@@ -44,7 +44,7 @@ Using the `op-scim-deployment.yaml` and `op-scim-service.yaml` files, deploy the
 
 NOTE: In order to obtain an SSL/TLS certificate for your SCIM Bridge instance, you must include a domain name in the `containers.args` field in the `op-scim-deployment.yaml` file. This will only succeed if a DNS record exists that points to your GCP load balancer. Please read the section about DNS records at the beginning of this example.
 
-NOTE: If you are using an existing redis instance that is not running on `redis:6379`, change the `--redis-host` and add a `--redis-port` flag to `containers.args` in the deployment yaml file.
+NOTE: If you are using an existing redis instance that is not running on `redis:6379`, add the `--redis-host=[host]` and `--redis-port=[port]` flags to `containers.args` in the deployment yaml file.
 
 Example:
 ```

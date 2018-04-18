@@ -16,7 +16,7 @@ spec:
       - name: op-scim
         image: onepassword/scim:latest
         command: ["./op-scim"]
-        args: ["--redis-host=redis-service", "--session=/secret/scimsession", "--letsencrypt-domain={YOUR-DOMAIN-HERE}"]
+        args: ["--session=/secret/scimsession", "--letsencrypt-domain={YOUR-DOMAIN-HERE}"]
         ports:
         - containerPort: 3002
         volumeMounts:
