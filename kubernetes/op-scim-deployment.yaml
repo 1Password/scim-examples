@@ -16,7 +16,7 @@ spec:
       - name: op-scim
         image: onepassword/scim:latest
         command: ["./op-scim"]
-        args: ["--redis-host=redis-service", "--session=/secret/scimsession"]
+        args: ["--redis-host=redis-service", "--session=/secret/scimsession", "--letsencrypt-domain={YOUR-DOMAIN-HERE}"]
         ports:
         - containerPort: 3002
         volumeMounts:
@@ -25,7 +25,7 @@ spec:
           readOnly: false
         env:
         - name: update
-          value: "1"
+          value: "2"
       volumes:
       - name: scimsession
         secret:
