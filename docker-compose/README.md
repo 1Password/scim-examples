@@ -27,6 +27,6 @@ Once your scimsession file has been created, copy it into this directory (next t
 
 Next, edit `docker-compose.yml`, replacing `{YOUR-DOMAIN-HERE}` with the domain name indicated by the DNS record created for your SCIM bridge. This will configure LetsEncrypt to automatically issue a certificate for your bridge.
 
-Running `docker-compose up --build` will now create a container from the `onepassword/scim` image. A redis container will also be started automatically to be used by the SCIM bridge. _After the DNS record has been propogated_, you can continue setting up your IdP with the SCIM bridge Administration Guide while monitoring the logs from the bridge on your local machine.
+Running `docker-compose up --build` will now create a container from the `1password/scim` image. A redis container will also be started automatically to be used by the SCIM bridge. _After the DNS record has been propogated_, you can continue setting up your IdP with the SCIM bridge Administration Guide while monitoring the logs from the bridge on your local machine.
 
 Once you have tested the configuration, the bridge can be exited using ctrl/cmd-c, and restarted in daemon mode using `docker-compose up -d, or deployed for production use with Docker Swarm or Kubernetes. You can access logs using `docker-compose logs` at any point in the future.
