@@ -1,0 +1,32 @@
+version: '3.3'
+
+services:
+    scim:
+        image: onepassword/scim:v0.4.4
+        deploy:
+          replicas: 1
+          restart_policy:
+            condition: on-failure
+        networks:
+          - op-scim
+        ports: 
+          - "80:8080"
+          - "443:8443"
+        secrets:
+          - scimsession
+        entrypoint: ["/op-scim/op-scim", "--letsencrypt-domain={YOUR-DOMAIN-HERE}", "--session=/run/secrets/scimsession"]
+    redis:
+        image: redis:latest
+        deploy:
+          replicas: 1
+          restart_policy:
+            condition: on-failure
+        networks:
+          - op-scim
+        
+networks:
+  op-scim:
+
+secrets:
+  scimsession:
+    external: true

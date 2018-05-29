@@ -1,0 +1,14 @@
+version: '3.3'
+
+services:
+    scim:
+        image: onepassword/scim:v0.4.4
+        ports: 
+            - "80:8080"
+            - "443:8443"
+        links:
+            - redis
+        entrypoint: ["/op-scim/op-scim", "--letsencrypt-domain={YOUR-DOMAIN-HERE}"]
+        env_file: scim.env
+    redis:
+        image: redis:latest
