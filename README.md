@@ -1,10 +1,17 @@
-# 1Password.com SCIM Bridge deployment examples
+## 1Password SCIM Bridge deployment examples
 
 Here you can find configuration files and best practice instructions for deploying the 1Password SCIM Bridge on various public and priavte clouds.
 
 To streamline your setup, it is suggested to have Docker installed on your local machine.
 
-To deply on Kubernetes, read the [Kubernetes example](https://github.com/1Password/scim-examples/tree/master/kubernetes)
-To deply with Docker Compose, read the [Docker example](https://github.com/1Password/scim-examples/tree/master/docker)
+
+### Deployments
+
+To deploy on Kubernetes, read the [Kubernetes example](https://github.com/1Password/scim-examples/tree/master/kubernetes)
+
+To deploy with Docker Swarm, read the [Docker Swarm example](https://github.com/1Password/scim-examples/tree/master/docker-swarm)
+
+To deploy with Docker Compose, read the [Docker Compose example](https://github.com/1Password/scim-examples/tree/master/docker-compose)
+
 
 More deployment examples are coming soon, including AWS and bare metal.
