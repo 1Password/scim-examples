@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: op-scim
-        image: 1password/scim:v0.4.4
+        image: 1password/scim:v0.5
         command: ["./op-scim"]
         args: ["--session=/secret/scimsession", "--letsencrypt-domain={YOUR-DOMAIN-HERE}"]
         ports:
