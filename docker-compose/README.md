@@ -1,6 +1,6 @@
 # Deploying the 1Password SCIM Bridge using Docker Compose
 
-This example describes the simplest method of deploying the 1Password SCIM bridge, using Docker Compose. These instructions require a remote Docker host be set up and configured to be accessed by the Docker CLI. 
+This example describes the simplest method of deploying the 1Password SCIM bridge, using Docker Compose. These instructions require a remote Docker host be set up and configured to be accessed by the Docker CLI.
 
 Note that this deployment strategy is very useful for testing, but it is not reccomended for use in a production environment. The scimsession file is passed into the container via an environment variable, which is less secure than Docker Swarm secrets or Kubernetes secrets, both of which are supported, and reccomended.
 
@@ -30,3 +30,13 @@ Next, edit `docker-compose.yml`, replacing `{YOUR-DOMAIN-HERE}` with the domain 
 Running `docker-compose up --build` will now create a container from the `1password/scim` image. A redis container will also be started automatically to be used by the SCIM bridge. _After the DNS record has been propogated_, you can continue setting up your IdP with the SCIM bridge Administration Guide while monitoring the logs from the bridge on your local machine.
 
 Once you have tested the configuration, the bridge can be exited using ctrl/cmd-c, and restarted in daemon mode using `docker-compose up -d, or deployed for production use with Docker Swarm or Kubernetes. You can access logs using `docker-compose logs` at any point in the future.
+
+## Automatically starting the SCIM bridge upon startup
+
+In order to automatically start the SCIM bridge upon startup when using docker-compose you'll need to automatically start the Docker daemon, then start op-scim.
+
+### Systemd
+
+* Enable dockerd to run on startup: `systemctl enable dockerd`
+* Create a service file for op-scim. A [sample file](op-scim.service) is provided and you'll need to change the path.
+* Enable op-scim to run on startup: `systemctl enable op-scim`
