@@ -1,11 +1,11 @@
-#/etc/systemd/system/op-scim.service 
+#/etc/systemd/system/op-scim.service
 [Unit]
 Description=1Password SCIM bridge
 Requires=docker.service
 After=docker.service
 
 [Service]
-Type=oneshot
+Type=simple
 RemainAfterExit=yes
 WorkingDirectory=/path/to/directory/containing/docker-compose.yml
 ExecStart=/usr/local/bin/docker-compose up -d
