@@ -33,10 +33,11 @@ Once you have tested the configuration, the bridge can be exited using ctrl/cmd-
 
 ## Automatically starting the SCIM bridge upon startup
 
-In order to automatically start the SCIM bridge upon startup when using docker-compose you'll need to automatically start the Docker daemon, then start op-scim.
+In order to automatically launch the 1Password SCIM bridge upon startup when using docker-compose you'll need to automatically start the Docker daemon, then start op-scim.
 
 ### Systemd
 
-* Enable dockerd to run on startup: `systemctl enable dockerd`
-* Create a service file for op-scim. A [sample file](op-scim.service) is provided and you'll need to change the path.
-* Enable op-scim to run on startup: `systemctl enable op-scim`
+1. Install the service file for op-scim. A [sample](op-scim.service) is provided and you'll need to change the path.
+2. Reload systemd: `systemctl daemon-reload`
+3. Enable the op-scim service: `systemctl enable op-scim`
+
