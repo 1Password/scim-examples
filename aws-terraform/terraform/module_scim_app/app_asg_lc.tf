@@ -63,7 +63,7 @@ data "template_file" "hostname" {
   template = "${file("${path.module}/data/user_data/01-set-hostname-by-instance-id.yml")}"
 
   vars {
-    fqdn   = "${var.application}-${var.env}-${var.domain}"
+    fqdn = "${var.application}-${var.env}-${var.domain}"
   }
 }
 

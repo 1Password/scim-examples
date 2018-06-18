@@ -1,4 +1,3 @@
-
 /*
   instance security group.
   Allows access from load balancer on port 80.

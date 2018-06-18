@@ -16,14 +16,14 @@ module "infra" {
 module "scim-app" {
   source = "../../module_scim_app/"
 
-  env                   = "${var.env}"          // tag
-  type                  = "${var.type}"         // tag
-  application           = "${var.application}"  // tag
-  region                = "${var.region}" 
+  env                   = "${var.env}"                                     // tag
+  type                  = "${var.type}"                                    // tag
+  application           = "${var.application}"                             // tag
+  region                = "${var.region}"
   aws-account           = "${var.aws-account}"
   az                    = "${data.aws_availability_zones.available.names}"
   log_bucket            = "${var.log_bucket}"
-  domain                = "${var.domain}"       // public
+  domain                = "${var.domain}"                                  // public
   endpoint_url          = "${var.endpoint_url}"
   ami                   = "${data.aws_ami.ubuntu.id}"
   instance_type         = "${var.instance_type}"

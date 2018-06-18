@@ -14,19 +14,19 @@ data "aws_acm_certificate" "lb" {
   Load balancer distributes incoming HTTP(S) traffic between app EC2 instances. It also provides TLS termination.
 */
 resource "aws_lb" "app_alb" {
-  name                      = "${var.env}-${var.application}-alb"
-  subnets                   = ["${var.public_subnets}"]
-  security_groups           = ["${aws_security_group.app_lb.id}"]
-  internal                  = false
+  name                       = "${var.env}-${var.application}-alb"
+  subnets                    = ["${var.public_subnets}"]
+  security_groups            = ["${aws_security_group.app_lb.id}"]
+  internal                   = false
   enable_deletion_protection = false
-  idle_timeout              = 400
-  load_balancer_type        = "application"
-  ip_address_type           = "ipv4"
+  idle_timeout               = 400
+  load_balancer_type         = "application"
+  ip_address_type            = "ipv4"
 
   access_logs {
-    bucket        = "${var.log_bucket}"
-    prefix        = "${var.env}/${var.application}"
-    enabled       = true
+    bucket  = "${var.log_bucket}"
+    prefix  = "${var.env}/${var.application}"
+    enabled = true
   }
 
   tags {
@@ -38,16 +38,16 @@ resource "aws_lb" "app_alb" {
 
 // LB target group
 resource "aws_lb_target_group" "app_tg" {
-  name                  = "${var.env}-${var.application}-${var.scim_port}-tg"
-  port                  = "${var.scim_port}"
-  protocol              = "HTTP"
-  vpc_id                = "${var.vpc}"
-  deregistration_delay  = 30
-  target_type           = "instance"
+  name                 = "${var.env}-${var.application}-${var.scim_port}-tg"
+  port                 = "${var.scim_port}"
+  protocol             = "HTTP"
+  vpc_id               = "${var.vpc}"
+  deregistration_delay = 30
+  target_type          = "instance"
 
   stickiness {
     enabled = false
-    type =  "lb_cookie"
+    type    = "lb_cookie"
   }
 
   health_check {
@@ -62,9 +62,9 @@ resource "aws_lb_target_group" "app_tg" {
   }
 
   tags {
-    Application         = "${var.application}"
-    type                = "${var.type}"
-    Name                = "${var.env}-${var.application}-tg"
+    Application = "${var.application}"
+    type        = "${var.type}"
+    Name        = "${var.env}-${var.application}-tg"
   }
 }
 

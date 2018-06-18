@@ -21,6 +21,7 @@ data "aws_iam_policy_document" "app" {
     effect    = "Allow"
     actions   = ["secretsmanager:GetSecretValue"]
     resources = ["arn:aws:secretsmanager:${var.region}:${var.aws-account}:secret:${var.scim_secret_name}-*"]
+
     /* condition {
             test     = "ForAnyValue:StringEquals"
             variable = "secretsmanager:VersionStage"

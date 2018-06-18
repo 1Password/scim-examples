@@ -97,7 +97,7 @@ variable "scim_secret_name" {
 
 variable "log_bucket" {
   description = "Load Balancer log bucket"
-  default = "bucket name"
+  default     = "bucket name"
 }
 
 variable "instance_type" {
@@ -132,7 +132,7 @@ variable "domain" {
 
 variable "endpoint_url" {
   // op-scim endpoint url prefix, resulting fqdn will be endpoint_url.domain (https://endpoint_url.example.com)
-  type = "string"
+  type    = "string"
   default = "op-scim"
 }
 
