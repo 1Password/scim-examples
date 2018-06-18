@@ -1,0 +1,22 @@
+[Unit]
+Description=scim endpoint
+After=network.target
+Wants=cloud-final.service
+ConditionPathExists=/path/to/scimsession
+
+[Service]
+Type=simple
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=scim_endpoint
+TimeoutStopSec=3
+RestartSec=5
+WorkingDirectory=/path/to/op-scim
+EnvironmentFile=/etc/default/op-scim
+ExecStart=/path/to/op-scim/op-scim --redis-host=${REDIS} --redis-port=${REDISPORT} --session=/path/to/scimsession
+Restart=always
+User=scim_user
+Group=scim_group
+
+[Install]
+WantedBy=multi-user.target
