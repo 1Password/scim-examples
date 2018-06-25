@@ -5,8 +5,10 @@ Below code searches for ACM certificate issued to endpoint_url.domain.tld
 */
 
 data "aws_acm_certificate" "lb" {
-  domain   = "${var.endpoint_url}.${var.domain}"
-  statuses = ["ISSUED"]
+  domain      = "${var.endpoint_url}.${var.domain}"
+  statuses    = ["ISSUED"]
+  types       = ["AMAZON_ISSUED"]
+  most_recent = true
 }
 
 /*
@@ -23,11 +25,12 @@ resource "aws_lb" "app_alb" {
   load_balancer_type         = "application"
   ip_address_type            = "ipv4"
 
-  access_logs {
+  // uncomment below access_logs to enable LB logs
+  /* access_logs {
     bucket  = "${var.log_bucket}"
     prefix  = "${var.env}/${var.application}"
     enabled = true
-  }
+  } */
 
   tags {
     Application = "${var.application}"

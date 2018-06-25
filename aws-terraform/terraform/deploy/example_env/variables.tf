@@ -18,8 +18,8 @@ variable "type" {
 
 variable "region" {
   type        = "string"
-  description = "AWS region where the application is deployed, for example 'us-west-1'"
-  default     = "us-west-1"
+  description = "AWS region where the application is deployed, for example 'us-east-2'"
+  default     = "region"
 }
 
 variable "aws-account" {
@@ -39,11 +39,12 @@ provider "aws" {
   allowed_account_ids = ["${var.aws-account}"]
 }
 
+// optional, comment out if not used
 terraform {
   backend "s3" {
-    region = "aws region"
-    bucket = "terraform state bucket name"
-    key    = "path/to/tf_remote_state.tfstate"
+    region = "region"
+    bucket = "bucket name"
+    key    = "state/op-scim-application-env.tfstate"
 
     encrypt = "true"
     acl     = "bucket-owner-full-control"
@@ -63,6 +64,12 @@ variable "scim_port" {
   default     = "3002"
 }
 
+variable "scim_repo" {
+  type        = "string"
+  description = "1Password SCIM bridge public debian repo"
+  default     = "deb https://apt.agilebits.com/op-scim/ stable op-scim"
+}
+
 variable "scim_user" {
   type        = "string"
   description = "Unprivileged user to run op-scim service"
@@ -72,7 +79,7 @@ variable "scim_user" {
 variable "scim_group" {
   type        = "string"
   description = "Unprivilaged group to run op-scim service"
-  default     = "scim_group"
+  default     = "nogroup"
 }
 
 variable "scim_path" {
@@ -159,5 +166,5 @@ variable "cache_port" {
 }
 
 variable "cache_name" {
-  default = "cache.internal"
+  default = "localhost"
 }

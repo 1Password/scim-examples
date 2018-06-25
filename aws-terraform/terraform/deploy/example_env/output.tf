@@ -6,6 +6,6 @@ output "type" {
   value = "${var.type}"
 }
 
-output "lb_pub_dns_name" {
-  value = "${module.scim-app.app_lb_dns_name}"
+output "op-scim_bridge_endpoint_url" {
+  value = "https://${module.scim-app.app_lb_dns_name}"
 }

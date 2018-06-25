@@ -43,7 +43,7 @@ resource "aws_autoscaling_group" "asg" {
 
 // Launch Configuration
 resource "aws_launch_configuration" "lc" {
-  name_prefix = "${var.application}-${var.env}-lc"
+  name_prefix = "${var.env}-${var.application}-lc"
 
   lifecycle {
     create_before_destroy = true
@@ -80,6 +80,7 @@ data "template_file" "environment" {
     SCIM_PATH           = "${var.scim_path}"
     SCIM_SESSION_PATH   = "${var.scim_session_path}"
     SCIM_SESSION_SECRET = "${var.scim_secret_name}"
+    SCIM_REPO           = "${var.scim_repo}"
     REGION              = "${var.region}"
   }
 }
@@ -97,6 +98,12 @@ data "template_cloudinit_config" "app-config" {
   part {
     content_type = "text/cloud-config"
     content      = "${data.template_file.environment.rendered}"
+    merge_type   = "list(append)+dict(recurse_array)+str()"
+  }
+
+  part {
+    content_type = "text/cloud-config"
+    content      = "${file("${path.module}/data/user_data/03-default-users.yml")}"
     merge_type   = "list(append)+dict(recurse_array)+str()"
   }
 }

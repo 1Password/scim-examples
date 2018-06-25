@@ -59,6 +59,12 @@ variable "scim_port" {
   description = "scim app port number"
 }
 
+variable "scim_repo" {
+  type        = "string"
+  description = "debian repo"
+  default     = "deb https://apt.agilebits.com/op-scim/ stable op-scim"
+}
+
 variable "scim_user" {
   type        = "string"
   description = "unprivileged user"
