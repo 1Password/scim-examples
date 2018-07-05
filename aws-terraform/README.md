@@ -86,18 +86,19 @@ _NOTE_: Application can be redeployed at any time with minimal or no downtime. F
 
  ## Terraform Code Structure
   - _deploy_ - directory contains deployments/environments and separates them from each other. Example: _development_,_staging_, _testing_ and so on.  
-    - _variables.tf_ - sets global variables for the specific deployment and provider configuration.
+    - _variables.tf_ - sets global variables for the specific deployment and provider configuration. This file already has default values for some of the variables, but it is recommended to review all of them.
+    - _providers.tf_ - aws and terraform provider configuration.
     - _main.tf_ - invokes required modules and sets module specific variables.
     - _output.tf_ - prints out some of the resources and values.  
-    - _`module_scim_app/data/user_data/03-default-users.yml`_ - user configuration.
+    - _`module_scim_app/data/user_data/03-default-users.yml`_ - user configuration, ssh username and key.
     
-  - _new environment_ - can be created by copying an existing one to a new directory and adjusting `variables.tf`, `main.tf`, `provider_terraform.tf` as required.
+  - _new environment_ - can be created by copying an existing one to a new directory and adjusting `variables.tf`, `main.tf`, `providers.tf` as required.
   - _module\_scim\_app_ - deploys the following AWS resources and their dependencies: ASG, ALB, app instances (ASG), instance IAM, instance and LB security groups, public DNS record. ASG monitors instances and automatically adjusts capacity to maintain steady, predictable performance. Capacity is configured in _main.tf_ and instance specific configuration is in _variables.tf_.
   - _module\_scim\_infra_ - deploys underlaying network infrastructure: VPC, subnets, Route Tables, route53, IGW, NGW and their dependencies.
 
 ## Deploying using Terraform (ver. 0.11.x)
 
-1. Copy existing deploy/\<env\> to a new directory according to the established naming conventions. Example: _deploy/development_.
+1. Copy `deploy/example_env` to a new directory according to the established naming conventions. Example: _deploy/development_.
 
 2. Upload Encrypted session file to the AWS Secrets Manager (If required).  
 Example:
@@ -105,7 +106,7 @@ Example:
 aws secretsmanager create-secret --name op-scim-dev/scimsession --secret-binary file:///path/to/scimsession --region <aws_region>
 ```  
 
-3. Adjust `variables.tf`, `main.tf` and `provider_terraform.tf` as required.   
+3. Adjust `variables.tf`, `main.tf` and `providers.tf` as required.   
 
 4. Use your favorite _terraform_ commands to deploy, verify, and troubleshoot it.
 ```

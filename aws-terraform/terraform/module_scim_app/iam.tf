@@ -7,26 +7,11 @@ data "aws_iam_policy_document" "app" {
     resources = ["*"]
   }
 
-  // access to software bucket (optional)
-  /*
-  statement {
-    effect    = "Allow"
-    actions   = ["s3:GetObject"]
-    resources = ["${APP_BUCKET}/*"]
-  }
-  */
-
   // access to secret manager
   statement {
     effect    = "Allow"
     actions   = ["secretsmanager:GetSecretValue"]
     resources = ["arn:aws:secretsmanager:${var.region}:${var.aws-account}:secret:${var.scim_secret_name}-*"]
-
-    /* condition {
-            test     = "ForAnyValue:StringEquals"
-            variable = "secretsmanager:VersionStage"
-            values = [ "AWSCURRENT" ]
-    } */
   }
 }
 

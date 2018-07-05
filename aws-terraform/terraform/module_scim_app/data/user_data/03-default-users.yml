@@ -6,4 +6,3 @@ users:
        shell: /bin/bash
        ssh-authorized-keys: 
            - ssh-rsa key user_name@example.com
-           

@@ -19,36 +19,19 @@ variable "type" {
 variable "region" {
   type        = "string"
   description = "AWS region where the application is deployed, for example 'us-east-2'"
-  default     = "region"
+  default     = "region"                                                                // CHANGE_IT
 }
 
 variable "aws-account" {
   type        = "string"
   description = "AWS account identifier"
-  default     = "123456789012"
+  default     = "123456789012"           // CHANGE_IT
 }
 
 variable "application" {
   description = "application name"
   type        = "string"
   default     = "op-scim"
-}
-
-provider "aws" {
-  region              = "${var.region}"
-  allowed_account_ids = ["${var.aws-account}"]
-}
-
-// optional, comment out if not used
-terraform {
-  backend "s3" {
-    region = "region"
-    bucket = "bucket name"
-    key    = "state/op-scim-application-env.tfstate"
-
-    encrypt = "true"
-    acl     = "bucket-owner-full-control"
-  }
 }
 
 // application vars:
@@ -97,14 +80,14 @@ variable "scim_session_path" {
 variable "scim_secret_name" {
   type        = "string"
   description = "the friendly name of the secret created in the secrets manager"
-  default     = "op-scim-dev/scimsession"
+  default     = "op-scim-dev/scimsession"                                        // CHANGE_IT
 }
 
-// vpc variables
+// environment variables
 
 variable "log_bucket" {
   description = "Load Balancer log bucket"
-  default     = "bucket name"
+  default     = "bucket name"              // CHANGE_IT (optional)
 }
 
 variable "instance_type" {
@@ -113,7 +96,7 @@ variable "instance_type" {
 }
 
 variable "vpc_cidr" {
-  default = "10.1.1.0/24"
+  default = "10.1.1.0/24" // CHANGE_IT
 }
 
 variable "subnet_cidr" {
@@ -134,7 +117,7 @@ variable "subnet_cidr" {
 
 variable "domain" {
   // public domain, make sure ACM certificate is ussed for under this name
-  default = "example.com"
+  default = "example.com" // CHANGE_IT
 }
 
 variable "endpoint_url" {

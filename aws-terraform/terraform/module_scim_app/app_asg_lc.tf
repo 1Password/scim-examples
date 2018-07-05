@@ -1,9 +1,5 @@
 // Autoscaling Group configuration
 resource "aws_autoscaling_group" "asg" {
-  lifecycle {
-    create_before_destroy = true
-  }
-
   availability_zones        = ["${var.az}"]
   name                      = "${aws_launch_configuration.lc.name}-asg"
   desired_capacity          = "${var.desired_capacity}"
@@ -15,6 +11,12 @@ resource "aws_autoscaling_group" "asg" {
   launch_configuration      = "${aws_launch_configuration.lc.name}"
   vpc_zone_identifier       = ["${var.private_subnets}"]
   target_group_arns         = ["${aws_lb_target_group.app_tg.arn}"]
+  min_elb_capacity          = "${var.min_size}"
+  wait_for_capacity_timeout = "15m"
+
+  lifecycle {
+    create_before_destroy = true
+  }
 
   tag {
     key                 = "env"
@@ -43,24 +45,22 @@ resource "aws_autoscaling_group" "asg" {
 
 // Launch Configuration
 resource "aws_launch_configuration" "lc" {
-  name_prefix = "${var.env}-${var.application}-lc"
-
-  lifecycle {
-    create_before_destroy = true
-  }
-
+  name_prefix                 = "${var.env}-${var.application}-lc"
   image_id                    = "${var.ami}"
   instance_type               = "${var.instance_type}"
   security_groups             = ["${aws_security_group.app.id}"]
   iam_instance_profile        = "${aws_iam_instance_profile.app.id}"
   associate_public_ip_address = false
+  user_data                   = "${data.template_cloudinit_config.app-config.rendered}"
 
-  user_data = "${data.template_cloudinit_config.app-config.rendered}"
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 // set instance hostname
 data "template_file" "hostname" {
-  template = "${file("${path.module}/data/user_data/01-set-hostname-by-instance-id.yml")}"
+  template = "${file("${path.module}/data/user_data/01-set-hostname.yml")}"
 
   vars {
     fqdn = "${var.application}-${var.env}-${var.domain}"
