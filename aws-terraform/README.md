@@ -23,15 +23,24 @@ Init mode will guide the administrator through an interactive process which gene
 
 ## OP-SCIM Bridge 
 
-The 1Password SCIM Bridge is distributed as the Debian package and can be installed during the deployment process using the following repo configuration: `deb https://apt.agilebits.com/op-scim/ stable op-scim`. [Repo GPG key](apt.agilebits.com_repo_key.asc).  
+The 1Password SCIM Bridge is distributed as the Debian package and can be installed during the deployment process using the following repo configuration: `deb https://apt.agilebits.com/op-scim/ stable op-scim`. [Repo GPG key](https://apt.agilebits.com/gpg.key) can be downloaded from the same repo.  
+Package upgrade script is included in the instance [User Data](https://github.com/1Password/scim-examples/blob/81f66e808941a9215af3fb27b3f4351c9c8b17ff/aws-terraform/terraform/module_scim_app/data/user_data/02-environment.yml#L13) and instance cron job runs that script hourly to automatically install newer version when it is available. Automatic updates can be disabled by removing the cron job:  
+```
+sudo rm /etc/cron.d/50_op-scim
+```  
+
+You can update to the later version of 1Password SCIM Bridge manually by running the following commands:  
+```
+sudo apt-get update
+sudo apt-get install op-scim
+```  
+
 The bridge exposes a service listening on TCP port 3002. The bridge must be deployed and protected by an API gateway, proxy, or load balancer supporting TLS. The bridge service runs using unprivileged user/group credentials, and administrators should use a separate user/group for the bridge service. The bridge writes logs to STDOUT allowing collection with a syslog facility. A systemd unit is included in the package and used to manage service operation, service default environment variables can be altered in `/etc/default/op-scim`. The scimsession file and a running instance of Redis are required to start the service. By default, 'localhost' Redis server is configured. 1Password SCIM Bridge service start command example:
 ```
 op-scim --redis-host={cache address} --redis-port={redis port} --session={/path/to/scimsession}
 ```
 
 __Note:__ If the `--redis-host` and/or `--redis-port` command flags are not passed, the bridge will default to the hostname `redis`, and the port number `6379`, respectively.
-
-A [sample](op-scim.service) is provided.
 
 ## Logs 
 Endpoint writes to STDOUT, thus logs can be processed in a preferred way, for example, send to a remote log collector using rsyslog. A systemd unit file configuration can be used to set a specific _SyslogIdentifier_ in order to filter service logs.
@@ -58,6 +67,7 @@ TLS is not implemented on the bridge application, it is __highly__ recommended t
 - Optional, AWS S3 bucket for the terraform remote state.
 - Optional, AWS S3 bucket for Load Balancer logs. 
 
+### Steps
 1. OP-SCIM session file and application binary/package are created outside of the infrastructure deployment and have to be available at the time of the deployment.    
 
 2. S3 buckets (Optional) are deployed separately prior to the rest of the infrastructure. These buckets can be used to store terraform state file, Load balancer logs and etc.  
@@ -90,7 +100,7 @@ _NOTE_: Application can be redeployed at any time with minimal or no downtime. F
     - _providers.tf_ - aws and terraform provider configuration.
     - _main.tf_ - invokes required modules and sets module specific variables.
     - _output.tf_ - prints out some of the resources and values.  
-    - _`module_scim_app/data/user_data/03-default-users.yml`_ - user configuration, ssh username and key.
+    - _module\_scim\_app/data/user\_data/03-default-users.yml_ - user configuration, ssh username and key.
     
   - _new environment_ - can be created by copying an existing one to a new directory and adjusting `variables.tf`, `main.tf`, `providers.tf` as required.
   - _module\_scim\_app_ - deploys the following AWS resources and their dependencies: ASG, ALB, app instances (ASG), instance IAM, instance and LB security groups, public DNS record. ASG monitors instances and automatically adjusts capacity to maintain steady, predictable performance. Capacity is configured in _main.tf_ and instance specific configuration is in _variables.tf_.
