@@ -23,7 +23,16 @@ Init mode will guide the administrator through an interactive process which gene
 
 ## OP-SCIM Bridge 
 
-The 1Password SCIM Bridge is distributed as the Debian package and can be installed during the deployment process using the following repo configuration: `deb https://apt.agilebits.com/op-scim/ stable op-scim`. [Repo GPG key](https://apt.agilebits.com/gpg.key) can be downloaded from the same repo.  
+The 1Password SCIM Bridge is distributed as a Debian package and can be installed automatically during the deployment process. You can add repository manually using the following commands:  
+Add [Repository GPG key](https://apt.agilebits.com/gpg.key) first:  
+```
+curl -sS https://apt.agilebits.com/gpg.key | sudo apt-key add -
+```
+Add Repository:  
+```
+echo "deb https://apt.agilebits.com/op-scim/ stable op-scim" > /etc/apt/sources.list.d/op-scim.list
+```  
+
 Package upgrade script is included in the instance [User Data](https://github.com/1Password/scim-examples/blob/81f66e808941a9215af3fb27b3f4351c9c8b17ff/aws-terraform/terraform/module_scim_app/data/user_data/02-environment.yml#L13) and instance cron job runs that script hourly to automatically install newer version when it is available. Automatic updates can be disabled by removing the cron job:  
 ```
 sudo rm /etc/cron.d/50_op-scim
