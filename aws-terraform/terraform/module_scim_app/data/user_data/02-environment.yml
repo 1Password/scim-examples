@@ -1,0 +1,112 @@
+#cloud-config
+
+write_files:
+    - content: |
+        REDIS="${REDIS}"
+        REDISPORT="${REDISPORT}"
+        SCIM_USER="${SCIM_USER}"
+        SCIM_GROUP="${SCIM_GROUP}"
+        SCIM_PATH="${SCIM_PATH}"
+        SCIM_SESSION_PATH="${SCIM_SESSION_PATH}"
+      path: /etc/default/op-scim
+      permissions: '644'
+    # op-scim package upgrade script:
+    - content: |
+        #!/bin/bash
+        export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+        export DEBIAN_FRONTEND="noninteractive"
+        # Check if session file exists before installing package
+        if [ -e "${SCIM_SESSION_PATH}" ] ; then
+            # Wait for lock on /var/lock/.op-scim-upgrade (fd 200) for 10 seconds
+            ( flock -x -w 10 200 || exit 1
+            apt-get -qq update -o Dir::Etc::sourcelist="sources.list.d/op-scimrepo.list" -o Dir::Etc::sourceparts="-" -o APT::Get::List-Cleanup="0"
+            apt-get -qq -y install op-scim
+            ) 200>/var/lock/.op-scim-upgrade
+        fi
+      path: /usr/local/bin/op-scim-upgrade.sh
+      permissions: '0755'
+      owner: root:root
+    # op-scim package upgrade cron job, runs hourly
+    - content: '0 * * * * root /usr/local/bin/op-scim-upgrade.sh 2>&1 | logger -t op-scim-upgrade
+    
+    '
+      path:  /etc/cron.d/50_op-scim
+      permissions: '0644'
+      owner: root:root
+
+apt:
+    preserve_sources_list: true
+    sources:
+        op-scimrepo:
+            source: '${SCIM_REPO}'
+            key: |
+                -----BEGIN PGP PUBLIC KEY BLOCK-----
+                Version: GnuPG v1
+
+                mQINBFstJYMBEAC/V/rXIYHwH06GJSZ0cfcW0Zx1mVD98rGMC/r0di2pAAkRuYtx
+                zWW8T/Zj6YjDnssidib+xG2LSARIik3/Mai91s7l0KI94zLRcH5Xdz4/kcWedcDL
+                QbM5fpGDZZtonmpK04uA5JoNfgqo8zuPys+vFQVoC16nTRYRXZci4VOeYyRgXSeV
+                Cn7hTsVU9acLuVru3ZJtRqxas0vMf0OUt7cpTw4jYqaWAu74WHC2sKY4V+W2zHeD
+                xljpXKn32Nyt5iOtsBF+iHki/0xZlbhXR0xnVhVyWEqFaDXUCx1AmCvVGqzVDFig
+                3egYQUk774tgVMTUrWfKiLp7d0DdE9qt9zdykc7tDNKZDtwEqxmbZItv1k2zMEzx
+                AboCuZLBzXvNVSVOdFLtJ66ZFJtdQfG06VXk8da6F4SE3kRONroew+Mb9N0MzzHl
+                2xf+QPdzqWLDME5nZzGKv3QvaLSZFifGjPjbQqiP12JES+hjhDhnbmVmvQgAlIAf
+                rFhyYn1tW4cvKlbxsbxi8C2+ebm5FiRLLmdTEkNbFS02RNV2eWKw71p03HVklNRA
+                QyH0f7YBIVg7gWiVLq4mNYXcaRNp6zXRoPHMNhAkzqI2P+wxK70Tqnzs31yW1P42
+                rfzXYiZnCGI7UkNDoA0XxuYgKT7LyvgxCiarcajIjIChOhTRqCG+juxFwwARAQAB
+                tDpBZ2lsZUJpdHMgSW5jLiAoYXB0LmFnaWxlYml0cy5jb20pIDxzdXBwb3J0QGFn
+                aWxlYml0cy5jb20+iQI+BBMBAgAoBQJbLSWDAhsDBQkDwmcABgsJCAcDAgYVCAIJ
+                CgsEFgIDAQIeAQIXgAAKCRBdudyMiLzt55UdD/9rIWh5w1WKrT3U7u/Hik8w5zoY
+                S/JlzazYjDAJhs7/c6JTnuLri4aZ8ytLAb3E1ryruR+h3XhBqYzuDBk/kWEsGcr9
+                MjQIkdrCORsTH/UG4CY2zNDGigRawv8xJ3ZGejemnElBq37MzmT5XqEaTjMIxM3Z
+                UNEhBTotuxjU3SmnMuUWRBC4TFf0YTUUXBWqr1pxzIqSSUtGjGypSOUxqJ8Q0/iu
+                QByIOLs5gu32dR/g7TarRkjDT11Tml6WvAOtbAxbmugjjk5Vf6DcpdNKY4g0Te49
+                heF8ekC63qg01EUtkrGr2AsqxdKdDV/Flu5ZTX+syMwonRBh1alJlsl7b3niRuKk
+                5+qGb5PJq09CK2SmicGj596bX+fTMi+b5sdpsUTkDfUtDBIP/XDzeYMplrW7Ar7G
+                fIR4JCUJmsXD9+IUnw9d/4XrTwRJURqsOeKchPVQbRo1kZ9lLg5yp6RTlGDbIf52
+                NPuidZJ6dtPDIZ3ECLTzU3bRf7e+mst0H8ttwJ2yLQoZh6wP7nkBjd7OFLJNIBLj
+                6QiNA3ApZX3MlZjlZXm4eJCP0JEhZHPNgwN/MzvMpZ9VnOMc23v2oUEFzPLPOp7T
+                uZZM3aYf8/IKjvu13pRaGJWTFCaiSjCH4DSNybG0bSgjOQvTeglOVIkYUUGWaeXP
+                SuZCY8es7Z6LyZQftrkCDQRbLSWDARAA6w7oCa/U/CSWdEVVQ08yCWB3wFH5PP2Q
+                O4pdIxKguBxjcUPPFrSx1I50V9K7qN5UPNzhXbqwlm5CNQCxbaYMo/xwFha+zls4
+                S5ux6plgoHzEy4IX2kTgzAsnNlCy6+ikPYrVpAq7A2A4EvK47UUbKtNSnL/5TDrW
+                O5lnjUIww7dSmU7rQb8LvUthM63Zv49XLW7TvkH4qOBY6F08oe3BrCVfKsLgAooF
+                fry2ZY22BGnH6SCwozlCue1p+QJ8g1wqeJRAzZmnQ8Ip3cUUw+dC1mL5Tm0uo+uH
+                414tIUwaEJdfC1zZCD8lL+I16eQyd3vvxf/JztzCzCCQ29feKyev2eKs+DWccf7H
+                UQ4Yjmpqy1Zo8Dj0f91xgvhwqBKOsNICt0q9tsPKTogb026zJhv8XXc8qsXxqXa1
+                VYz1VtJrXGxD3Q373KP0DTyHuP50FxrMBreBQRXN0fsVSwMUUd0AjkJABaRiWNqo
+                EEFD6G6WYNjWj9TRJ1Rii/fOsPVwjWv82CwiHSvTp3Hcm7Fv41kPBmkIgWJir0TN
+                voZrVRxj3zG+VAVkJsCzFCB/QrgjvZJ1mnSS13yZMsKEej3uEJ9zDXQCTdJPfhTH
+                LjJuwMWnUi0B2Iv4yLPA6qRke/zJJ+k8guHkZegfaEoZQeOahIx/X1h9Dh6c8M05
+                KNcEElETrSUAEQEAAYkCJQQYAQIADwUCWy0lgwIbDAUJA8JnAAAKCRBdudyMiLzt
+                5yy4D/43+rLzfQzaugSj39PiQrV1kdLQpgKZl6AiXak26RdrdU9JyatGaL/0P1sq
+                7/80vxFoWTr2D5jBhyIe0SKz7Q0vkhutbDIvAgeA/yce5qrzaEjmnX7ZgetkGbt0
+                QS5tv5wkFvtgHf7SuBJ3X386DGdkFxRRKgIctd1apmKAwS3ZVG8VwW14TLeLHQfj
+                lETBkDYkEHvLzW9B7s28tWblxR7gchsT2Nf3vgwo9YjYGqX8BHky4F+/lWc76OHl
+                gYM7h4vUNCYcjm2uuus7OnXSZnOkO+HXcbfNr0NVTcHUqeuMTYb2lY4kbE7qt2iI
+                3uSEf3fOTZtyhRlljStSWkodAYtAR0ai3N0iRQgZA4Zu2/FV7sHKlp1rHboRsVdR
+                o17XxBUcnJ2djyX3ES98HnKff6hSWOvxbsE30NdbGVPN8gqEFILNm5LR2Y69NSKE
+                /jnJUrdGqdn3+iIPoa7j5OK+9Gjh38mxPGBJMeOst0GcKusZy7DY+QqnNaVY0sYi
+                EwdlDcPmRY5Bzi8Wdkefi/M7BtyrcGfPr5ywEtVu73U9XVQ3cG8Xlc6SbOxb/Tef
+                maG0BttVdoJPODEqObczXjsEBnHgZ1gqr1E+L82kVFvTCcSYvD1zjrW47ZrDhNEb
+                lTWUR82+40D/Sv9QuJ03QbdhXqeZHJIctqI1cq0D4fFb9Fq9nA==
+                =yldc
+                -----END PGP PUBLIC KEY BLOCK-----
+
+package_upgrade: true
+packages: 
+    - ntp
+    - apt-transport-https
+    - redis-server
+    - ca-certificates
+    - python-pip
+
+runcmd:
+    # install aws cli
+    - pip install awscli --upgrade
+    # fetch encrypted scimsession, and set owner and permissions (optional)
+    - bash -vc "[ ! -d `dirname "${SCIM_SESSION_PATH}"` ] && mkdir -p `dirname "${SCIM_SESSION_PATH}"`"
+    - aws secretsmanager get-secret-value --secret-id ${SCIM_SESSION_SECRET} --region ${REGION} --output text --query SecretBinary | base64 --decode > ${SCIM_SESSION_PATH}
+    - chmod -v 600 ${SCIM_SESSION_PATH}
+    # install op-scim
+    - bash -vc "( flock -x -w 10 200 || exit 1 apt-get update && apt-get -y install op-scim ) 200>/var/lock/.op-scim-upgrade" 
