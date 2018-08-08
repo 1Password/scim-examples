@@ -13,5 +13,8 @@ To deploy with Docker Swarm, read the [Docker Swarm example](https://github.com/
 
 To deploy with Docker Compose, read the [Docker Compose example](https://github.com/1Password/scim-examples/tree/master/docker-compose)
 
+To deploy with AWS and Terraform, read the [AWS and Terraform example](https://github.com/1Password/scim-examples/tree/master/aws-terraform)
 
-More deployment examples are coming soon, including AWS and bare metal.
+To request additional deployment examples, please open an issue explaining your deployment environment, and we will do our best to accommodate.
+
+If you encounter issues or have any questions about your SCIM bridge deployment, do not hesitate to email support+business@agilebits.com. We are happy to help in any way we can.
