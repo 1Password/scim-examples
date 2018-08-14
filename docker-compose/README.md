@@ -10,7 +10,7 @@ The 1Password SCIM bridge requires SSL/TLS in order to communicate with your IdP
 
 ## Create your scimsession file
 
-Use the Linux Bash [create-session-file.sh] script or Windows PowerShell [create-session-file.bat] batch file (https://github.com/1Password/scim-examples/tree/master/session) while connected to the Docker host on your local machine to create a scimsession file. This script uses a Docker container to run the `op-scim init` command and writes the scimsession file back to your local machine using a mounted volume. Your bearer token will be printed to the console. Save your bearer token, as it will be needed to authenticate with your IdP.
+Use the Linux Bash [create-session-file.sh](../session/create-session-file.sh) script or Windows PowerShell [create-session-file.bat](../session/create-session-file.bat) batch file while connected to the Docker host on your local machine to create a scimsession file. This script uses a Docker container to run the `op-scim init` command and writes the scimsession file back to your local machine using a mounted volume. Your bearer token will be printed to the console. Save your bearer token, as it will be needed to authenticate with your IdP.
 
 The scimsession file is equivalent to your Master Password and Secret Key when combined with the bearer token, therefore they should never be stored in the same place.
 
