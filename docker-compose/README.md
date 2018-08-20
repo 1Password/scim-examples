@@ -10,7 +10,7 @@ The 1Password SCIM bridge requires SSL/TLS in order to communicate with your IdP
 
 ## Create your scimsession file
 
-Use the [create-session-file.sh](https://github.com/1Password/scim-examples/tree/master/session) script while connected to the Docker host on your local machine to create a scimsession file. This script uses a Docker container to run the `op-scim init` command and writes the scimsession file back to your local machine using a mounted volume. Your bearer token will be printed to the console. Save your bearer token, as it will be needed to authenticate with your IdP.
+Use the Linux Bash [create-session-file.sh](../session/create-session-file.sh) script or Windows PowerShell [create-session-file.bat](../session/create-session-file.bat) batch file while connected to the Docker host on your local machine to create a scimsession file. This script uses a Docker container to run the `op-scim init` command and writes the scimsession file back to your local machine using a mounted volume. Your bearer token will be printed to the console. Save your bearer token, as it will be needed to authenticate with your IdP.
 
 The scimsession file is equivalent to your Master Password and Secret Key when combined with the bearer token, therefore they should never be stored in the same place.
 
@@ -23,7 +23,7 @@ Bearer token: jafewnqrrupcnoiqj0829fe209fnsoudbf02efsdo
 
 ## Deploy the SCIM bridge
 
-Once your scimsession file has been created, copy it into this directory (next to docker-compose.yml), as we need to populate some ENV variables in the container. `generate-env.sh` will create a `scim.env` file, allowing docker-compose to pass the scimsession file into the container without writing it to the container filesystem, leading to insecure storage of the file. The scimsession is base64 encoded before being put into the .env file.
+Once your scimsession file has been created, copy it into this directory (next to docker-compose.yml), as we need to populate some ENV variables in the container. Linux Bash `generate-env.sh` script or Windows PowerShell `generate-env.bat` batch file will create a `scim.env` file, allowing docker-compose to pass the scimsession file into the container without writing it to the container filesystem, leading to insecure storage of the file. The scimsession is base64 encoded before being put into the .env file.
 
 Next, edit `docker-compose.yml`, replacing `{YOUR-DOMAIN-HERE}` with the domain name indicated by the DNS record created for your SCIM bridge. This will configure LetsEncrypt to automatically issue a certificate for your bridge.
 
