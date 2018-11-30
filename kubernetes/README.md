@@ -20,13 +20,13 @@ This will deploy a single redis instance listening on Kubernetes internal DNS `r
 
 ## Create your `scimsession` Kubernetes secret
 
-Firstly, use the [create-session-file.sh](https://github.com/1Password/scim-examples/tree/master/session) script on your local machine to create a scimsession file. This script uses a Docker container to run the `op-scim init` command and writes the scimsession file back to your local machine using a mounted volume. Your bearer token will be printed to the console. 
+Firstly, use the [scim-setup.sh](https://github.com/1Password/scim-examples/tree/master/scim-setup.sh) script on your local machine to set up your account and generate a `scimsession` file. This script uses a Docker container to run the `op-scim setup` command and writes the scimsession file back to your local machine using a mounted volume. Your bearer token will be printed to the console. 
 
 The scimsession file is equivalent to your account key and master password when combined with the bearer token, therefore they should never be stored in the same place.
 
 Example:
 ```
-create-session-file.sh
+scim-setup.sh
 [account sign-in]
 Bearer token: jafewnqrrupcnoiqj0829fe209fnsoudbf02efsdo
 ```
@@ -36,7 +36,7 @@ Next, we must create a Kubernetes secret containing the scimsession file. Using 
 ```
 kubectl create secret generic scimsession --from-file=./scimsession
 ```
-Make sure to pass the filepath of the scimsession file that was created by the `create-session-file.sh` script.
+Make sure to pass the filepath of the scimsession file that was created by the `scim-setup.sh` script.
 
 ## Deploy the SCIM bridge
 
