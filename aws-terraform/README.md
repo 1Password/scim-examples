@@ -10,12 +10,12 @@ This example describes one of the simplest methods of deploying the 1Password SC
 
 ## Session file
 
-The session file must be generated prior to deploying and starting the endpoint service. You can generate the session file and bearer token using the [create-session-file.sh](https://github.com/1Password/scim-examples/tree/master/session) script on administrator's local machine. This script uses a Docker container to run the `op-scim init` command and writes the scimsession file back to your local machine using a mounted volume. Your bearer token will be printed to the console.
+The session file must be generated prior to deploying and starting the endpoint service. You can generate the session file and bearer token using the [scim-setup.sh](https://github.com/1Password/scim-examples/tree/master/scim-setup.sh) script on administrator's local machine. This script uses a Docker container to run the `op-scim setup` command and writes the scimsession file back to your local machine using a mounted volume. Your bearer token will be printed to the console.
 Consider using Secrets Manager to securely store and provision scimsession file during the application deployment.  
 
 As an alternative, you can generate the session file and bearer token by running the 1Password SCIM Bridge binary in init mode:
 ```
-op-scim init
+op-scim setup
 ```  
 __Note:__ When prompted for user credentials by the `init` command, use the credentials for the provision manager user and __not__ an Owner or Administrator user.
 
