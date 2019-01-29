@@ -28,7 +28,7 @@ scim-setup.sh
 Bearer token: jafewnqrrupcnoiqj0829fe209fnsoudbf02efsdo
 ```
 
-3. Once your scimsession file has been created, use the Linux Bash `deploy.sh` script to deploy the SCIM bridge. Have the domain name indicated by the DNS record created for the SCIM bridge ready. This script will do the following :
+3. Once your scimsession file has been created, use the Linux Bash `./docker/deploy.sh` script to deploy the SCIM bridge. Have the domain name indicated by the DNS record created for the SCIM bridge ready. This script will do the following :
 
     1. For `docker-compose`, it generate a `scim.env` file that allows the scimsession file to be passed into the container without insecurely writing it to the container filesystem. For `docker-swarm`, it will create a secret called `scimsession`, which the op-scim container will then read from `/run/secrets`, as defined in docker-compose.yml.
 
