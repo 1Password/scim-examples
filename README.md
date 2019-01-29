@@ -1,6 +1,6 @@
 ## 1Password SCIM Bridge deployment examples
 
-Here you can find configuration files and best practice instructions for deploying the 1Password SCIM Bridge on various public and priavte clouds.
+Here you can find configuration files and best practice instructions for deploying the 1Password SCIM Bridge on various public and private clouds.
 
 To streamline your setup, it is suggested to have Docker installed on your local machine.
 
