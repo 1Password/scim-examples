@@ -3,9 +3,9 @@
 set -e
 
 run_docker_compose() {
-    cp ./scimsession ./docker-compose/scimsession
+    cp ./scimsession ./docker/compose/scimsession
     rm ./scimsession 
-    cd docker-compose
+    cd docker/compose
     ./generate-env.sh
 
     read -p 'Please enter your domain name : ' domain_name
@@ -16,9 +16,9 @@ run_docker_compose() {
 }
 
 run_docker_swarm(){
-    cp ./scimsession ./docker-swarm/scimsession
+    cp ./scimsession ./docker/swarm/scimsession
     rm ./scimsession 
-    cd docker-swarm
+    cd docker/swarm
     ./generate-secret.sh
 
     read -p 'Please enter your domain name : ' domain_name
