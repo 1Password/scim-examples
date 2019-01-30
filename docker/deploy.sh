@@ -2,6 +2,8 @@
 
 set -e
 
+echo "Initiating 1Password SCIM Bridge Deployment"
+
 run_docker_compose() {
     cp ./scimsession ./docker/compose/scimsession
     rm ./scimsession 
