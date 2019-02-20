@@ -5,4 +5,4 @@
 
 SESSION=$(cat scimsession | base64 | tr -d "\n")
 
-echo "OPSCIM_SESSION=$SESSION" > scim.env
+echo "OP_SESSION=$SESSION" > scim.env
