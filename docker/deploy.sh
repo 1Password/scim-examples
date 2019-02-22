@@ -13,10 +13,10 @@ run_docker_compose() {
 
     read -p 'Please enter your domain name : ' domain_name
 
-    sed -i '' s/{YOUR-DOMAIN-HERE}/$domain_name/g docker-compose.yml
+    sed -i.bak s/{YOUR-DOMAIN-HERE}/$domain_name/g docker-compose.yml
 
     docker-compose up --build -d
-    sed -i '' s/$domain_name/{YOUR-DOMAIN-HERE}/g docker-compose.yml
+    mv docker-compose.yml.bak docker-compose.yml
 
     docker-compose logs -f
 }
@@ -32,10 +32,10 @@ run_docker_swarm(){
 
     read -p 'Please enter your domain name : ' domain_name
 
-    sed -i '' s/{YOUR-DOMAIN-HERE}/$domain_name/g docker-compose.yml
+    sed -i.bak s/{YOUR-DOMAIN-HERE}/$domain_name/g docker-compose.yml
 
     docker stack deploy -c docker-compose.yml op-scim
-    sed -i '' s/$domain_name/{YOUR-DOMAIN-HERE}/g docker-compose.yml
+    mv docker-compose.yml.bak docker-compose.yml
 
     docker service logs --raw -f op-scim_scim
 }
