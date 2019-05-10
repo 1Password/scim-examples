@@ -62,6 +62,6 @@ _After the DNS record has been propogated_, you can continue setting up your IdP
 
 In order to automatically launch the 1Password SCIM bridge upon startup when using **docker-compose**, you will need to configure systemd to automatically start the Docker daemon and launch op-scim.
 
-1. Install the service file for op-scim. A [sample](op-scim.service) is provided and you'll need to change the path.
+1. Install the service file for op-scim. A [sample](compose/op-scim.service) is provided and you'll need to change the path.
 2. Reload systemd: `systemctl daemon-reload`
 3. Enable the op-scim service: `systemctl enable op-scim`
