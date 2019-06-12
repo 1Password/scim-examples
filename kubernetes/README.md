@@ -8,19 +8,19 @@ The 1Password SCIM bridge requires SSL/TLS in order to communicate with your IdP
 
 ## Deploy redis
 
-Use the `redis-deployment.yaml` and `redis.yaml` files with kubectl to deploy redis. If you have an existing redis instance, skip this step.
+Use the `redis-deployment.yaml` and `redis-service.yaml` files with kubectl to deploy redis. If you have an existing redis instance, skip this step.
 
 Example:
 ```
 kubectl apply -f redis-deployment.yaml
-kubectl apply -f redis.yaml
+kubectl apply -f redis-service.yaml
 ```
 
 This will deploy a single redis instance listening on Kubernetes internal DNS `redis:6379`, which the SCIM Bridge will use for caching during operation. A redis instance is required when using the SCIM Bridge.
 
 ## Create your `scimsession` Kubernetes secret
 
-Firstly, use the [scim-setup.sh](https://github.com/1Password/scim-examples/tree/master/scim-setup.sh) script on your local machine to set up your account and generate a `scimsession` file. This script uses a Docker container to run the `op-scim setup` command and writes the scimsession file back to your local machine using a mounted volume. Your bearer token will be printed to the console. 
+Firstly, use the [scim-setup.sh](https://github.com/1Password/scim-examples/tree/master/scim-setup.sh) script on your local machine to set up your account and generate a `scimsession` file. This script uses a Docker container to run the `op-scim setup` command and writes the scimsession file back to your local machine using a mounted volume. Your bearer token will be printed to the console.
 
 The scimsession file is equivalent to your account key and master password when combined with the bearer token, therefore they should never be stored in the same place.
 
