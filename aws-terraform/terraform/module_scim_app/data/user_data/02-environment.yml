@@ -106,6 +106,10 @@ runcmd:
     - pip install awscli --upgrade
     # fetch encrypted scimsession, and set owner and permissions (optional)
     - bash -vc "[ ! -d `dirname "${SCIM_SESSION_PATH}"` ] && mkdir -p `dirname "${SCIM_SESSION_PATH}"`"
+    - useradd -m ${SCIM_USER}
+    - groupadd ${SCIM_GROUP}
+    - usermod -a -G ${SCIM_GROUP} ${SCIM_USER}
+    - chown -R ${SCIM_USER}:${SCIM_GROUP} ${SCIM_SESSION_PATH}
     - aws secretsmanager get-secret-value --secret-id ${SCIM_SESSION_SECRET} --region ${REGION} --output text --query SecretBinary | base64 --decode > ${SCIM_SESSION_PATH}
     - chmod -v 600 ${SCIM_SESSION_PATH}
     # install op-scim
