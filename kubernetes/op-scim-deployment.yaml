@@ -16,7 +16,7 @@ spec:
       - name: op-scim
         image: 1password/scim:v0.8.4
         command: ["/op-scim/op-scim"]
-        args: ["--session=/secret/scimsession", "--letsencrypt-domain={YOUR-DOMAIN-HERE}"]
+        args: ["--session=/secret/scimsession", "--letsencrypt-domain={YOUR-DOMAIN-HERE}", "--expire-cached-logs=7"]
         ports:
         - containerPort: 3002
         volumeMounts:

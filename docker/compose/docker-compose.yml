@@ -8,7 +8,7 @@ services:
             - "443:8443"
         links:
             - redis
-        entrypoint: ["/op-scim/op-scim", "--letsencrypt-domain={YOUR-DOMAIN-HERE}"]
+        entrypoint: ["/op-scim/op-scim", "--letsencrypt-domain={YOUR-DOMAIN-HERE}", "--expire-cached-logs=7"]
         env_file: scim.env
     redis:
         image: redis:latest
