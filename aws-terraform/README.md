@@ -8,18 +8,18 @@ This example describes one of the simplest methods of deploying the 1Password SC
 * Anonymous access is not supported. A bearer token and session file is required for authentication with the SCIM Bridge and the 1Password service.
 * The session file is an encrypted file containing privileged 1Password account credentials. This file is created before the bridge application is deployed. The bearer token combined with the encrypted session file represent an authentication mechanism and must be treated extremely seriously in terms of security.
 
-## Session file
+## Prepare your 1Password Account
 
-The session file must be generated prior to deploying and starting the endpoint service. You can generate the session file and bearer token using the [scim-setup.sh](https://github.com/1Password/scim-examples/tree/master/scim-setup.sh) script on administrator's local machine. This script uses a Docker container to run the `op-scim setup` command and writes the scimsession file back to your local machine using a mounted volume. Your bearer token will be printed to the console.
-Consider using Secrets Manager to securely store and provision scimsession file during the application deployment.  
+Log in to your 1Password account [using this link](https://my.1password.com/scim/setup).  It will take you to a hidden setup page for the SCIM bridge.
 
-As an alternative, you can generate the session file and bearer token by running the 1Password SCIM Bridge binary in init mode:
-```
-op-scim setup
-```  
-__Note:__ When prompted for user credentials by the `init` command, use the credentials for the provision manager user and __not__ an Owner or Administrator user.
+Follow the on-screen instructions which will guide you through the following steps:
 
-Init mode will guide the administrator through an interactive process which generates the encrypted session file and bearer token. Although strong encryption is used to secure the session file, prevent unauthorized access to it. Never store the session file in the same place as the bearer token. The bearer token will be required to configure the identity provider (Azure, Okta, etc) to authenticate your connection.
+* Create a Provision Managers group
+* Create and confirm a Provision Manager user
+
+You can then download the `scimsession` file and save your bearer token.  The `scimsession` file contains the credentials for the new Provision Manager user.  This user will creates, confirms, and suspends users, and creates and manages access to groups.  You should use an email address that is unique and not that of another user.
+
+The bearer token and scimsession file combined can be used to sign in to your Provision Manager account. You’ll need to share the bearer token with your identity provider, but it’s important to **never share it with anyone else**. And never share your scimsession file with **anyone at all**.
 
 ## OP-SCIM Bridge 
 

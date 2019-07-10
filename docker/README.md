@@ -24,27 +24,28 @@ Install [Docker for Desktop](https://www.docker.com/products/docker-desktop) on 
 
 The 1Password SCIM bridge requires SSL/TLS in order to communicate with your IdP. In order to use TLS, you must create a DNS record that points to your Docker node. _Do not attempt to perform a provisioning sync before the DNS records have been propogated_. The DNS record must exist and the SCIM bridge server must be running if you wish to have LetsEncrypt automatically issue a TLS certificate for your SCIM bridge. _Please refer to your cloud provider on how to setup a DNS record if you do not have one set up already or are experiencing difficulties doing so._
 
-## 4: Create your scimsession file and Deploy SCIM bridge
+## 4: Prepare your 1Password Account
+
+Log in to your 1Password account [using this link](https://my.1password.com/scim/setup).  It will take you to a hidden setup page for the SCIM bridge.
+
+Follow the on-screen instructions which will guide you through the following steps:
+
+* Create a Provision Managers group
+* Create and confirm a Provision Manager user
+
+You can then download the `scimsession` file and save your bearer token.  The `scimsession` file contains the credentials for the new Provision Manager user.  This user will creates, confirms, and suspends users, and creates and manages access to groups.  You should use an email address that is unique and not that of another user.
+
+The bearer token and scimsession file combined can be used to sign in to your Provision Manager account. You’ll need to share the bearer token with your identity provider, but it’s important to **never share it with anyone else**. And never share your scimsession file with **anyone at all**.
+
+You should move your newly created `scimsession` file into the `scim-examples` folder (the root folder of this repository which you cloned earlier).
+
+
+## 5: Deploy SCIM bridge
 
 1. Connect to your remote Docker host from your local machine
-    - Either connect using [docker-machine](https://docs.docker.com/machine/), OR use SSH to access your remote maching and clone this repo.
+    - Either connect using [docker-machine](https://docs.docker.com/machine/), OR use SSH to access your remote machine and clone this repo.
 
-2. In your terminal, use the bash script [./scim-setup.sh](../session/scim-setup.sh) to authenticate your account and generate a `scimsession` file : This script uses a Docker container to run the `op-scim setup` command and writes the scimsession file back to your local machine using a mounted volume. Your bearer token will be printed to the console. **Save your bearer token, as it will be needed to authenticate with your IdP**.
-
-_The scimsession file is equivalent to your Master Password and Secret Key when combined with the bearer token, therefore they should never be stored in the same place._
-
-Example:
-```
-> cd [location of cloned scim-examples folder]
-> ./scim-setup.sh
-
-[interactive script]
-Bearer token: jafewnqrrupcnoiqj0829fe209fnsoudbf02efsdo
-
-> ./docker/deploy.sh
-```
-
-3. Once your scimsession file has been created, use the bash script `./docker/deploy.sh` to deploy the SCIM bridge. _Have the domain name indicated by the DNS record created for the SCIM bridge ready_. This script will do the following :
+2. In your terminal, use the bash script [./docker/deploy.sh](deploy.sh) to deploy your SCIM bridge.  If you cloned this repo on your remote machine using SSH, you should copy the `scimsession` file to the `scim-examples` folder on your server. _Have the domain name indicated by the DNS record created for the SCIM bridge ready_. This script will do the following:
 
     1. Ask if you want to deploy with Docker Swarm or Compose
 
