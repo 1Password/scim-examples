@@ -54,11 +54,6 @@ variable "asg_health_check_type" {
   description = "ELB or EC2"
 }
 
-variable "scim_port" {
-  type        = "string"
-  description = "scim app port number"
-}
-
 variable "scim_repo" {
   type        = "string"
   description = "debian repo"

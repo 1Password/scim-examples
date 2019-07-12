@@ -41,12 +41,6 @@ variable "asg_health_check_type" {
   default     = "ELB"
 }
 
-variable "scim_port" {
-  type        = "string"
-  description = "op-scim app port number"
-  default     = "3002"
-}
-
 variable "scim_repo" {
   type        = "string"
   description = "1Password SCIM bridge public debian repo"

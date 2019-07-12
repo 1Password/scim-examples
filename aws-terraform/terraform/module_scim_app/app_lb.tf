@@ -41,8 +41,8 @@ resource "aws_lb" "app_alb" {
 
 // LB target group
 resource "aws_lb_target_group" "app_tg" {
-  name                 = "${var.env}-${var.application}-${var.scim_port}-tg"
-  port                 = "${var.scim_port}"
+  name                 = "${var.env}-${var.application}-3002-tg"
+  port                 = "3002"
   protocol             = "HTTP"
   vpc_id               = "${var.vpc}"
   deregistration_delay = 30
@@ -56,7 +56,7 @@ resource "aws_lb_target_group" "app_tg" {
   health_check {
     interval            = 10
     path                = "/ping"
-    port                = "${var.scim_port}"
+    port                = "3002"
     protocol            = "HTTP"
     timeout             = 5
     healthy_threshold   = 2

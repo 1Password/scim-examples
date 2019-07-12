@@ -31,7 +31,6 @@ module "scim-app" {
   max_size              = 1
   desired_capacity      = 1
   asg_health_check_type = "${var.asg_health_check_type}"
-  scim_port             = "${var.scim_port}"
   scim_repo             = "${var.scim_repo}"
   scim_user             = "${var.scim_user}"
   scim_group            = "${var.scim_group}"
