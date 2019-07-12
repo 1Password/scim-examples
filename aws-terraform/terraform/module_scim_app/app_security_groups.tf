@@ -8,8 +8,8 @@ resource "aws_security_group" "app" {
   vpc_id      = "${var.vpc}"
 
   ingress {
-    from_port       = "${var.scim_port}"
-    to_port         = "${var.scim_port}"
+    from_port       = "3002"
+    to_port         = "3002"
     protocol        = "tcp"
     security_groups = ["${aws_security_group.app_lb.id}"]
   }
