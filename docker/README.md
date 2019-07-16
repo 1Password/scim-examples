@@ -26,14 +26,15 @@ The 1Password SCIM bridge requires SSL/TLS in order to communicate with your IdP
 
 ## 4: Prepare your 1Password Account
 
-Log in to your 1Password account [using this link](https://my.1password.com/scim/setup).  It will take you to a hidden setup page for the SCIM bridge.
+Log in to your 1Password account [using this link](https://start.1password.com/settings/provisioning/setup).  It will take you to the setup page for the SCIM bridge.
 
 Follow the on-screen instructions which will guide you through the following steps:
 
 * Create a Provision Managers group
 * Create and confirm a Provision Manager user
+* Generate your SCIM bridge credentials
 
-You can then download the `scimsession` file and save your bearer token.  The `scimsession` file contains the credentials for the new Provision Manager user.  This user will creates, confirms, and suspends users, and creates and manages access to groups.  You should use an email address that is unique and not that of another user.
+You can then download the `scimsession` file and save your bearer token.  The `scimsession` file contains the credentials for the new Provision Manager user.  This user will create, confirm, and suspend users, and create and manage access to groups.  You should use an email address that is unique.
 
 The bearer token and scimsession file combined can be used to sign in to your Provision Manager account. You’ll need to share the bearer token with your identity provider, but it’s important to **never share it with anyone else**. And never share your scimsession file with **anyone at all**.
 
@@ -49,7 +50,7 @@ You should move your newly created `scimsession` file into the `scim-examples` f
 
     1. Ask if you want to deploy with Docker Swarm or Compose
 
-    1. For `docker-compose`, it will generate a `scim.env` file that allows the scimsession file to be passed into the container without insecurely writing it to the container filesystem. For `docker-swarm`, it will create a secret called `scimsession`, which the op-scim container will then read from `/run/secrets`, as defined in docker-compose.yml.
+    1. Add your `scimsession` to the SCIM bridge container, using a .env file for Docker Compose or a swarm secret for Docker Swarm.
 
     1. You will be prompted for your SCIM bridge domain name which will configure LetsEncrypt to automatically issue a certificate for your bridge.
 

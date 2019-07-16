@@ -22,14 +22,15 @@ This will deploy a single redis instance listening on Kubernetes internal DNS `r
 
 ## Prepare your 1Password Account
 
-Log in to your 1Password account [using this link](https://my.1password.com/scim/setup).  It will take you to a hidden setup page for the SCIM bridge.
+Log in to your 1Password account [using this link](https://start.1password.com/settings/provisioning/setup).  It will take you to the setup page for the SCIM bridge.
 
 Follow the on-screen instructions which will guide you through the following steps:
 
 * Create a Provision Managers group
 * Create and confirm a Provision Manager user
+* Generate your SCIM bridge credentials
 
-You can then download the `scimsession` file and save your bearer token.  The `scimsession` file contains the credentials for the new Provision Manager user.  This user will creates, confirms, and suspends users, and creates and manages access to groups.  You should use an email address that is unique and not that of another user.
+You can then download the `scimsession` file and save your bearer token.  The `scimsession` file contains the credentials for the new Provision Manager user.  This user will create, confirm, and suspend users, and create and manage access to groups.  You should use an email address that is unique.
 
 The bearer token and scimsession file combined can be used to sign in to your Provision Manager account. You’ll need to share the bearer token with your identity provider, but it’s important to **never share it with anyone else**. And never share your scimsession file with **anyone at all**.
 
