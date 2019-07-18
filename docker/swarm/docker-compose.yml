@@ -14,7 +14,7 @@ services:
           - "443:8443"
         secrets:
           - scimsession
-        entrypoint: ["/op-scim/op-scim", "--letsencrypt-domain={YOUR-DOMAIN-HERE}", "--session=/run/secrets/scimsession"]
+        entrypoint: ["/op-scim/op-scim", "--session=/run/secrets/scimsession", "--letsencrypt-domain={YOUR-DOMAIN-HERE}", "--expire-cached-logs=7"]
     redis:
         image: redis:latest
         deploy:
