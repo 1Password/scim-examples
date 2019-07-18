@@ -8,18 +8,6 @@ If deploying to the Azure Kubernetes Service, you can refer to our [detailed dep
 
 The 1Password SCIM bridge requires SSL/TLS in order to communicate with your IdP. You must create a DNS record that points to your Kubernetes load balancer. This is a chicken and egg problem, as we need the load balancer before we can create the record. Please follow all of the steps until the load balancer has been created, then create your DNS record, but _do not attempt to perform a provisioning sync before the DNS records have been propogated_. The record must exist and the SCIM Bridge server must be running in order for LetsEncrypt to issue a certificate.
 
-## Deploy redis
-
-Use the `redis-deployment.yaml` and `redis-service.yaml` files with kubectl to deploy redis. If you have an existing redis instance, skip this step.
-
-Example:
-```
-kubectl apply -f redis-deployment.yaml
-kubectl apply -f redis-service.yaml
-```
-
-This will deploy a single redis instance listening on Kubernetes internal DNS `redis:6379`, which the SCIM Bridge will use for caching during operation. A redis instance is required when using the SCIM Bridge.
-
 ## Prepare your 1Password Account
 
 Log in to your 1Password account [using this link](https://start.1password.com/settings/provisioning/setup).  It will take you to the setup page for the SCIM bridge.
@@ -33,6 +21,18 @@ Follow the on-screen instructions which will guide you through the following ste
 You can then download the `scimsession` file and save your bearer token.  The `scimsession` file contains the credentials for the new Provision Manager user.  This user will create, confirm, and suspend users, and create and manage access to groups.  You should use an email address that is unique.
 
 The bearer token and scimsession file combined can be used to sign in to your Provision Manager account. You’ll need to share the bearer token with your identity provider, but it’s important to **never share it with anyone else**. And never share your scimsession file with **anyone at all**.
+
+## Deploy redis
+
+Use the `redis-deployment.yaml` and `redis-service.yaml` files with kubectl to deploy redis. If you have an existing redis instance, skip this step.
+
+Example:
+```
+kubectl apply -f redis-deployment.yaml
+kubectl apply -f redis-service.yaml
+```
+
+This will deploy a single redis instance listening on Kubernetes internal DNS `redis:6379`, which the SCIM Bridge will use for caching during operation. A redis instance is required when using the SCIM Bridge.
 
 ## Create your `scimsession` Kubernetes secret
 

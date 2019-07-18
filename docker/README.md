@@ -12,19 +12,19 @@ This is the simplest method of deploying the SCIM bridge. These instructions req
 
 These instructions require a remote Docker Swarm cluster be set up and configured to be accessed by the Docker CLI. _Please refer to your cloud provider on how to setup a remote Docker Swarm Cluster if you do not have one set up already or are experiencing difficulties doing so._
 
-## 1: Clone this repository
+## Clone this repository
 
 To make this process easier, it is recommended to clone this repository to have easy access to scripts and configuration files.
 
-## 2: Install Docker locally
+## Install Docker locally
 
 Install [Docker for Desktop](https://www.docker.com/products/docker-desktop) on your local machine and _start Docker_ before continuing, as it will be needed to run the setup process
 
-## 3: Create your DNS record
+## Create your DNS record
 
 The 1Password SCIM bridge requires SSL/TLS in order to communicate with your IdP. In order to use TLS, you must create a DNS record that points to your Docker node. _Do not attempt to perform a provisioning sync before the DNS records have been propogated_. The DNS record must exist and the SCIM bridge server must be running if you wish to have LetsEncrypt automatically issue a TLS certificate for your SCIM bridge. _Please refer to your cloud provider on how to setup a DNS record if you do not have one set up already or are experiencing difficulties doing so._
 
-## 4: Prepare your 1Password Account
+## Prepare your 1Password Account
 
 Log in to your 1Password account [using this link](https://start.1password.com/settings/provisioning/setup).  It will take you to the setup page for the SCIM bridge.
 
@@ -41,7 +41,7 @@ The bearer token and scimsession file combined can be used to sign in to your Pr
 You should move your newly created `scimsession` file into the `scim-examples` folder (the root folder of this repository which you cloned earlier).
 
 
-## 5: Deploy SCIM bridge
+## Deploy SCIM bridge
 
 1. Connect to your remote Docker host from your local machine
     - Either connect using [docker-machine](https://docs.docker.com/machine/), OR use SSH to access your remote machine and clone this repo.
