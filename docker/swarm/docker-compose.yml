@@ -2,7 +2,7 @@ version: '3.3'
 
 services:
     scim:
-        image: 1password/scim:v0.8.4
+        image: 1password/scim:v1.0
         deploy:
           replicas: 1
           restart_policy:
@@ -14,7 +14,7 @@ services:
           - "443:8443"
         secrets:
           - scimsession
-        entrypoint: ["/op-scim/op-scim", "--letsencrypt-domain={YOUR-DOMAIN-HERE}", "--session=/run/secrets/scimsession"]
+        entrypoint: ["/op-scim/op-scim", "--session=/run/secrets/scimsession", "--letsencrypt-domain={YOUR-DOMAIN-HERE}"]
     redis:
         image: redis:latest
         deploy:

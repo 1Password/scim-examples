@@ -5,7 +5,13 @@ Here you can find configuration files and best practice instructions for deployi
 To streamline your setup, it is suggested to have Docker installed on your local machine.
 
 
-### Deployments
+### Specific Deployment Guides
+
+The easiest way to deploy the SCIM bridge is with our one-click installation currently available for Google Cloud Platform.  If you'd like to deploy to GCP [use this guide instead](https://support.1password.com/cs/scim-deploy-gcp/).
+
+We also have specific, detailed instructions for deployments to Azure using the [Azure Kubernetes Service](https://support.1password.com/cs/scim-deploy-azure/).
+
+### General Deployment Guides
 
 To deploy on Kubernetes, read the [Kubernetes example](https://github.com/1Password/scim-examples/tree/master/kubernetes)
 

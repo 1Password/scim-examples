@@ -2,9 +2,25 @@
 
 This example explains how to deploy the 1Passwrd SCIM bridge on Kubernetes running on Google Cloud Platform, but the basic principles can be applied to any Kubernetes cluster.
 
+If deploying to the Azure Kubernetes Service, you can refer to our [detailed deployment guide instead](https://support.1password.com/cs/scim-deploy-azure/).
+
 ## Create your DNS record
 
 The 1Password SCIM bridge requires SSL/TLS in order to communicate with your IdP. You must create a DNS record that points to your Kubernetes load balancer. This is a chicken and egg problem, as we need the load balancer before we can create the record. Please follow all of the steps until the load balancer has been created, then create your DNS record, but _do not attempt to perform a provisioning sync before the DNS records have been propogated_. The record must exist and the SCIM Bridge server must be running in order for LetsEncrypt to issue a certificate.
+
+## Prepare your 1Password Account
+
+Log in to your 1Password account [using this link](https://start.1password.com/settings/provisioning/setup).  It will take you to the setup page for the SCIM bridge.
+
+Follow the on-screen instructions which will guide you through the following steps:
+
+* Create a Provision Managers group
+* Create and confirm a Provision Manager user
+* Generate your SCIM bridge credentials
+
+You can then download the `scimsession` file and save your bearer token.  The `scimsession` file contains the credentials for the new Provision Manager user.  This user will create, confirm, and suspend users, and create and manage access to groups.  You should use an email address that is unique.
+
+The bearer token and scimsession file combined can be used to sign in to your Provision Manager account. You’ll need to share the bearer token with your identity provider, but it’s important to **never share it with anyone else**. And never share your scimsession file with **anyone at all**.
 
 ## Deploy redis
 
@@ -20,23 +36,11 @@ This will deploy a single redis instance listening on Kubernetes internal DNS `r
 
 ## Create your `scimsession` Kubernetes secret
 
-Firstly, use the [scim-setup.sh](https://github.com/1Password/scim-examples/tree/master/scim-setup.sh) script on your local machine to set up your account and generate a `scimsession` file. This script uses a Docker container to run the `op-scim setup` command and writes the scimsession file back to your local machine using a mounted volume. Your bearer token will be printed to the console.
-
-The scimsession file is equivalent to your account key and master password when combined with the bearer token, therefore they should never be stored in the same place.
-
-Example:
-```
-scim-setup.sh
-[account sign-in]
-Bearer token: jafewnqrrupcnoiqj0829fe209fnsoudbf02efsdo
-```
-This script is an interactive setup of your 1Password account. It is reccomended to save the bearer token in 1Password within an account _other than the provision manager's_.
-
 Next, we must create a Kubernetes secret containing the scimsession file. Using kubectl, we can read the scimsession file and create the secret in one command:
 ```
 kubectl create secret generic scimsession --from-file=./scimsession
 ```
-Make sure to pass the filepath of the scimsession file that was created by the `scim-setup.sh` script.
+Make sure to pass the filepath of the scimsession file that you downloaded.  The above command will look for the file in  this folder (the `/kubernetes/` folder) of the repository.
 
 ## Deploy the SCIM bridge
 
@@ -58,6 +62,12 @@ NOTE: Port 80 on the load balancer is forwarded to :8080 on the SCIM Bridge, and
 
 At this point you should create your DNS record using the external IP address of the load balancer and wait for it to propogate.
 
-Once the record is propogated, you can test your instance by requesting `https://[your-domain]/scim/Users`, with the header `Authorization: Bearer [bearer token]` which should return a list of the users in your 1Password account.
+Once the record is propogated, you can test your instance by requesting `https://[your-domain]/scim/Users`, with the header `Authorization: Bearer [bearer token]` which should return a list of the users in your 1Password account.  You can do this with `curl` as follows:
+
+```
+curl --header "Authorization: Bearer <bearertoken>" https://<domain>/scim/Users
+```
+
+Alternatively, visit the domain you configured earlier.  You'll see a 1Password SCIM Bridge Status page which can be used to verify your OAuth bearer token.
 
 You can now continue with the administration guide to configure your IdP to enable provisioning with your SCIM Bridge.
