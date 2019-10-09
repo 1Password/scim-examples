@@ -1,9 +1,9 @@
 output "env" {
-  value = "${var.env}"
+  value = var.env
 }
 
 output "type" {
-  value = "${var.type}"
+  value = var.type
 }
 
 output "op-scim_bridge_endpoint_url" {

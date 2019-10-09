@@ -17,8 +17,8 @@ data "aws_iam_policy_document" "app" {
 
 resource "aws_iam_role_policy" "app" {
   name   = "${var.env}-${var.application}-role-policy"
-  role   = "${aws_iam_role.app.id}"
-  policy = "${data.aws_iam_policy_document.app.json}"
+  role   = aws_iam_role.app.id
+  policy = data.aws_iam_policy_document.app.json
 }
 
 data "aws_iam_policy_document" "app-assume-role-policy" {
@@ -35,10 +35,10 @@ data "aws_iam_policy_document" "app-assume-role-policy" {
 
 resource "aws_iam_role" "app" {
   name               = "${var.env}-${var.application}-role"
-  assume_role_policy = "${data.aws_iam_policy_document.app-assume-role-policy.json}"
+  assume_role_policy = data.aws_iam_policy_document.app-assume-role-policy.json
 }
 
 resource "aws_iam_instance_profile" "app" {
   name = "${var.env}-${var.application}-instance-profile"
-  role = "${aws_iam_role.app.name}"
+  role = aws_iam_role.app.name
 }

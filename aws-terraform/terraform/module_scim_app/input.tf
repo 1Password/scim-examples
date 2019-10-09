@@ -1,99 +1,82 @@
+provider "aws" {}
+
 variable "env" {
-  type        = "string"
+  type        = string
   description = "environment name. For example, op-scim"
 }
 
 variable "type" {
-  type        = "string"
+  type        = string
   description = "environment type. For example, development, staging, testing"
 }
 
-variable "az" {
-  type        = "list"
-  description = "A list of AWS Availability Zones where the application should be deployed"
-}
-
 variable "region" {
-  type        = "string"
+  type        = string
   description = "AWS region where the application is deployed, for example 'us-west-1'"
 }
 
 variable "aws-account" {
-  type        = "string"
+  type        = string
   description = "AWS account identifier"
 }
 
 variable "application" {
   description = "application name"
-  type        = "string"
+  type        = string
 }
 
 // app vars
 variable "instance_type" {
   description = "Instance type for scim app"
-  type        = "string"
+  type        = string
 }
 
 variable "min_size" {
-  type        = "string"
+  type        = string
   description = "Minimum number of instances in the autoscaling group"
 }
 
 variable "max_size" {
-  type        = "string"
+  type        = string
   description = "Maximum number of instances in the autoscaling group"
 }
 
 variable "desired_capacity" {
-  type        = "string"
+  type        = string
   description = "The number of Amazon EC2 instances that should be running in the group."
 }
 
 variable "asg_health_check_type" {
-  type        = "string"
+  type        = string
   description = "ELB or EC2"
 }
 
 variable "scim_port" {
-  type        = "string"
+  type        = string
   description = "scim app port number"
 }
 
 variable "scim_repo" {
-  type        = "string"
+  type        = string
   description = "debian repo"
   default     = "deb https://apt.agilebits.com/op-scim/ stable op-scim"
 }
 
-variable "scim_user" {
-  type        = "string"
-  description = "unprivileged user"
-}
-
-variable "scim_group" {
-  type        = "string"
-  description = "unprivilaged group"
-}
-
-variable "scim_path" {
-  type        = "string"
-  description = "scim path, example: /var/lib/op-scim"
-}
-
-variable "scim_session_path" {
-  type        = "string"
-  description = "session path, example: /var/lib/op-scim/.op/scimsession"
-}
-
 variable "scim_secret_name" {
-  type        = "string"
+  type        = string
   description = "the friendly name of the secret created in the secrets manager"
+}
+
+variable "user_data" {
+  type        = string
+  description = "op-scim EC2 instance user-data"
+  default     = " "
 }
 
 // vpc vars
 
 variable "log_bucket" {
-  type = "string"
+  type = string
 }
 
 variable "vpc" {
@@ -101,21 +84,21 @@ variable "vpc" {
 }
 
 variable "domain" {
-  type = "string"
+  type = string
 }
 
 variable "endpoint_url" {
-  type = "string"
+  type = string
 }
 
 variable "private_subnets" {
   description = ""
-  type        = "list"
+  type        = list(string)
 }
 
 variable "public_subnets" {
   description = ""
-  type        = "list"
+  type        = list(string)
 }
 
 data "aws_route53_zone" "domain" {
@@ -123,16 +106,6 @@ data "aws_route53_zone" "domain" {
 }
 
 variable "ami" {
-  type        = "string"
+  type        = string
   description = "Identifier of the image used to create the instance"
-}
-
-// cache vars:
-
-variable "cache_port" {
-  description = "default 6379"
-}
-
-variable "cache_dns_name" {
-  description = "cache internal dns name"
 }
