@@ -93,7 +93,7 @@ variable "log_bucket" {
 
 variable "instance_type" {
   type    = string
-  default = "t2.micro"
+  default = "t3.micro"
 }
 
 variable "vpc_cidr" {
