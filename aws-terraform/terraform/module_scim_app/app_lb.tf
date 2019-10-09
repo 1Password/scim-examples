@@ -17,8 +17,8 @@ data "aws_acm_certificate" "lb" {
 */
 resource "aws_lb" "app_alb" {
   name                       = "${var.env}-${var.application}-alb"
-  subnets                    = ["${var.public_subnets}"]
-  security_groups            = ["${aws_security_group.app_lb.id}"]
+  subnets                    = var.public_subnets
+  security_groups            = [aws_security_group.app_lb.id]
   internal                   = false
   enable_deletion_protection = false
   idle_timeout               = 400
@@ -32,9 +32,9 @@ resource "aws_lb" "app_alb" {
     enabled = true
   } */
 
-  tags {
-    Application = "${var.application}"
-    type        = "${var.type}"
+  tags = {
+    Application = var.application
+    type        = var.type
     Name        = "${var.env}-${var.application}-alb"
   }
 }
@@ -42,9 +42,9 @@ resource "aws_lb" "app_alb" {
 // LB target group
 resource "aws_lb_target_group" "app_tg" {
   name                 = "${var.env}-${var.application}-${var.scim_port}-tg"
-  port                 = "${var.scim_port}"
+  port                 = var.scim_port
   protocol             = "HTTP"
-  vpc_id               = "${var.vpc}"
+  vpc_id               = var.vpc
   deregistration_delay = 30
   target_type          = "instance"
 
@@ -56,7 +56,7 @@ resource "aws_lb_target_group" "app_tg" {
   health_check {
     interval            = 10
     path                = "/ping"
-    port                = "${var.scim_port}"
+    port                = var.scim_port
     protocol            = "HTTP"
     timeout             = 5
     healthy_threshold   = 2
@@ -64,23 +64,23 @@ resource "aws_lb_target_group" "app_tg" {
     matcher             = "200"
   }
 
-  tags {
-    Application = "${var.application}"
-    type        = "${var.type}"
+  tags = {
+    Application = var.application
+    type        = var.type
     Name        = "${var.env}-${var.application}-tg"
   }
 }
 
 // LB listener
 resource "aws_lb_listener" "app_lb_list443" {
-  load_balancer_arn = "${aws_lb.app_alb.arn}"
+  load_balancer_arn = aws_lb.app_alb.arn
   port              = "443"
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-TLS-1-2-2017-01"
-  certificate_arn   = "${data.aws_acm_certificate.lb.arn}"
+  certificate_arn   = data.aws_acm_certificate.lb.arn
 
   default_action {
-    target_group_arn = "${aws_lb_target_group.app_tg.arn}"
+    target_group_arn = aws_lb_target_group.app_tg.arn
     type             = "forward"
   }
 }
@@ -89,7 +89,7 @@ resource "aws_lb_listener" "app_lb_list443" {
 resource "aws_security_group" "app_lb" {
   name_prefix = "${var.env}-${var.application}_lb"
   description = "Allow access to ${var.application}-lb on port 443"
-  vpc_id      = "${var.vpc}"
+  vpc_id      = var.vpc
 
   ingress {
     from_port   = 443
@@ -105,15 +105,18 @@ resource "aws_security_group" "app_lb" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags {
-    Application = "${var.application}"
-    type        = "${var.type}"
+  tags = {
+    Application = var.application
+    type        = var.type
     Name        = "${var.env}-${var.application}-lb-sg"
   }
 
   lifecycle {
     create_before_destroy = true
-    ignore_changes        = ["name", "name_prefix"]
+    ignore_changes = [
+      name,
+      name_prefix,
+    ]
   }
 }
 
@@ -121,13 +124,13 @@ resource "aws_security_group" "app_lb" {
   Route53 record creates "A" record in the public DNS zone.
 */
 resource "aws_route53_record" "app_lb" {
-  zone_id = "${data.aws_route53_zone.domain.zone_id}"
+  zone_id = data.aws_route53_zone.domain.zone_id
   name    = "${var.endpoint_url}.${data.aws_route53_zone.domain.name}"
   type    = "A"
 
   alias {
-    name                   = "${lower(aws_lb.app_alb.dns_name)}"
-    zone_id                = "${aws_lb.app_alb.zone_id}"
+    name                   = lower(aws_lb.app_alb.dns_name)
+    zone_id                = aws_lb.app_alb.zone_id
     evaluate_target_health = false
   }
 }

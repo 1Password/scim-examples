@@ -5,13 +5,13 @@
 resource "aws_security_group" "app" {
   name_prefix = "${var.env}-${var.application}-sg"
   description = "Allow access from load balancer"
-  vpc_id      = "${var.vpc}"
+  vpc_id      = var.vpc
 
   ingress {
-    from_port       = "${var.scim_port}"
-    to_port         = "${var.scim_port}"
+    from_port       = var.scim_port
+    to_port         = var.scim_port
     protocol        = "tcp"
-    security_groups = ["${aws_security_group.app_lb.id}"]
+    security_groups = [aws_security_group.app_lb.id]
   }
 
   egress {
@@ -21,15 +21,18 @@ resource "aws_security_group" "app" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags {
-    Application = "${var.application}"
-    env         = "${var.env}"
-    type        = "${var.type}"
+  tags = {
+    Application = var.application
+    env         = var.env
+    type        = var.type
     Name        = "${var.env}-${var.application}-sg"
   }
 
   lifecycle {
     create_before_destroy = true
-    ignore_changes        = ["name", "name_prefix"]
+    ignore_changes = [
+      name,
+      name_prefix,
+    ]
   }
 }

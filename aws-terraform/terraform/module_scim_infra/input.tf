@@ -1,40 +1,41 @@
 // aws provider and environment variables
+provider "aws" {}
 
 variable "env" {
-  type        = "string"
+  type        = string
   description = "environment name"
 }
 
 variable "type" {
-  type        = "string"
+  type        = string
   description = "environment name. For example, op-scim"
 }
 
 variable "az" {
-  type        = "list"
+  type        = list(string)
   description = "A list of AWS Availability Zones where the application should be deployed"
 }
 
 variable "region" {
-  type        = "string"
+  type        = string
   description = "AWS region where the application is deployed, for example 'us-west-1'"
 }
 
 variable "application" {
   description = "application name"
-  type        = "string"
+  type        = string
 }
 
 // vpc vars
 
 variable "subnet_cidr" {
-  type = "map"
+  type = map(any)
 }
 
 variable "vpc_cidr" {
-  type = "string"
+  type = string
 }
 
 variable "domain" {
-  type = "string"
+  type = string
 }
