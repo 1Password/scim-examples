@@ -2,7 +2,7 @@ version: '2.2'
 
 services:
     scim:
-        image: 1password/scim:v1.1.2
+        image: 1password/scim:v1.2.0
         ports: 
             - "80:8080"
             - "443:8443"
