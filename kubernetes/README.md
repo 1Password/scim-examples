@@ -23,6 +23,8 @@ Log in to your 1Password account [using this link](https://start.1password.com/s
 
 *IMPORTANT*: When the setup asks you for an email address for the new Provision Manager user it creates for you automatically, use a dedicated email address (for example: `op-provision-manager@example.com`) to handle this account. It is _not advised_ to use any personal email address!
 
+*IMPORTANT*: DO NOT create the Provision User manually. Let the setup process create the Provision Manager user for you **automatically.**
+
 Once complete, you'll be provided with two separate secrets:
 
 * a `scimsession` file 
