@@ -17,8 +17,6 @@ spec:
         image: 1password/scim:v1.3.1
         command: ["/op-scim/op-scim"]
         args: ["--session=/secret/scimsession", "--letsencrypt-domain={YOUR-DOMAIN-HERE}"]
-        ports:
-        - containerPort: 3002
         volumeMounts:
         - name: scimsession
           mountPath: "/secret"
