@@ -68,7 +68,7 @@ Additionally, if you are using an existing redis instance that's not running on 
 
 ## Deploy redis
 
-A redis instance is required when using the SCIM Bridge, whether you use the option provided her to deploy one, or have configured one yourself independently. If you defined a pre-existing redis instance in [Configuring the SCIM bridge)[#Configuring-the-SCIM-bridge], you can skip this section.
+A redis instance is required when using the SCIM Bridge, whether you use the option provided her to deploy one, or have configured one yourself independently. If you defined a pre-existing redis instance in [Configuring the SCIM bridge](#Configuring-the-SCIM-bridge), you can skip this section.
 
 Use the `redis-deployment.yaml` and `redis-service.yaml` files with `kubectl` to deploy redis.
 
