@@ -1,6 +1,6 @@
 # Deploying the 1Password SCIM Bridge on Kubernetes
 
-This example explains how to deploy the 1Passwrd SCIM bridge on Kubernetes running on Google Cloud Platform, but the basic principles can be applied to any Kubernetes cluster.
+This example explains how to deploy the 1Password SCIM bridge on Kubernetes running on Google Cloud Platform, but the basic principles can be applied to any Kubernetes cluster.
 
 If deploying to the Azure Kubernetes Service, you can refer to our [detailed deployment guide instead](https://support.1password.com/cs/scim-deploy-azure/).
 
@@ -9,13 +9,13 @@ If deploying to the Azure Kubernetes Service, you can refer to our [detailed dep
 There are a few pieces of information you'll want to decide on before beginning the setup process:
 
 * Your SCIM bridge domain name. (example: `op-scim-bridge.example.com`)
-* An email to use for the automatically-created Provision Manager user. (example: `op-scim@example.com`)
+* An _accessible_ email to use for the automatically-created Provision Manager user. You'll be required to use a code sent to this email to complete setup of the account. (example: `op-scim@example.com`)
 
 In addition, there are a few things to keep in mind before you begin deployment.
 
 * Do not create the Provision Manager user manually. Let the setup process create the Provision Manager user for you **automatically.**
 * When the Provisioning setup asks you for an email address for the new Provision Manager user it creates for you automatically, use a dedicated email address (for example: `op-provision-manager@example.com`) to handle this account. It is _not advised_ to use any personal email address. At no point should you need to log into this new Provision Manager account manually.
-* Do not attempt to perform a provisioning sync the setup has been completed. 
+* Do not attempt to perform a provisioning sync before the setup has been completed. 
 * **IMPORTANT:** You will be provided with two separate secrets: a `scimsession` file and a Bearer token. **Do not share these secrets!** The bearer token must be provided to your Identity Provider, but beyond that it should be kept safe and **not shared with anyone else.** The `scimsession` file should only be shared with the SCIM bridge itself.
 
 
