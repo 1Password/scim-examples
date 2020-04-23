@@ -2,10 +2,33 @@
 
 This guide will help you prepare to deploy your 1Password SCIM Bridge.
 
+## Decide on URL and email address
+
+There are a few pieces of information you'll want to decide on before beginning the setup process:
+
+* Your SCIM bridge domain name. (example: `op-scim-bridge.example.com`)
+* An email to use for the automatically-created Provision Manager user. (example: `op-scim@example.com`)
+
+
+## High-Level Overview
+
+The SCIM bridge relies on the [SCIM protocol](http://www.simplecloud.info/), and acts as an intermediary between your Identity Provider - Azure Active Directory, Okta, and others - and your 1Password instance.
+
+It allows for automatic provisioning and deprovisioning of your 1Password user accounts based on what accounts you have assigned in your Identity Provider, providing a way to centralize your organization's 1Password account with other services you may be using.
+
+For general deployment, the SCIM bridge requires three things to function correctly:
+* the `op-scim` service itself
+* a [Redis](https://redis.io/) cache
+* a load balancer or web server to handle TLS connections on port 443
+
+SSL certificates are handled through the [https://letsencrypt.org/](LetsEncrypt) service which automatically generates and renews an SSL certificate based on the domain name you've decided on. On your firewall, you should ensure that the service can access Port 80 and Port 443, as Port 80 is required for the LetsEncrypt service to complete its domain challenge and issue your SCIM bridge an SSL certificate.
+
+Note that a TLS connection is still mandatory for connecting to the 1Password service.
+
 
 ## Clone this repository
 
-You should clone this repository to ensure you have all the files needed to begin deployment.
+You should clone this repository to ensure you have all the files needed to begin deployment. You should also familiarize yourself with the contents of the deployment method you've selected to ensure you have a full idea of what the deployment process will do.
 
 From the command line:
 
@@ -14,14 +37,6 @@ git clone https://github.com/1Password/scim-examples.git
 ```
 
 Alternatively, you can download a .zip of the project by clicking the "Clone or download" button.
-
-
-## Decide on URL and email address
-
-There are a few pieces of information you'll want to decide on before beginning the setup process:
-
-* Your SCIM bridge domain name. (example: `op-scim-bridge.example.com`)
-* An email to use for the automatically-created Provision Manager user. (example: `op-scim@example.com`)
 
 
 ## Caveats
@@ -34,7 +49,7 @@ There are a few common issues that pop up when deploying the SCIM Bridge.
 * Do not attempt to perform a provisioning sync until the setup has been completed.
 
 
-## Prepare your 1Passsword Account
+## Prepare your 1Password Account
 
 Log in to your 1Password account [using this link](https://start.1password.com/settings/provisioning/setup). It will take you to the setup page for the SCIM bridge. Follow the instructions there.
 
