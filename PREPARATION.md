@@ -16,14 +16,20 @@ The SCIM bridge relies on the [SCIM protocol](http://www.simplecloud.info/), and
 
 It allows for automatic provisioning and deprovisioning of your 1Password user accounts based on what accounts you have assigned in your Identity Provider, providing a way to centralize your organization's 1Password account with other services you may be using.
 
+
+
+### Technical Components
+
 For general deployment, the SCIM bridge requires three things to function correctly:
+
 * the `op-scim` service itself
 * a [Redis](https://redis.io/) cache
 * a load balancer or web server to handle TLS connections on port 443
 
-SSL certificates are handled through the [https://letsencrypt.org/](LetsEncrypt) service which automatically generates and renews an SSL certificate based on the domain name you've decided on. On your firewall, you should ensure that the service can access Port 80 and Port 443, as Port 80 is required for the LetsEncrypt service to complete its domain challenge and issue your SCIM bridge an SSL certificate.
 
-Note that a TLS connection is still mandatory for connecting to the 1Password service.
+### SSL Certificates
+
+SSL certificates are handled through the [https://letsencrypt.org/](LetsEncrypt) service which automatically generates and renews an SSL certificate based on the domain name you've decided on. On your firewall, you should ensure that the service can access Port 80 and Port 443, as Port 80 is required for the LetsEncrypt service to complete its domain challenge and issue your SCIM bridge an SSL certificate. Note that a TLS connection is still mandatory for connecting to the 1Password service.
 
 
 ## Clone this repository
@@ -47,6 +53,7 @@ There are a few common issues that pop up when deploying the SCIM Bridge.
 * When the Provisioning setup asks you for an email address for the new Provision Manager user it creates for you automatically, use a **dedicated email address** (for example: `op-provision-manager@example.com`) to handle this account. It is _not advised_ to use any personal email address.
 * You should **never** need to log into this Provision Manager account manually.
 * Do not attempt to perform a provisioning sync until the setup has been completed.
+* Once set up, your Identity Provider becomes the _authoritative source_ of information for your 1Password accounts. With Provisioning enabled, you _cannot edit user details manually_, and must do so through your Identity Provider.
 
 
 ## Prepare your 1Password Account
