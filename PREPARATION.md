@@ -14,22 +14,20 @@ There are a few pieces of information you'll want to decide on before beginning 
 
 The SCIM bridge relies on the [SCIM protocol](http://www.simplecloud.info/), and acts as an intermediary between your Identity Provider - Azure Active Directory, Okta, and others - and your 1Password instance.
 
-It allows for automatic provisioning and deprovisioning of your 1Password user accounts based on what accounts you have assigned in your Identity Provider, providing a way to centralize your organization's 1Password account with other services you may be using.
-
+It allows for automatic provisioning and deprovisioning of your 1Password user accounts and groups based on what accounts and groups you have assigned in your Identity Provider, providing a way to centralize your organization's 1Password account with other services you may be using.
 
 
 ### Technical Components
 
-For general deployment, the SCIM bridge requires three things to function correctly:
+For general deployment, the SCIM bridge requires two things to function correctly:
 
 * the `op-scim` service itself
 * a [Redis](https://redis.io/) cache
-* a load balancer or web server to handle TLS connections on port 443
 
 
 ### SSL Certificates
 
-SSL certificates are handled through the [https://letsencrypt.org/](LetsEncrypt) service which automatically generates and renews an SSL certificate based on the domain name you've decided on. On your firewall, you should ensure that the service can access Port 80 and Port 443, as Port 80 is required for the LetsEncrypt service to complete its domain challenge and issue your SCIM bridge an SSL certificate. Note that a TLS connection is still mandatory for connecting to the 1Password service.
+SSL certificates are handled through the [https://letsencrypt.org/](LetsEncrypt) service which automatically generates and renews an SSL certificate based on the domain name you've decided on. On your firewall, you should ensure that the service can access Port 80 and Port 443, as Port 80 is required for the LetsEncrypt service to complete its domain challenge and issue your SCIM bridge an SSL certificate. Note that a TLS connection is mandatory for connecting to the 1Password service.
 
 
 ## Clone this repository
@@ -50,8 +48,8 @@ Alternatively, you can download a .zip of the project by clicking the "Clone or 
 There are a few common issues that pop up when deploying the SCIM Bridge.
 
 * Do not create the Provision Manager user manually. Let the setup process create the Provision Manager user for you **automatically.**
-* When the Provisioning setup asks you for an email address for the new Provision Manager user it creates for you automatically, use a **dedicated email address** (for example: `op-provision-manager@example.com`) to handle this account. It is _not advised_ to use any personal email address.
-* You should **never** need to log into this Provision Manager account manually.
+* When the Provisioning setup asks you for an email address for the new Provision Manager user it creates for you automatically, use a **dedicated email address** (for example: `op-provision-manager@example.com`) to handle this account. It is _not advised_ to use any personal email address, and additionally, this account should be accessible by whomever will manage the 1Password service for your organization, be it a single individual or a group.
+* You should **never** need to log into this Provision Manager account manually. Please refrain from doing so.
 * Do not attempt to perform a provisioning sync until the setup has been completed.
 * Once set up, your Identity Provider becomes the _authoritative source_ of information for your 1Password accounts. With Provisioning enabled, you _cannot edit user details manually_, and must do so through your Identity Provider.
 
@@ -73,14 +71,12 @@ There are a few specific considerations with respect to security.
 
 All SCIM requests must be secured via TLS using an API gateway (self-configured web server) or the provided load balancer.
 
-Anonymous access to 1Password is not supported. You must use the provided secrets to authenticate with the SCIM Bridge and 1Password service.
-
 You will be provided with two separate secrets:
 
 * a `scimsession` file
 * a bearer token
 
-The `scimsession` file contains the credentials for the new Provision Manager user the setup process automatically created for you. This user will create, confirm, and suspend users, and create and manage access to groups.
+The `scimsession` file contains the credentials for the new Provision Manager user the setup process automatically created for you. This user will create, confirm, and suspend users, and create and manage access to groups. These secrets are required to connect to the 1Password service.
 
 **Do not share these secrets!**
 
@@ -88,7 +84,7 @@ The bearer token must be provided to your Identity Provider, but beyond that it 
 
 These secrets can be used to authenticate as the Provision Manager user. While vaults cannot be compromised in this way, it is still a major security concern if they're not kept safe. If, for any reason, you think the secrets may have been leaked, please regenerate them by following the setup guide again through the link above.
 
-**IMPORTANT:** To reiterate, please keep these secrets in a secure location, and **don't share them** with anyone unless absolutely necessary.
+**IMPORTANT:** To reiterate, please keep these secrets in a secure location (such as within 1Password), and **don't share them** with anyone unless absolutely necessary.
 
 
 ## DNS record

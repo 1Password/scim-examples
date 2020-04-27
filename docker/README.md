@@ -6,14 +6,6 @@ This example describes the methods of deploying the 1Password SCIM bridge using 
 
 Please ensure you've read through the [Preparing](https://github.com/1Password/scim-examples/tree/master/PREPARING.md) document before beginning deployment.
 
-
-## Install Docker locally
-
-Install [Docker for Desktop](https://www.docker.com/products/docker-desktop) on your local machine and _start Docker_ before continuing, as it will be needed to continue with the deployment process.
-
-For macOS users who use Homebrew, ensure you're using the _cask_ app-based version of Docker, not the default CLI version.
-
-
 ## Docker Compose vs Docker Swarm
 
 Using Docker, you have two different deployment options: `docker-compose` and Docker Swarm.
@@ -23,17 +15,25 @@ Docker Swarm is the recommended option. _Please refer to your cloud provider on 
 `docker-compose` is very useful for testing, but it is not recommended for use in a production environment. The `scimsession` file is passed into the docker container via an environment variable, which is less secure than Docker Swarm secrets or Kubernetes secrets, both of which are supported, and recommended.
 
 
-## Deploy SCIM bridge
+## Install Docker tools
 
-Connect to your remote Docker host from your local machine using the following:
+Install [Docker for Desktop](https://www.docker.com/products/docker-desktop) on your local machine and _start Docker_ before continuing, as it will be needed to continue with the deployment process.
 
-```
-eval %{docker-machine env dev}
-```
+You'll also need to install `docker-compose` and `docker-machine` command line tools for your platform.
 
-It's recommended to use the provided the bash script [./docker/deploy.sh](deploy.sh) to deploy your SCIM bridge. 
+For macOS users who use Homebrew, ensure you're using the _cask_ app-based version of Docker, not the default CLI version. (i.e: `brew cask install docker`)
 
-If you cloned this repo on your remote machine using SSH, you should copy the `scimsession` file to the `scim-examples` folder on your server. 
+
+## Setting up Docker
+
+
+
+
+### Docker Swarm
+
+For this, you will need to have a Docker Swarm set up. Please refer to [the official Docker documentation](https://docs.docker.com/engine/swarm/swarm-tutorial/create-swarm/) on how to do that.
+
+Once set up and you've logged into your Swarm with `docker swarm join`, it's recommended to use the provided the bash script [./docker/deploy.sh](deploy.sh) to deploy your SCIM bridge.
 
 The script will do the following:
 
@@ -44,12 +44,18 @@ The script will do the following:
 
 The logs from the SCIM bridge and redis containers will be streamed to your machine. If everything seems to have deployed successfully, press Ctrl+C to exit, and the containers will remain running on the remote machine.
 
-At this point you should set the DNS record for the domain name you selected to the IP address of the op-scim container. You can continue setting up your Identity Provider with the SCIM Bridge Administration Guide.
+At this point you should set the DNS record for the domain name you selected to the IP address of the op-scim container. You can also continue setting up your Identity Provider.
 
 
-### Additional Docker Compose instructions
+### Docker Compose
 
-This only applies when using and testing the SCIM bridge through `docker-compose`.
+As stated before, `compose` is meant for testing or evaluation, and not as a permanent solution.
+
+You will need to have a Docker machine set up either locally or remotely. Refer to [this documentation](https://docs.docker.com/machine/reference/create/) on how to do that. For a local installation, you can use the `virtualbox` driver.
+
+Once set up, ensure your environment is set up with `eval %{docker-machine env $machine_name}`, with whatever machine name you decided upon.
+
+Run the [./docker/deploy.sh](deploy.sh) script as in the previous example.
 
 In order to automatically launch the 1Password SCIM bridge upon startup when using `docker-compose`, you will need to configure systemd to automatically start the Docker daemon and launch op-scim.
 
