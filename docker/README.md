@@ -10,9 +10,9 @@ Please ensure you've read through the [Preparing](https://github.com/1Password/s
 
 Using Docker, you have two different deployment options: `docker-compose` and Docker Swarm.
 
-Docker Swarm is the recommended option. _Please refer to your cloud provider on how to setup a remote Docker Swarm Cluster if you do not have one set up already or are experiencing difficulties doing so._
+Docker Swarm is the recommended option. _Please refer to your cloud provider on how to setup a remote Docker Swarm Cluster if you do not have one set up already or are experiencing difficulties doing so._ Setting up a Swarm is beyond the scope of this documentation.
 
-`docker-compose` is very useful for testing, but it is not recommended for use in a production environment. The `scimsession` file is passed into the docker container via an environment variable, which is less secure than Docker Swarm secrets or Kubernetes secrets, both of which are supported, and recommended.
+While Docker Compose is useful for testing, it is not recommended for use in a production environment. The `scimsession` file is passed into the docker container via an environment variable, which is less secure than Docker Swarm secrets, Kubernetes secrets, or AWS Secrets Manager, all of which are supported and recommended for production use.
 
 
 ## Install Docker tools
@@ -31,20 +31,19 @@ For macOS users who use Homebrew, ensure you're using the _cask_ app-based versi
 
 ### Docker Swarm
 
-For this, you will need to have a Docker Swarm set up. Please refer to [the official Docker documentation](https://docs.docker.com/engine/swarm/swarm-tutorial/create-swarm/) on how to do that.
+For this, you will need to have joined a Docker Swarm. Please refer to [the official Docker documentation](https://docs.docker.com/engine/swarm/swarm-tutorial/create-swarm/) on how to do that.
 
 Once set up and you've logged into your Swarm with `docker swarm join`, it's recommended to use the provided the bash script [./docker/deploy.sh](deploy.sh) to deploy your SCIM bridge.
 
 The script will do the following:
 
-1. Ask if you want to deploy with Docker Swarm or Compose
-2. Add your `scimsession` to the SCIM bridge container, using a .env file for Docker Compose or a swarm secret for Docker Swarm.
-3. Prompt you for your SCIM bridge domain name which will configure LetsEncrypt to automatically issue a certificate for your bridge. This is the domain you selected in [Preparing](https://github.com/1Password/scim-examples/tree/master/PREPARING.md).
-4. Deploy a container using `1password/scim`, and a redis container. The redis container is necessary to store LetsEncrypt certificates.
+1. Add your `scimsession` to the SCIM bridge container, using a .env file for Docker Compose or a swarm secret for Docker Swarm.
+2. Prompt you for your SCIM bridge domain name which will configure LetsEncrypt to automatically issue a certificate for your bridge. This is the domain you selected in [Preparing](https://github.com/1Password/scim-examples/tree/master/PREPARING.md).
+3. Deploy a container using `1password/scim`, and a redis container. The redis container is necessary to store LetsEncrypt certificates.
 
 The logs from the SCIM bridge and redis containers will be streamed to your machine. If everything seems to have deployed successfully, press Ctrl+C to exit, and the containers will remain running on the remote machine.
 
-At this point you should set the DNS record for the domain name you selected to the IP address of the op-scim container. You can also continue setting up your Identity Provider.
+At this point you should set the DNS record for the domain name you prepared to the IP address of the `op-scim` container. You can also continue setting up your Identity Provider at this point.
 
 
 ### Docker Compose
