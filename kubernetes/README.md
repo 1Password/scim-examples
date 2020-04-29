@@ -4,49 +4,9 @@ This example explains how to deploy the 1Password SCIM bridge on Kubernetes runn
 
 If deploying to the Azure Kubernetes Service, you can refer to our [detailed deployment guide instead](https://support.1password.com/cs/scim-deploy-azure/).
 
-## Before beginning
+## Preparing
 
-There are a few pieces of information you'll want to decide on before beginning the setup process:
-
-* Your SCIM bridge domain name. (example: `op-scim-bridge.example.com`)
-* An _accessible_ email to use for the automatically-created Provision Manager user. You'll be required to use a code sent to this email to complete setup of the account. (example: `op-scim@example.com`)
-
-In addition, there are a few things to keep in mind before you begin deployment.
-
-* Do not create the Provision Manager user manually. Let the setup process create the Provision Manager user for you **automatically.**
-* When the Provisioning setup asks you for an email address for the new Provision Manager user it creates for you automatically, use a dedicated email address (for example: `op-provision-manager@example.com`) to handle this account. It is _not advised_ to use any personal email address. At no point should you need to log into this new Provision Manager account manually.
-* Do not attempt to perform a provisioning sync before the setup has been completed. 
-* **IMPORTANT:** You will be provided with two separate secrets: a `scimsession` file and a Bearer token. **Do not share these secrets!** The bearer token must be provided to your Identity Provider, but beyond that it should be kept safe and **not shared with anyone else.** The `scimsession` file should only be shared with the SCIM bridge itself.
-
-
-## Start creating your DNS record
-
-The 1Password SCIM bridge requires SSL/TLS in order to communicate with your Identity Provider. To do that, you must create a DNS record that points to your Kubernetes load balancer. 
-
-This is a chicken and egg problem, as we need the load balancer online with an IP address before we can create the DNS record. 
-
-Please follow all of the steps until the load balancer has been created, and at the very end, you will finish setting up the DNS record with the domain you decided on in [Before beginning](#Before-beginning).
-
-
-## Prepare your 1Password Account
-
-Log in to your 1Password account [using this link](https://start.1password.com/settings/provisioning/setup). It will take you to the setup page for the SCIM bridge. Follow the instructions there.
-
-During this process, the setup will guide you through the following process:
-
-* Automatically creating a Provision Managers group
-* Automatically creating a Provision Manager user
-* Generating your SCIM bridge credentials
-
-The SCIM bridge credentials are split into two equally-important parts:
-
-* a `scimsession` file 
-* a bearer token
-
-The `scimsession` file contains the credentials for the new Provision Manager user the setup process automatically created for you. This user will create, confirm, and suspend users, and create and manage access to groups.
-
-**IMPORTANT:** As stated before, please keep these secrets in a secure location, and don't share them with anyone unless absolutely necessary.
-
+Please ensure you've read through the [Preparing](https://github.com/1Password/scim-examples/tree/master/PREPARING.md) document before beginning deployment.
 
 ## Create your `scimsession` Kubernetes secret
 
@@ -96,13 +56,9 @@ kubectl apply -f op-scim-service.yaml
 ```
 
 
-## Finish configuring DNS
+## Configuring DNS
 
-As mentioned before, you'll need to configure you DNS after the fact, as configuring DNS requires the IP address of the deployed container.
-
-It's important that you use the IP address of the container that runs the load balancer. 
-
-Within your DNS provider, create the DNS record for the domain you decided on in [Start creating your DNS record](#Start-creating-your-DNS-record). You should give it a few minutes to propagate. 
+At this stage, you can finish configuring your DNS entry as outlined in [Preparing](https://github.com/1Password/scim-examples/tree/master/PREPARING.md). Please ensure you're using the IP address of the op-scim service you've deployed, which should have been automatically assigned.
 
 
 ## Test the instance

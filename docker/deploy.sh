@@ -11,7 +11,7 @@ run_docker_compose() {
     ./generate-env.sh
     mv ./scimsession ../../
 
-    read -p 'Please enter your domain name : ' domain_name
+    read -p 'Please enter your domain name: ' domain_name
 
     sed -i.bak s/{YOUR-DOMAIN-HERE}/$domain_name/g docker-compose.yml
 
@@ -30,7 +30,7 @@ run_docker_swarm(){
 
     mv ./scimsession ../../
 
-    read -p 'Please enter your domain name : ' domain_name
+    read -p 'Please enter your domain name: ' domain_name
 
     sed -i.bak s/{YOUR-DOMAIN-HERE}/$domain_name/g docker-compose.yml
 
@@ -40,7 +40,9 @@ run_docker_swarm(){
     docker service logs --raw -f op-scim_scim
 }
 
-read -p 'Please enter the configuration you are using [compose] or [swarm] : ' docker_path
+echo 'Please ensure you have read the README before continuing.'
+echo 'Which docker deployment method are you using?'
+read -p '[compose] or [swarm]: ' docker_path
 
 if [ "$docker_path" == "compose" ];
 then 
@@ -49,6 +51,6 @@ elif [ "$docker_path" == "swarm" ]
 then
     run_docker_swarm
 else 
-    echo "Invalid docker manager. Please use docker-compose or docker-swarm"
+    echo "Invalid docker manager. Please use either docker-compose or docker-swarm."
     exit
 fi
