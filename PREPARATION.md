@@ -25,6 +25,11 @@ For general deployment, the SCIM bridge requires two services to function correc
 * a [Redis](https://redis.io/) cache
 
 
+### DNS record
+
+You will need to be able to create a DNS record with the SCIM bridge domain name decided. However, you'll need to have the IP address of the host, which necessitates deploying the SCIM bridge first, unless you have a static IP already assigned. Follow the steps in each respective deployment guide on when to finish setting up your DNS record.
+
+
 ### SSL Certificates
 
 SSL certificates are handled through the [https://letsencrypt.org/](LetsEncrypt) service which automatically generates and renews an SSL certificate based on the domain name you've decided on. On your firewall, you should ensure that the service can access Port 80 and Port 443, as Port 80 is required for the LetsEncrypt service to complete its domain challenge and issue your SCIM bridge an SSL certificate. Note that a TLS connection is mandatory for connecting to the 1Password service.
@@ -82,11 +87,6 @@ The `scimsession` file contains the credentials for the new Provision Manager us
 
 The bearer token must be provided to your Identity Provider, but beyond that it should be kept safe and **not shared with anyone else.** The `scimsession` file should only be shared with the SCIM bridge itself.
 
-These secrets can be used to authenticate as the Provision Manager user. While vaults cannot be compromised in this way, it is still a major security concern if they're not kept safe. If, for any reason, you think the secrets may have been leaked, please regenerate them by following the setup guide again through the link above.
+These secrets can be used to authenticate as the Provision Manager user. It is a major security concern if they're not kept safe.
 
 **IMPORTANT:** To reiterate, please keep these secrets in a secure location (such as within 1Password), and **don't share them** with anyone unless absolutely necessary.
-
-
-## DNS record
-
-You will need to be able to create a DNS record with the SCIM bridge domain name decided. However, you'll need to have the IP address of the host, which necessitates deploying the SCIM bridge first, unless you have a static IP already assigned. Follow the steps in each respective deployment guide on when to finish setting up your DNS record.
