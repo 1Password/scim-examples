@@ -48,9 +48,7 @@ At this point you should set the DNS record for the domain name you prepared to 
 
 ### Docker Compose
 
-As stated before, `compose` is meant for testing or evaluation, and not as a permanent solution.
-
-You will need to have a Docker machine set up either locally or remotely. Refer to [this documentation](https://docs.docker.com/machine/reference/create/) on how to do that. For a local installation, you can use the `virtualbox` driver.
+You will need to have a Docker machine set up either locally or remotely. Refer to [the docker-compose documentation](https://docs.docker.com/machine/reference/create/) on how to do that. For a local installation, you can use the `virtualbox` driver.
 
 Once set up, ensure your environment is set up with `eval %{docker-machine env $machine_name}`, with whatever machine name you decided upon.
 

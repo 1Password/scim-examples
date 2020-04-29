@@ -19,7 +19,7 @@ It allows for automatic provisioning and deprovisioning of your 1Password user a
 
 ### Technical Components
 
-For general deployment, the SCIM bridge requires two things to function correctly:
+For general deployment, the SCIM bridge requires two services to function correctly:
 
 * the `op-scim` service itself
 * a [Redis](https://redis.io/) cache
