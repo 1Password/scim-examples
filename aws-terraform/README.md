@@ -5,21 +5,26 @@ This example describes one of the simplest methods of deploying the 1Password SC
 
 ## Preparing
 
-Please ensure you've read through the [Preparing](https://github.com/1Password/scim-examples/tree/master/PREPARING.md) document before beginning deployment.
+Please ensure you've read through [PREPARING.md](https://github.com/1Password/scim-examples/tree/master/PREPARING.md) before beginning deployment.
 
 
 ## Deployment overview
 
-For most installations, one `t3.micro` size instance will be adequate to serve Identity Provider requests. Ensure instance performance is monitored, and upgrade instance size if required.
+### Required Tools 
 
 The minimum supported version of Terraform is `0.12.x`.
 
-You'll also want the `terraform` command line tools package for your respective system.
+You'll also want the `terraform` command line tools package for your operating system.
+
+
+### Instance Size
+
+For most installations, one `t3.micro` size instance will be adequate to serve Identity Provider requests. We recommend enabling auto-scaling, but it is not strictly necessary.
 
 
 ### Optional Components
 
-* **AWS Key Management Service and Secrets Manager** - KMS Key is used to encrypt/decrypt Secrets Manager data, for example, session file and must be configured prior to deploying your 1Password SCIM infrastructure. The SCIM bridge has to know where to find the session file, so please refer to its documentation on how to set that up.
+* **AWS Key Management Service and Secrets Manager** - Key Management Service (KMS) key is used to encrypt/decrypt Secrets Manager data. `scimsession` file must be placed into the service prior to deploying your 1Password SCIM Bridge while using this service. Additionally, the SCIM Bridge has to know where to find the `scimsession` file, so please refer to the KMS/SM documentation on how to set that up.
 * **AWS S3 Bucket** - This can be used to store the terraform state file, load balancer logs, and so on.
 
 
@@ -40,7 +45,7 @@ Below is the overall code structure of the Terraform deployment.
 
 ## Deploying using Terraform
 
-1. Copy `deploy/example_env` to a new directory according to the established naming conventions. Example: `deploy/development`.
+1. Copy `deploy/example_env` to a new directory according to your established naming conventions. Example: `deploy/development`.
 
 2. Upload encrypted session file to the AWS Secrets Manager (if required).
 
@@ -49,34 +54,34 @@ Example:
 aws secretsmanager create-secret --name op-scim-dev/scimsession --secret-binary /path/to/scimsession --region <aws_region>
 aws secretsmanager describe-secret --secret-id op-scim/scimsession --region <aws_region>
 ```
-Custom KMS key can be specified by `--kms-key-id <kms_key_arn>`, in this case make sure deployed instances have access to that key, otherwise skip this option. If you don't specify key, then Secrets Manager defaults to using the AWS account's default Customer Master Key (CMK, the one named `aws/secretsmanager`).
+Custom Key Management Service key can be specified by `--kms-key-id <kms_key_arn>`. Ensure deployed instances have access to that key. If you don't specify key, then Secrets Manager defaults to using the AWS account's default Customer Master Key (CMK, the one named `aws/secretsmanager`).
 
 3. Adjust `variables.tf`, `main.tf` and `providers.tf` as required.
 
-4. Use `terraform` commands to deploy, verify, and troubleshoot.
+4. Use `terraform` commands to deploy and verify your installation.
 
 Example:
 ```bash
   terraform init
-  terraform plan -out=/tmp/op-scim.plan
-  terraform apply /tmp/op-scim.plan
+  terraform plan -out=./op-scim.plan
+  terraform apply ./op-scim.plan
 ```
 
-5. Update/Create 1Password SCIM endpoint configuration in your Identity Provider using your generated [Bearer Token](https://github.com/1Password/scim-examples/tree/master/PREPARING.md).
+5. Update/Create 1Password SCIM endpoint configuration in your Identity Provider using your generated [bearer token](https://github.com/1Password/scim-examples/tree/master/PREPARING.md).
 
 
 ## Advanced
 
 ### Logging
 
-All logs go to `syslog` (AWS EC2 instance OS). You may consider configuring a "bastion" host or AWS System Manager or assign Public IP address to your instance, in order to be able to login to the deployed EC2 instance to view system logs.
+All logs go to `syslog` (AWS EC2 instance OS). You can use the AWS System Manager to view logs for your instance.
 
 
-### Destroying and Redeploying
+### Upgrading and Redeployment
 
 You can destroy and redeploy the instance whenever you feel the need to. No permanent data is stored within the SCIM bridge. This is useful for upgrading your SCIM bridge with important bugfix or feature releases.
 
-`terraform destroy` (if target is not specified) deletes all but the `scimsession` file in Secrets Manager (deployed separately).
+`terraform destroy` deletes all but the `scimsession` file in Secrets Manager (deployed separately).
 
 
 ### Debian Package
