@@ -30,12 +30,12 @@ echo "Deployment type:" $docker_type
 echo "scimsession file path:" $scimsession_file
 echo "Domain name:" $domain_name
 
-while ! [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; do
-    read -p "Does this look correct? [Y/n]: " response
-    if ! [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]
+while ! [[ "$proceed" =~ ^([yY][eE][sS]|[yY])$ || "$proceed" =~ ^([nN][oO][nN]) ]]; do
+    read -p "Does this look correct? [Y/n]: " proceed
+    if [[ "$proceed" =~ ^([nN][oO][nN])$ ]]
     then
         echo "Exiting..."
-        exit 0
+        exit 1
     fi
 done
 
@@ -71,8 +71,9 @@ then
             echo " "
             echo "Press Ctrl+C to quit out of the log view."
             sleep 2
-            docker-compose -f $docker_deploy_file logs -f
-        else
+            docker-compose -f $docker_deploy_file logs -f 2>/dev/null
+        elif [[ "$view_logs" =~ ^([nN][oO][nN])$ ]]
+        then
             echo "Skipping logs..."
             echo "You can view the logs manually by running: docker-compose logs -f"
         fi
@@ -109,8 +110,9 @@ then
             echo " "
             echo "Press Ctrl+C to quit out of the log view."
             sleep 2
-            docker service logs --raw -f op-scim_scim
-        else
+            docker service logs --raw -f op-scim_scim 2>/dev/null
+        elif [[ "$view_logs" =~ ^([nN][oO][nN])$ ]]
+        then
             echo "Skipping logs..."
             echo "You can view the logs manually by running: docker service logs --raw -f op-scim_scim"
         fi
