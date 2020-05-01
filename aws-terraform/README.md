@@ -7,7 +7,7 @@ This document describes deploying the 1Password SCIM bridge to your Amazon Web S
 
 This is only an example of how you could deploy the 1Password SCIM Bridge to your existing AWS infrastructure. Utilizing the full suite of AWS/Terraform infrastructure is considered an advanced form of deployment, so feel free to modify it to suit your needs.
 
-If you find that you are not using a majority of the services listed in this documentation within your AWS account - for instance, you have an external DNS provider, or you are providing your own certificates through a third-party service - consider deploying through [Kubernetes](https://github.com/1Password/scim-examples/tree/master/kubernetes/README.md) using AWS Elastic Kubernetes Service (EKS). The 1Password SCIM Bridge is not a resource-intensive service, and a full AWS deployment may be more resource-intensive than you require, unless it fits neatly into your existing infrastructure.
+If you find that you are not using a majority of the services listed in this documentation within your AWS account - for instance, you have an external DNS provider, or you are providing your own certificates through a third-party service - consider deploying through [Kubernetes](https://github.com/1Password/scim-examples/tree/master/kubernetes/README.md) using AWS Elastic Kubernetes Service (EKS). The 1Password SCIM Bridge is not a resource-intensive service, and a full AWS deployment may include more infrastructure than you require, unless it fits neatly into your existing setup.
 
 To continue, please ensure you've read through [PREPARING.md](https://github.com/1Password/scim-examples/tree/master/PREPARING.md) before beginning deployment.
 
@@ -38,15 +38,16 @@ For most installations, one `t3.micro` size instance will be adequate to serve I
 
 Below is the overall code structure of the Terraform deployment.
 
-- `deploy` - directory contains deployments/environments and separates them from each other. Example: `development`, `staging`, `testing` and so on.
-    - `variables.tf` - sets global variables for the specific deployment and provider configuration. This file already has default values for some of the variables, but it is recommended to review all of them.
-    - `providers.tf` - AWS and Terraform provider configuration.
-    - `main.tf` - invokes required modules and sets module specific variables.
-    - `output.tf` - prints out some of the resources and values.
-    - `deploy/<new-environment>/user_data/03-default-users.yml` - user configuration, ssh username and key.
-    - `new-environment` - can be created by copying an existing one to a new directory and adjusting `variables.tf`, `main.tf`, `providers.tf` as required.
-    - `module_scim_app` - deploys the following AWS resources and their dependencies: Application Load Balancer (ALB), Auto Scaling Groups (ASG), Identity and Access Management (IAM), instance and load balancer security groups, and a public DNS record. ASG monitors instances and automatically adjusts capacity to maintain steady, predictable performance. Capacity is configured in `main.tf` and instance specific configuration is in `variables.tf`.
-    - `module_scim_infra` - deploys network infrastructure: Virtual Private Cloud, networking (route tables, etc), Route 53, Internet Gateways, NAT Gateways, and their dependencies.
+- `/module_scim_app/` - deploys the following AWS resources and their dependencies: Application Load Balancer (ALB), Auto Scaling Groups (ASG), Identity and Access Management (IAM), instance and load balancer security groups, and a public DNS record.
+- `/module_scim_infra/` - deploys network infrastructure: Virtual Private Cloud, networking (route tables, etc), Route 53, Internet Gateways, NAT Gateways, and their dependencies.
+- `/deploy/{environment}` - contains the variable files which you will need to copy and modify to suit your needs.
+
+Specific files you should review and edit include:
+
+- `variables.tf` - sets global variables for the specific deployment and provider configuration. This file already has default values for some of the variables, but it is recommended to review all of them.
+- `providers.tf` - AWS and Terraform provider configuration.
+- `main.tf` - invokes required modules and sets module specific variables.
+- `output.tf` - prints out some of the resources and values.
 
 
 ## Deploying using Terraform
@@ -56,7 +57,7 @@ Below is the overall code structure of the Terraform deployment.
 Example:
 ```bash
 cp -a terraform/deploy/example_env terraform/deploy/{testing,production}
-cd terraform/deploy/{testing,production} 
+cd terraform/deploy/{testing,production}
 ```
 
 2. Upload encrypted session file to the AWS Secrets Manager. Replace `<aws_region>` with the region you are deploying to.
