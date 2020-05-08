@@ -38,16 +38,18 @@ For most installations, one `t3.micro` size instance will be adequate to serve I
 
 Below is the overall code structure of the Terraform deployment.
 
-- `/module_scim_app/` - deploys the following AWS resources and their dependencies: Application Load Balancer (ALB), Auto Scaling Groups (ASG), Identity and Access Management (IAM), instance and load balancer security groups, and a public DNS record.
-- `/module_scim_infra/` - deploys network infrastructure: Virtual Private Cloud, networking (route tables, etc), Route 53, Internet Gateways, NAT Gateways, and their dependencies.
-- `/deploy/{environment}` - contains the variable files which you will need to copy and modify to suit your needs.
-
-Specific files you should review and edit include:
-
-- `variables.tf` - sets global variables for the specific deployment and provider configuration. This file already has default values for some of the variables, but it is recommended to review all of them.
-- `providers.tf` - AWS and Terraform provider configuration.
-- `main.tf` - invokes required modules and sets module specific variables.
-- `output.tf` - prints out some of the resources and values.
+- `module_scim_app/` - deploys the following AWS resources and their dependencies: Application Load Balancer (ALB), Auto Scaling Groups (ASG), Identity and Access Management (IAM), instance and load balancer security groups, and a public DNS record.
+- `module_scim_infra/` - deploys network infrastructure: Virtual Private Cloud, networking (route tables, etc), Route 53, Internet Gateways, NAT Gateways, and their dependencies.
+- `deploy/` - where the deployment files are contained.
+    - `{environment}/` - a directory named after the environment you’re deploying to.
+        - `user_data/` - contains files related to the specific operating system setup within the container.
+            - `01-set-hostname.yml` - hostname options for the OS.
+            - `02-environment.yml` - environment variable setup.
+            - `03-default-users.yml` - default user setup for the environment (modify if needed).
+        - `variables.tf` - sets global variables for the specific deployment and provider configuration. This file already has default values for some of the variables, but it is recommended to review all of them.
+        - `providers.tf` - AWS and Terraform provider configuration.
+        - `main.tf` - invokes required modules and sets module specific variables.
+        - `output.tf` - prints out some of the resources and values.
 
 
 ## Deploying using Terraform
@@ -70,7 +72,7 @@ aws secretsmanager describe-secret --secret-id op-scim/scimsession --region <aws
 
 Custom Key Management Service key can be specified by `--kms-key-id <kms_key>`. Ensure deployed instances have access to that key. If you don't specify key, Secrets Manager will default to using the AWS account's default Customer Master Key (CMK, the one named `aws/secretsmanager`).
 
-3. Adjust `variables.tf`, `main.tf` and `providers.tf` as required, paying special attention to variables tagged with `CHANGE_ME`.
+3. Adjust `variables.tf`, `main.tf`, `providers.tf`, and `user_data/03-default-users.yml` as required, paying special attention to variables tagged with `CHANGE_ME`.
 
 4. Ensure that you've manually created a certificate for the subdomain you've specified in `variables.tf` in your AWS Certificate Manager. This is not automatically performed by the deployment script.
 
