@@ -56,7 +56,8 @@ There are a few common issues that pop up when deploying the SCIM Bridge.
 * When the Provisioning setup asks you for an email address for the new Provision Manager user it creates for you automatically, use a **dedicated email address** (for example: `op-provision-manager@example.com`) to handle this account. It is _not advised_ to use any personal email address, and additionally, this account should be accessible by whomever will manage the 1Password service for your organization, be it a single individual or a group.
 * You should **never** need to log into this Provision Manager account manually. Please refrain from doing so.
 * Do not attempt to perform a provisioning sync until the setup has been completed.
-* Once set up, your Identity Provider becomes the _authoritative source_ of information for your 1Password accounts. With Provisioning enabled, you _cannot edit user details manually_, and must do so through your Identity Provider.
+* Once set up, your Identity Provider becomes the _authoritative source_ of information for your 1Password accounts. With Provisioning enabled, the ability to change the _display name_ and _account status_ are not possible through the 1Password Web UI, and must be done through your Identity Provider. You can, however, continue to issue Account Recovery requests through the 1Password Web UI with Provisioning enabled.
+* E-mail addresses for provisioned users cannot be changed through the Identity Provider, due to the way their e-mail addresses are used as a factor for authentication. Users must change their e-mail manually through the 1Password Web UI.
 
 
 ## Prepare your 1Password Account
