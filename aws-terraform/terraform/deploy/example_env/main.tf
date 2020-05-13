@@ -3,7 +3,7 @@ module "infra" {
   source = "../../module_scim_infra/"
 
   providers = {
-    "aws" = "aws.main" // CHANGE_IT
+    aws = aws.main // CHANGE_ME
   }
 
   env         = var.env
@@ -21,7 +21,7 @@ module "scim-app" {
   source = "../../module_scim_app/"
 
   providers = {
-    "aws" = "aws.main" // CHANGE_IT
+    aws = aws.main // CHANGE_ME
   }
 
   env                   = var.env
