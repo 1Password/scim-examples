@@ -5,7 +5,7 @@ This document describes deploying the 1Password SCIM bridge to your Amazon Web S
 
 ## Preparing
 
-This is only an example of how you could deploy the 1Password SCIM Bridge to your existing AWS infrastructure. Utilizing the full suite of AWS/Terraform infrastructure is considered an advanced form of deployment, so feel free to modify it to suit your needs.
+This is only an example of how you could deploy the 1Password SCIM Bridge to your existing AWS infrastructure. As an advanced form of deployment, this AWS/Terraform example can be integrated into your existing infrastructure. Feel free to modify the deployment to suit your specific needs.
 
 If you find that you are not using a majority of the services listed in this documentation within your AWS account - for instance, you have an external DNS provider, or you are providing your own certificates through a third-party service - consider deploying through [Kubernetes](https://github.com/1Password/scim-examples/tree/master/kubernetes/README.md) using AWS Elastic Kubernetes Service (EKS). The 1Password SCIM Bridge is not a resource-intensive service, and a full AWS deployment may include more infrastructure than you require, unless it fits neatly into your existing setup.
 
@@ -23,7 +23,7 @@ You will also want to ensure the `aws` and `terraform` CLI tools are installed f
 
 ### Instance Size
 
-For most installations, one `t3.micro` size instance will be adequate to serve Identity Provider requests. We recommend enabling auto-scaling, but it is not strictly necessary.
+For most installations, one [t3.micro](https://github.com/1Password/scim-examples/tree/master/aws-terraform/terraform/deploy/example_env/variables.tf#L96) size instance will be adequate to serve Identity Provider requests. We recommend enabling auto-scaling, but it is not strictly necessary.
 
 
 ### AWS Components
@@ -70,7 +70,7 @@ aws secretsmanager create-secret --name op-scim/scimsession --secret-binary file
 aws secretsmanager describe-secret --secret-id op-scim/scimsession --region <aws_region>
 ```
 
-Custom Key Management Service key can be specified by `--kms-key-id <kms_key>`. Ensure deployed instances have access to that key. If you don't specify key, Secrets Manager will default to using the AWS account's default Customer Master Key (CMK, the one named `aws/secretsmanager`).
+Custom Key Management Service key can be specified by `--kms-key-id <kms_key>`. Ensure deployed instances have access to that key. If you don't specify key, AWS Secrets Manager will default to using the AWS account's default Customer Master Key (CMK, the one named `aws/secretsmanager`).
 
 3. Adjust `variables.tf`, `main.tf`, `providers.tf`, and `user_data/03-default-users.yml` as required, paying special attention to variables tagged with `CHANGE_ME`.
 
@@ -91,14 +91,12 @@ Custom Key Management Service key can be specified by `--kms-key-id <kms_key>`. 
 
 ### Logging
 
-All logs go to `syslog` (AWS EC2 instance OS). You can use the AWS System Manager to view logs for your instance.
+All logs go to `/var/log/syslog` (AWS EC2 instance OS). You can use the AWS System Manager to view logs for your instance.
 
 
 ### Upgrading and Redeployment
 
-You can destroy and redeploy the instance whenever you feel the need to. No permanent data is stored within the SCIM bridge. This is useful for upgrading your SCIM bridge with important bugfix or feature releases.
-
-`terraform destroy` deletes all but the `scimsession` file in Secrets Manager (deployed separately).
+You can destroy and redeploy the instance whenever you feel the need to. No permanent data is stored within the SCIM bridge instance itself, as secrets are stored in the AWS Secrets Manager. This is useful for upgrading your SCIM bridge with important bugfix or feature releases.
 
 
 ### Debian Package
