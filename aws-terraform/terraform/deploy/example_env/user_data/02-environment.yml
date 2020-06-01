@@ -52,7 +52,7 @@ runcmd:
     - aws secretsmanager get-secret-value --secret-id ${SCIM_SESSION_SECRET} --region ${REGION} --output text --query SecretBinary | base64 --decode > ${SCIM_SESSION_PATH}
     - chmod -v 600 ${SCIM_SESSION_PATH}
     # configure op-scim repo
-    - curl -L https://apt.agilebits.com/gpg.key 2> /dev/null | apt-key add -
+    - curl -L https://apt.agilebits.com/op-scim/1Password.asc 2> /dev/null | apt-key add -
     - echo '${SCIM_REPO}' > /etc/apt/sources.list.d/op-scimrepo.list
     # install op-scim
     - apt-get -y -qq update && apt-get -y -qq install op-scim

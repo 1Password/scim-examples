@@ -104,7 +104,7 @@ You can destroy and redeploy the instance whenever you feel the need to. No perm
 The 1Password SCIM Bridge is distributed as a Debian package and installed automatically during the deployment process. The following commands are run during the deployment:
 
 ```bash
-- curl -L https://apt.agilebits.com/gpg.key 2> /dev/null | apt-key add -
+- curl -L https://apt.agilebits.com/op-scim/1Password.asc 2> /dev/null | apt-key add -
 - echo '${SCIM_REPO}' > /etc/apt/sources.list.d/op-scimrepo.list
 - apt-get -y -qq update && apt-get -y -qq install op-scim
 - echo '10 * * * * root /usr/local/bin/op-scim-upgrade.sh 2>&1 | logger -t op-scim-deploy-cron' > /etc/cron.d/50_op-scim && chmod 0644 /etc/cron.d/50_op-scim
