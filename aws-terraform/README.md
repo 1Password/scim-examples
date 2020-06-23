@@ -9,7 +9,7 @@ This is only an example of how you could deploy the 1Password SCIM Bridge to you
 
 If you find that you are not using a majority of the services listed in this documentation within your AWS account - for instance, you have an external DNS provider, or you are providing your own certificates through a third-party service - consider deploying through [Kubernetes](https://github.com/1Password/scim-examples/tree/master/kubernetes/README.md) using AWS Elastic Kubernetes Service (EKS). The 1Password SCIM Bridge is not a resource-intensive service, and a full AWS deployment may include more infrastructure than you require, unless it fits neatly into your existing setup.
 
-To continue, please ensure you've read through [PREPARING.md](https://github.com/1Password/scim-examples/tree/master/PREPARING.md) before beginning deployment.
+To continue, please ensure you've read through [PREPARATION.md](/PREPARATION.md) before beginning deployment.
 
 
 ## Deployment overview
@@ -84,7 +84,7 @@ Custom Key Management Service key can be specified by `--kms-key-id <kms_key>`. 
   terraform apply ./op-scim.plan
 ```
 
-6. Update/Create 1Password SCIM configuration in your Identity Provider using your generated [bearer token](https://github.com/1Password/scim-examples/tree/master/PREPARING.md) and newly-created subdomain.
+6. Update/Create 1Password SCIM configuration in your Identity Provider using your generated [bearer token](/PREPARATION.md) and newly-created subdomain.
 
 
 ## Advanced

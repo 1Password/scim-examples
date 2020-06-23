@@ -4,7 +4,7 @@ This example describes the methods of deploying the 1Password SCIM bridge using 
 
 ## Preparing
 
-Please ensure you've read through the [Preparing](https://github.com/1Password/scim-examples/tree/master/PREPARING.md) document before beginning deployment.
+Please ensure you've read through the [PREPARATION.md](/PREPARATION.md) document before beginning deployment.
 
 ## Docker Compose vs Docker Swarm
 
@@ -38,7 +38,7 @@ Once set up and you've logged into your Swarm with `docker swarm join`, it's rec
 The script will do the following:
 
 1. Add your `scimsession` to the SCIM bridge container, using a .env file for Docker Compose or a swarm secret for Docker Swarm.
-2. Prompt you for your SCIM bridge domain name which will configure LetsEncrypt to automatically issue a certificate for your bridge. This is the domain you selected in [Preparing](https://github.com/1Password/scim-examples/tree/master/PREPARING.md).
+2. Prompt you for your SCIM bridge domain name which will configure LetsEncrypt to automatically issue a certificate for your bridge. This is the domain you selected in [PREPARATION.md](/PREPARATION.md).
 3. Deploy a container using `1password/scim`, and a redis container. The redis container is necessary to store LetsEncrypt certificates.
 
 The logs from the SCIM bridge and redis containers will be streamed to your machine. If everything seems to have deployed successfully, press Ctrl+C to exit, and the containers will remain running on the remote machine.

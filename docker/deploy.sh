@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Docker Swarm deployment script
-# Please ensure you've read PREPARING.md and docker/README.md
+# Please ensure you've read PREPARATION.md and docker/README.md
 
 # set the full path of the docker examples directory
 
