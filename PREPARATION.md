@@ -16,6 +16,16 @@ The SCIM bridge relies on the [SCIM protocol](http://www.simplecloud.info/), and
 
 It allows for automatic provisioning and deprovisioning of your 1Password user accounts and groups based on what accounts and groups you have assigned in your Identity Provider, providing a way to centralize your organization's 1Password account with other services you may be using.
 
+### Risks & Considerations
+
+The SCIM Bridge was designed to be a **low risk** service for our customers.
+
+Most importantly, you **will _not_ be locked out of your accounts** if your SCIM Bridge goes down. While it’s better to have your SCIM Bridge in an always-on state, there is no risk of account locking or data loss should your SCIM Bridge go offline, or even be deleted altogether.
+
+If your SCIM Bridge does go down, your integrations with your Identity Provider will cease functioning. That means additional updates to your accounts and users through your Identity Provider won’t be possible until it’s brought back online, but it does not mean any of your existing accounts will be locked or suspended in any way.
+
+Additionally, you can freely deploy, delete, and redeploy without concerning yourself with saving any of the data on the SCIM Bridge deployment, as no necessary permanent data is stored within it.
+
 
 ### Technical Components
 
