@@ -6,7 +6,7 @@ If deploying to the Azure Kubernetes Service, you can refer to our [detailed dep
 
 ## Preparing
 
-Please ensure you've read through the [Preparing](https://github.com/1Password/scim-examples/tree/master/PREPARING.md) document before beginning deployment.
+Please ensure you've read through the [PREPARATION.md](/PREPARATION.md) document before beginning deployment.
 
 ## Create your `scimsession` Kubernetes secret
 
@@ -58,7 +58,7 @@ kubectl apply -f op-scim-service.yaml
 
 ## Configuring DNS
 
-At this stage, you can finish configuring your DNS entry as outlined in [Preparing](https://github.com/1Password/scim-examples/tree/master/PREPARING.md). Please ensure you're using the IP address of the op-scim service you've deployed, which should have been automatically assigned.
+At this stage, you can finish configuring your DNS entry as outlined in [PREPATATION.md](/PREPARATION.md). Please ensure you're using the IP address of the op-scim service you've deployed, which should have been automatically assigned.
 
 
 ## Test the instance

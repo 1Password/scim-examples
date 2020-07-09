@@ -2,7 +2,7 @@
 provider "aws" {
   region              = var.region
   allowed_account_ids = [var.aws-account]
-  alias               = "main" // CHANGE_IT
+  alias               = "main" // CHANGE_ME
 
   // skip some validations to speed up TF
   skip_get_ec2_platforms      = true
@@ -11,14 +11,13 @@ provider "aws" {
   skip_credentials_validation = true
 }
 
-// optional, comment out if not used
 terraform {
   required_version = ">= 0.12"
 
   backend "s3" {
-    region = "region"      // CHANGE_IT
-    bucket = "bucket name" // CHANGE_IT
-    key    = "state/op-scim-example-env.tfstate"
+    region = "region"      // CHANGE_ME
+    bucket = "bucket name" // CHANGE_ME
+    key    = "state/op-scim-example-env.tfstate" // CHANGE_ME
 
     encrypt = "true"
     acl     = "bucket-owner-full-control"

@@ -4,28 +4,28 @@ data "aws_availability_zones" "available" {
   state = "available"
 }
 
-variable "env" {
-  type        = string
-  description = "environment name. For example, op-scim"
-  default     = "scim-example"
-}
-
 variable "type" {
   type        = string
-  description = "environment type. For example, development, staging, testing"
-  default     = "example"
+  description = "deployment type (e.g: 'testing', 'staging', 'production')"
+  default     = "testing" // CHANGE_ME
 }
 
 variable "region" {
   type        = string
-  description = "AWS region where the application is deployed, for example 'us-east-2'"
-  default     = "region" // CHANGE_IT
+  description = "AWS region where your application is to be deployed (e.g: 'us-east-1')"
+  default     = "region" // CHANGE_ME
 }
 
 variable "aws-account" {
   type        = string
-  description = "AWS account identifier"
-  default     = "123456789012" // CHANGE_IT
+  description = "AWS account ID"
+  default     = "123456789012" // CHANGE_ME
+}
+
+variable "scim_secret_name" {
+  type        = string
+  description = "the name of the secret created in the Secrets Manager"
+  default     = "op-scim-example/scimsession" // CHANGE_ME
 }
 
 variable "application" {
@@ -34,11 +34,18 @@ variable "application" {
   default     = "op-scim"
 }
 
+variable "env" {
+  type        = string
+  description = "environment name (e.g: 'op-scim')"
+  default     = "op-scim"
+}
+
+
 // application vars:
 
 variable "asg_health_check_type" {
   type        = string
-  description = "health check type ELB or EC2"
+  description = "health check type (e.g: ELB or EC2)"
   default     = "ELB"
 }
 
@@ -50,54 +57,56 @@ variable "scim_port" {
 
 variable "scim_repo" {
   type        = string
-  description = "1Password SCIM bridge public debian repo"
+  description = "1Password SCIM bridge public Debian repository"
   default     = "deb https://apt.agilebits.com/op-scim/ stable op-scim"
 }
 
 variable "scim_user" {
   type        = string
-  description = "Unprivileged user to run op-scim service"
+  description = "unprivileged user to run op-scim service"
   default     = "op-scim"
 }
 
 variable "scim_group" {
   type        = string
-  description = "Unprivilaged group to run op-scim service"
+  description = "unprivileged group to run op-scim service"
   default     = "nogroup"
 }
 
 variable "scim_path" {
   type        = string
-  description = "scim working directory path, example: /var/lib/op-scim"
+  description = "op-scim working directory path (e.g: /var/lib/op-scim)"
   default     = "/var/lib/op-scim"
 }
 
 variable "scim_session_path" {
   type        = string
-  description = "session path, example: /var/lib/op-scim/.op/scimsession"
+  description = "op-scim scimsession file path (e.g: /var/lib/op-scim/.op/scimsession)"
   default     = "/var/lib/op-scim/.op/scimsession"
 }
 
-variable "scim_secret_name" {
-  type        = string
-  description = "the friendly name of the secret created in the secrets manager"
-  default     = "op-scim-example/scimsession" // CHANGE_IT
-}
 
 // environment variables
 
-variable "log_bucket" {
-  description = "Load Balancer log bucket"
-  default     = "log bucket name" // CHANGE_IT (optional)
+variable "domain" {
+  // public domain name used for this deployment
+  default = "example.com" // CHANGE_ME
 }
 
-variable "instance_type" {
+variable "endpoint_url" {
+  // op-scim endpoint subdomain (https://op-scim-example.example.com)
+  // ensure your Certificate Manager certificate can accept this subdomain
   type    = string
-  default = "t3.micro"
+  default = "op-scim-example"
+}
+
+variable "log_bucket" {
+  description = "Load Balancer log bucket"
+  default     = "log bucket name" // CHANGE_ME (optional)
 }
 
 variable "vpc_cidr" {
-  default = "10.1.1.0/24" // CHANGE_IT
+  default = "10.1.1.0/24" // CHANGE_ME
 }
 
 variable "subnet_cidr" {
@@ -115,15 +124,10 @@ variable "subnet_cidr" {
   }
 }
 
-variable "domain" {
-  // public domain, make sure ACM certificate is ussed for under this name
-  default = "example.com" // CHANGE_IT
-}
-
-variable "endpoint_url" {
-  // op-scim endpoint url prefix, resulting fqdn will be endpoint_url.domain (https://endpoint_url.example.com)
+variable "instance_type" {
   type    = string
-  default = "op-scim-example"
+  description = "size of instance to deploy to ('t3.micro' is adequate for op-scim)"
+  default = "t3.micro"
 }
 
 data "aws_ami" "ubuntu18" {

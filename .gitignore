@@ -2,3 +2,4 @@ scimsession
 scim.env
 *.deploy
 .idea/
+*.bak
