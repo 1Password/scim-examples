@@ -54,6 +54,13 @@ Below is the overall code structure of the Terraform deployment.
 
 ## Deploying using Terraform
 
+0. Set the environment variable for your AWS/Terraform deployment’s region by exporting the following environment variable:
+
+```bash
+# for example: export AWS_DEFAULT_REGION=”us-east-2”
+export AWS_DEFAULT_REGION=”<aws_region>”
+```
+
 1. Copy `deploy/example_env` to a new directory depending on the environment you wish to deploy to. (e.g: `testing`, `production`, etc)
 
 Example:
