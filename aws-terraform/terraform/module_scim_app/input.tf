@@ -109,3 +109,20 @@ variable "ami" {
   type        = string
   description = "Identifier of the image used to create the instance"
 }
+
+variable "tags" {
+  type        = map
+  description = "Additional tags to be applied to resources."
+  default     = {}
+}
+
+locals {
+  tags = merge(
+    {
+      "Application" = var.application,
+      "env"         = var.env,
+      "type"        = var.type,
+    },
+    var.tags
+  )
+}

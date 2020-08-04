@@ -32,11 +32,12 @@ resource "aws_lb" "app_alb" {
     enabled = true
   } */
 
-  tags = {
-    Application = var.application
-    type        = var.type
-    Name        = "${var.env}-${var.application}-alb"
-  }
+  tags = merge(
+    {
+      Name = "${var.env}-${var.application}-alb"
+    },
+    local.tags
+  )
 }
 
 // LB target group
@@ -64,11 +65,12 @@ resource "aws_lb_target_group" "app_tg" {
     matcher             = "200"
   }
 
-  tags = {
-    Application = var.application
-    type        = var.type
-    Name        = "${var.env}-${var.application}-tg"
-  }
+  tags = merge(
+    {
+      Name = "${var.env}-${var.application}-tg"
+    },
+    local.tags
+  )
 }
 
 // LB listener
@@ -105,11 +107,12 @@ resource "aws_security_group" "app_lb" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = {
-    Application = var.application
-    type        = var.type
-    Name        = "${var.env}-${var.application}-lb-sg"
-  }
+  tags = merge(
+    {
+      Name = "${var.env}-${var.application}-lb-sg"
+    },
+    local.tags
+  )
 
   lifecycle {
     create_before_destroy = true

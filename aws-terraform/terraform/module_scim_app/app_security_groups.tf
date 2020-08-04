@@ -21,12 +21,12 @@ resource "aws_security_group" "app" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = {
-    Application = var.application
-    env         = var.env
-    type        = var.type
-    Name        = "${var.env}-${var.application}-sg"
-  }
+  tags = merge(
+    {
+      Name = "${var.env}-${var.application}-sg"
+    },
+    local.tags
+  )
 
   lifecycle {
     create_before_destroy = true
