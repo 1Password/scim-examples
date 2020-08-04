@@ -1,11 +1,12 @@
 /*
 The following LB configuration requires SSL certificate, It can to be created manually
 this is prerequisite before applying this template.
-Below code searches for ACM certificate issued to endpoint_url.domain.tld 
+Below code searches for ACM certificate issued to the specified acm_certificate_domain or
+endpoint_url.domain.tld
 */
 
 data "aws_acm_certificate" "lb" {
-  domain      = "${var.endpoint_url}.${var.domain}"
+  domain      = var.acm_certificate_domain == "" ? "${var.endpoint_url}.${var.domain}" : var.acm_certificate_domain
   statuses    = ["ISSUED"]
   types       = ["AMAZON_ISSUED"]
   most_recent = true

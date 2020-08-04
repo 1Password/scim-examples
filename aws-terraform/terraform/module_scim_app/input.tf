@@ -105,6 +105,12 @@ data "aws_route53_zone" "domain" {
   name = "${var.domain}."
 }
 
+variable "acm_certificate_domain" {
+  type        = string
+  description = "The domain string to use to search for an ACM Certificate.  Defaults to {var.endpoint_url}.{var.domain}."
+  default     = ""
+}
+
 variable "ami" {
   type        = string
   description = "Identifier of the image used to create the instance"
