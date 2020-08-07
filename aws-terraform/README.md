@@ -54,6 +54,13 @@ Below is the overall code structure of the Terraform deployment.
 
 ## Deploying using Terraform
 
+0. If you don’t have a region set through your `aws` command line tools, you’ll want to have an environment variable to the region your preferred region. This can solve errors such as `The argument "region" is required, but was not set.`
+
+```bash
+# change “aws-region-x” to your preferred region, for example: export AWS_DEFAULT_REGION=”us-east-2”
+export AWS_DEFAULT_REGION=”aws-region-x”
+```
+
 1. Copy `deploy/example_env` to a new directory depending on the environment you wish to deploy to. (e.g: `testing`, `production`, etc)
 
 Example:
