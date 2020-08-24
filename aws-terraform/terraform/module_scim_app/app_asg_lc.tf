@@ -17,13 +17,14 @@ resource "aws_autoscaling_group" "asg" {
     create_before_destroy = true
   }
 
+  tag {
+    key                 = "Name"
+    value               = "${var.env}-${var.application}"
+    propagate_at_launch = true
+  }
+
   dynamic "tag" {
-    for_each = merge(
-      {
-        "Name" = "${var.env}-${var.application}"
-      },
-      local.tags
-    )
+    for_each = local.tags
 
     content {
       key                 = tag.key
