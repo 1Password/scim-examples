@@ -73,7 +73,7 @@ cd terraform/deploy/{testing,production}
 
 Example:
 ```bash
-aws secretsmanager create-secret --name op-scim/scimsession --secret-binary file:///path/to/scimsession --region <aws_region>
+aws secretsmanager create-secret --name op-scim/scimsession --secret-binary file:///path/to/scimsession --region <aws_region> --cli-binary-format raw-in-base64-out
 aws secretsmanager describe-secret --secret-id op-scim/scimsession --region <aws_region>
 ```
 
