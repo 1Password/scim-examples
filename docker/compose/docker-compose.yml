@@ -1,14 +1,22 @@
 version: '2.2'
-
 services:
-    scim:
-        image: 1password/scim:v1.6.0
-        ports: 
-            - "80:8080"
-            - "443:8443"
-        links:
-            - redis
-        entrypoint: ["/op-scim/op-scim", "--letsencrypt-domain={YOUR-DOMAIN-HERE}"]
-        env_file: scim.env
-    redis:
-        image: redis:latest
+  scim:
+    image: 1password/scim:v1.6.0
+    ports:
+      - "80:8080"
+      - "443:8443"
+    networks:
+      - op-scim
+    entrypoint: ["/op-scim/op-scim"]
+    env_file: scim.env
+    restart: always
+  redis:
+    image: redis:latest
+    expose:
+      - "6379"
+    networks:
+      - op-scim
+    restart: always
+
+networks:
+  op-scim:
