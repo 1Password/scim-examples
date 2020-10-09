@@ -28,7 +28,6 @@ spec:
           initialDelaySeconds: 3
           periodSeconds: 3
         ports:
-        - containerPort: 8002
         - containerPort: 8443
         - containerPort: 8080
         volumeMounts:
