@@ -8,9 +8,11 @@ spec:
   type: LoadBalancer
   ports:
   - protocol: TCP
-    name: tls
+    name: https
     port: 443
     targetPort: 8443
+# Traffic on :80 is needed to perform the LetsEncrypt certificate challenges, 
+# after which all SCIM traffic will be served on :443.
   - protocol: TCP
     name: http
     port: 80

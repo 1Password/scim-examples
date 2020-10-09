@@ -24,11 +24,11 @@ Before you begin deploying the 1Password SCIM Bridge, please refer to the [Prepa
 
 ## General Deployment Guides
 
-To deploy on Kubernetes, read the [Kubernetes example documentation](https://github.com/1Password/scim-examples/tree/master/kubernetes)
+To deploy on Kubernetes, read the [Kubernetes example documentation](/kubernetes)
 
-To deploy with Docker, read the [Docker example documentation](https://github.com/1Password/scim-examples/tree/master/docker)
+To deploy with Docker, read the [Docker example documentation](/docker)
 
-To deploy with AWS and Terraform, read the [AWS and Terraform example documentation](https://github.com/1Password/scim-examples/tree/master/aws-terraform)
+To deploy on a AWS EC2 with Terraform, read the [AWS and Terraform example documentation](/aws-terraform)
 
 We also have specific, detailed instructions for deployments to Azure using the [Azure Kubernetes Service](https://support.1password.com/cs/scim-deploy-azure/).
 
