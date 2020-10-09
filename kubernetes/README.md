@@ -51,7 +51,7 @@ kubectl apply -f .
 
 The Kubernetes deployment creates a public load balancer in your environment pointing to the SCIM Bridge. To get its address use: `kubectl describe service/op-scim`. It can take some time before the public address becomes available.
 
-At this stage, you can finish configuring your DNS entry as outlined in [PREPATATION.md](/PREPARATION.md). 
+At this stage, you can finish configuring your DNS entry as outlined in [PREPARATION.md](/PREPARATION.md). 
 
 
 ## Test the instance
