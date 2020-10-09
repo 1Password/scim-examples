@@ -34,7 +34,7 @@ Once set up and you've logged into your Swarm with `docker swarm join` or create
 
 The script will do the following:
 
-1. Add your `scimsession` file as a Docker Secret within your Swarm.
+1. Add your `scimsession` file as a Docker Secret within your Swarm cluster.
 2. Prompt you for your SCIM Bridge domain name which will configure LetsEncrypt to automatically issue a certificate for your Bridge. This is the domain you selected in [PREPARATION.md](/PREPARATION.md).
 3. Deploy a container using `1password/scim`, and a `redis` container. The `redis` container is necessary to store LetsEncrypt certificates.
 
