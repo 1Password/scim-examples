@@ -54,7 +54,7 @@ Run the [./docker/deploy.sh](deploy.sh) script as in the previous example.
 
 ### Manual Instructions
 
-#### Creating the env file
+#### Creating the `scim.env` file
 
 The `scim.env` file contains two environment variables:
 
@@ -119,3 +119,9 @@ docker stack deploy -c docker-compose.yml op-scim
 # (optional) view the service logs
 docker service logs --raw -f op-scim_scim
 ```
+
+#### Advanced `scim.env` file options
+
+These should only be used for advanced setups.
+
+* `OP_PORT` - when `OP_LETSENCRYPT_DOMAIN` is set to blank, you can use `OP_PORT` to change the default port from 3002 to one of your choosing.
