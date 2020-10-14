@@ -1,37 +1,25 @@
 ## 1Password SCIM Bridge deployment examples
 
-Here you can find configuration files and best practice instructions for deploying the 1Password SCIM Bridge on various public and private clouds.
-
-
-## Automatic Deployment
-
-The easiest way to deploy the SCIM bridge is with our one-click installations currently available for Google Cloud Platform and DigitalOcean.
-
-For Google Cloud Platform, please [refer to this guide](https://support.1password.com/cs/scim-deploy-gcp/).
-
-For DigitalOcean, please [refer to this guide](https://support.1password.com/scim-deploy-digitalocean/).
-
-
-## Advanced Deployment
-
-The following guides are for anyone who isn't using the one-click solutions available on Google Cloud Platform or DigitalOcean.
-
+Here you can find configuration files and best practice instructions for deploying the 1Password SCIM Bridge on various public and private cloud providers.
 
 ### Before Deploying 
 
 Before you begin deploying the 1Password SCIM Bridge, please refer to the [Preparation Guide](https://github.com/1Password/scim-examples/tree/master/PREPARATION.md). You will need to make some decisions about certain key details, and it also contains ways to avoid common pitfalls.
 
+## Automatic (one click) Deployment
 
-## General Deployment Guides
+The easiest way to deploy the SCIM bridge is with our one-click installations currently available for Google Cloud Platform and DigitalOcean.
 
-To deploy on Kubernetes, read the [Kubernetes example documentation](https://github.com/1Password/scim-examples/tree/master/kubernetes)
+- [One click Google Cloud Platform](https://support.1password.com/cs/scim-deploy-gcp/)
+- [One click DigitalOcean](https://support.1password.com/scim-deploy-digitalocean/)
 
-To deploy with Docker, read the [Docker example documentation](https://github.com/1Password/scim-examples/tree/master/docker)
+## Advanced Deployment Guides
 
-To deploy with AWS and Terraform, read the [AWS and Terraform example documentation](https://github.com/1Password/scim-examples/tree/master/aws-terraform)
-
-We also have specific, detailed instructions for deployments to Azure using the [Azure Kubernetes Service](https://support.1password.com/cs/scim-deploy-azure/).
-
+Advanced deployment are recommended when you have particular requirements for your environment. They are easily customizable and adaptable to your situation.
+- [Kubernetes](/kubernetes)
+- [Docker Compose & Docker Swarm](/docker)
+- [AWS EC2 with terraform](/aws-terraform)
+- [Azure Kubernetes Service](https://support.1password.com/cs/scim-deploy-azure/)
 
 ## Support
 

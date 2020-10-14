@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: redis
+  name: op-scim-redis
 spec:
   selector:
     matchLabels:
-      app: redis
+      app: op-scim-redis
   replicas: 1
   template:
     metadata:
       labels:
-        app: redis
+        app: op-scim-redis
     spec:
       containers:
       - name: redis

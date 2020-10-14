@@ -16,9 +16,20 @@ spec:
       - name: op-scim
         image: 1password/scim:v1.6.0
         command: ["/op-scim/op-scim"]
-        args: ["--session=/secret/scimsession", "--letsencrypt-domain={YOUR-DOMAIN-HERE}"]
+        args:
+        - "--session=/secret/scimsession"
+        - "--letsencrypt-domain={YOUR-DOMAIN-HERE}"
+        - "--redis-host=redis
+        - "--redis-port=6379"
+        livelinessProbe:
+          httpGet:
+            path: /ping
+            port: 8080
+          initialDelaySeconds: 3
+          periodSeconds: 3
         ports:
-        - containerPort: 3002
+        - containerPort: 8443
+        - containerPort: 8080
         volumeMounts:
         - name: scimsession
           mountPath: "/secret"
