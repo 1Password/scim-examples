@@ -1,42 +1,38 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: op-scim
+  name: op-scim-bridge
 spec:
   selector:
     matchLabels:
-      app: op-scim
+      app: op-scim-bridge
   replicas: 1
   template:
     metadata:
       labels:
-        app: op-scim
+        app: op-scim-bridge
     spec:
       containers:
       - name: op-scim
         image: 1password/scim:v1.6.0
         command: ["/op-scim/op-scim"]
-        args:
-        - "--session=/secret/scimsession"
-        - "--letsencrypt-domain={YOUR-DOMAIN-HERE}"
-        - "--redis-host=redis
-        - "--redis-port=6379"
-        livelinessProbe:
+        livenessProbe:
           httpGet:
             path: /ping
             port: 8080
           initialDelaySeconds: 3
           periodSeconds: 3
         ports:
+        - containerPort: 3002
         - containerPort: 8443
         - containerPort: 8080
         volumeMounts:
         - name: scimsession
           mountPath: "/secret"
           readOnly: false
-        env:
-        - name: update
-          value: "2"
+        envFrom:
+          - configMapRef:
+              name: op-scim-configmap
       volumes:
       - name: scimsession
         secret:

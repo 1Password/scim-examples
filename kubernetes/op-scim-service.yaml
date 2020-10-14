@@ -1,19 +1,19 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: op-scim
+  name: op-scim-bridge
   labels:
-    app: op-scim
+    app: op-scim-bridge
 spec:
   type: LoadBalancer
+  # Traffic on :80 is needed for the status page and to perform the 
+  # LetsEncrypt certificate challenges after which all SCIM traffic
+  # will be served on :443.
   ports:
   - protocol: TCP
     name: https
     port: 443
     targetPort: 8443
-# Traffic on :80 is needed for the status page and to perform the 
-# LetsEncrypt certificate challenges after which all SCIM traffic
-# will be served on :443.
   - protocol: TCP
     name: http
     port: 80
