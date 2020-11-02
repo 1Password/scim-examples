@@ -2,9 +2,11 @@
 
 This example describes the methods of deploying the 1Password SCIM Bridge using Docker. The Docker Compose and Docker Swarm managers are available and deployment using each manager is described below.
 
+
 ## Preparing
 
 Please ensure you've read through the [PREPARATION.md](/PREPARATION.md) document before beginning deployment.
+
 
 ## Docker Compose vs Docker Swarm
 
@@ -54,6 +56,21 @@ Run the [./docker/deploy.sh](deploy.sh) script as in the previous example.
 
 ### Manual Instructions
 
+#### Cloning `scim-examples`
+
+As seen in [PREPARATION.md](/PREPARATION.md), you’ll need to clone this repository using `git` into a directory of your choice.
+
+```bash
+git clone https://github.com/1Password/scim-examples.git
+```
+
+You can then browse to the Docker directory:
+
+```bash
+cd scim-examples/docker/
+```
+
+
 #### Creating the `scim.env` file
 
 The `scim.env` file contains two environment variables:
@@ -86,13 +103,14 @@ On Windows, you can refer to the [./docker/compose/generate-env.bat](generate-en
 
 Check that the `scim.env` file only has two entries (in total) - `OP_LETSENCRYPT_DOMAIN` and/or `OP_SESSION`.
 
+
 #### Docker Compose
 
 To use Docker Compose to deploy:
 
 ```bash
 # enter the compose directory
-cd compose/
+cd scim-examples/docker/compose/
 # copy the scim.env file
 cp ../scim.env ./
 # create the container
@@ -100,6 +118,7 @@ docker-compose -f docker-compose.yml up --build -d
 # (optional) view the container logs
 docker-compose -f docker-compose.yml logs -f
 ```
+
 
 #### Docker Swarm
 
@@ -109,7 +128,7 @@ Once that’s set up, you can do the following:
 
 ```bash
 # enter the swarm directory
-cd swarm/
+cd scim-examples/docker/swarm/
 # sets up a Docker Secret on your Swarm
 cat /path/to/scimsession | docker secret create scimsession -
 # copy the scim.env file
@@ -120,7 +139,24 @@ docker stack deploy -c docker-compose.yml op-scim
 docker service logs --raw -f op-scim_scim
 ```
 
-#### Advanced `scim.env` file options
+
+### Upgrading
+
+Upgrading the SCIM Bridge should be relatively simple.
+
+First, you `git pull` the latest versions from this repository. Then, you re-apply the `.yml` file.
+
+```bash
+cd scim-examples/
+git pull
+cd docker/{swarm or compose}/
+docker-compose -f docker-compose.yml up --build -d
+```
+
+This should seamlessly upgrade your SCIM Bridge to the latest version. The process takes about 2-3 minutes for the Bridge to come back online.
+
+
+### Advanced `scim.env` file options
 
 These should only be used for advanced setups.
 
