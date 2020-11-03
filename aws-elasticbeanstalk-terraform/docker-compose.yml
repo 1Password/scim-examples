@@ -1,0 +1,24 @@
+version: '3.6'
+services:
+  scim:
+    image: 1password/scim:v1.6.0
+    ports:
+      - "80:8080"
+      - "443:8443"
+    entrypoint: ["/op-scim/op-scim"]
+    restart: always
+    # AWS Elastic Beanstalk generates a Docker Compose environment file called
+    # .env in the root directory of your application project. This file stores
+    # the environment variables you configured for Elastic Beanstalk.
+    environment:
+      - OP_PORT=8080
+      - OP_SESSION="/scimsession"
+    env_file:
+      - .env
+    depends_on:
+      - "redis"
+    volumes:
+      - ./scimsession:/scimsession
+  redis:
+    image: redis:latest
+    restart: always

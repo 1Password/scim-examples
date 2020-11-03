@@ -1,5 +1,9 @@
+.DS_Store
 scimsession
 scim.env
 *.deploy
 *.bak
 .idea/
+.terraform
+.tfstate
+.tfstate.backup
