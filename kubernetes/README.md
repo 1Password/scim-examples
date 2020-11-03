@@ -91,10 +91,11 @@ Once the DNS record has propagated, you can test your instance by requesting `ht
 You can do this with `curl`, as an example:
 
 ```sh
-curl --header "Authorization: Bearer <bearertoken>" https://<domain>/scim/Users
+curl --header "Authorization: Bearer TOKEN_GOES_HERE" https://<domain>/scim/Users
 ```
 
 You can now continue with the administration guide to configure your Identity Provider to enable provisioning with your SCIM Bridge.
+
 
 ## Upgrading
 
@@ -113,7 +114,7 @@ This should seamlessly upgrade your SCIM Bridge to the latest version. The proce
 
 **NOTE:** As of October 2020, the `scim-examples` Kubernetes deployment now uses `op-scim-config.yaml` to set the configuration needed for your SCIM Bridge, and has changed the deployment names from `op-scim` to `op-scim-bridge`, and `redis` to `op-scim-redis` for clarity and consistency. 
 
-You’ll need to re-configure your options in `op-scim-config.yaml`, particularly `OP_LETSENCRYPT_DOMAIN`. You may also want to delete your previous `op-scim` and `redis` deployments.
+You’ll need to re-configure your options in `op-scim-config.yaml`, particularly `OP_LETSENCRYPT_DOMAIN`. You may also want to delete your previous `op-scim` and `redis` deployments to prevent conflict between the two versions.
 
 ```bash
 kubectl delete deployments.apps op-scim redis
@@ -125,6 +126,8 @@ You’ll then need to update your SCIM Bridge’s domain name DNS record with it
 ```bash
 kubectl describe service/op-scim-bridge | grep "LoadBalancer Ingress" | cut -d' ' -f7
 ```
+
+This is a one-time operation to change the deployment and service names of the SCIM Bridge so they are more easily identifiable to administrators.
 
 
 ## Advanced deployments
