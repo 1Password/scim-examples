@@ -1,5 +1,4 @@
 scimsession
-scim.env
 *.deploy
 *.bak
 .idea/
