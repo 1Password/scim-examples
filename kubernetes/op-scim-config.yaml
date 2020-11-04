@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: op-scim-configmap
 data:
-  # set this to the URL you've selected for your SCIM Bridge deployment
+  # Set this to the FQDN you've selected for your SCIM Bridge deployment
   OP_LETSENCRYPT_DOMAIN: ""
   # (advanced) only change the options below if you need to
   OP_REDIS_HOST: "op-scim-redis"
