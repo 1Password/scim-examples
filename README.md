@@ -10,15 +10,15 @@ Before you begin deploying the 1Password SCIM Bridge, please refer to the [Prepa
 
 The easiest way to deploy the SCIM bridge is with our one-click installations currently available for Google Cloud Platform and DigitalOcean.
 
-- [One click Google Cloud Platform](https://support.1password.com/cs/scim-deploy-gcp/)
-- [One click DigitalOcean](https://support.1password.com/scim-deploy-digitalocean/)
+- [One-click Google Cloud Platform Marketplace App](https://support.1password.com/cs/scim-deploy-gcp/)
+- [One-click DigitalOcean Marketplace App](https://support.1password.com/scim-deploy-digitalocean/)
 
 ## Advanced Deployment Guides
 
 Advanced deployment are recommended when you have particular requirements for your environment. They are easily customizable and adaptable to your situation.
 - [Kubernetes](/kubernetes)
 - [Docker Compose & Docker Swarm](/docker)
-- [AWS EC2 with terraform](/aws-terraform)
+- [AWS EC2 with Terraform](/aws-terraform)
 - [Azure Kubernetes Service](https://support.1password.com/cs/scim-deploy-azure/)
 
 ## Support
