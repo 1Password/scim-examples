@@ -1,0 +1,61 @@
+[
+    {
+      "name": "scim-bridge",
+      "image": "1password/scim:v1.6.0",
+      "cpu": 128,
+      "memory": 512,
+      "essential": true,
+      "dependsOn": [
+        {
+          "containerName": "redis",
+          "condition": "START"
+        }
+      ],
+      "portMappings": [
+        {
+          "containerPort": 8080,
+          "hostPort": 8080
+        },
+        {
+          "containerPort": 8443,
+          "hostPort": 8443
+        }
+      ],
+      "entrypoint": ["/op-scim/op-scim", "--redis-host=redis", "--redis-port=6379"],
+      "environment": [
+        { "name": "OP_PORT", "value": "8080"},
+        { "name": "OP_SESSION", "value": "/data/scimsession"},
+        { "name": "OP_REDIS_URL", "value": "redis"}
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": { 
+           "awslogs-group" : "/ecs/fargate-task-definition",
+           "awslogs-region": "us-east-1",
+           "awslogs-stream-prefix": "ecs-scim"
+        }
+      }
+    },
+    {
+      "name": "redis",
+      "image": "redis:latest",
+      "cpu": 128,
+      "memory": 256,
+      "essential": true,
+      "restart": "always",
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": { 
+           "awslogs-group" : "/ecs/fargate-task-definition",
+           "awslogs-region": "us-east-1",
+           "awslogs-stream-prefix": "ecs-redis"
+        }
+      },
+      "portMappings": [
+        {
+          "containerPort": 6379,
+          "hostPort": 6379
+        }
+      ]
+    }
+  ]
