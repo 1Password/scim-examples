@@ -95,6 +95,11 @@ Custom Key Management Service key can be specified by `--kms-key-id <kms_key>`. 
 
 6. Update/Create 1Password SCIM configuration in your Identity Provider using your generated [bearer token](/PREPARATION.md) and newly-created subdomain.
 
+7. Test your SCIM Bridge deployment using the following `curl` command:
+
+```bash
+curl --header "Authorization: Bearer TOKEN_GOES_HERE" https://<domain>/scim/Users
+```
 
 ## Advanced
 

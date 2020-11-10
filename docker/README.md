@@ -2,11 +2,9 @@
 
 This example describes the methods of deploying the 1Password SCIM Bridge using Docker. The Docker Compose and Docker Swarm managers are available and deployment using each manager is described below.
 
-
 ## Preparing
 
 Please ensure you've read through the [PREPARATION.md](/PREPARATION.md) document before beginning deployment.
-
 
 ## Docker Compose vs Docker Swarm
 
@@ -16,7 +14,6 @@ Docker Swarm is the recommended option. While setting up Swarm is beyond the sco
 
 While Docker Compose is useful for testing, it is not recommended for use in a production environment. The `scimsession` file is passed into the docker container via an environment variable, which is less secure than Docker Swarm secrets, Kubernetes secrets, or AWS Secrets Manager, all of which are supported and recommended for production use.
 
-
 ## Install Docker tools
 
 Install [Docker for Desktop](https://www.docker.com/products/docker-desktop) on your local machine and _start Docker_ before continuing, as it will be needed to continue with the deployment process.
@@ -24,7 +21,6 @@ Install [Docker for Desktop](https://www.docker.com/products/docker-desktop) on 
 You'll also need to install `docker-compose` and `docker-machine` command line tools for your platform.
 
 For macOS users who use Homebrew, ensure you're using the _cask_ app-based version of Docker, not the default CLI version. (i.e: `brew cask install docker`)
-
 
 ## Setting up Docker
 
@@ -46,7 +42,6 @@ The logs from the SCIM Bridge and redis containers will be streamed to your mach
 
 At this point you should set the DNS record for the domain name you prepared to the IP address of the `op-scim` container. You can also continue setting up your Identity Provider at this point.
 
-
 #### Docker Compose
 
 You will need to have a Docker machine set up either locally or remotely. Refer to [the docker-compose documentation](https://docs.docker.com/machine/reference/create/) on how to do that. For a local installation, you can use the `virtualbox` driver.
@@ -54,7 +49,6 @@ You will need to have a Docker machine set up either locally or remotely. Refer 
 Once set up, ensure your environment is set up with `eval %{docker-machine env $machine_name}`, with whatever machine name you decided upon.
 
 Run the [./docker/deploy.sh](deploy.sh) script as in the previous example.
-
 
 ### Manual Instructions
 
@@ -71,7 +65,6 @@ You can then browse to the Docker directory:
 ```bash
 cd scim-examples/docker/
 ```
-
 
 #### Docker Compose
 
@@ -96,7 +89,6 @@ docker-compose -f docker-compose.yml up --build -d
 docker-compose -f docker-compose.yml logs -f
 ```
 
-
 #### Docker Swarm
 
 To use Docker Swarm to deploy, you’ll want to have run `docker swarm init` or `docker swarm join` on the target node and completed that portion of the setup. Refer to Docker’s documentation for more details.
@@ -118,6 +110,15 @@ docker stack deploy -c docker-compose.yml op-scim
 docker service logs --raw -f op-scim_scim
 ```
 
+### Testing
+
+To test if your SCIM Bridge came online, you can browse to the public IP address of your SCIM Bridge’s Docker Host with a web browser, and input your Bearer Token into the provided Bearer Token field.
+
+You can also use the following `curl` command to test the SCIM Bridge from the command line:
+
+```bash
+curl --header "Authorization: Bearer TOKEN_GOES_HERE" https://<domain>/scim/Users
+```
 
 ### Upgrading
 
@@ -134,8 +135,9 @@ docker-compose -f docker-compose.yml up --build -d
 
 This should seamlessly upgrade your SCIM Bridge to the latest version. The process takes about 2-3 minutes for the Bridge to come back online.
 
-NOTE: If you’re upgrading from a previous version of the repository, ensure that you’ve reconfigured your environment variables within `scim.env` before upgrading.
+#### October 2020 Update
 
+As of October 2020, if you’re upgrading from a previous version of the repository, ensure that you’ve reconfigured your environment variables within `scim.env` before upgrading.
 
 ### Advanced `scim.env` file options
 
@@ -143,7 +145,6 @@ These should only be used for advanced setups.
 
 * `OP_PORT` - when `OP_LETSENCRYPT_DOMAIN` is set to blank, you can use `OP_PORT` to change the default port from 3002 to one of your choosing.
 * `OP_REDIS_HOST` - you can specify either a hostname or IP address here to point towards an alternative redis host. You can then strip out the sections in `docker-compose.yml` that refer to redis to not deploy that container. Note that redis is still required for the SCIM Bridge to function.
-
 
 #### Generating `scim.env` file on Windows
 

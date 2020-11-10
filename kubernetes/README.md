@@ -8,10 +8,10 @@ If you are deploying to the Azure Kubernetes Service, you can refer to our [deta
 
 The deployment process consists of these steps:
 
-1. Create the scimsession Kubernetes secret
-2. Configure the SCIM bridge (through the `op-scim-config.yaml`) file
-3. Deploy the service
-4. Set up DNS entries for LetsEncrypt
+1. Create a Kubernetes secret with your `scimsession` file
+2. Configure the SCIM bridge (through the `op-scim-config.yaml` file)
+3. Deploy the SCIM Bridge and Redis services
+4. Set up DNS entries for your SCIM Bridge
 
 ## Structure
 
@@ -39,7 +39,7 @@ You can then browse to the Kubernetes directory:
 cd scim-examples/kubernetes/
 ```
 
-## Create the `scimsession` Kubernetes secret
+## Create the Kubernetes secret
 
 The following requires that you’ve completed the initial setup of Provisioning in your 1Password Account. [See here](https://support.1password.com/scim/#step-1-prepare-your-1password-account) for more details.
 
@@ -62,27 +62,28 @@ cd scim-examples/kubernetes/
 kubectl apply -f .
 ```
 
-## Configure the DNS entries
+## Configuring the DNS entries
 
 The Kubernetes deployment creates a public load balancer in your environment pointing to the SCIM Bridge.
 
 To get its public IP address:
 
 ```bash
-kubectl describe service/op-scim-bridge | grep "LoadBalancer Ingress" | cut -d' ' -f7
+kubectl describe service/op-scim-bridge 
+# look for ‘LoadBalancer Ingress’
 ```
 
 It can take some time before the public address becomes available.
 
 At this stage, you can finish configuring your DNS entry as outlined in [PREPARATION.md](/PREPARATION.md).
 
-## Test the instance
+## Testing the instance
 
 Once the DNS record has propagated, you can test your instance by requesting `https://[your-domain]/scim/Users`, with the header `Authorization: Bearer [bearer token]` which should return a list of the users in your 1Password account.
 
 You can do this with `curl`, as an example:
 
-```sh
+```bash
 curl --header "Authorization: Bearer TOKEN_GOES_HERE" https://<domain>/scim/Users
 ```
 
