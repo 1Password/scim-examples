@@ -72,8 +72,10 @@ When using Docker Compose, you can create the environment variable `OP_SESSION` 
 
 ```bash
 # only needed for Docker Compose - use Docker Secrets when using Swarm
+# enter the ‘compose’ directory within `scim-examples/docker/`
+cd compose/
 SESSION=$(cat /path/to/scimsession | base64 | tr -d "\n")
-sed -i'' -e "s/OP_SESSION=$/OP_SESSION=$SESSION/" scim-examples/docker/compose/scim.env
+sed -i '' -e "s/OP_SESSION=$/OP_SESSION=$SESSION/" compose/scim.env
 ```
 
 You’ll also need to set the environment variable `OP_LETSENCRYPT_DOMAIN` within `scim.env` to the URL you selected during [PREPARATION.md](/PREPARATION.md). Open that in your preferred text editor and change `OP_LETSENCRYPT_DOMAIN` to that domain name.

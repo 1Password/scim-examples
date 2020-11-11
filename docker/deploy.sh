@@ -14,7 +14,7 @@ run_docker_compose() {
 
     # this command populates an .env file which allows the container to have a needed environment variable without needing to store the scimsession file itself
     SESSION=$(cat $scimsession_file | base64 | tr -d "\n")
-    echo "OP_SESSION=$SESSION" >> $docker_path/$docker_type/scim.env
+    sed -i '' -e "s/^OP_SESSION=.*$/OP_SESSION=$SESSION/" $docker_path/$docker_type/scim.env
 
     if ! docker-compose -f $docker_file up --build -d
     then
@@ -132,7 +132,7 @@ docker_file_path=$docker_path/$docker_type
 docker_file=$docker_file_path/docker-compose.yml
 docker_backup_file=$docker_file_path/docker-compose.yml.bak
 cp $docker_file $docker_backup_file
-echo "OP_LETSENCRYPT_DOMAIN=$domain_name" > $docker_path/$docker_type/scim.env
+sed -i '' -e "s/^OP_LETSENCRYPT_DOMAIN=.*$/OP_LETSENCRYPT_DOMAIN=$domain_name/" $docker_path/$docker_type/scim.env
 
 # run the function associated with the Docker type selected
 if [[ "$docker_type" == "compose" ]]
