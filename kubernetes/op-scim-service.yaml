@@ -19,4 +19,4 @@ spec:
     port: 80
     targetPort: 8080
   selector:
-    app: op-scim
+    app: op-scim-bridge

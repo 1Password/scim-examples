@@ -29,7 +29,7 @@ For most installations, one [t3.micro](https://github.com/1Password/scim-example
 ### AWS Components
 
 * **AWS Elastic Compute Cloud** - Elastic Compute Cloud (EC2) provides the compute necessary to deploy the SCIM Bridge.
-* **AWS Key Management Service and Secrets Manager** - Key Management Service (KMS) key is used to encrypt/decrypt Secrets Manager data. `scimsession` file must be placed into the service prior to deploying your 1Password SCIM Bridge while using this service. Additionally, the SCIM Bridge has to know where to find the `scimsession` file, so please refer to the KMS/SM documentation on how to set that up.
+* **AWS Key Management Service and Secrets Manager** - Key Management Service (KMS) key is used to encrypt/decrypt Secrets Manager data. You’ll be placing the `scimsession` file (mentioned in [PREPARATION.md](/PREPARATION.md)) in the steps outlined here.
 * **AWS S3 Bucket** - This can be used to store the terraform state file, load balancer logs, and so on.
 * **AWS Certificate Manager** - Used to manage SSL certificates for your deployment.
 
@@ -54,11 +54,13 @@ Below is the overall code structure of the Terraform deployment.
 
 ## Deploying using Terraform
 
-0. If you don’t have a region set through your `aws` command line tools, you’ll want to have an environment variable to the region your preferred region. This can solve errors such as `The argument "region" is required, but was not set.`
+0. Configure AWS tools by running the command `aws configure`. It will step you through providing it with your API tokens. You’ll need to refer to [AWS’s documentation](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html) on how to get that set up.
+
+If you don’t have a region set through your `aws` command line tools, you’ll want to have an environment variable to the region your preferred region. This can solve errors such as `The argument "region" is required, but was not set.`
 
 ```bash
-# change “aws-region-x” to your preferred region, for example: export AWS_DEFAULT_REGION=”us-east-2”
-export AWS_DEFAULT_REGION=”aws-region-x”
+# change “us-east-1” to your preferred AWS region, i.e: “us-west-1”, “us-central-1”, etc.
+export AWS_DEFAULT_REGION=”us-east-1”
 ```
 
 1. Copy `deploy/example_env` to a new directory depending on the environment you wish to deploy to. (e.g: `testing`, `production`, etc)
@@ -93,6 +95,11 @@ Custom Key Management Service key can be specified by `--kms-key-id <kms_key>`. 
 
 6. Update/Create 1Password SCIM configuration in your Identity Provider using your generated [bearer token](/PREPARATION.md) and newly-created subdomain.
 
+7. Test your SCIM Bridge deployment using the following `curl` command:
+
+```bash
+curl --header "Authorization: Bearer TOKEN_GOES_HERE" https://<domain>/scim/Users
+```
 
 ## Advanced
 
@@ -104,6 +111,10 @@ All logs go to `/var/log/syslog` (AWS EC2 instance OS). You can use the AWS Syst
 ### Upgrading and Redeployment
 
 You can destroy and redeploy the instance whenever you feel the need to. No permanent data is stored within the SCIM bridge instance itself, as secrets are stored in the AWS Secrets Manager. This is useful for upgrading your SCIM bridge with important bugfix or feature releases.
+
+```bash
+  terraform destroy
+```
 
 
 ### Debian Package

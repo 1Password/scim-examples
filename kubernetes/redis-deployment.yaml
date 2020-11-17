@@ -13,7 +13,7 @@ spec:
         app: op-scim-redis
     spec:
       containers:
-      - name: redis
+      - name: op-scim-redis
         image: redis:latest
         ports:
         - containerPort: 6379
