@@ -20,6 +20,7 @@ Advanced deployment are recommended when you have particular requirements for yo
 - [Kubernetes](/kubernetes)
 - [AWS Elastic beanstalk with terraform](/aws-elasticbeanstalk-terraform)
 - [Docker Compose & Docker Swarm](/docker)
+- [AWS EC2 with Terraform](/aws-terraform)
 - [Azure Kubernetes Service](https://support.1password.com/cs/scim-deploy-azure/)
 
 ## Support
