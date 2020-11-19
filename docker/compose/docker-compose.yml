@@ -7,7 +7,6 @@ services:
       - "443:8443"
     networks:
       - op-scim
-    entrypoint: ["/op-scim/op-scim"]
     env_file: scim.env
     restart: always
   redis:

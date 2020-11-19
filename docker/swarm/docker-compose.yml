@@ -17,7 +17,6 @@ services:
         uid: "999"
         gid: "999"
         mode: 0440
-    entrypoint: ["/op-scim/op-scim"]
     env_file: scim.env
   redis:
     image: redis:latest
