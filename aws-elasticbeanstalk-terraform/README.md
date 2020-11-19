@@ -8,7 +8,7 @@ We highly recommend using terraform to create this AWS infrastructure, this help
 
 # How to deploy the bridge
 
-1. Have the prerequisite "scimsession" file ready, and have read the [preparation document](../Preparation.md)
+1. Have the prerequisite `scimsession` file ready, and have read the [preparation document](../PREPARATION.md). The `scimsession` file should be located in the current directory
 2. Have terraform on your computer, [terraform download](https://www.terraform.io/downloads.html)
 3. Have your aws credentials ready for terraform to load, see [Terraform - AWS provider - authentication](https://registry.terraform.io/providers/hashicorp/aws/latest/docs#authentication)
 4. Edit the `input.tf` file so the variable matches what you wanna try

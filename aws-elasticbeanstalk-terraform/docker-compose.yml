@@ -12,13 +12,13 @@ services:
     # the environment variables you configured for Elastic Beanstalk.
     environment:
       - OP_PORT=8080
-      - OP_SESSION="/scimsession"
+      - OP_SESSION="/op-scim/scimsession"
     env_file:
       - .env
     depends_on:
       - "redis"
     volumes:
-      - ./scimsession:/scimsession
+      - ./scimsession:/op-scim/scimsession
   redis:
     image: redis:latest
     restart: always

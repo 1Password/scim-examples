@@ -124,7 +124,7 @@ resource "aws_iam_instance_profile" "in_beanstalk_ec2" {
 resource "aws_elastic_beanstalk_environment" "onepassword_scimbridge" {
   name         = "1password-scimbridge"
   application  = aws_elastic_beanstalk_application.onepassword_scimbridge.name
-  cname_prefix = local.BEANSTALK_CNAME_PREFIX
+  cname_prefix = "1password-scim-${random_pet.bucket_suffix.id}"
 
   # To get the list of available solutions stack, aws-cli
   # aws elasticbeanstalk list-available-solution-stacks
