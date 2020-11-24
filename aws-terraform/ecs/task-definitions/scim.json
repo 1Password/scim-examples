@@ -21,16 +21,16 @@
           "hostPort": 8443
         }
       ],
-      "entrypoint": ["/op-scim/op-scim", "--redis-host=redis", "--redis-port=6379"],
+      "entrypoint": ["/op-scim/op-scim", "--redis-host=localhost", "--redis-port=6379"],
       "environment": [
         { "name": "OP_PORT", "value": "8080"},
         { "name": "OP_SESSION", "value": "/data/scimsession"},
-        { "name": "OP_REDIS_URL", "value": "redis"}
+        { "name": "OP_REDIS_URL", "value": "localhost"}
       ],
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": { 
-           "awslogs-group" : "/ecs/fargate-task-definition",
+           "awslogs-group" : "/ecs/scim-bridge",
            "awslogs-region": "us-east-1",
            "awslogs-stream-prefix": "ecs-scim"
         }
@@ -46,7 +46,7 @@
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": { 
-           "awslogs-group" : "/ecs/fargate-task-definition",
+           "awslogs-group" : "/ecs/scim-bridge",
            "awslogs-region": "us-east-1",
            "awslogs-stream-prefix": "ecs-redis"
         }

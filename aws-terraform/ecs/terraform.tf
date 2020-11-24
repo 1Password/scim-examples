@@ -10,10 +10,6 @@ resource "aws_ecs_cluster" "scim-bridge" {
 resource "aws_ecs_task_definition" "scim-bridge" {
   family                   = "scim-bridge"
   container_definitions    =  file("task-definitions/scim.json")
-  #volume {
-  #  name      = "data"
-  #  host_path = "/data"
-  #}
   requires_compatibilities = ["FARGATE"] # Stating that we are using ECS Fargate
   network_mode             = "awsvpc"    # Using awsvpc as our network mode as this is required for Fargate
   memory                   = 512         # Specifying the memory our container requires
@@ -48,12 +44,13 @@ resource "aws_ecs_service" "scim_bridge_service" {
   task_definition = aws_ecs_task_definition.scim-bridge.arn
   launch_type     = "FARGATE"
   desired_count   = 1 
+  depends_on      = [aws_lb_listener.listener_http, aws_lb_listener.listener_https]
 
-  /**load_balancer {
+  load_balancer {
     target_group_arn = aws_lb_target_group.target_group_http.arn 
     container_name   = aws_ecs_task_definition.scim-bridge.family
     container_port   = 8080 # Specifying the container port
-  }*/
+  }
 
   load_balancer {
     target_group_arn = aws_lb_target_group.target_group_https.arn
@@ -90,7 +87,7 @@ resource "aws_security_group" "scim-bridge-sg" {
   }
 
   ingress {
-    from_port   = 443 # Allowing traffic in from port 80
+    from_port   = 443
     to_port     = 443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"] # Allowing traffic in from all sources
@@ -123,7 +120,7 @@ resource "aws_security_group" "service_security_group" {
 
 resource "aws_lb_target_group" "target_group_http" {
   name        = "target-group-http"
-  port        = 80
+  port        = 8080
   protocol    = "HTTP"
   target_type = "ip"
   vpc_id      = aws_default_vpc.default_vpc.id # Referencing the default VPC
@@ -135,7 +132,7 @@ resource "aws_lb_target_group" "target_group_http" {
 
 resource "aws_lb_listener" "listener_http" {
   load_balancer_arn = aws_alb.scim-bridge-alb.arn # Referencing our load balancer
-  port              = "80"
+  port              = 80
   protocol          = "HTTP"
   default_action {
     type             = "forward"
@@ -145,7 +142,7 @@ resource "aws_lb_listener" "listener_http" {
 
 resource "aws_lb_target_group" "target_group_https" {
   name        = "target-group-https"
-  port        = 443
+  port        = 8443
   protocol    = "HTTPS"
   target_type = "ip"
   vpc_id      = aws_default_vpc.default_vpc.id # Referencing the default VPC
@@ -157,7 +154,7 @@ resource "aws_lb_target_group" "target_group_https" {
 
 resource "aws_lb_listener" "listener_https" {
   load_balancer_arn = aws_alb.scim-bridge-alb.arn # Referencing our load balancer
-  port              = "443"
+  port              = 443
   protocol          = "HTTPS"
   certificate_arn   = "arn:aws:acm:us-east-1:729119775555:certificate/7b939514-6eee-496f-97dd-b30a63331db7"
   default_action {
