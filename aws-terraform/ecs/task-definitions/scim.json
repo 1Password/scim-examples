@@ -19,12 +19,15 @@
         {
           "containerPort": 8443,
           "hostPort": 8443
+        },
+        {
+          "containerPort": 3002,
+          "hostPort": 3002
         }
       ],
       "entrypoint": ["/op-scim/op-scim", "--redis-host=localhost", "--redis-port=6379"],
       "environment": [
         { "name": "OP_PORT", "value": "8080"},
-        { "name": "OP_SESSION", "value": "/data/scimsession"},
         { "name": "OP_REDIS_URL", "value": "localhost"}
       ],
       "logConfiguration": {

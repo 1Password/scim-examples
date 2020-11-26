@@ -44,7 +44,7 @@ resource "aws_ecs_service" "scim_bridge_service" {
   task_definition = aws_ecs_task_definition.scim-bridge.arn
   launch_type     = "FARGATE"
   desired_count   = 1 
-  depends_on      = [aws_lb_listener.listener_http, aws_lb_listener.listener_https]
+  depends_on      = [aws_lb_listener.listener_https]
 
   load_balancer {
     target_group_arn = aws_lb_target_group.target_group_http.arn 
@@ -52,11 +52,11 @@ resource "aws_ecs_service" "scim_bridge_service" {
     container_port   = 8080 # Specifying the container port
   }
 
-  load_balancer {
+  /*load_balancer {
     target_group_arn = aws_lb_target_group.target_group_https.arn
     container_name   = aws_ecs_task_definition.scim-bridge.family
     container_port   = 8443 # Specifying the container port
-  }
+  }*/
 
   network_configuration {
     subnets          = [aws_default_subnet.default_subnet_a.id, aws_default_subnet.default_subnet_b.id, aws_default_subnet.default_subnet_c.id]
@@ -130,17 +130,7 @@ resource "aws_lb_target_group" "target_group_http" {
   }
 }
 
-resource "aws_lb_listener" "listener_http" {
-  load_balancer_arn = aws_alb.scim-bridge-alb.arn # Referencing our load balancer
-  port              = 80
-  protocol          = "HTTP"
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.target_group_http.arn # Referencing our target group
-  }
-}
-
-resource "aws_lb_target_group" "target_group_https" {
+/*resource "aws_lb_target_group" "target_group_https" {
   name        = "target-group-https"
   port        = 8443
   protocol    = "HTTPS"
@@ -150,24 +140,32 @@ resource "aws_lb_target_group" "target_group_https" {
     matcher = "200,301,302"
     path = "/"
   }
-}
-
+}*/
 resource "aws_lb_listener" "listener_https" {
   load_balancer_arn = aws_alb.scim-bridge-alb.arn # Referencing our load balancer
   port              = 443
   protocol          = "HTTPS"
-  certificate_arn   = "arn:aws:acm:us-east-1:729119775555:certificate/7b939514-6eee-496f-97dd-b30a63331db7"
+  certificate_arn   = aws_acm_certificate.scim_bridge_cert.arn
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.target_group_https.arn # Referencing our target group
+    target_group_arn = aws_lb_target_group.target_group_http.arn # Referencing our target group
   }
 }
+
+/*resource "aws_lb_listener" "listener_http" {
+  load_balancer_arn = aws_alb.scim-bridge-alb.arn # Referencing our load balancer
+  port              = 80
+  protocol          = "HTTP"
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.target_group_http.arn # Referencing our target group
+  }
+}*/
 
 # Providing a reference to our default VPC
 resource "aws_default_vpc" "default_vpc" {
 }
 
-# Providing a reference to our default subnets
 resource "aws_default_subnet" "default_subnet_a" {
   availability_zone = "us-east-1a"
 }
@@ -178,4 +176,42 @@ resource "aws_default_subnet" "default_subnet_b" {
 
 resource "aws_default_subnet" "default_subnet_c" {
   availability_zone = "us-east-1c"
+}
+
+resource "aws_acm_certificate" "scim_bridge_cert" {
+  domain_name       = "scim-bridge-amanda.play.agilebits.net"
+  validation_method = "DNS"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_route53_record" "scim_bridge_cert_validation" {
+  for_each = {
+    for dvo in aws_acm_certificate.scim_bridge_cert.domain_validation_options : dvo.domain_name => {
+      name   = dvo.resource_record_name
+      record = dvo.resource_record_value
+      type   = dvo.resource_record_type
+    }
+  }
+
+  allow_overwrite = true
+  name            = each.value.name
+  records         = [each.value.record]
+  ttl             = 60
+  type            = each.value.type
+  zone_id         = "Z3V3UMKDNQGJ7A"
+}
+
+resource "aws_route53_record" "scim_bridge" {
+  zone_id = "Z3V3UMKDNQGJ7A"
+  name    = "scim-bridge-amanda.play.agilebits.net"
+  type    = "A"
+
+  alias {
+    name                   = aws_alb.scim-bridge-alb.dns_name
+    zone_id                = aws_alb.scim-bridge-alb.zone_id
+    evaluate_target_health = true
+  }
 }
