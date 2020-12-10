@@ -38,6 +38,30 @@ resource "aws_iam_role_policy_attachment" "ecsTaskExecutionRole_policy-scim-brid
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
+resource "aws_iam_role_policy" "scim_secret_policy" {
+  name = "scim_secret_policy"
+  role = aws_iam_role.ecsTaskExecutionRole-scim-bridge.id
+
+  policy = <<-EOF
+  {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Action": [
+          "secretsmanager:GetSecretValue",
+          "ssm:GetParameters"
+        ],
+        "Resource": [
+          "arn:aws:secretsmanager:us-east-1:729119775555:secret:amanda/scim-bridge/scimsession-ukalr5",
+          "arn:aws:ssm:us-east-1:729119775555:parameter/*"
+        ]
+      }
+    ]
+  }
+  EOF
+}
+
 resource "aws_ecs_service" "scim_bridge_service" {
   name            = "scim_bridge_service"
   cluster         = aws_ecs_cluster.scim-bridge.id
@@ -49,7 +73,7 @@ resource "aws_ecs_service" "scim_bridge_service" {
   load_balancer {
     target_group_arn = aws_lb_target_group.target_group_http.arn 
     container_name   = aws_ecs_task_definition.scim-bridge.family
-    container_port   = 8080 # Specifying the container port
+    container_port   = 3002 # Specifying the container port
   }
 
   /*load_balancer {
@@ -120,7 +144,7 @@ resource "aws_security_group" "service_security_group" {
 
 resource "aws_lb_target_group" "target_group_http" {
   name        = "target-group-http"
-  port        = 8080
+  port        = 3002
   protocol    = "HTTP"
   target_type = "ip"
   vpc_id      = aws_default_vpc.default_vpc.id # Referencing the default VPC
