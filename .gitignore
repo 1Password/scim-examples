@@ -3,3 +3,6 @@ scim.env
 *.deploy
 *.bak
 .idea/
+.terraform/
+terraform.tfstate
+terraform.tfstate.backup

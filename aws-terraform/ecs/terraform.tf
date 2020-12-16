@@ -1,6 +1,6 @@
 provider "aws" {
   version = "~> 2.0"
-  region  = "us-east-1"
+  region  = var.region
 }
 
 resource "aws_ecs_cluster" "scim-bridge" {
@@ -49,12 +49,10 @@ resource "aws_iam_role_policy" "scim_secret_policy" {
       {
         "Effect": "Allow",
         "Action": [
-          "secretsmanager:GetSecretValue",
-          "ssm:GetParameters"
+          "secretsmanager:GetSecretValue"
         ],
         "Resource": [
-          "arn:aws:secretsmanager:us-east-1:729119775555:secret:amanda/scim-bridge/scimsession-ukalr5",
-          "arn:aws:ssm:us-east-1:729119775555:parameter/*"
+          "${var.secret_arn}"
         ]
       }
     ]
@@ -67,6 +65,7 @@ resource "aws_ecs_service" "scim_bridge_service" {
   cluster         = aws_ecs_cluster.scim-bridge.id
   task_definition = aws_ecs_task_definition.scim-bridge.arn
   launch_type     = "FARGATE"
+  platform_version = "1.4.0"
   desired_count   = 1 
   depends_on      = [aws_lb_listener.listener_https]
 
@@ -75,12 +74,6 @@ resource "aws_ecs_service" "scim_bridge_service" {
     container_name   = aws_ecs_task_definition.scim-bridge.family
     container_port   = 3002 # Specifying the container port
   }
-
-  /*load_balancer {
-    target_group_arn = aws_lb_target_group.target_group_https.arn
-    container_name   = aws_ecs_task_definition.scim-bridge.family
-    container_port   = 8443 # Specifying the container port
-  }*/
 
   network_configuration {
     subnets          = [aws_default_subnet.default_subnet_a.id, aws_default_subnet.default_subnet_b.id, aws_default_subnet.default_subnet_c.id]
@@ -154,17 +147,6 @@ resource "aws_lb_target_group" "target_group_http" {
   }
 }
 
-/*resource "aws_lb_target_group" "target_group_https" {
-  name        = "target-group-https"
-  port        = 8443
-  protocol    = "HTTPS"
-  target_type = "ip"
-  vpc_id      = aws_default_vpc.default_vpc.id # Referencing the default VPC
-  health_check {
-    matcher = "200,301,302"
-    path = "/"
-  }
-}*/
 resource "aws_lb_listener" "listener_https" {
   load_balancer_arn = aws_alb.scim-bridge-alb.arn # Referencing our load balancer
   port              = 443
@@ -176,34 +158,24 @@ resource "aws_lb_listener" "listener_https" {
   }
 }
 
-/*resource "aws_lb_listener" "listener_http" {
-  load_balancer_arn = aws_alb.scim-bridge-alb.arn # Referencing our load balancer
-  port              = 80
-  protocol          = "HTTP"
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.target_group_http.arn # Referencing our target group
-  }
-}*/
-
 # Providing a reference to our default VPC
 resource "aws_default_vpc" "default_vpc" {
 }
 
 resource "aws_default_subnet" "default_subnet_a" {
-  availability_zone = "us-east-1a"
+  availability_zone = "${var.region}a"
 }
 
 resource "aws_default_subnet" "default_subnet_b" {
-  availability_zone = "us-east-1b"
+  availability_zone = "${var.region}b"
 }
 
 resource "aws_default_subnet" "default_subnet_c" {
-  availability_zone = "us-east-1c"
+  availability_zone = "${var.region}c"
 }
 
 resource "aws_acm_certificate" "scim_bridge_cert" {
-  domain_name       = "scim-bridge-amanda.play.agilebits.net"
+  domain_name       = var.domain_name
   validation_method = "DNS"
 
   lifecycle {
@@ -225,12 +197,12 @@ resource "aws_route53_record" "scim_bridge_cert_validation" {
   records         = [each.value.record]
   ttl             = 60
   type            = each.value.type
-  zone_id         = "Z3V3UMKDNQGJ7A"
+  zone_id         = var.dns_zone_id
 }
 
 resource "aws_route53_record" "scim_bridge" {
-  zone_id = "Z3V3UMKDNQGJ7A"
-  name    = "scim-bridge-amanda.play.agilebits.net"
+  zone_id = var.dns_zone_id
+  name    = var.domain_name
   type    = "A"
 
   alias {

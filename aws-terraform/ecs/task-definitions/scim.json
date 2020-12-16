@@ -17,13 +17,13 @@
           "hostPort": 3002
         }
       ],
-      "entrypoint": ["/op-scim/op-scim", "--redis-host=localhost", "--redis-port=6379"],
+      "entrypoint": ["/op-scim/op-scim", "--redis-host=localhost"],
       "environment": [
         { "name": "OP_REDIS_URL", "value": "localhost" },
         { "name": "OP_LETSENCRYPT_DOMAIN", "value": "" }
       ],
       "secrets": [
-        {"name": "OP_SESSION", "valueFrom": "arn:aws:secretsmanager:us-east-1:729119775555:secret:amanda/scim-bridge/scimsession-ukalr5"}
+        {"name": "OP_SESSION", "valueFrom": "arn:aws:secretsmanager:us-east-1:729119775555:secret:ecs/scim-bridge/amanda-HF09CT"}
       ],
       "logConfiguration": {
         "logDriver": "awslogs",
