@@ -9,7 +9,11 @@ resource "aws_ecs_cluster" "scim-bridge" {
 
 resource "aws_ecs_task_definition" "scim-bridge" {
   family                   = "scim-bridge"
-  container_definitions    =  file("task-definitions/scim.json")
+  container_definitions    =  templatefile("task-definitions/scim.json", 
+                              { secret_arn = var.secret_arn, 
+                                aws_logs_group = var.aws_logs_group, 
+                                region = var.region
+                              })
   requires_compatibilities = ["FARGATE"] # Stating that we are using ECS Fargate
   network_mode             = "awsvpc"    # Using awsvpc as our network mode as this is required for Fargate
   memory                   = 512         # Specifying the memory our container requires

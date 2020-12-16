@@ -23,13 +23,13 @@
         { "name": "OP_LETSENCRYPT_DOMAIN", "value": "" }
       ],
       "secrets": [
-        {"name": "OP_SESSION", "valueFrom": "arn:aws:secretsmanager:us-east-1:729119775555:secret:ecs/scim-bridge/amanda-HF09CT"}
+        {"name": "OP_SESSION", "valueFrom": "${secret_arn}"}
       ],
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": { 
-           "awslogs-group" : "/ecs/scim-bridge",
-           "awslogs-region": "us-east-1",
+           "awslogs-group" : "${aws_logs_group}",
+           "awslogs-region": "${region}",
            "awslogs-stream-prefix": "ecs-scim"
         }
       }
@@ -44,8 +44,8 @@
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": { 
-           "awslogs-group" : "/ecs/scim-bridge",
-           "awslogs-region": "us-east-1",
+           "awslogs-group" : "${aws_logs_group}",
+           "awslogs-region": "${region}",
            "awslogs-stream-prefix": "ecs-redis"
         }
       },

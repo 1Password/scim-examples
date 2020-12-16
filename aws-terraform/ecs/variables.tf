@@ -4,11 +4,6 @@ variable "region" {
     default = "us-east-1"
 }
 
-variable "prefix" {
-    type = string
-    description = ""
-    default = "scim-bridge"
-}
 
 variable "secret_arn" {
     type = string
@@ -23,7 +18,6 @@ variable "domain_name" {
 variable "dns_zone_id" {
     type = string
     description = ""
-    default = "Z3V3UMKDNQGJ7A"
 }
 
 variable "aws_logs_group" {
