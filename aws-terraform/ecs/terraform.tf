@@ -14,10 +14,10 @@ resource "aws_ecs_task_definition" "scim-bridge" {
                                 aws_logs_group = var.aws_logs_group, 
                                 region = var.region
                               })
-  requires_compatibilities = ["FARGATE"] # Stating that we are using ECS Fargate
-  network_mode             = "awsvpc"    # Using awsvpc as our network mode as this is required for Fargate
-  memory                   = 512         # Specifying the memory our container requires
-  cpu                      = 256         # Specifying the CPU our container requires
+  requires_compatibilities = ["FARGATE"]
+  network_mode             = "awsvpc"
+  memory                   = 512
+  cpu                      = 256
   execution_role_arn       = aws_iam_role.ecsTaskExecutionRole-scim-bridge.arn
 }
 
@@ -76,49 +76,48 @@ resource "aws_ecs_service" "scim_bridge_service" {
   load_balancer {
     target_group_arn = aws_lb_target_group.target_group_http.arn 
     container_name   = aws_ecs_task_definition.scim-bridge.family
-    container_port   = 3002 # Specifying the container port
+    container_port   = 3002
   }
 
   network_configuration {
     subnets          = [aws_default_subnet.default_subnet_a.id, aws_default_subnet.default_subnet_b.id, aws_default_subnet.default_subnet_c.id]
-    assign_public_ip = true                                                # Providing our containers with public IPs
-    security_groups  = [aws_security_group.service_security_group.id] # Setting the security group
+    assign_public_ip = true
+    security_groups  = [aws_security_group.service_security_group.id]
   }
 }
 
 resource "aws_alb" "scim-bridge-alb" {
-  name               = "scim-bridge-alb" # Naming our load balancer
+  name               = "scim-bridge-alb"
   load_balancer_type = "application"
-  subnets = [ # Referencing the default subnets
+  subnets = [
     aws_default_subnet.default_subnet_a.id,
     aws_default_subnet.default_subnet_b.id,
     aws_default_subnet.default_subnet_c.id
   ]
-  # Referencing the security group
   security_groups = [aws_security_group.scim-bridge-sg.id]
 }
 
 # Creating a security group for the load balancer:
 resource "aws_security_group" "scim-bridge-sg" {
   ingress {
-    from_port   = 80 # Allowing traffic in from port 80
+    from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # Allowing traffic in from all sources
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # Allowing traffic in from all sources
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
-    from_port   = 0 # Allowing any incoming port
-    to_port     = 0 # Allowing any outgoing port
-    protocol    = "-1" # Allowing any outgoing protocol 
-    cidr_blocks = ["0.0.0.0/0"] # Allowing traffic out to all IP addresses
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
@@ -132,10 +131,10 @@ resource "aws_security_group" "service_security_group" {
   }
 
   egress {
-    from_port   = 0 # Allowing any incoming port
-    to_port     = 0 # Allowing any outgoing port
-    protocol    = "-1" # Allowing any outgoing protocol 
-    cidr_blocks = ["0.0.0.0/0"] # Allowing traffic out to all IP addresses
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
@@ -152,13 +151,13 @@ resource "aws_lb_target_group" "target_group_http" {
 }
 
 resource "aws_lb_listener" "listener_https" {
-  load_balancer_arn = aws_alb.scim-bridge-alb.arn # Referencing our load balancer
+  load_balancer_arn = aws_alb.scim-bridge-alb.arn
   port              = 443
   protocol          = "HTTPS"
   certificate_arn   = aws_acm_certificate.scim_bridge_cert.arn
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.target_group_http.arn # Referencing our target group
+    target_group_arn = aws_lb_target_group.target_group_http.arn
   }
 }
 
