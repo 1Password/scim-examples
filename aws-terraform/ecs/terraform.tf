@@ -3,6 +3,23 @@ provider "aws" {
   region  = var.region
 }
 
+data "aws_vpc" "default" {
+  default = true
+} 
+
+data "aws_subnet_ids" "default_vpc_subnets" {
+  vpc_id = data.aws_vpc.default.id
+}
+
+resource "aws_secretsmanager_secret" "scimsession" {
+  name = "scim-bridge-scimsession"
+}
+
+resource "aws_secretsmanager_secret_version" "scimsession_1" {
+  secret_id     = aws_secretsmanager_secret.scimsession.id
+  secret_string = base64encode(file("${path.module}/scimsession"))
+}
+
 resource "aws_ecs_cluster" "scim-bridge" {
   name = "scim-bridge"
 }
@@ -10,7 +27,7 @@ resource "aws_ecs_cluster" "scim-bridge" {
 resource "aws_ecs_task_definition" "scim-bridge" {
   family                   = "scim-bridge"
   container_definitions    =  templatefile("task-definitions/scim.json", 
-                              { secret_arn = var.secret_arn, 
+                              { secret_arn = aws_secretsmanager_secret.scimsession.arn, 
                                 aws_logs_group = var.aws_logs_group, 
                                 region = var.region
                               })
@@ -18,11 +35,11 @@ resource "aws_ecs_task_definition" "scim-bridge" {
   network_mode             = "awsvpc"
   memory                   = 512
   cpu                      = 256
-  execution_role_arn       = aws_iam_role.ecsTaskExecutionRole-scim-bridge.arn
+  execution_role_arn       = aws_iam_role.scim-bridge.arn
 }
 
-resource "aws_iam_role" "ecsTaskExecutionRole-scim-bridge" {
-  name               = "ecsTaskExecutionRole-scim-bridge"
+resource "aws_iam_role" "scim-bridge" {
+  name               = "scim-bridge-task-role"
   assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
 }
 
@@ -37,31 +54,27 @@ data "aws_iam_policy_document" "assume_role_policy" {
   }
 }
 
-resource "aws_iam_role_policy_attachment" "ecsTaskExecutionRole_policy-scim-bridge" {
-  role       = aws_iam_role.ecsTaskExecutionRole-scim-bridge.name
+resource "aws_iam_role_policy_attachment" "scim-bridge" {
+  role       = aws_iam_role.scim-bridge.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
+
+data "aws_iam_policy_document" "scim" {
+  statement {
+    actions = [
+      "secretsmanager:GetSecretValue",
+    ]
+
+    resources = [
+      aws_secretsmanager_secret.scimsession.arn,
+    ]
+  }
 }
 
 resource "aws_iam_role_policy" "scim_secret_policy" {
   name = "scim_secret_policy"
-  role = aws_iam_role.ecsTaskExecutionRole-scim-bridge.id
-
-  policy = <<-EOF
-  {
-    "Version": "2012-10-17",
-    "Statement": [
-      {
-        "Effect": "Allow",
-        "Action": [
-          "secretsmanager:GetSecretValue"
-        ],
-        "Resource": [
-          "${var.secret_arn}"
-        ]
-      }
-    ]
-  }
-  EOF
+  role = aws_iam_role.scim-bridge.id
+  policy = data.aws_iam_policy_document.scim.json
 }
 
 resource "aws_ecs_service" "scim_bridge_service" {
@@ -80,7 +93,7 @@ resource "aws_ecs_service" "scim_bridge_service" {
   }
 
   network_configuration {
-    subnets          = [aws_default_subnet.default_subnet_a.id, aws_default_subnet.default_subnet_b.id, aws_default_subnet.default_subnet_c.id]
+    subnets          = data.aws_subnet_ids.default_vpc_subnets.ids
     assign_public_ip = true
     security_groups  = [aws_security_group.service_security_group.id]
   }
@@ -89,11 +102,7 @@ resource "aws_ecs_service" "scim_bridge_service" {
 resource "aws_alb" "scim-bridge-alb" {
   name               = "scim-bridge-alb"
   load_balancer_type = "application"
-  subnets = [
-    aws_default_subnet.default_subnet_a.id,
-    aws_default_subnet.default_subnet_b.id,
-    aws_default_subnet.default_subnet_c.id
-  ]
+  subnets = data.aws_subnet_ids.default_vpc_subnets.ids
   security_groups = [aws_security_group.scim-bridge-sg.id]
 }
 
@@ -143,7 +152,7 @@ resource "aws_lb_target_group" "target_group_http" {
   port        = 3002
   protocol    = "HTTP"
   target_type = "ip"
-  vpc_id      = aws_default_vpc.default_vpc.id # Referencing the default VPC
+  vpc_id      = data.aws_vpc.default.id
   health_check {
     matcher = "200,301,302"
     path = "/"
@@ -159,22 +168,6 @@ resource "aws_lb_listener" "listener_https" {
     type             = "forward"
     target_group_arn = aws_lb_target_group.target_group_http.arn
   }
-}
-
-# Providing a reference to our default VPC
-resource "aws_default_vpc" "default_vpc" {
-}
-
-resource "aws_default_subnet" "default_subnet_a" {
-  availability_zone = "${var.region}a"
-}
-
-resource "aws_default_subnet" "default_subnet_b" {
-  availability_zone = "${var.region}b"
-}
-
-resource "aws_default_subnet" "default_subnet_c" {
-  availability_zone = "${var.region}c"
 }
 
 resource "aws_acm_certificate" "scim_bridge_cert" {
@@ -213,4 +206,9 @@ resource "aws_route53_record" "scim_bridge" {
     zone_id                = aws_alb.scim-bridge-alb.zone_id
     evaluate_target_health = true
   }
+}
+
+output "loadbalancer-dns-name" {
+  description = "The Load balancer address to set in your DNS"
+  value = aws_alb.scim-bridge-alb.dns_name
 }

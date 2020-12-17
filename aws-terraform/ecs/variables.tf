@@ -4,12 +4,6 @@ variable "region" {
     default = "us-east-1"
 }
 
-
-variable "secret_arn" {
-    type = string
-    description = ""
-}
-
 variable "domain_name" {
     type = string
     description = ""
