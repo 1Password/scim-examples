@@ -6,13 +6,14 @@ Prerequisites
 - [terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) and [aws-cli](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html) installed and configured
 - DNS Zone in Route 53
 - scimsession file and bearer token ([follow step 1 here](https://support.1password.com/scim/))
-- an empty file `terraform.tfvars` in this directory
 
-1. Have the scimsession file available in the same directory has the terraform code
+1. Copy `terraform.tfvars.template` to `terraform.tfvars`
 
-2. Create or choose the zone you want to use and grab the Hosted zone ID and save it as dns_zone_id in terraform.tfvars. Save the full domain name you want to use as domain_name in terraform.tfvars.
+2. Have the scimsession file available in the same directory has the terraform code
 
-3. Create a region entry in terraform.tfvars for what region you're deploying in. You can omit this if you are using us-east-1.
+3. Create or choose the zone you want to use and grab the Hosted zone ID and save it as dns_zone_id in terraform.tfvars. Save the full domain name you want to use as domain_name in terraform.tfvars.
+
+4. Create a region entry in terraform.tfvars for what region you're deploying in. You can omit this if you are using us-east-1.
 
 Your terraform.tfvars file should look something like this:
 ```

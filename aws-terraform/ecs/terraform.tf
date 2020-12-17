@@ -1,6 +1,6 @@
 provider "aws" {
   version = "~> 2.0"
-  region  = var.region
+  region  = var.aws_region
 }
 
 data "aws_vpc" "default" {
@@ -33,7 +33,7 @@ resource "aws_ecs_task_definition" "scim-bridge" {
   container_definitions = templatefile("task-definitions/scim.json",
     { secret_arn     = aws_secretsmanager_secret.scimsession.arn,
       aws_logs_group = aws_cloudwatch_log_group.scim-bridge.name,
-      region         = var.region
+      region         = var.aws_region
   })
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
@@ -197,11 +197,11 @@ resource "aws_route53_record" "scim_bridge_cert_validation" {
   records         = [each.value.record]
   ttl             = 60
   type            = each.value.type
-  zone_id         = var.dns_zone_id
+  zone_id         = var.route53_zone_id
 }
 
 resource "aws_route53_record" "scim_bridge" {
-  zone_id = var.dns_zone_id
+  zone_id = var.route53_zone_id
   name    = var.domain_name
   type    = "A"
 
