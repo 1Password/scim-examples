@@ -20,6 +20,10 @@ resource "aws_secretsmanager_secret_version" "scimsession_1" {
   secret_string = base64encode(file("${path.module}/scimsession"))
 }
 
+resource "aws_cloudwatch_log_group" "scim-bridge" {
+  name_prefix = "scim-bridge-logs"
+}
+
 resource "aws_ecs_cluster" "scim-bridge" {
   name = "scim-bridge"
 }
@@ -28,7 +32,7 @@ resource "aws_ecs_task_definition" "scim-bridge" {
   family = "scim-bridge"
   container_definitions = templatefile("task-definitions/scim.json",
     { secret_arn     = aws_secretsmanager_secret.scimsession.arn,
-      aws_logs_group = var.aws_logs_group,
+      aws_logs_group = aws_cloudwatch_log_group.scim-bridge.name,
       region         = var.region
   })
   requires_compatibilities = ["FARGATE"]
@@ -211,4 +215,9 @@ resource "aws_route53_record" "scim_bridge" {
 output "loadbalancer-dns-name" {
   description = "The Load balancer address to set in your DNS"
   value       = aws_alb.scim-bridge-alb.dns_name
+}
+
+output "cloudwatch-log-group" {
+  description = "Where you can find your scim-bridge logs"
+  value       = aws_cloudwatch_log_group.scim-bridge.name
 }

@@ -13,9 +13,3 @@ variable "dns_zone_id" {
   type        = string
   description = ""
 }
-
-variable "aws_logs_group" {
-  type        = string
-  description = ""
-  default     = "/ecs/scim-bridge"
-}
