@@ -5,7 +5,7 @@ provider "aws" {
 
 data "aws_vpc" "default" {
   default = true
-} 
+}
 
 data "aws_subnet_ids" "default_vpc_subnets" {
   vpc_id = data.aws_vpc.default.id
@@ -25,12 +25,12 @@ resource "aws_ecs_cluster" "scim-bridge" {
 }
 
 resource "aws_ecs_task_definition" "scim-bridge" {
-  family                   = "scim-bridge"
-  container_definitions    =  templatefile("task-definitions/scim.json", 
-                              { secret_arn = aws_secretsmanager_secret.scimsession.arn, 
-                                aws_logs_group = var.aws_logs_group, 
-                                region = var.region
-                              })
+  family = "scim-bridge"
+  container_definitions = templatefile("task-definitions/scim.json",
+    { secret_arn     = aws_secretsmanager_secret.scimsession.arn,
+      aws_logs_group = var.aws_logs_group,
+      region         = var.region
+  })
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   memory                   = 512
@@ -72,22 +72,22 @@ data "aws_iam_policy_document" "scim" {
 }
 
 resource "aws_iam_role_policy" "scim_secret_policy" {
-  name = "scim_secret_policy"
-  role = aws_iam_role.scim-bridge.id
+  name   = "scim_secret_policy"
+  role   = aws_iam_role.scim-bridge.id
   policy = data.aws_iam_policy_document.scim.json
 }
 
 resource "aws_ecs_service" "scim_bridge_service" {
-  name            = "scim_bridge_service"
-  cluster         = aws_ecs_cluster.scim-bridge.id
-  task_definition = aws_ecs_task_definition.scim-bridge.arn
-  launch_type     = "FARGATE"
+  name             = "scim_bridge_service"
+  cluster          = aws_ecs_cluster.scim-bridge.id
+  task_definition  = aws_ecs_task_definition.scim-bridge.arn
+  launch_type      = "FARGATE"
   platform_version = "1.4.0"
-  desired_count   = 1 
-  depends_on      = [aws_lb_listener.listener_https]
+  desired_count    = 1
+  depends_on       = [aws_lb_listener.listener_https]
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.target_group_http.arn 
+    target_group_arn = aws_lb_target_group.target_group_http.arn
     container_name   = aws_ecs_task_definition.scim-bridge.family
     container_port   = 3002
   }
@@ -102,8 +102,8 @@ resource "aws_ecs_service" "scim_bridge_service" {
 resource "aws_alb" "scim-bridge-alb" {
   name               = "scim-bridge-alb"
   load_balancer_type = "application"
-  subnets = data.aws_subnet_ids.default_vpc_subnets.ids
-  security_groups = [aws_security_group.scim-bridge-sg.id]
+  subnets            = data.aws_subnet_ids.default_vpc_subnets.ids
+  security_groups    = [aws_security_group.scim-bridge-sg.id]
 }
 
 # Creating a security group for the load balancer:
@@ -155,7 +155,7 @@ resource "aws_lb_target_group" "target_group_http" {
   vpc_id      = data.aws_vpc.default.id
   health_check {
     matcher = "200,301,302"
-    path = "/"
+    path    = "/"
   }
 }
 
@@ -210,5 +210,5 @@ resource "aws_route53_record" "scim_bridge" {
 
 output "loadbalancer-dns-name" {
   description = "The Load balancer address to set in your DNS"
-  value = aws_alb.scim-bridge-alb.dns_name
+  value       = aws_alb.scim-bridge-alb.dns_name
 }
