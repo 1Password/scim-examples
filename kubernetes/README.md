@@ -8,10 +8,10 @@ If you are deploying to the Azure Kubernetes Service, you can refer to our [deta
 
 The deployment process consists of these steps:
 
-1. Create the scimsession Kubernetes secret
-2. Configure the SCIM bridge (through the `op-scim-config.yaml`) file
-3. Deploy the service
-4. Set up DNS entries for LetsEncrypt
+1. Create a Kubernetes secret with your `scimsession` file
+2. Configure the SCIM bridge (through the `op-scim-config.yaml` file)
+3. Deploy the SCIM Bridge and Redis services
+4. Set up DNS entries for your SCIM Bridge
 
 ## Structure
 
@@ -21,12 +21,25 @@ The deployment process consists of these steps:
 - `redis-deployment.yaml`:  [(optional*)](#external-redis-server) A redis server deployment.
 - `redis-service.yaml`:  [(optional*)](#external-redis-server) Kubernetes service for the redis deployment.
 
-
 ## Preparing
 
 Please ensure you've read through the [PREPARATION.md](/PREPARATION.md) document before beginning deployment.
 
-### Create the `scimsession` Kubernetes secret
+## Clone `scim-examples`
+
+As seen in [PREPARATION.md](/PREPARATION.md), you’ll need to clone this repository using `git` into a directory of your choice.
+
+```bash
+git clone https://github.com/1Password/scim-examples.git
+```
+
+You can then browse to the Kubernetes directory:
+
+```bash
+cd scim-examples/kubernetes/
+```
+
+## Create the Kubernetes secret
 
 The following requires that you’ve completed the initial setup of Provisioning in your 1Password Account. [See here](https://support.1password.com/scim/#step-1-prepare-your-1password-account) for more details.
 
@@ -36,48 +49,78 @@ Once complete, you must create a Kubernetes secret containing the `scimsession` 
 kubectl create secret generic scimsession --from-file=/path/to/scimsession
 ```
 
-
-### Configuring the SCIM bridge
+## Configuring the SCIM bridge
 
 You'll need to edit the `op-scim-config.yaml` file and change the variable `OP_LETSENCRYPT_DOMAIN` to the domain you've decided on for your SCIM Bridge. This allows LetsEncrypt to issue your deployment an SSL certificate necessary for encrypted traffic.
-
 
 ## Deploy to the Kubernetes cluster
 
 Run the following `kubectl` command to complete your deployment. It will deploy the both the `redis` server and the `op-scim` app.
 
 ```bash
+cd scim-examples/kubernetes/
 kubectl apply -f .
 ```
 
-
-## Configure the DNS entries
+## Configuring the DNS entries
 
 The Kubernetes deployment creates a public load balancer in your environment pointing to the SCIM Bridge.
 
 To get its public IP address:
 
 ```bash
-kubectl describe service/op-scim
+kubectl describe service/op-scim-bridge 
+# look for ‘LoadBalancer Ingress’
 ```
 
 It can take some time before the public address becomes available.
 
 At this stage, you can finish configuring your DNS entry as outlined in [PREPARATION.md](/PREPARATION.md).
 
-
-## Test the instance
+## Testing the instance
 
 Once the DNS record has propagated, you can test your instance by requesting `https://[your-domain]/scim/Users`, with the header `Authorization: Bearer [bearer token]` which should return a list of the users in your 1Password account.
 
 You can do this with `curl`, as an example:
 
-```sh
-curl --header "Authorization: Bearer <bearertoken>" https://<domain>/scim/Users
+```bash
+curl --header "Authorization: Bearer TOKEN_GOES_HERE" https://<domain>/scim/Users
 ```
 
 You can now continue with the administration guide to configure your Identity Provider to enable provisioning with your SCIM Bridge.
 
+## Upgrading
+
+To upgrade your SCIM Bridge, follow these steps:
+
+```bash
+cd scim-examples/
+git pull
+cd kubernetes/
+kubectl apply -f .
+```
+
+This will upgrade your SCIM Bridge to the latest version, which should take about 2-3 minutes for Kubernetes to process.
+
+### October 2020 Upgrade Changes
+
+As of October 2020, the `scim-examples` Kubernetes deployment now uses `op-scim-config.yaml` to set the configuration needed for your SCIM Bridge, and has changed the deployment names from `op-scim` to `op-scim-bridge`, and `redis` to `op-scim-redis` for clarity and consistency. 
+
+You’ll need to re-configure your options in `op-scim-config.yaml`, particularly `OP_LETSENCRYPT_DOMAIN`. You may also want to delete your previous `op-scim` and `redis` deployments to prevent conflict between the two versions.
+
+```bash
+kubectl delete deployment/op-scim deployment/redis
+kubectl apply -f .
+```
+
+You’ll then need to update your SCIM Bridge’s domain name DNS record. You can find the IP for that with:
+
+```bash
+kubectl describe service/op-scim-bridge
+# look for ‘LoadBalancer Ingress’
+```
+
+This is a one-time operation to change the deployment and service names of the SCIM Bridge so they are more easily identifiable to administrators.
 
 ## Advanced deployments
 

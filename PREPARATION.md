@@ -58,7 +58,7 @@ There are a few common issues that pop up when deploying the SCIM Bridge.
 * You should only run one instance of the SCIM Bridge online at a time. The SCIM Bridge is not considered a high-availablity service. Running multiple SCIM Bridges is also not supported.
 * Do not attempt to perform a provisioning sync until the setup has been completed.
 * Once set up, your Identity Provider becomes the _authoritative source_ of information for your 1Password accounts. With Provisioning enabled, the ability to change the _display name_ and _account status_ are not possible through the 1Password Web UI, and must be done through your Identity Provider. You can, however, continue to issue Account Recovery requests through the 1Password Web UI with Provisioning enabled.
-* E-mail addresses for provisioned users cannot be changed through the Identity Provider, due to the way their e-mail is used to generate their encryption key. Users must change their e-mail manually through the 1Password Web UI, so that they can have their encryption key and Emergency Kit regenerated.
+* With v1.6.0+ of the SCIM Bridge, you can enforce e-mail address changes through your Identity Provider. Users will be required to confirm those e-mail changes the next time they log in, as their e-mail address is used when generating their encryption keys.
 
 For more information on our security model, you can read our [security whitepaper](https://1password.com/files/1Password-White-Paper.pdf).
 
