@@ -3,8 +3,10 @@
 This document describes deploying the 1Password SCIM bridge to your Amazon Web Service Elastic Container Service Fargate using Terraform. It's just a suggested starting point - you may be using different services for different things, this example uses only AWS products. Please familiarize yourself with [Preparation.md](../../Preparation.md) before beginning.
 
 Prerequisites
-- [terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) and [aws-cli](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html) installed and configured
-- DNS Zone in Route 53
+- [terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
+- AWS credentials configured (either through $HOME/.aws/credentials or environment variable)
+  see: [Terraform AWS authentication](https://registry.terraform.io/providers/hashicorp/aws/latest/docs#authentication)
+- (Optional) DNS Zone in Route 53
 - scimsession file and bearer token ([follow step 1 here](https://support.1password.com/scim/))
 
 1. Copy `terraform.tfvars.template` to `terraform.tfvars`
