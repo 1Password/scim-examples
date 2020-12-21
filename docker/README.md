@@ -14,7 +14,6 @@ Docker Swarm is the recommended option. While setting up Swarm is beyond the sco
 
 While Docker Compose is useful for testing, it is not recommended for use in a production environment. The `scimsession` file is passed into the docker container via an environment variable, which is less secure than Docker Swarm secrets, Kubernetes secrets, or AWS Secrets Manager, all of which are supported and recommended for production use.
 
-
 ## Install Docker tools
 
 Install [Docker for Desktop](https://www.docker.com/products/docker-desktop) on your local machine and _start Docker_ before continuing, as it will be needed to continue with the deployment process.
@@ -23,10 +22,11 @@ You'll also need to install `docker-compose` and `docker-machine` command line t
 
 For macOS users who use Homebrew, ensure you're using the _cask_ app-based version of Docker, not the default CLI version. (i.e: `brew cask install docker`)
 
-
 ## Setting up Docker
 
-### Docker Swarm
+### Automatic Instructions
+
+#### Docker Swarm
 
 For this, you will need to have joined a Docker Swarm with the target deployment node. Please refer to [the official Docker documentation](https://docs.docker.com/engine/swarm/swarm-tutorial/create-swarm/) on how to do that.
 
@@ -42,8 +42,7 @@ The logs from the SCIM Bridge and redis containers will be streamed to your mach
 
 At this point you should set the DNS record for the domain name you prepared to the IP address of the `op-scim` container. You can also continue setting up your Identity Provider at this point.
 
-
-### Docker Compose
+#### Docker Compose
 
 You will need to have a Docker machine set up either locally or remotely. Refer to [the docker-compose documentation](https://docs.docker.com/machine/reference/create/) on how to do that. For a local installation, you can use the `virtualbox` driver.
 
@@ -51,50 +50,41 @@ Once set up, ensure your environment is set up with `eval %{docker-machine env $
 
 Run the [./docker/deploy.sh](deploy.sh) script as in the previous example.
 
-
 ### Manual Instructions
 
-#### Creating the `scim.env` file
+#### Cloning `scim-examples`
 
-The `scim.env` file contains two environment variables:
-
-* `OP_SESSION` (mandatory for Docker Compose) - a `base64` encoded string of your `scimsession` file
-* (OPTIONAL) `OP_LETSENCRYPT_DOMAIN` (for Docker Compose and Docker Swarm) - if set, it initiates a LetsEncrypt challenge to have your SCIM Bridge issued a valid SSL certificate, provided the DNS record is set to its IP
-
-To take advantage of the complimentary LetsEncrypt SSL certificate service, set the variable in the `scim.env` file:
-```bash
-# change ‘op-scim.example.com’ to match the domain name you’ve set aside for your SCIM Bridge
-echo “OP_LETSENCRYPT_DOMAIN=op-scim.example.com” > scim.env
-```
-
-Alternatively, setting this variable to blank (i.e: `OP_LETSENCRYPT_DOMAIN=`) will cause the SCIM Bridge to start on port 3002. This is useful if you have a custom load balancer you want to use to terminate SSL connections rather than using LetsEncrypt. Otherwise, you should be sure to set it. This is an “advanced” option so please only try this if you are familiar with setting up your own load balancer:
+As seen in [PREPARATION.md](/PREPARATION.md), you’ll need to clone this repository using `git` into a directory of your choice.
 
 ```bash
-# ADVANCED: if you have your own load balancer
-echo “OP_LETSENCRYPT_DOMAIN=” > scim.env
+git clone https://github.com/1Password/scim-examples.git
 ```
+
+You can then browse to the Docker directory:
+
+```bash
+cd scim-examples/docker/
+```
+
+#### Docker Compose
 
 When using Docker Compose, you can create the environment variable `OP_SESSION` manually by doing the following:
 
 ```bash
 # only needed for Docker Compose - use Docker Secrets when using Swarm
+# enter the ‘compose’ directory within `scim-examples/docker/`
+cd compose/
 SESSION=$(cat /path/to/scimsession | base64 | tr -d "\n")
-echo "OP_SESSION=$SESSION" >> scim.env
+sed -i '' -e "s/OP_SESSION=$/OP_SESSION=$SESSION/" ./scim.env
 ```
 
-On Windows, you can refer to the [./docker/compose/generate-env.bat](generate-env.bat) file on how to generate the `base64` string for `OP_SESSION`.
+You’ll also need to set the environment variable `OP_LETSENCRYPT_DOMAIN` within `scim.env` to the URL you selected during [PREPARATION.md](/PREPARATION.md). Open that in your preferred text editor and change `OP_LETSENCRYPT_DOMAIN` to that domain name.
 
-Check that the `scim.env` file only has two entries (in total) - `OP_LETSENCRYPT_DOMAIN` and/or `OP_SESSION`.
-
-#### Docker Compose
-
-To use Docker Compose to deploy:
+And finally, use `docker-compose` to deploy:
 
 ```bash
 # enter the compose directory
-cd compose/
-# copy the scim.env file
-cp ../scim.env ./
+cd scim-examples/docker/compose/
 # create the container
 docker-compose -f docker-compose.yml up --build -d
 # (optional) view the container logs
@@ -105,23 +95,59 @@ docker-compose -f docker-compose.yml logs -f
 
 To use Docker Swarm to deploy, you’ll want to have run `docker swarm init` or `docker swarm join` on the target node and completed that portion of the setup. Refer to Docker’s documentation for more details.
 
+Unlike Docker Compose, you won’t need to set the `OP_SESSION` variable in `scim.env`, as we’ll be using Docker Secrets to store the `scimsession` file.
+
+You’ll still need to set the environment variable `OP_LETSENCRYPT_DOMAIN` within `scim.env` to the URL you selected during [PREPARATION.md](/PREPARATION.md). Open that in your preferred text editor and change `OP_LETSENCRYPT_DOMAIN` to that domain name.
+
 Once that’s set up, you can do the following:
 
 ```bash
 # enter the swarm directory
-cd swarm/
+cd scim-examples/docker/swarm/
 # sets up a Docker Secret on your Swarm
 cat /path/to/scimsession | docker secret create scimsession -
-# copy the scim.env file
-cp ../scim.env ./
 # deploy your Stack
 docker stack deploy -c docker-compose.yml op-scim
 # (optional) view the service logs
 docker service logs --raw -f op-scim_scim
 ```
 
-#### Advanced `scim.env` file options
+### Testing
+
+To test if your SCIM Bridge came online, you can browse to the public IP address of your SCIM Bridge’s Docker Host with a web browser, and input your Bearer Token into the provided Bearer Token field.
+
+You can also use the following `curl` command to test the SCIM Bridge from the command line:
+
+```bash
+curl --header "Authorization: Bearer TOKEN_GOES_HERE" https://<domain>/scim/Users
+```
+
+### Upgrading
+
+Upgrading the SCIM Bridge should be relatively simple.
+
+First, you `git pull` the latest versions from this repository. Then, you re-apply the `.yml` file.
+
+```bash
+cd scim-examples/
+git pull
+cd docker/{swarm or compose}/
+docker-compose -f docker-compose.yml up --build -d
+```
+
+This should seamlessly upgrade your SCIM Bridge to the latest version. The process takes about 2-3 minutes for the Bridge to come back online.
+
+#### October 2020 Update
+
+As of October 2020, if you’re upgrading from a previous version of the repository, ensure that you’ve reconfigured your environment variables within `scim.env` before upgrading.
+
+### Advanced `scim.env` file options
 
 These should only be used for advanced setups.
 
 * `OP_PORT` - when `OP_LETSENCRYPT_DOMAIN` is set to blank, you can use `OP_PORT` to change the default port from 3002 to one of your choosing.
+* `OP_REDIS_HOST` - you can specify either a hostname or IP address here to point towards an alternative redis host. You can then strip out the sections in `docker-compose.yml` that refer to redis to not deploy that container. Note that redis is still required for the SCIM Bridge to function.
+
+#### Generating `scim.env` file on Windows
+
+On Windows, you can refer to the [./docker/compose/generate-env.bat](generate-env.bat) file on how to generate the `base64` string for `OP_SESSION`.
