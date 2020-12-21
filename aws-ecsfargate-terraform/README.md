@@ -11,13 +11,13 @@ Prerequisites
 
 1. Copy `terraform.tfvars.template` to `terraform.tfvars`
 
-2. Have the scimsession file available in the same directory has the terraform code
+2. Copy the `scimsession` file in the terraform code directory
 
-3. If you are using Route53, create or choose the zone you want to use and grab the Hosted zone ID and save it as dns_zone_id in terraform.tfvars. 
+3. (Optional) If you use route 53, save the Route53 zone ID in the `terraform.tfvars`
 
-4. Save the full domain name you want to use as domain_name in terraform.tfvars.
+4. Save the full domain name you want to use as domain_name in terraform.tfvars
 
-5. Create a region entry in terraform.tfvars for what region you're deploying in. You can omit this if you are using us-east-1.
+5. Create a region entry in terraform.tfvars for what region you're deploying in. You can omit this if you are using us-east-1
 
 Your terraform.tfvars file should look something like this:
 ```
