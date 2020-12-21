@@ -18,7 +18,8 @@ The easiest way to deploy the SCIM bridge is with our one-click installations cu
 Advanced deployment are recommended when you have particular requirements for your environment. They are easily customizable and adaptable to your situation.
 - [Kubernetes](/kubernetes)
 - [Docker Compose & Docker Swarm](/docker)
-- [AWS EC2 with terraform](/aws-terraform)
+- [AWS EC2 with terraform](/aws-terraform) [deprecated]
+- [AWS ECS Fargate with Terraform](/aws-ecsfargate-terraform)
 - [Azure Kubernetes Service](https://support.1password.com/cs/scim-deploy-azure/)
 
 ## Support

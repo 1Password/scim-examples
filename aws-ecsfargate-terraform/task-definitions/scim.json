@@ -17,9 +17,8 @@
           "hostPort": 3002
         }
       ],
-      "entrypoint": ["/op-scim/op-scim", "--redis-host=localhost"],
       "environment": [
-        { "name": "OP_REDIS_URL", "value": "localhost" },
+        { "name": "OP_REDIS_HOST", "value": "localhost" },
         { "name": "OP_LETSENCRYPT_DOMAIN", "value": "" }
       ],
       "secrets": [

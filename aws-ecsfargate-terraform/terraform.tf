@@ -174,6 +174,16 @@ resource "aws_lb_listener" "listener_https" {
   }
 }
 
+output "cloudwatch-log-group" {
+  description = "Where you can find your scim-bridge logs"
+  value       = aws_cloudwatch_log_group.scim-bridge.name
+}
+
+output "loadbalancer-dns-name" {
+  description = "The Load balancer address to set in your DNS"
+  value       = aws_alb.scim-bridge-alb.dns_name
+}
+
 resource "aws_acm_certificate" "scim_bridge_cert" {
   domain_name       = var.domain_name
   validation_method = "DNS"
@@ -183,6 +193,8 @@ resource "aws_acm_certificate" "scim_bridge_cert" {
   }
 }
 
+/* If you are not using AWS Route 53 and AWS Certificate Manager for your DNS, 
+   comment out below here */
 resource "aws_route53_record" "scim_bridge_cert_validation" {
   for_each = {
     for dvo in aws_acm_certificate.scim_bridge_cert.domain_validation_options : dvo.domain_name => {
@@ -210,14 +222,4 @@ resource "aws_route53_record" "scim_bridge" {
     zone_id                = aws_alb.scim-bridge-alb.zone_id
     evaluate_target_health = true
   }
-}
-
-output "loadbalancer-dns-name" {
-  description = "The Load balancer address to set in your DNS"
-  value       = aws_alb.scim-bridge-alb.dns_name
-}
-
-output "cloudwatch-log-group" {
-  description = "Where you can find your scim-bridge logs"
-  value       = aws_cloudwatch_log_group.scim-bridge.name
 }
