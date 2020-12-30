@@ -1,6 +1,6 @@
 # Deploying the 1Password SCIM Bridge in AWS ECS with Terraform
 
-This document describes deploying the 1Password SCIM bridge to your Amazon Web Service Elastic Container Service Fargate using Terraform. It's just a suggested starting point - you may be using different services for different things, this example uses only AWS products. Please familiarize yourself with [Preparation.md](../../Preparation.md) before beginning.
+This document describes deploying the 1Password SCIM bridge to your Amazon Web Service Elastic Container Service Fargate using Terraform. It's just a suggested starting point - you may be using different services for different things, this example uses only AWS products. Please familiarize yourself with [PREPARATION.md](/PREPARATION.md) before beginning.
 
 Prerequisites
 - [terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
