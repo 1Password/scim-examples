@@ -1,4 +1,10 @@
+.DS_Store
+
 scimsession
 *.deploy
 *.bak
 .idea/
+.terraform/
+terraform.tfstate
+terraform.tfstate.backup
+terraform.tfvars
