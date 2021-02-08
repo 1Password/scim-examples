@@ -1,58 +1,67 @@
 [
-    {
-      "name": "scim-bridge",
-      "image": "1password/scim:v1.6.1",
-      "cpu": 128,
-      "memory": 512,
-      "essential": true,
-      "dependsOn": [
-        {
-          "containerName": "redis",
-          "condition": "START"
-        }
-      ],
-      "portMappings": [
-        {
-          "containerPort": 3002,
-          "hostPort": 3002
-        }
-      ],
-      "environment": [
-        { "name": "OP_REDIS_HOST", "value": "localhost" },
-        { "name": "OP_LETSENCRYPT_DOMAIN", "value": "" }
-      ],
-      "secrets": [
-        {"name": "OP_SESSION", "valueFrom": "${secret_arn}"}
-      ],
-      "logConfiguration": {
-        "logDriver": "awslogs",
-        "options": { 
-           "awslogs-group" : "${aws_logs_group}",
-           "awslogs-region": "${region}",
-           "awslogs-stream-prefix": "ecs-scim"
-        }
+  {
+    "name": "scim-bridge",
+    "image": "1password/scim:v1.6.2",
+    "cpu": 128,
+    "memory": 512,
+    "essential": true,
+    "dependsOn": [
+      {
+        "containerName": "redis",
+        "condition": "START"
+      }
+    ],
+    "portMappings": [
+      {
+        "containerPort": 3002,
+        "hostPort": 3002
+      }
+    ],
+    "environment": [
+      {
+        "name": "OP_REDIS_HOST",
+        "value": "localhost"
+      },
+      {
+        "name": "OP_LETSENCRYPT_DOMAIN",
+        "value": ""
+      }
+    ],
+    "secrets": [
+      {
+        "name": "OP_SESSION",
+        "valueFrom": "${secret_arn}"
+      }
+    ],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "${aws_logs_group}",
+        "awslogs-region": "${region}",
+        "awslogs-stream-prefix": "ecs-scim"
+      }
+    }
+  },
+  {
+    "name": "redis",
+    "image": "redis:latest",
+    "cpu": 128,
+    "memory": 256,
+    "essential": true,
+    "restart": "always",
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "${aws_logs_group}",
+        "awslogs-region": "${region}",
+        "awslogs-stream-prefix": "ecs-redis"
       }
     },
-    {
-      "name": "redis",
-      "image": "redis:latest",
-      "cpu": 128,
-      "memory": 256,
-      "essential": true,
-      "restart": "always",
-      "logConfiguration": {
-        "logDriver": "awslogs",
-        "options": { 
-           "awslogs-group" : "${aws_logs_group}",
-           "awslogs-region": "${region}",
-           "awslogs-stream-prefix": "ecs-redis"
-        }
-      },
-      "portMappings": [
-        {
-          "containerPort": 6379,
-          "hostPort": 6379
-        }
-      ]
-    }
-  ]
+    "portMappings": [
+      {
+        "containerPort": 6379,
+        "hostPort": 6379
+      }
+    ]
+  }
+]
