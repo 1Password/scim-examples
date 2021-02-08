@@ -1,4 +1,4 @@
-version: '3.3'
+version: "3.3"
 services:
   scim:
     image: 1password/scim:v1.6.1
