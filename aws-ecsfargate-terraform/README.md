@@ -29,7 +29,6 @@ Note: If you are not using Route53, you don't need to set the zone id and can re
 Now run the following commands (Note: If you are not using Route53 the second command is unnecessary):
 ```
 terraform init
-terraform apply -target=aws_acm_certificate.scim_bridge_cert
 terraform plan -out=./op-scim.plan
 # Validate what this plan does by reading it
 terraform apply ./op-scim.plan
