@@ -146,9 +146,9 @@ resource "aws_security_group" "scim-bridge-sg" {
 
 resource "aws_security_group" "service_security_group" {
   ingress {
-    from_port = 0
-    to_port   = 0
-    protocol  = "-1"
+    from_port = 3002
+    to_port   = 3002
+    protocol  = "tcp"
     # Only allowing traffic in from the load balancer security group
     security_groups = [aws_security_group.scim-bridge-sg.id]
   }
@@ -177,7 +177,7 @@ resource "aws_lb_listener" "listener_https" {
   load_balancer_arn = aws_alb.scim-bridge-alb.arn
   port              = 443
   protocol          = "HTTPS"
-  certificate_arn   = aws_acm_certificate.scim_bridge_cert.arn
+  certificate_arn   = aws_acm_certificate_validation.scim_bridge_cert_validate.certificate_arn
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.target_group_http.arn
@@ -201,6 +201,11 @@ resource "aws_acm_certificate" "scim_bridge_cert" {
   lifecycle {
     create_before_destroy = true
   }
+}
+
+resource "aws_acm_certificate_validation" "scim_bridge_cert_validate" { 
+  certificate_arn         = aws_acm_certificate.scim_bridge_cert.arn
+  validation_record_fqdns = [for record in aws_route53_record.scim_bridge_cert_validation : record.fqdn]
 }
 
 /* If you are not using AWS Route 53 and AWS Certificate Manager for your DNS, 
