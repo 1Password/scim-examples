@@ -24,7 +24,7 @@ Your terraform.tfvars file should look something like this:
 domain_name = "scim-bridge.yourcompany.com"
 dns_zone_id = "RANDOMLETTERS123"
 ```
-Note: If you are not using Route53, you don't need to set the zone id and can remove that line from the tfvars file.
+Note: If you are not using Route53, you don't need to set the zone id and can remove that line from the tfvars file. You will also need to comment out or remove the last section of the terraform.tf file that creates the route53 entry (below the comment)
 
 Now run the following commands (Note: If you are not using Route53 the second command is unnecessary):
 ```
