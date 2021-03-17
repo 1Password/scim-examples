@@ -24,7 +24,7 @@ Your terraform.tfvars file should look something like this:
 domain_name = "scim-bridge.yourcompany.com"
 dns_zone_id = "RANDOMLETTERS123"
 ```
-Note: If you are not using Route53, you don't need to set the zone id and can remove that line from the tfvars file. You will also need to comment out or remove the last section of the terraform.tf file that creates the route53 entry (below the comment)
+Note: If you are not using Route53, you don't need to set the zone id and can remove that line from the tfvars file. You will also need to comment out or remove the last section of the terraform.tf file that creates the route53 entry (below the comment) and remove `certificate_arn   = aws_acm_certificate_validation.scim_bridge_cert_validate.certificate_arn` and replace it with `certificate_arn   = aws_acm_certificate.scim_bridge_cert.arn`.
 
 Now run the following commands (Note: If you are not using Route53 the second command is unnecessary):
 ```
@@ -39,4 +39,6 @@ After a few minutes, if you go to the SCIM Bridge URL you set, you should be abl
 
 If you want to check out the logs for your scim bridge, in AWS go to Cloudwatch -> Log Groups and you should see the log group that was printed out at the end of your terraform apply. You can then see the scim-bridge and redis container logs. 
 
-Note: If you are using this as a guide but not running it exactly, ensure that you are `base64url` encoding the scimsession and storing it in a secret as plaintext (not json, not wrapped in quotation marks)
+Notes 
+1. If you are using this as a guide but not running it exactly, ensure that you are `base64url` encoding the scimsession and storing it in a secret as plaintext (not json, not wrapped in quotation marks)
+2. If you are not using the default vpc, you may need to specify sepcific subnets in the alb, ie. subnets = ["subnet-1234", "subnet-5678"]
