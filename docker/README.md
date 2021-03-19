@@ -141,12 +141,16 @@ This should seamlessly upgrade your SCIM Bridge to the latest version. The proce
 
 As of October 2020, if you’re upgrading from a previous version of the repository, ensure that you’ve reconfigured your environment variables within `scim.env` before upgrading.
 
+#### March 2021 Update (SCIM Bridge 2.0)
+
+The environment variables `OP_REDIS_HOST` and `OP_REDIS_PORT` have been deprecated in favour of `OP_REDIS_URL`, which takes a full `redis://` or `rediss://` (for TLS) redis URL. For example: `OP_REDIS_URL=redis://redis:6379`
+
 ### Advanced `scim.env` file options
 
 These should only be used for advanced setups.
 
 * `OP_PORT` - when `OP_LETSENCRYPT_DOMAIN` is set to blank, you can use `OP_PORT` to change the default port from 3002 to one of your choosing.
-* `OP_REDIS_HOST` - you can specify either a hostname or IP address here to point towards an alternative redis host. You can then strip out the sections in `docker-compose.yml` that refer to redis to not deploy that container. Note that redis is still required for the SCIM Bridge to function.
+* `OP_REDIS_URL` - you can specify `redis://` or `rediss://` (for TLS) URL here to point towards an alternative redis host. You can then strip out the sections in `docker-compose.yml` that refer to redis to not deploy that container. Note that redis is still required for the SCIM Bridge to function.
 
 #### Generating `scim.env` file on Windows
 

@@ -122,6 +122,10 @@ kubectl describe service/op-scim-bridge
 
 This is a one-time operation to change the deployment and service names of the SCIM Bridge so they are more easily identifiable to administrators.
 
+### March 2021 Upgrade Changes (SCIM Bridge 2.0)
+
+As of March 2021, the environment variables `OP_REDIS_HOST` and `OP_REDIS_PORT` have been deprecated and replaced with `OP_REDIS_URL`. Ensure that your `op-scim-config.yaml` file has changed to reflect this new environment variable, and reapplied to your pods with `kubectl apply -f op-scim-config.yaml`.
+
 ## Advanced deployments
 
 The following are helpful tips in case you wish to perform an advanced deployment.
@@ -132,6 +136,6 @@ In `op-scim-config.yaml`, you can set the `OP_LETSENCRYPT_DOMAIN` variable to bl
 
 ### External redis server
 
-If you are using an existing redis instance that's not running on `redis:6379`, you can change the `OP_REDIS_HOST` and `OP_REDIS_PORT` variables in `op-scim-config.yaml`.
+If you are using an existing redis instance that's not running on `redis://redis:6379`, you can change the `OP_REDIS_URL` variable in `op-scim-config.yaml`.
 
 You would then omit the the `redis-*.yaml` files when deploying to your Kubernetes cluster.
