@@ -146,3 +146,7 @@ In `op-scim-config.yaml`, you can set the `OP_LETSENCRYPT_DOMAIN` variable to bl
 If you are using an existing redis instance that's not running on `redis://redis:6379`, you can change the `OP_REDIS_URL` variable in `op-scim-config.yaml`.
 
 You would then omit the the `redis-*.yaml` files when deploying to your Kubernetes cluster.
+
+### JSON-formatted Logs
+
+You can set `OP_JSON_LOGS` to `1` if you would like the SCIM bridge to output logs in JSON format. This can be helpful if you are doing custom log ingestion in your environment.
