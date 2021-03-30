@@ -60,7 +60,8 @@ data "template_file" "environment" {
   template = file("${path.module}/user_data/02-environment.yml")
 
   vars = {
-    REDISURL            = var.cache_url
+    REDIS               = var.cache_dns_name
+    REDISPORT           = var.cache_port
     SCIM_USER           = var.scim_user
     SCIM_GROUP          = var.scim_group
     SCIM_PATH           = var.scim_path

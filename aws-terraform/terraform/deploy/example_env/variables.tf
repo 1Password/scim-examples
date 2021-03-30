@@ -148,7 +148,10 @@ data "aws_ami" "ubuntu20" {
 
 // cache variables:
 
-variable "cache_url" {
-  default = "redis://localhost:6379"
+variable "cache_port" {
+  default = "6379"
 }
 
+variable "cache_dns_name" {
+  default = "localhost"
+}

@@ -3,7 +3,8 @@
 write_files:
     # configure op-scim service/systemd unit default environment variables
     - content: |
-        REDISURL="${REDISURL}"
+        REDIS="${REDIS}"
+        REDISPORT="${REDISPORT}"
         SCIM_USER="${SCIM_USER}"
         SCIM_GROUP="${SCIM_GROUP}"
         SCIM_PATH="${SCIM_PATH}"
