@@ -1,10 +1,10 @@
-## 1Password SCIM Bridge deployment examples
+## 1Password SCIM bridge deployment examples
 
-Here you can find configuration files and best practice instructions for deploying the 1Password SCIM Bridge on various public and private cloud providers.
+Here you can find configuration files and best practice instructions for deploying the 1Password SCIM bridge on various public and private cloud providers.
 
 ### Before Deploying 
 
-Before you begin deploying the 1Password SCIM Bridge, please refer to the [Preparation Guide](https://github.com/1Password/scim-examples/tree/master/PREPARATION.md). You will need to make some decisions about certain key details, and it also contains ways to avoid common pitfalls.
+Before you begin deploying the 1Password SCIM bridge, please refer to the [Preparation Guide](https://github.com/1Password/scim-examples/tree/master/PREPARATION.md). You will need to make some decisions about certain key details, and it also contains ways to avoid common pitfalls.
 
 ## Automatic (one click) Deployment
 
