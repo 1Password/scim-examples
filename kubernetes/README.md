@@ -147,6 +147,10 @@ If you are using an existing redis instance that's not running on `redis://redis
 
 You would then omit the the `redis-*.yaml` files when deploying to your Kubernetes cluster.
 
-### JSON-formatted Logs
+### Human-Readable Logs
 
-You can set `OP_JSON_LOGS` to `1` if you would like the SCIM bridge to output logs in JSON format. This can be helpful if you are doing custom log ingestion in your environment.
+You can set `OP_PRETTY_LOGS` to `1` if you would like the SCIM bridge to output logs in a human-readable format. This can be helpful if you aren’t planning on doing custom log ingestion in your environment.
+
+### Debug Mode
+
+You can set `OP_DEBUG` to `1` to enable debug output in the logs. Useful for troubleshooting or when contacting 1Password Support.

@@ -8,4 +8,5 @@ data:
   # (advanced) only change the options below if you need to
   OP_REDIS_URL: "redis://op-scim-redis:6379"
   OP_SESSION: "/secret/scimsession"
-  OP_JSON_LOGS: 0
+  OP_PRETTY_LOGS: 0
+  OP_DEBUG: 0
