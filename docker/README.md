@@ -80,6 +80,8 @@ sed -i '' -e "s/OP_SESSION=$/OP_SESSION=$SESSION/" ./scim.env
 
 You’ll also need to set the environment variable `OP_LETSENCRYPT_DOMAIN` within `scim.env` to the URL you selected during [PREPARATION.md](/PREPARATION.md). Open that in your preferred text editor and change `OP_LETSENCRYPT_DOMAIN` to that domain name.
 
+Ensure that `OP_LETSENCRYPT_DOMAIN` is set to the domain name you’ve set up before continuing.
+
 And finally, use `docker-compose` to deploy:
 
 ```bash
@@ -153,6 +155,8 @@ The following options are available for advanced or custom deployments. Unless y
 
 * `OP_PORT` - when `OP_LETSENCRYPT_DOMAIN` is set to blank, you can use `OP_PORT` to change the default port from 3002 to one of your choosing.
 * `OP_REDIS_URL` - you can specify `redis://` or `rediss://` (for TLS) URL here to point towards an alternative Redis host. You can then strip out the sections in `docker-compose.yml` that refer to Redis to not deploy that container. Note that Redis is still required for the SCIM bridge to function.
+* `OP_PRETTY_LOGS` - can be set to `1` if you would like the SCIM bridge to output logs in a human-readable format. This can be helpful if you aren’t planning on doing custom log ingestion in your environment.
+* `OP_DEBUG` - can be set to `1` to enable debug output in the logs. Useful for troubleshooting or when contacting 1Password Support.
 
 #### Generating `scim.env` file on Windows
 
