@@ -129,6 +129,7 @@ With the release of SCIM bridge 2.0, the environment variables `OP_REDIS_HOST` a
 ```bash
 cd scim-examples/kubernetes
 git pull
+kubectl delete configmaps op-scim-configmap
 kubectl apply -f .
 kubectl scale deploy op-scim-bridge --replicas=0 && sleep 3 && kubectl scale deploy op-scim-bridge --replicas=1
 ```
