@@ -1,16 +1,14 @@
-# Deploying the 1Password SCIM Bridge in AWS/Terraform
+# Deploying the 1Password SCIM bridge in AWS/Terraform
 
 This document describes deploying the 1Password SCIM bridge to your Amazon Web Service cloud services using Terraform.
 
-
 ## Preparing
 
-This is only an example of how you could deploy the 1Password SCIM Bridge to your existing AWS infrastructure. As an advanced form of deployment, this AWS/Terraform example can be integrated into your existing infrastructure. Feel free to modify the deployment to suit your specific needs.
+This is only an example of how you could deploy the 1Password SCIM bridge to your existing AWS infrastructure. As an advanced form of deployment, this AWS/Terraform example can be integrated into your existing infrastructure. Feel free to modify the deployment to suit your specific needs.
 
-If you find that you are not using a majority of the services listed in this documentation within your AWS account - for instance, you have an external DNS provider, or you are providing your own certificates through a third-party service - consider deploying through [Kubernetes](https://github.com/1Password/scim-examples/tree/master/kubernetes/README.md) using AWS Elastic Kubernetes Service (EKS). The 1Password SCIM Bridge is not a resource-intensive service, and a full AWS deployment may include more infrastructure than you require, unless it fits neatly into your existing setup.
+If you find that you are not using a majority of the services listed in this documentation within your AWS account - for instance, you have an external DNS provider, or you are providing your own certificates through a third-party service - consider deploying through [Kubernetes](https://github.com/1Password/scim-examples/tree/master/kubernetes/README.md) using AWS Elastic Kubernetes Service (EKS). The 1Password SCIM bridge is not a resource-intensive service, and a full AWS deployment may include more infrastructure than you require, unless it fits neatly into your existing setup.
 
 To continue, please ensure you've read through [PREPARATION.md](/PREPARATION.md) before beginning deployment.
-
 
 ## Deployment overview
 
@@ -20,19 +18,16 @@ The minimum supported version of Terraform is `0.12.x`.
 
 You will also want to ensure the `aws` and `terraform` CLI tools are installed for your operating system.
 
-
 ### Instance Size
 
 For most installations, one [t3.micro](https://github.com/1Password/scim-examples/tree/master/aws-terraform/terraform/deploy/example_env/variables.tf#L96) size instance will be adequate to serve Identity Provider requests. We recommend enabling auto-scaling, but it is not strictly necessary.
 
-
 ### AWS Components
 
-* **AWS Elastic Compute Cloud** - Elastic Compute Cloud (EC2) provides the compute necessary to deploy the SCIM Bridge.
+* **AWS Elastic Compute Cloud** - Elastic Compute Cloud (EC2) provides the compute necessary to deploy the SCIM bridge.
 * **AWS Key Management Service and Secrets Manager** - Key Management Service (KMS) key is used to encrypt/decrypt Secrets Manager data. You’ll be placing the `scimsession` file (mentioned in [PREPARATION.md](/PREPARATION.md)) in the steps outlined here.
 * **AWS S3 Bucket** - This can be used to store the terraform state file, load balancer logs, and so on.
 * **AWS Certificate Manager** - Used to manage SSL certificates for your deployment.
-
 
 ## Code Structure
 
@@ -88,14 +83,14 @@ Custom Key Management Service key can be specified by `--kms-key-id <kms_key>`. 
 5. Use the following `terraform` commands to deploy and verify your installation. From the `terraform/deploy/{testing,production}` directory:
 
 ```bash
-  terraform init
-  terraform plan -out=./op-scim.plan
-  terraform apply ./op-scim.plan
+terraform init
+terraform plan -out=./op-scim.plan
+terraform apply ./op-scim.plan
 ```
 
 6. Update/Create 1Password SCIM configuration in your Identity Provider using your generated [bearer token](/PREPARATION.md) and newly-created subdomain.
 
-7. Test your SCIM Bridge deployment using the following `curl` command:
+7. Test your SCIM bridge deployment using the following `curl` command:
 
 ```bash
 curl --header "Authorization: Bearer TOKEN_GOES_HERE" https://<domain>/scim/Users
@@ -107,7 +102,6 @@ curl --header "Authorization: Bearer TOKEN_GOES_HERE" https://<domain>/scim/User
 
 All logs go to `/var/log/syslog` (AWS EC2 instance OS). You can use the AWS System Manager to view logs for your instance.
 
-
 ### Upgrading and Redeployment
 
 You can destroy and redeploy the instance whenever you feel the need to. No permanent data is stored within the SCIM bridge instance itself, as secrets are stored in the AWS Secrets Manager. This is useful for upgrading your SCIM bridge with important bugfix or feature releases.
@@ -116,14 +110,13 @@ You can destroy and redeploy the instance whenever you feel the need to. No perm
   terraform destroy
 ```
 
-
 ### Debian Package
 
-The 1Password SCIM Bridge is distributed as a Debian package and installed automatically during the deployment process. The following commands are run during the deployment:
+The 1Password SCIM bridge is distributed as a Debian package and installed automatically during the deployment process. The following commands are run during the deployment:
 
 ```bash
-- curl -L https://apt.agilebits.com/op-scim/1Password.asc 2> /dev/null | apt-key add -
-- echo '${SCIM_REPO}' > /etc/apt/sources.list.d/op-scimrepo.list
-- apt-get -y -qq update && apt-get -y -qq install op-scim
-- echo '10 * * * * root /usr/local/bin/op-scim-upgrade.sh 2>&1 | logger -t op-scim-deploy-cron' > /etc/cron.d/50_op-scim && chmod 0644 /etc/cron.d/50_op-scim
+curl -L https://apt.agilebits.com/op-scim/1Password.asc 2> /dev/null | apt-key add -
+echo '${SCIM_REPO}' > /etc/apt/sources.list.d/op-scimrepo.list
+apt-get -y -qq update && apt-get -y -qq install op-scim
+echo '10 * * * * root /usr/local/bin/op-scim-upgrade.sh 2>&1 | logger -t op-scim-deploy-cron' > /etc/cron.d/50_op-scim && chmod 0644 /etc/cron.d/50_op-scim
 ```

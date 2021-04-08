@@ -1,8 +1,9 @@
 version: "2.2"
 services:
   scim:
-    image: 1password/scim:v1.6.2
+    image: 1password/scim:v2.0.0
     ports:
+      - "3002:3002"
       - "80:8080"
       - "443:8443"
     networks:
@@ -11,8 +12,6 @@ services:
     restart: always
   redis:
     image: redis:latest
-    expose:
-      - "6379"
     networks:
       - op-scim
     restart: always

@@ -1,4 +1,4 @@
-# Deploying the 1Password SCIM Bridge on Kubernetes
+# Deploying the 1Password SCIM bridge on Kubernetes
 
 This example explains how to deploy the 1Password SCIM bridge on a Kubernetes cluster. It assumes your Kubernetes cluster supports "load balancer" services.
 
@@ -10,20 +10,20 @@ The deployment process consists of these steps:
 
 1. Create a Kubernetes secret with your `scimsession` file
 2. Configure the SCIM bridge (through the `op-scim-config.yaml` file)
-3. Deploy the SCIM Bridge and Redis services
-4. Set up DNS entries for your SCIM Bridge
+3. Deploy the SCIM bridge and Redis services
+4. Set up DNS entries for your SCIM bridge
 
 ## Structure
 
-- `op-scim-deployment.yaml`: The SCIM Bridge deployment.
-- `op-scim-service.yaml`: Public load balancer for the SCIM Bridge server.
-- `op-scim-config.yaml`: Configuration for the SCIM Bridge server. You’ll be modifying this file during the deployment.
+- `op-scim-deployment.yaml`: The SCIM bridge deployment.
+- `op-scim-service.yaml`: Public load balancer for the SCIM bridge server.
+- `op-scim-config.yaml`: Configuration for the SCIM bridge server. You’ll be modifying this file during the deployment.
 - `redis-deployment.yaml`:  [(optional*)](#external-redis-server) A redis server deployment.
 - `redis-service.yaml`:  [(optional*)](#external-redis-server) Kubernetes service for the redis deployment.
 
 ## Preparing
 
-Please ensure you've read through the [PREPARATION.md](/PREPARATION.md) document before beginning deployment.
+Ensure you've read through the [PREPARATION.md](/PREPARATION.md) document before beginning deployment.
 
 ## Clone `scim-examples`
 
@@ -51,7 +51,7 @@ kubectl create secret generic scimsession --from-file=/path/to/scimsession
 
 ## Configuring the SCIM bridge
 
-You'll need to edit the `op-scim-config.yaml` file and change the variable `OP_LETSENCRYPT_DOMAIN` to the domain you've decided on for your SCIM Bridge. This allows LetsEncrypt to issue your deployment an SSL certificate necessary for encrypted traffic.
+You'll need to edit the `op-scim-config.yaml` file and change the variable `OP_LETSENCRYPT_DOMAIN` to the domain you've decided on for your SCIM bridge. This allows LetsEncrypt to issue your deployment an SSL certificate necessary for encrypted traffic.
 
 ## Deploy to the Kubernetes cluster
 
@@ -64,7 +64,7 @@ kubectl apply -f .
 
 ## Configuring the DNS entries
 
-The Kubernetes deployment creates a public load balancer in your environment pointing to the SCIM Bridge.
+The Kubernetes deployment creates a public load balancer in your environment pointing to the SCIM bridge.
 
 To get its public IP address:
 
@@ -87,11 +87,11 @@ You can do this with `curl`, as an example:
 curl --header "Authorization: Bearer TOKEN_GOES_HERE" https://<domain>/scim/Users
 ```
 
-You can now continue with the administration guide to configure your Identity Provider to enable provisioning with your SCIM Bridge.
+You can now continue with the administration guide to configure your Identity Provider to enable provisioning with your SCIM bridge.
 
 ## Upgrading
 
-To upgrade your SCIM Bridge, follow these steps:
+To upgrade your SCIM bridge, follow these steps:
 
 ```bash
 cd scim-examples/
@@ -100,11 +100,11 @@ cd kubernetes/
 kubectl apply -f .
 ```
 
-This will upgrade your SCIM Bridge to the latest version, which should take about 2-3 minutes for Kubernetes to process.
+This will upgrade your SCIM bridge to the latest version, which should take about 2-3 minutes for Kubernetes to process.
 
 ### October 2020 Upgrade Changes
 
-As of October 2020, the `scim-examples` Kubernetes deployment now uses `op-scim-config.yaml` to set the configuration needed for your SCIM Bridge, and has changed the deployment names from `op-scim` to `op-scim-bridge`, and `redis` to `op-scim-redis` for clarity and consistency. 
+As of October 2020, the `scim-examples` Kubernetes deployment now uses `op-scim-config.yaml` to set the configuration needed for your SCIM bridge, and has changed the deployment names from `op-scim` to `op-scim-bridge`, and `redis` to `op-scim-redis` for clarity and consistency. 
 
 You’ll need to re-configure your options in `op-scim-config.yaml`, particularly `OP_LETSENCRYPT_DOMAIN`. You may also want to delete your previous `op-scim` and `redis` deployments to prevent conflict between the two versions.
 
@@ -113,14 +113,26 @@ kubectl delete deployment/op-scim deployment/redis
 kubectl apply -f .
 ```
 
-You’ll then need to update your SCIM Bridge’s domain name DNS record. You can find the IP for that with:
+You’ll then need to update your SCIM bridge’s domain name DNS record. You can find the IP for that with:
 
 ```bash
 kubectl describe service/op-scim-bridge
 # look for ‘LoadBalancer Ingress’
 ```
 
-This is a one-time operation to change the deployment and service names of the SCIM Bridge so they are more easily identifiable to administrators.
+This is a one-time operation to change the deployment and service names of the SCIM bridge so they are more easily identifiable to administrators.
+
+### April 2021 Upgrade Changes (SCIM bridge 2.0)
+
+With the release of SCIM bridge 2.0, the environment variables `OP_REDIS_HOST` and `OP_REDIS_PORT` have been deprecated and in favour of `OP_REDIS_URL`. Ensure that your `op-scim-config.yaml` file has changed to reflect this new environment variable, and reapplied to your pods with:
+
+```bash
+cd scim-examples/kubernetes
+git pull
+kubectl delete configmaps op-scim-configmap
+kubectl apply -f .
+kubectl scale deploy op-scim-bridge --replicas=0 && sleep 3 && kubectl scale deploy op-scim-bridge --replicas=1
+```
 
 ## Advanced deployments
 
@@ -128,10 +140,18 @@ The following are helpful tips in case you wish to perform an advanced deploymen
 
 ### External load balancer
 
-In `op-scim-config.yaml`, you can set the `OP_LETSENCRYPT_DOMAIN` variable to blank, which will have the SCIM Bridge serve on port 3002. You can then map your pre-existing webserver (Apache, NGINX, etc). You will no longer be issued a certificate by LetsEncrypt.
+In `op-scim-config.yaml`, you can set the `OP_LETSENCRYPT_DOMAIN` variable to blank, which will have the SCIM bridge serve on port 3002. You can then map your pre-existing webserver (Apache, NGINX, etc). You will no longer be issued a certificate by LetsEncrypt.
 
 ### External redis server
 
-If you are using an existing redis instance that's not running on `redis:6379`, you can change the `OP_REDIS_HOST` and `OP_REDIS_PORT` variables in `op-scim-config.yaml`.
+If you are using an existing redis instance that's not running on `redis://redis:6379`, you can change the `OP_REDIS_URL` variable in `op-scim-config.yaml`.
 
 You would then omit the the `redis-*.yaml` files when deploying to your Kubernetes cluster.
+
+### Human-Readable Logs
+
+You can set `OP_PRETTY_LOGS` to `1` if you would like the SCIM bridge to output logs in a human-readable format. This can be helpful if you aren’t planning on doing custom log ingestion in your environment.
+
+### Debug Mode
+
+You can set `OP_DEBUG` to `1` to enable debug output in the logs. Useful for troubleshooting or when contacting 1Password Support.
