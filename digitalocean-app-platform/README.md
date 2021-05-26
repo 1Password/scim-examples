@@ -20,9 +20,9 @@ To get started with deploying the SCIM bridge using App Platform, you'll need:
 * Access to create a Droplet for Redis in your organization's DigitalOcean tenant.
 
 
-### Step One: Setting up your Redis Droplet
+### Step One: Setting up Redis
 
-Before you deploy the SCIM bridge application using App Platform, a redis database must be created first, so that you can add the connection details for your database to the application at setup.
+Before you deploy the SCIM bridge application using App Platform, a redis database must be created first, so that you can add the connection details for your database to the application at setup. There are two options for setting up a redis database: creating a Droplet in DigitalOcean and installing redis onto it or using DigitalOcean's Managed Redis database solution.
 
 To create a Droplet:
 
@@ -40,6 +40,22 @@ Once the creation process of your Droplet is complete:
 * At this point, you will want to install redis on your Droplet. DigitalOcean provides detailed documentaion on how to install redis on each of its provided images. Documentation can be found [here](https://www.digitalocean.com/community/tutorial_collections/how-to-install-and-secure-redis)
 * For the ```Binding to Localhost``` step in the redis documentation, you will want to ensure that you allow all connections initially, so that the SCIM application can make a connection to your Droplet. After the successful deployment of your SCIM application, you can lock down access to your redis Droplet, ensuring that your SCIM application only has access to that Droplet.
 
+If you prefer to use DigitalOcean's Managed Redis Database solution:
+
+* Under Manage in the left-hand navigation menu, select ```Databases``` or select the Create dropdown menu in the top right corner of your DigitalOcean tenant and select Databases.
+* Choose Redis as your Database Engine.
+* Under Choose your Configuration, leaving the ```Machine Type``` set to the ```Basic Nodes``` option is sufficient.
+* Choose a Datacenter.
+* Once you've configured the other settings on this page to your liking, click Create a Database Cluster.
+
+Once the creation process of your managed database is complete:
+
+* Click on the hostname of your new container from your list of managed databases.
+* In the top right corner, click on the ```Actions``` dropdown menu and select ```Connection details```.
+* Under the ```Public Network``` settings, you will need to take note of the hostname as well as the provided port number.
+* You can secure your database's inbound connections using DigitalOcean's ```Getting Started``` tutorial or by selecting ```Secure this database cluster by restricting access``` under the ```Trusted Sources``` section on the Overview page. You will want to complete this step after you've successfully deployed the application in Step Two, so that you can add the ip address of the application's container to that section. 
+
+
 ### Step Two: Building and Deploying using App Platform
 
 Now that a redis Droplet has been created, you can start the deployment process of the SCIM application.
@@ -52,7 +68,8 @@ Now that a redis Droplet has been created, you can start the deployment process 
 * You can choose to allow or deny Autodeploy code changes.
 * Click ```Next```.
 * To configure your app, you will want to set two environment variables: ```OP_REDIS_URL``` and ```OP_SESSION```. 
- * ```OP_REDIS_URL``` should contain the following: redis://[ip or hostname of redis Droplet]:6379
+ * If you are using a Droplet, ```OP_REDIS_URL``` should contain the following: redis://[ip or hostname of redis Droplet]:6379 
+ * If you are using DigitalOcean's managed database solution, ```OP_REDIS_URL``` should contain the following: redis://[ip or hostname of redis Droplet]:[provided port number]
  * ```OP_SESSION``` should contain the base64 encoded version of your scimsession file. Run the following command to generate the scimsession: cat /path/to/scimsession| base64 | tr -d "\n"
  * You've successfully run the command when the base64 encoded version of your scimsession is returned in the terminal. Copy and paste the contents and paste them as the value of the OP_SESSION variable. (Do not copy the % sign at the end of the contents)
 * Set the HTTP port for the app to 3002.
