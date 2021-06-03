@@ -2,8 +2,8 @@
 This document will describe how to deploy the 1Password SCIM bridge using DigitalOcean's App Platform.
 
 ## Deployment Overview
-App Platform is DigitalOcean's new fully managed solution for deploying applications via a code repository. The idea is that there is less of
-a focus on the containers and their setup in a given environment, and more of a focus on deploying the application for immediate access. After testing
+App Platform is DigitalOcean's new, fully managed solution for deploying applications via a code repository. The idea behind App platform is that there is less of
+a focus on the manual management of containers in a given environment, and more of a focus on deploying applications for immediate access. After testing
 the deployment of the SCIM bridge with App Platform, it is now being added as a deployment option for those using DigitalOcean to host the SCIM bridge.
 
 Deploying the SCIM bridge with App Platform comes with a few benefits:
@@ -46,7 +46,7 @@ If you prefer to use DigitalOcean's Managed Redis Database solution:
 * Choose Redis as your Database Engine.
 * Under Choose your Configuration, leaving the ```Machine Type``` set to the ```Basic Nodes``` option is sufficient.
 * Choose a Datacenter.
-* Once you've configured the other settings on this page to your liking, click Create a Database Cluster.
+* Once you've configured the other settings on this page to your liking, click ```Create a Database Cluster```.
 
 Once the creation process of your managed database is complete:
 
@@ -81,11 +81,11 @@ Now that a redis Droplet has been created, you can start the deployment process 
 * Under Containers, the ```Basic Size``` is defaulted to the ```1 GB RAM | 1 vCPU``` option, however the ```512 MB RAM | 1 vCPU``` option is sufficient for this deployment.
 * ```Number of Containers``` should be set to 1.
 * Select ```Launch Basic App```.
-* The App will begin the build and deploy process. Once complete, you should receive an alert of Deployed Successfully and the URL for the SCIM bridge will be made available on the Apps Dashboard. (You may need to refresh your page if the URL is not yet visible at this point)
+* The App will begin the build and deploy process. Once complete, you should receive an alert that states ```Deployed Successfully``` and the URL for the SCIM bridge will be made available on the Apps Dashboard. (You may need to refresh your page if the URL is not yet visible at this point)
 * Click the URL link and enter the bearer token for your SCIM bridge to start Provisioning tasks.
-* Ensure that you add the provided URL and the bearer token to your IdP of choice as well.
+* Ensure that you add the provided URL and the bearer token to your IdP of choice.
 
 
-You can also deploy your application using this Deploy to DigitalOcean button below, which is a quick link that will start the process of Step Two:
+You can also deploy your application using the Deploy to DigitalOcean button below, which is a quick link that will start the process of Step Two:
 
 [![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)
