@@ -2,9 +2,6 @@
 This document will describe how to deploy the 1Password SCIM bridge using DigitalOcean's App Platform.
 
 ## Deployment Overview
-App Platform is DigitalOcean's new, fully managed solution for deploying applications via a code repository. The idea behind App platform is that there is less of
-a focus on the manual management of containers in a given environment, and more of a focus on deploying applications for immediate access. After testing
-the deployment of the SCIM bridge with App Platform, it is now being added as a deployment option for those using DigitalOcean to host the SCIM bridge.
 
 Deploying the SCIM bridge with App Platform comes with a few benefits:
 * App Platform will provide and host the URL for your SCIM bridge; you will not need to setup an A record or prepare a name for a URL as noted in [PREPARATION.md](https://github.com/1Password/scim-examples/blob/master/PREPARATION.md)
