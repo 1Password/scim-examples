@@ -4,4 +4,4 @@ spec:
  - name: web
    git:
      branch: main
-     repo_clone_url: https://github.com/1Password/scim-examples/digitalocean-app-platform
+     repo_clone_url: https://github.com/1Password/scim-examples.git
