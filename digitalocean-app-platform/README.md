@@ -85,4 +85,4 @@ Now that a redis Droplet has been created, you can start the deployment process 
 
 You can also deploy your application using the Deploy to DigitalOcean button below, which is a quick link that will start the process of Step Two:
 
-[![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)
+[![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/1Password/scim-examples/tree/digitalocean-app-platform)
