@@ -116,7 +116,7 @@ In order to provide the build system with the correct path:
 
 **The build process will automatically restart from here.**
 
-* Once complete, you should receive an alert that states ```Deployed Successfully``` and the URL for the SCIM bridge will be made available on the ```Apps Dashboard```. (You may need to refresh your page if the URL is not yet visible at this point)
+* Once complete, you should be notified that the app ```Deployed Successfully``` and the URL for the SCIM bridge will be made available on the ```Apps Dashboard```. (You may need to refresh your page if the URL is not yet visible at this point)
 * Ensure that you add the provided URL and the bearer token to your IdP and test the connection.
 * Click the URL link and enter the bearer token for your SCIM bridge to start Provisioning tasks.
 
