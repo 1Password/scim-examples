@@ -91,7 +91,7 @@ Now that a redis Droplet has been created, you can start the deployment process 
 
 
 
-#### Selecting Your Tier:
+#### Selecting a Tier:
 
 
 * The Basic tier of App Platform is suffient enough for the SCIM bridge.
