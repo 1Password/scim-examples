@@ -65,7 +65,7 @@ Now that a redis Droplet has been created, you can start the deployment process 
 * Select Launch Your App on the splash page. If you've already started using Apps, select Create App in the top right corner of the page.
 * Choose Github as your source. (You may be prompted to walk through an authorization process for your Github account and your DigitalOcean tenant)
 * Choose the repository that contains the files for the DigitalOcean App Platform deployment.
-* Choose the corresponding branch.
+* Choose the ```main``` branch.
 * You can choose to allow or deny Autodeploy code changes.
 * Click ```Next```.
 
