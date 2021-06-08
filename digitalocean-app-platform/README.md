@@ -111,8 +111,9 @@ In order to provide the build system with the correct path:
 * Click on Settings from the Apps Dashboard.
 * Scroll down to App Spec.
 * Download the App Spec.
-* Edit the file by updating the ```dockerfile_path``` value to ```/digitalocean-app-platform/Dockerfile```
+* Edit the file by updating the ```dockerfile_path``` value to ```/digitalocean-app-platform/Dockerfile``` and save it.
 * Upload your file by clicking the ```Upload``` button in the App Spec section.
+* Select Replace
 
 **The build process will automatically restart from here.**
 
