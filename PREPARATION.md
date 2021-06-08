@@ -1,6 +1,6 @@
-# Preparing to deploy your 1Password SCIM Bridge
+# Preparing to deploy your 1Password SCIM bridge
 
-This guide will help you prepare to deploy your 1Password SCIM Bridge.
+This guide will help you prepare to deploy your 1Password SCIM bridge.
 
 ## High-Level Overview
 
@@ -42,8 +42,8 @@ There are a few considerations to be aware of when deploying the SCIM bridge.
 
 * Once set up, your Identity Provider becomes the _authoritative source_ of information for your 1Password accounts. With Provisioning enabled, the ability to change the _display name_ and _account status_ are not possible through the 1Password Web UI, and must be done through your Identity Provider. You can, however, continue to issue Account Recovery requests through the 1Password Web UI with Provisioning enabled.
 * Do not attempt to perform a provisioning sync until the setup has been completed.
-* You should only run one instance of the SCIM Bridge online at a time. The SCIM Bridge is not considered a high-availablity service. Running multiple SCIM Bridges is also not supported.
-* With v1.6.0+ of the SCIM Bridge, you can enforce e-mail address changes through your Identity Provider. Users will be required to confirm those e-mail changes the next time they log in, as their e-mail address is used when generating their encryption keys.
+* You should only run one instance of the SCIM bridge online at a time. The SCIM bridge is not considered a high-availablity service. Running multiple SCIM bridges is also not supported.
+* With v1.6.0+ of the SCIM bridge, you can enforce e-mail address changes through your Identity Provider. Users will be required to confirm those e-mail changes the next time they log in, as their e-mail address is used when generating their encryption keys.
 
 For more information on our security model, you can read our [security whitepaper](https://1password.com/files/1Password-White-Paper.pdf).
 
@@ -71,3 +71,7 @@ The bearer token must be provided to your Identity Provider, but beyond that it 
 These secrets can be used to authenticate as the Automated Provisioning integration. It is a major security concern if they're not kept safe.
 
 **IMPORTANT:** To reiterate, please keep these secrets in a secure location (such as within 1Password), and **don't share them** with anyone unless absolutely necessary.
+
+## Upgrading from Provision Manager
+
+If you were previously using a Provision Manager with the SCIM bridge integration, read [this guide](https://support.1password.com/cs/upgrade-provisioning-integration/) to upgrade your account to the latest version of the integration.
