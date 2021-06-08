@@ -5,7 +5,7 @@ This document will describe how to deploy the 1Password SCIM bridge using Digita
 
 Deploying the SCIM bridge with App Platform comes with a few benefits:
 * App Platform will provide and host the URL for your SCIM bridge; you will not need to setup an A record or prepare a name for a URL as noted in [PREPARATION.md](https://github.com/1Password/scim-examples/blob/master/PREPARATION.md)
-* App Platfom will host the SCIM application for a low cost of $5/mo. An additional $5/mo or $6/mo will be utilized for the Droplet created for the Redis container. *If you will be using a managed redis database, an additional $15/mo will be charged.*
+* App Platfom will host the SCIM application for a low cost of $5/mo. An additional cost will be applied for setting up redis.
 * There's no need to manage the container that the SCIM bridge will be running on.
 
 
