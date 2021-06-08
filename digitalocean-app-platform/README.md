@@ -94,7 +94,7 @@ Now that a redis Droplet has been created, you can start the deployment process 
 #### Selecting a Tier:
 
 
-* The Basic tier of App Platform is suffient enough for the SCIM bridge.
+* The Basic tier of App Platform is suffient for the SCIM bridge.
 * Under Containers, the ```Basic Size``` is defaulted to the ```1 GB RAM | 1 vCPU``` option, however the ```512 MB RAM | 1 vCPU``` option is sufficient for this deployment.
 * ```Number of Containers``` should be set to 1.
 * Select ```Launch Basic App```.
