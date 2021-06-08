@@ -3,7 +3,7 @@ spec:
  services:
  - dockerfile_path: /digitalocean-app-platform/Dockerfile
   github:
-    branch: digitalocean-app-platform
+    branch: main
     deploy_on_push: true
     repo: 1Password/scim-examples
   name: scim
