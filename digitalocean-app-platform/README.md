@@ -91,14 +91,33 @@ Now that a redis Droplet has been created, you can start the deployment process 
 
 
 
-#### Selecting Your Tier & Deployment:
+#### Selecting Your Tier:
 
 
 * The Basic tier of App Platform is suffient enough for the SCIM bridge.
 * Under Containers, the ```Basic Size``` is defaulted to the ```1 GB RAM | 1 vCPU``` option, however the ```512 MB RAM | 1 vCPU``` option is sufficient for this deployment.
 * ```Number of Containers``` should be set to 1.
 * Select ```Launch Basic App```.
-* The App will begin the build and deploy process. Once complete, you should receive an alert that states ```Deployed Successfully``` and the URL for the SCIM bridge will be made available on the ```Apps Dashboard```. (You may need to refresh your page if the URL is not yet visible at this point)
+
+
+
+#### Deployment:
+
+
+* The App will begin the build and deploy process but the build will fail. This is related to the Dockerfile not being located at the root of the repo as mentioned earlier. Although the ```dockerfile_path``` is correctly specified in the ```deploy.template.yaml``` file, this is only provided to DigitalOcean's app detection system and not the build system.
+
+In order to provide the build system with the correct path:
+
+* Click on Settings from the Apps Dashboard.
+* Scroll down to App Spec.
+* Download the App Spec.
+* Edit the file by updating the ```dockerfile_path``` value to ```/digitalocean-app-platform/Dockerfile```
+* Upload your file by clicking the ```Upload``` button in the App Spec section.
+
+**The build process will automatically restart from here.**
+
+* Once complete, you should receive an alert that states ```Deployed Successfully``` and the URL for the SCIM bridge will be made available on the ```Apps Dashboard```. (You may need to refresh your page if the URL is not yet visible at this point)
+* Ensure that you add the provided URL and the bearer token to your IdP and test the connection.
 * Click the URL link and enter the bearer token for your SCIM bridge to start Provisioning tasks.
-* Ensure that you add the provided URL and the bearer token to your IdP.
+
 
