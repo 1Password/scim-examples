@@ -1,42 +1,97 @@
 # Deploying the 1Password SCIM Bridge in AWS ECS with Terraform
 
-This document describes deploying the 1Password SCIM bridge to your Amazon Web Service Elastic Container Service Fargate using Terraform. It's just a suggested starting point - you may be using different services for different things, this example uses only AWS products. Please familiarize yourself with [PREPARATION.md](/PREPARATION.md) before beginning.
+This guide will run you through a deployment of the 1Password SCIM bridge to your Amazon Web Service Elastic Container Service (ECS) Fargate using Terraform. 
 
-Prerequisites
-- [terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
-- AWS credentials configured (either through $HOME/.aws/credentials or environment variable)
-  see: [Terraform AWS authentication](https://registry.terraform.io/providers/hashicorp/aws/latest/docs#authentication)
-- (Optional) DNS Zone in Route 53
-- scimsession file and bearer token ([follow step 1 here](https://support.1password.com/scim/))
+Note that due to the highly advanced and customizable nature of Fargate, this is only a suggested starting point. You may modify it to your needs to fit within your existing infrastructure.
 
-1. Copy `terraform.tfvars.template` to `terraform.tfvars`
+# Prerequisites
 
-2. Copy the `scimsession` file in the terraform code directory
+Before beginning, familiarize yourself with [PREPARATION.md](/PREPARATION.md) and complete the necessary steps there.
 
-3. (Optional) If you use route 53, save the Route53 zone ID in the `terraform.tfvars`
+- the [terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) command line tools
+- `scimsession` file and bearer token (as seen in `PREPARATION.md`)
+- (Optional) DNS Zone in Route53
 
-4. Save the full domain name you want to use as domain_name in terraform.tfvars
+## Log In With `aws`
 
-5. Create a region entry in terraform.tfvars for what region you're deploying in. You can omit this if you are using us-east-1
+Ensure you are authenticated with the `aws` tool in your local environment.
 
-Your terraform.tfvars file should look something like this:
+See [Terraform AWS Authentication](https://registry.terraform.io/providers/hashicorp/aws/latest/docs#authentication) for more details.
+
+## Configuration
+
+1. Copy `terraform.tfvars.template` to `terraform.tfvars`:
+
+```bash
+cp terraform.tfvars.template terraform.tfvars
+```
+
+2. Copy the `scimsession` file in the terraform code directory:
+
+```bash
+cp /path/to/scimsession ./
+```
+
+This will install the `scimsession` file automatically in your instance.
+
+NOTE: If you skip this step or the installation of the `scimsession` file is not successful, you can perform this step manually afterwards. Ensure you `base64` encode the `scimsession` file, and store it in a secret as plain text (not in json, and not wrapped in quotation marks).
+
+```bash
+# only required if the automatic installation of the 'scimession' file is not successful
+cat /path/to/scimsession | base64
+# copy the output to Secrets Manager
+```
+
+3. Create a region entry in `terraform.tfvars` for what region you're deploying in (default is `us-east-1`).
+
+4. (Optional) Save the full domain name you want to use as domain_name in `terraform.tfvars`:
+
+With the SCIM bridge, you have two options for securing it with TLS:
+
+* Allowing the SCIM bridge to use the complimentary Let’s Encrypt service to receive one
+* Using AWS’s Certificate Manager service
+
+If you are _not_ using Certificate Manager, be sure to set the domain below.
+
+Otherwise, if you _are_ using Certificate Manager, you can skip this step.
+
 ```
 domain_name = "scim-bridge.yourcompany.com"
-dns_zone_id = "RANDOMLETTERS123"
 ```
-Note: If you are not using Route53, you don't need to set the zone id and can remove that line from the tfvars file.
 
-Now run the following commands (Note: If you are not using Route53 the second command is unnecessary):
+5. (Optional) If you use Route53, save the Route53 zone ID in the `terraform.tfvars`:
+
 ```
+dns_zone_id = "EXAMPLE123"
+```
+
+## Deploy
+
+```bash
 terraform init
 terraform plan -out=./op-scim.plan
-# Validate what this plan does by reading it
+```
+
+You will now be asked to validate your configuration. Once you are sure it is correct, run the following:
+
+```bash
 terraform apply ./op-scim.plan
 ```
-If you are using something other than Route53 for your domain name, point your domain to the `loadbalancer-dns-name` that was printed out from your terraform apply.
 
-After a few minutes, if you go to the SCIM Bridge URL you set, you should be able to enter your bearer token to verify that your scim bridge is up and running. Connect to your IdP using step 3 [here](https://support.1password.com/scim/) and go to your 1Password account and check that provisioning is on in Setting -> Provisioning and you should be good to go!
+NOTE: If you are using something other than Route53 for your domain name, point your domain to the `loadbalancer-dns-name` that was printed out from `terraform apply`.
 
-If you want to check out the logs for your scim bridge, in AWS go to Cloudwatch -> Log Groups and you should see the log group that was printed out at the end of your terraform apply. You can then see the scim-bridge and redis container logs. 
+After a few minutes and the DNS update has had time to take effect, go to the SCIM Bridge URL you set, and you should be able to enter your bearer token to verify that your SCIM bridge is up and running.
 
-Note: If you are using this as a guide but not running it exactly, ensure that you are `base64url` encoding the scimsession and storing it in a secret as plaintext (not json, not wrapped in quotation marks)
+## Complete Setup
+
+Connect to your Identity Provider following [the remainder of our setup guide](https://support.1password.com/scim/#step-2-deploy-the-scim-bridge).
+
+## Logs
+
+If you want to view the logs for your SCIM bridge within AWS, go to **Cloudwatch -> Log Groups** and you should see the log group that was printed out at the end of your `terraform apply`. Look for `scim-bridge` and `redis` for your logs in this section.
+
+## Troubleshooting
+
+If you browse to the domain name of your SCIM bridge and are met with a `Sign In With 1Password` link, this means the `scimsession` file was not properly installed. Due to the nature of the ECS deployment, **this “sign in” option cannot be used** complete the setup of your SCIM bridge.
+
+To fix this, be sure to retry the instructions of Step 2 of Configuration. You will also need to restart your `scim-bridge` task in order for the changes to take effect when you update the `scimsession` secret.
