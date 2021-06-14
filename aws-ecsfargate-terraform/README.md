@@ -125,6 +125,6 @@ If you want to view the logs for your SCIM bridge within AWS, go to **Cloudwatch
 
 #### Prompted to Sign In
 
-If you browse to the domain name of your SCIM bridge and are met with a `Sign In With 1Password` link, this means the `scimsession` file was not properly installed. Due to the nature of the ECS deployment, **this "sign in" option cannot be used** complete the setup of your SCIM bridge.
+If you browse to the domain name of your SCIM bridge and are met with a `Sign In With 1Password` link, this means the `scimsession` file was not properly installed. Due to the nature of the ECS deployment, **this “sign in” option cannot be used** to complete the setup of your SCIM bridge.
 
 To fix this, be sure to retry the instructions of Step 2 of Configuration. You will also need to restart your `scim-bridge` task in order for the changes to take effect when you update the `scimsession` secret.
