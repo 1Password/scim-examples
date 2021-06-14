@@ -113,6 +113,7 @@ Then, reapply your Terraform settings:
 ```bash
 terraform init
 terraform plan -out=./op-scim.plan
+terraform apply ./op-scim.plan
 ```
 
 ## Troubleshooting
