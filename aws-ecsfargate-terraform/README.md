@@ -56,7 +56,7 @@ Save the full domain name you want to use as domain_name in `terraform.tfvars`:
 
 With the SCIM bridge, you have two options for securing it with TLS:
 
-* Allowing the SCIM bridge to use the complimentary Let’s Encrypt service to receive one
+* Allowing the SCIM bridge to use the complimentary Let's Encrypt service to receive one
 * Using AWS’s Certificate Manager service
 
 If you are _not_ using Certificate Manager, be sure to set the domain below.
@@ -64,7 +64,7 @@ If you are _not_ using Certificate Manager, be sure to set the domain below.
 Otherwise, if you _are_ using Certificate Manager, you can skip this step.
 
 ```
-domain_name = "scim-bridge.yourcompany.com"
+    domain_name = "scim-bridge.yourcompany.com"
 ```
 
 ### (Optional) Route53 
@@ -72,10 +72,12 @@ domain_name = "scim-bridge.yourcompany.com"
 If you use Route53, save the Route53 zone ID in the `terraform.tfvars`:
 
 ```
-dns_zone_id = "EXAMPLE123"
+    dns_zone_id = "EXAMPLE123"
 ```
 
 ## Deploy
+
+Run the following commands to create the necessary configuration settings:
 
 ```bash
 terraform init
@@ -96,6 +98,23 @@ After a few minutes and the DNS update has had time to take effect, go to the SC
 
 Connect to your Identity Provider following [the remainder of our setup guide](https://support.1password.com/scim/#step-2-deploy-the-scim-bridge).
 
+## Upgrading
+
+To upgrade your deployment, edit the `task-definitions/scim.json` file and edit the following line:
+
+```json
+    "image": "1password/scim/v2.0.x",
+```
+
+Change `v2.0.x` to the latest version [seen here](https://app-updates.agilebits.com/product_history/SCIM).
+
+Then, reapply your Terraform settings:
+
+```bash
+terraform init
+terraform plan -out=./op-scim.plan
+```
+
 ## Troubleshooting
 
 ### Logs
@@ -106,6 +125,6 @@ If you want to view the logs for your SCIM bridge within AWS, go to **Cloudwatch
 
 #### Prompted to Sign In
 
-If you browse to the domain name of your SCIM bridge and are met with a `Sign In With 1Password` link, this means the `scimsession` file was not properly installed. Due to the nature of the ECS deployment, **this “sign in” option cannot be used** complete the setup of your SCIM bridge.
+If you browse to the domain name of your SCIM bridge and are met with a `Sign In With 1Password` link, this means the `scimsession` file was not properly installed. Due to the nature of the ECS deployment, **this "sign in" option cannot be used** complete the setup of your SCIM bridge.
 
 To fix this, be sure to retry the instructions of Step 2 of Configuration. You will also need to restart your `scim-bridge` task in order for the changes to take effect when you update the `scimsession` secret.
