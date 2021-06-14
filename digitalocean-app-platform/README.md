@@ -50,7 +50,7 @@ Once the creation process of your managed database is complete:
 * Click on the hostname of your new container from your list of managed databases.
 * In the top right corner, click on the ```Actions``` dropdown menu and select ```Connection details```.
 * Under the ```Public Network``` settings, you will need to take note of the hostname as well as the provided port number.
-* You can secure your database's inbound connections using DigitalOcean's ```Getting Started``` tutorial or by selecting ```Secure this database cluster by restricting access``` under the ```Trusted Sources``` section on the Overview page. You will want to complete this step after you've successfully deployed the SCIM bridge in Step Two, so that you can add the ip address of the SCIM bridge's container to that section. 
+* You can secure your database's inbound connections using DigitalOcean's ```Getting Started``` tutorial or by selecting ```Secure this database cluster by restricting access``` under the ```Trusted Sources``` section on the Overview page. You will want to complete this step after you've successfully deployed the SCIM bridge in Step Two (below), so that you can add the ip address of the SCIM bridge's container to that section. 
 
 
 ### Step Two: Building and Deploying using App Platform
