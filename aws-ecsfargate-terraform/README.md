@@ -111,7 +111,6 @@ Change `v2.0.x` to the latest version [seen here](https://app-updates.agilebits.
 Then, reapply your Terraform settings:
 
 ```bash
-terraform init
 terraform plan -out=./op-scim.plan
 terraform apply ./op-scim.plan
 ```
