@@ -5,7 +5,7 @@ services:
     deploy:
       replicas: 1
       restart_policy:
-        condition: always
+        condition: any
     networks:
       - op-scim
     ports:
@@ -24,7 +24,7 @@ services:
     deploy:
       replicas: 1
       restart_policy:
-        condition: always
+        condition: any
     networks:
       - op-scim
 
