@@ -13,10 +13,10 @@ spec:
   - protocol: TCP
     name: https
     port: 443
-    targetPort: 8443
+    targetPort: 3002
   - protocol: TCP
     name: http
     port: 80
-    targetPort: 8080
+    targetPort: 3002
   selector:
     app: op-scim-bridge
