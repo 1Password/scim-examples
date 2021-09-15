@@ -22,6 +22,7 @@ To get started with deploying the SCIM bridge using App Platform, you'll need:
 Before you deploy the SCIM bridge using App Platform, a redis database must be created first. There are two options for setting up a redis database: creating a Droplet in DigitalOcean and installing redis onto it or using DigitalOcean's Managed redis database solution.
 
 #### To create a Droplet:
+**Note: If you are extremely comfortable with setting up redis and securing it, you are welcome to use this method. We do no provide instructions for securing it because the SCIM bridge app will not have a consisten IP address**
 
 * Under ```Manage``` in the left-hand navigation menu, select ```Droplet``` or select the ```Create``` dropdown menu in the top right corner of your DigitalOcean tenant and select ```Droplet```.
 * Choose an image for your container.
@@ -35,7 +36,7 @@ Once the creation process of your Droplet is complete:
 * Click on the hostname of your new container from your list of Droplets.
 * Click on ```Console```. (Ensure that the credentials for your image are set and that you can log into the container.)
 * At this point, you will want to install redis on your Droplet. DigitalOcean provides detailed documentaion on how to install redis onto each of its provided images. Documentation can be found [here](https://www.digitalocean.com/community/tutorial_collections/how-to-install-and-secure-redis).
-* For the ```Binding to Localhost``` step in the redis documentation, you will want to ensure that you allow all connections initially, so that the SCIM bridge can make a connection to your Droplet. After the successful deployment of your SCIM bridge, you can lock down access to your redis Droplet, ensuring that your SCIM bridge only has access to that Droplet.
+* For the ```Binding to Localhost``` step in the redis documentation, you will want to ensure that you allow all connections initially (including turning protected mode off), so that the SCIM bridge can make a connection to your Droplet. After the successful deployment of your SCIM bridge, you can lock down access to your redis Droplet, ensuring that your SCIM bridge only has access to that Droplet. 
 
 #### If you prefer to use DigitalOcean's Managed redis Database solution:
 
@@ -49,8 +50,8 @@ Once the creation process of your managed database is complete:
 
 * Click on the hostname of your new container from your list of managed databases.
 * In the top right corner, click on the ```Actions``` dropdown menu and select ```Connection details```.
-* Under the ```Public Network``` settings, you will need to take note of the hostname as well as the provided port number.
-* You can secure your database's inbound connections using DigitalOcean's ```Getting Started``` tutorial or by selecting ```Secure this database cluster by restricting access``` under the ```Trusted Sources``` section on the Overview page. You will want to complete this step after you've successfully deployed the SCIM bridge in Step Two (below), so that you can add the ip address of the SCIM bridge's container to that section. 
+* Under the ```Public Network``` settings, switch from ```Connection Parameters``` to ```Connection String``` and copy the string (it should look something like `rediss://default:password@d<something>.b.db.ondigitalocean.com:25061`
+* You can secure your database's inbound connections using DigitalOcean's ```Getting Started``` tutorial or by selecting ```Secure this database cluster by restricting access``` under the ```Trusted Sources``` section on the Overview page. You will want to complete this step after you've successfully deployed the SCIM bridge in Step Two (below), so that you can select the SCIM bridge app in that section. 
 
 
 ### Step Two: Building and Deploying using App Platform
@@ -81,7 +82,7 @@ Now that a redis Droplet has been created, you can start the deployment process 
 * To configure your app, you will need to set two environment variables: ```OP_REDIS_URL``` and ```OP_SESSION```. 
  * If you are using a Droplet, ```OP_REDIS_URL``` should contain the following: redis://[ip or hostname of redis Droplet]:6379 
  * If you are using DigitalOcean's managed database solution, ```OP_REDIS_URL``` should contain the following: redis://[ip or hostname of redis Droplet]:[provided port number]
- * ```OP_SESSION``` should contain the base64 encoded version of your scimsession file. Run the following command in a terminal to generate the scimsession in a base64 encoded format: ```cat /path/to/scimsession| base64 | tr -d "\n"```
+ * ```OP_SESSION``` should contain the base64 encoded version of your scimsession file. Run the following command in a terminal to generate the scimsession in a base64 encoded format: ```cat /path/to/scimsession | base64 | tr -d "\n"```
  * The base64 encoded version of your scimsession should be returned in the terminal. Copy and paste the contents and paste them as the value of the OP_SESSION variable. (Do not copy the ```%``` sign at the end of the contents.)
 * Set the HTTP port for the app to ```3002```.
 * Click ```Next```.
