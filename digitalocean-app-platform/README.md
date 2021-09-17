@@ -40,7 +40,7 @@ Now that Redis has been set up, you can start the deployment process of the SCIM
 6. You can choose to allow or deny Autodeploy code changes.
 7. Click ```Next```.
 
-***NOTE**: DigitalOcean will notify you that it cannot find an app in the repo. This is due to the fact that App Platform expects the Dockerfile to be located at the root of the repo. In this case, the Dockerfile is located in the ```digitalocean-app-platform``` directory and we need to specify that source directory in App Platform.*
+    ***NOTE**: DigitalOcean will notify you that it cannot find an app in the repo. This is due to the fact that App Platform expects the Dockerfile to be located at the root of the repo. In this case, the Dockerfile is located in the ```digitalocean-app-platform``` directory and we need to specify that source directory in App Platform.*
 
 8. Add ```digitalocean-app-platform``` after the ```/``` in the Source Directory field and select ```Find Directory```
 
@@ -51,11 +51,11 @@ To configure your app, you will need to add the Redis database, and set two envi
 2. Choose Previously Created DigitalOcean Database, and select the Redis database created in Step 1 under Database Cluster.
 3. Leave "Add app as a trusted source" checked to automatically restrict access to the app. Click Add Database.
 4. Enter the environment variables:
-  * `OP_REDIS_URL`=`${<your-redis-cluster>.REDIS_URL}`
-    * Replace `<your-redis-cluster>` with the name of your Redis cluster from Step 1. This will automatically bind the Redis connection string to the environment variable.
-  * `OP_SESSION`=`<base64_encoded_scimsession>`
-    *  The OP_SESSION variable should be set to the base64 encoded version of your scimsession file. Run the following command in a terminal to generate the scimsession in a base64 encoded format: ```cat /path/to/scimsession | base64 | tr -d "\n"```
-    * The base64 encoded version of your scimsession should be returned in the terminal. Copy and paste the contents and paste them as the value of the OP_SESSION variable (do not copy the ```%``` sign at the end of the output).
+    * `OP_REDIS_URL`=`${<your-redis-cluster>.REDIS_URL}`
+        * Replace `<your-redis-cluster>` with the name of your Redis cluster from Step 1. This will automatically bind the Redis connection string to the environment variable.
+    * `OP_SESSION`=`<base64_encoded_scimsession>`
+        *  The OP_SESSION variable should be set to the base64 encoded version of your scimsession file. Run the following command in a terminal to generate the scimsession in a base64 encoded format: ```cat /path/to/scimsession | base64 | tr -d "\n"```
+        * The base64 encoded version of your scimsession should be returned in the terminal. Copy and paste the contents and paste them as the value of the OP_SESSION variable (do not copy the ```%``` sign at the end of the output).
 4. Set the HTTP port for the app to ```3002```.
 5.  Click ```Next```.
 6.  Name your application.
