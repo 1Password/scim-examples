@@ -103,7 +103,7 @@ Connect to your Identity Provider following [the remainder of our setup guide](h
 To upgrade your deployment, edit the `task-definitions/scim.json` file and edit the following line:
 
 ```json
-    "image": "1password/scim/v2.0.x",
+    "image": "1password/scim:v2.0.x",
 ```
 
 Change `v2.0.x` to the latest version [seen here](https://app-updates.agilebits.com/product_history/SCIM).
