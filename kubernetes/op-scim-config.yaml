@@ -10,6 +10,7 @@ data:
   OP_SESSION: "/secret/scimsession"
   OP_PRETTY_LOGS: "0"
   OP_DEBUG: "0"
+  OP_PING_SERVER: "0"
   # (optional) uncomment this line to change the email that is used when Let's Encrypt issues your SCIM bridge a certificate
   # default: "1pw@[OP_LETSENCRYPT_DOMAIN]" 
   #OP_LETSENRYPT_EMAIL: "1pw@example.com"
