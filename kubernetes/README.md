@@ -155,3 +155,12 @@ You can set `OP_PRETTY_LOGS` to `1` if you would like the SCIM bridge to output 
 ### Debug Mode
 
 You can set `OP_DEBUG` to `1` to enable debug output in the logs. Useful for troubleshooting or when contacting 1Password Support.
+
+### Health Check Ping Server
+
+When using Let’s Encrypt on some Kubernetes clusters, health checks can fail for the SCIM bridge before the bridge is able to obtain a Let’s Encrypt certificate.
+
+You can set `OP_PING_SERVER` to `1` to enable a `/ping` endpoint on port `80` so that health checks will always be brought online. For security reasons, no other endpoints (such as `/scim`) are exposed through this port.
+
+The endpoint is disabled if `OP_LETSENCRYPT_DOMAIN` is set to blank and TLS is not utilized.
+

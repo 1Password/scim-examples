@@ -157,6 +157,7 @@ The following options are available for advanced or custom deployments. Unless y
 * `OP_REDIS_URL` - you can specify `redis://` or `rediss://` (for TLS) URL here to point towards an alternative Redis host. You can then strip out the sections in `docker-compose.yml` that refer to Redis to not deploy that container. Note that Redis is still required for the SCIM bridge to function.
 * `OP_PRETTY_LOGS` - can be set to `1` if you would like the SCIM bridge to output logs in a human-readable format. This can be helpful if you aren’t planning on doing custom log ingestion in your environment.
 * `OP_DEBUG` - can be set to `1` to enable debug output in the logs. Useful for troubleshooting or when contacting 1Password Support.
+* `OP_PING_SERVER` - can be set to `1` to enable an optional `/ping` endpoint on port `80`. Useful for health checks. Disabled if `OP_LETSENCRYPT_DOMAIN` is unset and TLS is not utilized.
 
 #### Generating `scim.env` file on Windows
 
