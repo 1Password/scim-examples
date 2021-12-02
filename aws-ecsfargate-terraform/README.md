@@ -67,13 +67,15 @@ Otherwise, if you _are_ using Certificate Manager, you can skip this step.
     domain_name = "scim-bridge.yourcompany.com"
 ```
 
-### (Optional) Route53 
+### Route53 
 
 If you use Route53, save the Route53 zone ID in the `terraform.tfvars`:
 
 ```
     dns_zone_id = "EXAMPLE123"
 ```
+
+If you are not using Route53, you will need to comment out or remove the last section of the terraform.tf file that creates the route53 entry (below the comment) and remove `certificate_arn   = aws_acm_certificate_validation.scim_bridge_cert_validate.certificate_arn` and replace it with `certificate_arn   = aws_acm_certificate.scim_bridge_cert.arn`.
 
 ## Deploy
 
