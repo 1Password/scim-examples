@@ -178,6 +178,9 @@ resource "aws_lb_listener" "listener_https" {
   port              = 443
   protocol          = "HTTPS"
   certificate_arn   = aws_acm_certificate_validation.scim_bridge_cert_validate.certificate_arn
+   /* Use the following line instead of the previous line if you're not using Route53
+  certificate_arn         = aws_acm_certificate.scim_bridge_cert.arn 
+   */
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.target_group_http.arn
@@ -203,13 +206,14 @@ resource "aws_acm_certificate" "scim_bridge_cert" {
   }
 }
 
+/* If you are not using AWS Route 53 and AWS Certificate Manager for your DNS, 
+   comment out below here */
+
 resource "aws_acm_certificate_validation" "scim_bridge_cert_validate" { 
   certificate_arn         = aws_acm_certificate.scim_bridge_cert.arn
   validation_record_fqdns = [for record in aws_route53_record.scim_bridge_cert_validation : record.fqdn]
 }
 
-/* If you are not using AWS Route 53 and AWS Certificate Manager for your DNS, 
-   comment out below here */
 resource "aws_route53_record" "scim_bridge_cert_validation" {
   for_each = {
     for dvo in aws_acm_certificate.scim_bridge_cert.domain_validation_options : dvo.domain_name => {
