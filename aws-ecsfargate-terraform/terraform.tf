@@ -168,7 +168,7 @@ resource "aws_lb_target_group" "target_group_http" {
   target_type = "ip"
   vpc_id      = data.aws_vpc.default.id
   health_check {
-    matcher = "200,301,302"
+    matcher = "200,301,302,307"
     path    = "/"
   }
 }
