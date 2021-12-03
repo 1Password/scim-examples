@@ -50,30 +50,23 @@ cat /path/to/scimsession | base64
 
 Create a region entry in `terraform.tfvars` for what region you're deploying in (default is `us-east-1`).
 
-### (Optional) Domain Name
+### Domain Name
 
-Save the full domain name you want to use as domain_name in `terraform.tfvars`:
-
-With the SCIM bridge, you have two options for securing it with TLS:
-
-* Allowing the SCIM bridge to use the complimentary Let's Encrypt service to receive one
-* Using AWS’s Certificate Manager service
-
-If you are _not_ using Certificate Manager, be sure to set the domain below.
-
-Otherwise, if you _are_ using Certificate Manager, you can skip this step.
+This example uses AWS Certificate Manager to manage the certificate. Save the full domain name you want to use as domain_name in `terraform.tfvars`:
 
 ```
     domain_name = "scim-bridge.yourcompany.com"
 ```
 
-### (Optional) Route53 
+### Route53 
 
 If you use Route53, save the Route53 zone ID in the `terraform.tfvars`:
 
 ```
     dns_zone_id = "EXAMPLE123"
 ```
+
+If you are not using Route53, you will need to comment out or remove the last section of the terraform.tf file that creates the route53 entry (below the comment) and remove `certificate_arn   = aws_acm_certificate_validation.scim_bridge_cert_validate.certificate_arn` and replace it with `certificate_arn   = aws_acm_certificate.scim_bridge_cert.arn`.
 
 ## Deploy
 
@@ -90,7 +83,7 @@ You will now be asked to validate your configuration. Once you are sure it is co
 terraform apply ./op-scim.plan
 ```
 
-NOTE: If you are using something other than Route53 for your domain name, point your domain to the `loadbalancer-dns-name` that was printed out from `terraform apply`.
+NOTE: If you are using something other than Route53 for your DNS, create a CNAME record pointing to the `loadbalancer-dns-name` that was printed out from `terraform apply`.
 
 After a few minutes and the DNS update has had time to take effect, go to the SCIM Bridge URL you set, and you should be able to enter your bearer token to verify that your SCIM bridge is up and running.
 
