@@ -169,7 +169,7 @@ resource "aws_lb_target_group" "target_group_http" {
   vpc_id      = data.aws_vpc.default.id
   health_check {
     matcher = "200,301,302"
-    path    = "/"
+    path    = "/app"
   }
 }
 
