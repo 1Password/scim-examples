@@ -1,7 +1,6 @@
 variable "aws_region" {
   type        = string
   description = ""
-  default     = "us-east-1"
 }
 
 variable "domain_name" {
@@ -9,7 +8,29 @@ variable "domain_name" {
   description = ""
 }
 
-variable "route53_zone_id" {
+variable "tags" {
+  type        = map(string)
+  description = ""
+}
+
+variable "name_prefix" {
   type        = string
+  description = ""
+}
+
+variable "vpc_name" {
+  type        = string
+  description = ""
+}
+
+variable "wildcard_cert" {
+  type        = bool
+  default     = false
+  description = ""
+}
+
+variable "using_route53" {
+  type        = bool
+  default     = true
   description = ""
 }

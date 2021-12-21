@@ -1,4 +1,18 @@
-aws_region="us-east-1"
+# Required: Set a domain name for your SCIM bridge
+domain_name   = "scim.example.com"
 
-domain_name="FILL_ME"
-route53_zone_id="FILL_ME"
+# Optional: Specify a different region
+aws_region    = "us-east-1"
+
+# Optional: Specify a VPC, add a default name prefix, and add tags for all resources
+vpc_name      = ""
+name_prefix   = ""
+tags = {
+    #key = "value"
+}
+
+# Uncomment the below line to use an existing wildcard certificate in Route 53.
+#wildcart_cert = true
+
+# Uncomment the below line if you are *not* using Route 53
+#using_route53 = false
