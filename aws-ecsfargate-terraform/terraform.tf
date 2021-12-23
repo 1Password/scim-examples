@@ -203,10 +203,10 @@ resource "aws_lb_listener" "listener_https" {
   load_balancer_arn = aws_alb.scim-bridge-alb.arn
   port              = 443
   protocol          = "HTTPS"
-  certificate_arn   = var.using_route53 ? (
-                        !var.wildcard_cert ?
-                          aws_acm_certificate_validation.scim_bridge_cert_validate[0].certificate_arn : data.aws_acm_certificate.wildcard_cert[0].arn
-                        ) : aws_acm_certificate.scim_bridge_cert[0].arn
+  certificate_arn   = !var.wildcard_cert ? (
+                        var.using_route53 ?
+                          aws_acm_certificate_validation.scim_bridge_cert_validate[0].certificate_arn : aws_acm_certificate.scim_bridge_cert[0].arn
+                        ) : data.aws_acm_certificate.wildcard_cert[0].arn                      
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.target_group_http.arn
