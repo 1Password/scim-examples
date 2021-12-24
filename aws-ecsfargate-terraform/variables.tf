@@ -32,5 +32,5 @@ variable "wildcard_cert" {
 variable "using_route53" {
   type        = bool
   default     = true
-  description = "Set to false to use an external DNS provider."
+  description = "Set to false to use an external DNS provider"
 }
