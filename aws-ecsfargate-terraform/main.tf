@@ -29,7 +29,7 @@ data "aws_vpc" "vpc" {
 }
 
 # Find the public subnets in the VPC
-data "aws_subnet_ids" "subnets" {
+data "aws_subnet_ids" "public" {
   vpc_id = data.aws_vpc.vpc.id
   tags   = var.vpc_name != "" ? { SubnetTier = "public"} : {}
 }
@@ -130,7 +130,7 @@ resource "aws_ecs_service" "scim_bridge_service" {
   }
 
   network_configuration {
-    subnets          = data.aws_subnet_ids.subnets.ids
+    subnets          = data.aws_subnet_ids.public.ids
     assign_public_ip = true
     security_groups  = [aws_security_group.service_security_group.id]
   }
@@ -143,7 +143,7 @@ resource "aws_ecs_service" "scim_bridge_service" {
 resource "aws_alb" "scim-bridge-alb" {
   name               = format("%s-%s",local.name_prefix,"alb")
   load_balancer_type = "application"
-  subnets            = data.aws_subnet_ids.subnets.ids
+  subnets            = data.aws_subnet_ids.public.ids
   security_groups    = [aws_security_group.scim-bridge-sg.id]
   
   tags               = local.tags
@@ -223,16 +223,6 @@ resource "aws_lb_listener" "listener_https" {
   }
 }
 
-output "cloudwatch_log_group" {
-  description = "Where you can find your SCIM bridge logs"
-  value       = aws_cloudwatch_log_group.scim-bridge.name
-}
-
-output "loadbalancer_dns_name" {
-  description = "The name of the load balancer to target in your DNS"
-  value       = var.using_route53 ? null : aws_alb.scim-bridge-alb.dns_name
-}
-
 data "aws_acm_certificate" "wildcard_cert" {
   count  =  !var.wildcard_cert ? 0 : 1
 
@@ -297,9 +287,4 @@ resource "aws_route53_record" "scim_bridge" {
     zone_id                = aws_alb.scim-bridge-alb.zone_id
     evaluate_target_health = true
   }
-}
-
-output "scim_bridge_url" {
-  description = "The URL of your SCIM bridge"
-  value       = "https://${var.domain_name}"
 }
