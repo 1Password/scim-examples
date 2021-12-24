@@ -4,7 +4,7 @@ domain_name   = "scim.example.com"
 # Optional: Specify a different region
 aws_region    = "us-east-1"
 
-# Optional: Specify a VPC, add a common name prefix to all resources, and add tags for all supported resources
+# Optional: Specify an existing VPC to use, add a common name prefix to all resources, and add tags for all supported resources
 vpc_name      = ""
 name_prefix   = ""
 tags = {

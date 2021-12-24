@@ -5,7 +5,7 @@ variable "aws_region" {
 
 variable "domain_name" {
   type        = string
-  description = "The public DNS name pointing to the 1Password SCIM bridge."
+  description = "The public DNS address pointing to your 1Password SCIM bridge."
 }
 
 variable "tags" {
