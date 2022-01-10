@@ -91,9 +91,9 @@ After a few minutes and the DNS update has had time to take effect, go to the SC
 
 Connect to your Identity Provider following [the remainder of our setup guide](https://support.1password.com/scim/#step-2-deploy-the-scim-bridge).
 
-## Upgrading
+## Updating
 
-To upgrade your deployment, edit the `task-definitions/scim.json` file and edit the following line:
+To update your deployment to the latest version, edit the `task-definitions/scim.json` file and edit the following line:
 
 ```json
     "image": "1password/scim:v2.0.x",
@@ -107,6 +107,10 @@ Then, reapply your Terraform settings:
 terraform plan -out=./op-scim.plan
 terraform apply ./op-scim.plan
 ```
+
+### December 2021 Update Changes
+
+As of December 2021, [the ALB health check path has changed](https://github.com/1Password/scim-examples/pull/162). If you are updating from a version earlier than 2.3.0, edit your `terraform.tf` file [to use `/app` instead of `/`](https://github.com/1Password/scim-examples/pull/162/commits/a876c46b9812e96f65e42e0441a772566ca32176#) for the health check before reapplying your Terraform settings.
 
 ## Troubleshooting
 
