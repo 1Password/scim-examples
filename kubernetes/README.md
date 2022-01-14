@@ -1,6 +1,7 @@
 # Deploying the 1Password SCIM bridge on Kubernetes
 
 This example explains how to deploy the 1Password SCIM bridge on a Kubernetes cluster. It assumes your Kubernetes cluster supports "load balancer" services.
+It also assumes that your cluster has at least 2 nodes to ensure that the SCIM bridge and Redis pods are note scheduled on the same node.
 
 You can modify this deployment to suit your environment and needs.
 

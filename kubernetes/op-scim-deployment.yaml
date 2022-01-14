@@ -28,3 +28,10 @@ spec:
         - name: scimsession
           secret:
             secretName: scimsession
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: op-scim-redis
+              topologyKey: topology.kubernetes.io/zone

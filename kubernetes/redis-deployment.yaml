@@ -13,7 +13,14 @@ spec:
         app: op-scim-redis
     spec:
       containers:
-      - name: op-scim-redis
-        image: redis:latest
-        ports:
-        - containerPort: 6379
+        - name: op-scim-redis
+          image: redis:latest
+          ports:
+            - containerPort: 6379
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: op-scim-bridge
+              topologyKey: topology.kubernetes.io/zone
