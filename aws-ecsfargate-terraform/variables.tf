@@ -34,3 +34,8 @@ variable "using_route53" {
   default     = true
   description = "Set to false to use an external DNS provider"
 }
+
+variable "log_retention_days" {
+  type        = number
+  description = "Specifies the number of days to retain log events in CloudWatch. Set to the default of 0, the log is retained indefinitely."
+}

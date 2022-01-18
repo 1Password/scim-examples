@@ -84,8 +84,10 @@ resource "aws_secretsmanager_secret_version" "scimsession_1" {
 }
 
 resource "aws_cloudwatch_log_group" "op_scim_bridge" {
-  name_prefix = local.name_prefix
-  tags        = local.tags
+  name_prefix       = local.name_prefix
+  retention_in_days = var.log_retention_days 
+  
+  tags              = local.tags
 }
 
 resource "aws_ecs_cluster" "op_scim_bridge" {
