@@ -138,7 +138,7 @@ resource "aws_ecs_service" "op_scim_bridge" {
   
   load_balancer {
     target_group_arn = aws_lb_target_group.op_scim_bridge.arn
-    container_name   = aws_ecs_task_definition.op_scim_bridge.family
+    container_name   = jsondecode(file("task-definitions/scim.json"))[0].name
     container_port   = 3002
   }
 
