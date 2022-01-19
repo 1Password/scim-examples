@@ -8,7 +8,7 @@ Note that due to the highly advanced and customizable nature of Amazon Web Servi
 
 Before beginning, familiarize yourself with [PREPARATION.md](/PREPARATION.md) and complete the necessary steps there.
 
-- [Terraform](https://www.terraform.io/downloads)
+- Install [Terraform](https://www.terraform.io/downloads)
 - `scimsession` file and bearer token (as seen in `PREPARATION.md`)
 
 ## Sign in with `aws`
