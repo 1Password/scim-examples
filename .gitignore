@@ -9,4 +9,4 @@ terraform.tfstate
 terraform.tfstate.backup
 terraform.tfvars
 .terraform*
-aws-ecsfargate-terraform/op-scim.plan
+*.plan
