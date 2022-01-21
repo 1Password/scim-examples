@@ -1,11 +1,11 @@
 variable "aws_region" {
   type        = string
-  description = "The region of the AWS account where the SCIM bridge will be deployed."
+  description = "The region of the AWS account where the 1Password SCIM bridge will be deployed."
 }
 
 variable "domain_name" {
   type        = string
-  description = "The public DNS address pointing to your 1Password SCIM bridge."
+  description = "The public DNS address pointing to your SCIM bridge."
 }
 
 variable "tags" {
@@ -15,7 +15,7 @@ variable "tags" {
 
 variable "name_prefix" {
   type        = string
-  description = "A default prefix to apply to the names of all AWS resources."
+  description = "A common prefix to apply to the names of all AWS resources."
 }
 
 variable "vpc_name" {
