@@ -11,6 +11,7 @@ services:
     ports:
       - "80:8080"
       - "443:8443"
+      - "3002:3002"
     secrets:
       - source: scimsession
         target: scimsession
