@@ -195,6 +195,8 @@ resource "aws_security_group" "alb" {
 }
 
 resource "aws_security_group" "service" {
+  # Create a security group for the service
+  vpc_id = data.aws_vpc.this.id
   
   # Only allow traffic from the load balancer security group
   ingress {
