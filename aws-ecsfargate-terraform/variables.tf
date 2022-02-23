@@ -1,8 +1,3 @@
-variable "aws_region" {
-  type        = string
-  description = "The region of the AWS account where the 1Password SCIM bridge will be deployed."
-}
-
 variable "domain_name" {
   type        = string
   description = "The public DNS address pointing to your SCIM bridge."
@@ -11,6 +6,7 @@ variable "domain_name" {
 variable "tags" {
   type        = map(string)
   description = "A set of tags to apply to all respective AWS resources."
+  default     = {}
 }
 
 variable "name_prefix" {
@@ -38,4 +34,26 @@ variable "using_route53" {
 variable "log_retention_days" {
   type        = number
   description = "Specifies the number of days to retain log events in CloudWatch. Set to the default of 0, the log is retained indefinitely."
+}
+
+variable "scimsession_arn" {
+  type        = string
+  description = "ARN of the secret storing the scimsession file."
+}
+
+variable "subnet_name" {
+  type        = string
+  description = "Regular expression for the Name tag to search for subnet ids."
+}
+
+variable "ecs_task_memory" {
+  type        = number
+  description = "Memory value to set in the task definition."
+  default     = 512
+}
+
+variable "ecs_task_cpu" {
+  type        = number
+  description = "CPU value to set in the task definition."
+  default     = 256
 }
