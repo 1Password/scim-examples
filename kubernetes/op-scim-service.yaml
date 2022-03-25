@@ -6,17 +6,18 @@ metadata:
     app: op-scim-bridge
 spec:
   type: LoadBalancer
-  # Traffic on :80 is needed for the status page and to perform the 
-  # LetsEncrypt certificate challenges after which all SCIM traffic
-  # will be served on :443.
   ports:
+  # Use this port in the standard configuration to terminate TLS at the SCIM
+  # bridge container using Let's Encrypt
   - protocol: TCP
     name: https
     port: 443
-    targetPort: 8443
-  - protocol: TCP
-    name: http
-    port: 80
-    targetPort: 8080
+    targetPort: https
+  # Use this port when terminating TLS in front of the SCIM bridge to listen
+  # for unencrypted traffic redirected from a reverse proxy or load balancer
+  #- protocol: TCP
+  #  name: http
+  #  port: 3002
+  #  targetPort: http
   selector:
     app: op-scim-bridge
