@@ -17,6 +17,7 @@ spec:
           image: redis:latest
           ports:
             - containerPort: 6379
+              name: redis
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
