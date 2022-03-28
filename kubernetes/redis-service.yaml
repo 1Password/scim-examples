@@ -6,7 +6,7 @@ metadata:
     app: op-scim-redis
 spec:
   ports:
-  - port: 6379
-    targetPort: redis
+    - port: 6379
+      targetPort: redis
   selector:
     app: op-scim-redis
