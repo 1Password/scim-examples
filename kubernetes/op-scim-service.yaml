@@ -15,9 +15,9 @@ spec:
       targetPort: https
     # Use this port when terminating TLS in front of the SCIM bridge to listen
     # for unencrypted traffic redirected from a reverse proxy or load balancer
-    #- protocol: TCP
-    #  name: http
-    #  port: 80
-    #  targetPort: http
+    # - protocol: TCP
+    #   name: http
+    #   port: 80
+    #   targetPort: http
   selector:
     app: op-scim-bridge
