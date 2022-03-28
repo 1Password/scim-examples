@@ -17,7 +17,7 @@ spec:
     # for unencrypted traffic redirected from a reverse proxy or load balancer
     #- protocol: TCP
     #  name: http
-    #  port: 3002
+    #  port: 80
     #  targetPort: http
   selector:
     app: op-scim-bridge
