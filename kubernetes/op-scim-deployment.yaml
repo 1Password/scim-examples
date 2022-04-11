@@ -26,6 +26,13 @@ spec:
             - name: scimsession
               mountPath: "/secret"
               readOnly: false
+          resources:
+            requests:
+              cpu: 125m
+              memory: 256M
+            limits:
+              cpu: 250m
+              memory: 512M
           envFrom:
             - configMapRef:
                 name: op-scim-configmap
