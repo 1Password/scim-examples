@@ -14,6 +14,7 @@ services:
     image: redis:latest
     networks:
       - op-scim
+    env_file: redis.env
     restart: always
 
 networks:
