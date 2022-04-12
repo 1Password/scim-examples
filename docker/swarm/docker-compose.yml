@@ -28,6 +28,7 @@ services:
         condition: any
     networks:
       - op-scim
+    env_file: redis.env
 
 networks:
   op-scim:
