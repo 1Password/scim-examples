@@ -136,6 +136,20 @@ Connect to your Identity Provider following [the remainder of our setup guide](h
 
 ## Updating
 
+The process for updating your infrastructure involes a few key steps. Lucky for us most of the heavy lifting is done by the `terraform` CLI.
+
+The update steps are generally as follows:
+
+1. Update any variables and task definitions as necessary
+2. Create a plan for Terraform to apply
+3. Apply the new plan to your infrastrucure
+
+Note that the `terraform` CLI will output the details of the plan in addition to saving it to an output file (`./op-scim.plan`). The plan will contain the steps necessary to bring your deployment in line with the latest configuration depending on the changes that are detected. Feel free to inspect the output to get a better idea of the steps that will be taken.
+
+Below we go into detail about some common reasons that you would want to update your infrastructure.
+
+### Updating to the latest tag version
+
 To update your deployment to the latest version, edit the `task-definitions/scim.json` file and edit the following line:
 
 ```json
@@ -150,6 +164,18 @@ Then, reapply your Terraform settings:
 terraform plan -out=./op-scim.plan
 terraform apply ./op-scim.plan
 ```
+
+### Updating to the latest configuration
+
+There may be situations where you want to update your deployment with the latest configuration changes available in this repository even if you are already on the latest `1password/scim` tag. The steps are fairly similar to updating the tag with a few minor differences.
+
+Update steps:
+
+1. [Optional] Verify that your Terraform variables (`./terraform.tfvars`) are correct and up to date
+2. [Optional] Reconcile the state between what Terraform knows about and your deployed infrastructure: `terraform refresh`
+3. Create an update plan to apply: `terraform plan -out=./op-scim.plan`
+4. Apply the plan to your infrastructure: `terraform apply ./op-scim.plan`
+5. Verify that there are no errors in the output as Terraform updates your infrastructure
 
 ### April 2022 changes
 
