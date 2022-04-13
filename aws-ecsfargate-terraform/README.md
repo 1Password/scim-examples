@@ -153,11 +153,9 @@ terraform apply ./op-scim.plan
 
 ### April 2022 changes
 
-As of April 2022 we have updated the Redis deployment to require a maximum of 512 MB of memory. This meant that we also had to bump required memory for the "op-scim-bridge" task definition to 1024 MB.
+As of April 2022, we have [updated the Redis configuration to require a maximum of 512 MB of memory](https://github.com/1Password/scim-examples/pull/182). This meant that we also had to bump required memory for the `op-scim-bridge` task definition to 1024 MB.
 
-The Redis dataset maximum is set to 256Mb and an eviction policy will determine how keys are evicted when the maximum data set size is approached.
-
-This should prevent Redis from consuming large amounts of memory and eventually running out of available memory. The SCIM bridge is also restarted in instances where Redis runs into an out of memory error.
+Applying these changes to an existing 1Password SCIM bridge deployment will require adjusting the parameters of both [the task definition](https://github.com/1Password/scim-examples/blob/master/aws-ecsfargate-terraform/task-definitions/scim.json) and [the main Terraform script](https://github.com/1Password/scim-examples/blob/master/aws-ecsfargate-terraform/main.tf) as amended in [this PR](https://github.com/1Password/scim-examples/pull/182/files).
 
 ### December 2021 changes
 
