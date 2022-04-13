@@ -105,7 +105,7 @@ resource "aws_ecs_task_definition" "op_scim_bridge" {
   })
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
-  memory                   = 512
+  memory                   = 1024
   cpu                      = 256
   execution_role_arn       = aws_iam_role.op_scim_bridge.arn
 
