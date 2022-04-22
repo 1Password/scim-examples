@@ -18,6 +18,7 @@ The deployment process consists of these steps:
 - `op-scim-deployment.yaml`: The SCIM bridge deployment.
 - `op-scim-service.yaml`: Public load balancer for the SCIM bridge server.
 - `op-scim-config.yaml`: Configuration for the SCIM bridge server. You’ll be modifying this file during the deployment.
+- `redis-config.yaml`: [(optional*)](#external-redis-server) Configuration for the redis reployment.
 - `redis-deployment.yaml`:  [(optional*)](#external-redis-server) A redis server deployment.
 - `redis-service.yaml`:  [(optional*)](#external-redis-server) Kubernetes service for the redis deployment.
 
