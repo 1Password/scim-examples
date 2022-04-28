@@ -7,21 +7,12 @@ resources:
 - ../../base
 - ingress.yaml
 
-images:
-- name: 1password/scim
-  newName: docker.edge.tmecosys.com/tmde2-public/1password/scim
-  newTag: v2.3.1
-- name: redis
-  newName: docker.edge.tmecosys.com/tmde2-public/redis
-  newTag: 6.2.6-alpine
-
 configMapGenerator:
   - name: op-scim-configmap
     behavior: merge
     literals:
       - OP_PING_SERVER="1"
       # Set this to the FQDN you've selected for your SCIM Bridge deployment
-      # - OP_LETSENCRYPT_DOMAIN="eu.op-scim.nonprod.tools.vorwerk-digital.com"
       - OP_LETSENCRYPT_DOMAIN=""
       # - OP_TLS_KEY_FILE="/tls/tls.key"
       # - OP_TLS_CERT_FILE="/tls/tls.crt"
