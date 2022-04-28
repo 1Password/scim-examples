@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: zerossl
+    external-dns.alpha.kubernetes.io/managed: "true"
+    kubernetes.io/ingress.class: nginx-eks
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  name: op-scim
+spec:
+  rules:
+  - host: op-scim.example.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: op-scim-svc
+            port:
+              name: http
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - op-scim.example.com
+    secretName: op-scim-secret

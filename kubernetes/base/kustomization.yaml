@@ -1,0 +1,39 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: monitoring
+
+resources:
+- op-scim-deployment.yaml
+- op-scim-service.yaml
+- redis-deployment.yaml
+- redis-service.yaml
+
+
+configMapGenerator:
+  - name: op-scim-configmap
+    literals:
+      # (advanced) only change the options below if you need to
+      - OP_REDIS_URL="redis://op-scim-redis:6379"
+      - OP_SESSION="/secret/scimsession"
+      - OP_PRETTY_LOGS="0"
+      - OP_DEBUG="1"
+      #- OP_PORT="8080"
+      - OP_PING_SERVER="1"
+      # Set this to the FQDN you've selected for your SCIM Bridge deployment
+      # - OP_LETSENCRYPT_DOMAIN=""
+      # (optional) uncomment this line to change the email that is used when Let's Encrypt issues your SCIM bridge a certificate
+      # default: "1pw@[OP_LETSENCRYPT_DOMAIN]"
+      # - OP_LETSENCRYPT_EMAIL=""
+  - name: op-redis-configmap
+    literals:
+      # Set the arguments passed to Redis
+      # - maxmemory configures Redis to use a specified amount of memory for the data set
+      # - maxmemory-policy is the eviction policy used when the maximum memory is reached
+      - REDIS_ARGS="--maxmemory 256mb --maxmemory-policy volatile-lru"
+
+
+secretGenerator:
+  - name: scimsession
+    files:
+    - scimsession

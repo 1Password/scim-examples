@@ -26,6 +26,9 @@ spec:
             - name: scimsession
               mountPath: "/secret"
               readOnly: false
+            - name: tls
+              mountPath: "/tls"
+              readOnly: false
           resources:
             requests:
               cpu: 125m
@@ -40,3 +43,6 @@ spec:
         - name: scimsession
           secret:
             secretName: scimsession
+        - name: tls
+          secret:
+            secretName: op-scim-secret
