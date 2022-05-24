@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Docker Swarm deployment script
-# Please ensure you've read PREPARATION.md and docker/README.md
+# Ensure you've read PREPARATION.md and docker/README.md
 
 # set the full path of the docker examples directory
 
@@ -15,11 +15,19 @@ run_docker_compose() {
     # this command populates an .env file which allows the container to have a needed environment variable without needing to store the scimsession file itself
     SESSION=$(cat $scimsession_file | base64 | tr -d "\n")
     sed -i '' -e "s/^OP_SESSION=.*$/OP_SESSION=$SESSION/" $docker_path/$docker_type/scim.env
+    if $workspace_beta
+    then
+        WORKSPACE_FILE=$(cat $workspace_settings | base64 | tr -d "\n")
+        sed -i '' -e "s/^OP_WORKSPACE_SETTINGS=.*$/OP_WORKSPACE_SETTINGS=$WORKSPACE_FILE/" $docker_path/$docker_type/scim.env
+
+        GOOGLE_KEY_FILE=$(cat $google_credentials | base64 | tr -d "\n")
+        sed -i '' -e "s/^OP_WORKSPACE_CREDENTIALS=.*$/OP_WORKSPACE_CREDENTIALS=$GOOGLE_KEY_FILE/" $docker_path/$docker_type/scim.env
+    fi
 
     if ! docker-compose -f $docker_file up --build -d
     then
         echo " "
-        echo "Failed to run docker-compose, please investigate the error"
+        echo "Failed to run docker-compose; investigate the error before proceeding"
         sleep 1
         exit 1
     fi
@@ -49,15 +57,33 @@ run_docker_swarm() {
     if ! cat $scimsession_file | docker secret create scimsession -
     then
         echo " "
-        echo "Failed to create Docker Swarm secret, please investigate the error"
+        echo "Failed to create Docker Swarm secret; investigate the error before proceeding"
         sleep 1
         exit 1
+    fi
+
+    if $workspace_beta
+    then
+        if ! cat $workspace_settings | docker secret create workspace-settings -
+        then
+            echo " "
+            echo "Failed to create Google Workspace settings secret in Docker; investigate the error before proceeding"
+            sleep 1
+            exit 1
+        fi
+        if ! cat $google_credentials | docker secret create workspace-credentials -
+        then
+            echo " "
+            echo "Failed to create Google Service Account key secret in Docker; investigate the error before proceeding"
+            sleep 1
+            exit 1
+        fi
     fi
 
     if ! docker stack deploy -c $docker_file op-scim
     then
         echo " "
-        echo "Failed to deploy to Docker Swarm, please investigate the error"
+        echo "Failed to deploy to Docker Swarm; investigate the error before proceeding"
         sleep 1
         exit 1
     fi
@@ -78,25 +104,58 @@ run_docker_swarm() {
 # Begin main script
 
 docker_path=$(dirname $(realpath $0))
+workspace_beta=false
 
 echo "Initiating 1Password SCIM Bridge Deployment to Docker Swarm"
 echo " "
 echo "Please specify the following options."
 
+while ! [[ "$workspace" =~ ^([yY][eE][sS]|[yY]|[nN][oO]|[nN])$ ]]; do
+    read -p "Are you part of the Google Workspace beta? [y/n]: " workspace_beta
+    if [[ "$workspace" =~ ^([yY][eS][sS]|[yY])$ ]]
+    then
+        workspace_beta=true
+        break
+    fi
+done
+
+if $workspace_beta
+then
+    while :
+    do
+        read -p "Path to your Google Workspace settings file: " workspace_settings
+        if [[ -f "$workspace_settings" ]]
+        then
+            break
+        fi
+        echo "File '$workspace_settings' does not exist at that path, please try again." >&2
+    done
+    while :
+    do
+        read -p "Path to your Google Service Account key file: " google_credentials
+        if [[ -f "$google_credentials" ]]
+        then
+            break
+        fi
+        echo "File '$google_credentials' does not exist at that path, please try again." >&2
+    done
+fi
+
 while :
 do
     read -p "Docker Swarm or Docker Compose? [swarm/compose]: " docker_type
-    if [[ "$docker_type" =~ ^(swarm|compose)$ ]]; then
+    if [[ "$docker_type" =~ ^(swarm|compose)$ ]]
+    then
         break
     fi
     echo "$docker_type is not a valid input. Please select either 'swarm' or 'compose'."
 done
 
-
 while :
 do
     read -p "Fully-qualified domain name (FQDN) you are deploying to [e.g: 'op-scim.example.com']: " domain_name
-    if [[ $domain_name = *.* ]]; then
+    if [[ $domain_name = *.* ]]
+    then
         break
     fi
     echo "Please enter a fully-qualified domain name."
@@ -117,6 +176,12 @@ echo "Using the following parameters to deploy the SCIM Bridge"
 echo "Deployment type:" $docker_type
 echo "scimsession file path:" $scimsession_file
 echo "Domain name:" $domain_name
+echo "Google Workspace beta program:" $workspace
+if $workspace_beta
+then
+    echo "Workspace settings file path:" $workspace_settings
+    echo "Google Service Account credentials file path:" $google_credentials
+fi
 
 while ! [[ "$proceed" =~ ^([yY][eE][sS]|[yY])$ ]]; do
     read -p "Does this look correct? [Y/n]: " proceed

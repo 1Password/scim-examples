@@ -1,0 +1,5 @@
+{
+    "actor":"admin.email.goes.here@example.com",
+    "domain":"example.1password.om",
+    "bridgeAddress":"https://bridge.example.com"
+}
