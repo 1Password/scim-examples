@@ -84,7 +84,7 @@ Ensure that `OP_LETSENCRYPT_DOMAIN` is set to the domain name you’ve set up be
 
 (Optional) If you’re part of the Google Workspace provisioning beta, you will need to set up some additional secrets to use this functionality. Refer to our complete Google Workspace provisioning beta documentation for more complete information.
 
-First, you will want to edit the file located at `scim-examples/beta/workspace-settings.json` and enter in the appropriate details.
+First, edit the file located at `scim-examples/beta/workspace-settings.json` and enter in the appropriate details.
 
 Next, to create the necessary environment variables for Google Workspace:
 
@@ -120,7 +120,7 @@ You’ll still need to set the environment variable `OP_LETSENCRYPT_DOMAIN` with
 
 (Optional) If you’re part of the Google Workspace provisioning beta, you will need to set up some additional secrets to use this functionality. Refer to our complete Google Workspace provisioning beta documentation for more complete information.
 
-First, you will want to edit the file located at `scim-examples/beta/workspace-settings.json` and enter in the appropriate details.
+First, edit the file located at `scim-examples/beta/workspace-settings.json` and enter in the appropriate details.
 
 Next, to create the necessary secrets for Google Workspace:
 
