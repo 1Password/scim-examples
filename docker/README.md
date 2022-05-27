@@ -82,7 +82,9 @@ You’ll also need to set the environment variable `OP_LETSENCRYPT_DOMAIN` withi
 
 Ensure that `OP_LETSENCRYPT_DOMAIN` is set to the domain name you’ve set up before continuing.
 
-(Optional) If you’re part of the Google Workspace provisioning beta, you will need to set up some additional secrets to use this functionality. Refer to our complete Google Workspace provisioning beta documentation for more complete information.
+<details>
+<summary>Information for Google Workspace beta participants</summary>
+If you’re part of the Google Workspace provisioning beta, you will need to set up some additional secrets to use this functionality. Refer to our complete Google Workspace provisioning beta documentation for more complete information.
 
 First, edit the file located at `scim-examples/beta/workspace-settings.json` and enter in the appropriate details.
 
@@ -98,6 +100,8 @@ sed -i '' -e "s/OP_WORKSPACE_SETTINGS=$/OP_WORKSPACE_SETTINGS=$WORKSPACE_SETTING
 GOOGLE_CREDENTIALS=$(cat /path/to/<google keyfile>.json | base64 | tr -d "\n")
 sed -i '' -e "s/OP_WORKSPACE_CREDENTIALS=$/OP_WORKSPACE_CREDENTIALS=$GOOGLE_CREDENTIALS/" ./scim.env
 ```
+</details>
+<br>
 
 And finally, use `docker-compose` to deploy:
 
@@ -118,7 +122,9 @@ Unlike Docker Compose, you won’t need to set the `OP_SESSION` variable in `sci
 
 You’ll still need to set the environment variable `OP_LETSENCRYPT_DOMAIN` within `scim.env` to the URL you selected during [PREPARATION.md](/PREPARATION.md). Open that in your preferred text editor and change `OP_LETSENCRYPT_DOMAIN` to that domain name.
 
-(Optional) If you’re part of the Google Workspace provisioning beta, you will need to set up some additional secrets to use this functionality. Refer to our complete Google Workspace provisioning beta documentation for more complete information.
+<details>
+<summary>Information for Google Workspace beta participants</summary>
+If you’re part of the Google Workspace provisioning beta, you will need to set up some additional secrets to use this functionality. Refer to our complete Google Workspace provisioning beta documentation for more complete information.
 
 First, edit the file located at `scim-examples/beta/workspace-settings.json` and enter in the appropriate details.
 
@@ -131,6 +137,8 @@ cat /path/to/workspace-settings.json | docker secret create workspace-settings -
 cat /path/to/<google keyfile>.json | docker secret create workspace-settings -
 
 ```
+</details>
+<br>
 
 Once that’s set up, you can do the following:
 
