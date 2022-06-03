@@ -111,7 +111,7 @@ echo " "
 echo "Please specify the following options."
 
 while ! [[ "$workspace" =~ ^([yY][eE][sS]|[yY]|[nN][oO]|[nN])$ ]]; do
-    read -p "Are you part of the Google Workspace beta? [y/n]: " workspace_beta
+    read -p "Are you part of the Google Workspace beta? [y/n]: " workspace
     if [[ "$workspace" =~ ^([yY][eS][sS]|[yY])$ ]]
     then
         workspace_beta=true
@@ -177,6 +177,7 @@ echo "Deployment type:" $docker_type
 echo "scimsession file path:" $scimsession_file
 echo "Domain name:" $domain_name
 echo "Google Workspace beta program:" $workspace
+
 if $workspace_beta
 then
     echo "Workspace settings file path:" $workspace_settings
