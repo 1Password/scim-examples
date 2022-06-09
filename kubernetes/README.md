@@ -45,7 +45,7 @@ cd scim-examples/kubernetes/
 
 The following requires that you’ve completed the initial setup of Automated User Provisioning in your 1Password account. See [our support article](https://support.1password.com/scim/#step-1-prepare-your-1password-account) for more details.
 
-Once complete, create a Kubernetes Secret containing the contents of the `scimsession` file. Using `kubectl`, we can read the `scimsession` file and create the Kubernetes Secret in one command (use `--from-file=scimsession=[<path>/]<filename>` if your scimsession file was renamed and/or saved in another directory):
+Once complete, create a Kubernetes Secret containing the contents of the `scimsession` credentials file. Using `--from-file=[key=]source` when [creating the Kubernetes Secret](https://kubernetes.io/docs/tasks/configmap-secret/managing-secret-using-kubectl/#create-a-secret), we can create the Kubernetes Secret named `scimsession`, specify the `scimsession` key, and set its value as the contents of the `scimsession` file in one command:
 
 ```bash
 kubectl create secret generic scimsession --from-file=scimsession=scimsession
