@@ -18,3 +18,13 @@ spec:
           ports:
             - containerPort: 6379
               name: redis
+          resources:
+            requests:
+              cpu: 125m
+              memory: 256M
+            limits:
+              cpu: 250m
+              memory: 512M
+          envFrom:
+            - configMapRef:
+                name: op-redis-configmap

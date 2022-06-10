@@ -2,13 +2,15 @@
 
 This document describes deploying the 1Password SCIM bridge to your Amazon Web Service cloud services using Terraform.
 
+**NOTE** This deployment has been deprecated in favour of the [aws-ecsfargate-terraform](../../aws-ecsfargate-terraform) deployment.
+
 ## Preparing
 
 This is only an example of how you could deploy the 1Password SCIM bridge to your existing AWS infrastructure. As an advanced form of deployment, this AWS/Terraform example can be integrated into your existing infrastructure. Feel free to modify the deployment to suit your specific needs.
 
 If you find that you are not using a majority of the services listed in this documentation within your AWS account - for instance, you have an external DNS provider, or you are providing your own certificates through a third-party service - consider deploying through [Kubernetes](https://github.com/1Password/scim-examples/tree/master/kubernetes/README.md) using AWS Elastic Kubernetes Service (EKS). The 1Password SCIM bridge is not a resource-intensive service, and a full AWS deployment may include more infrastructure than you require, unless it fits neatly into your existing setup.
 
-To continue, please ensure you've read through [PREPARATION.md](/PREPARATION.md) before beginning deployment.
+To continue, please ensure you've read through [PREPARATION.md](../../PREPARATION.md) before beginning deployment.
 
 ## Deployment overview
 

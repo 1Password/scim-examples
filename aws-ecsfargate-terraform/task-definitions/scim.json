@@ -1,7 +1,7 @@
 [
   {
     "name": "op_scim_bridge",
-    "image": "1password/scim:v2.3.1",
+    "image": "1password/scim:v2.4.0",
     "cpu": 128,
     "memory": 512,
     "essential": true,
@@ -46,7 +46,7 @@
     "name": "redis",
     "image": "redis:latest",
     "cpu": 128,
-    "memory": 256,
+    "memory": 512,
     "essential": true,
     "restart": "always",
     "logConfiguration": {
@@ -61,6 +61,12 @@
       {
         "containerPort": 6379,
         "hostPort": 6379
+      }
+    ],
+    "environment": [
+      {
+        "name": "REDIS_ARGS",
+        "value": "--maxmemory 256mb --maxmemory-policy volatile-lru"
       }
     ]
   }

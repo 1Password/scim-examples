@@ -136,6 +136,20 @@ Connect to your Identity Provider following [the remainder of our setup guide](h
 
 ## Updating
 
+The process for updating your infrastructure involes a few key steps. Lucky for us most of the heavy lifting is done by the `terraform` CLI.
+
+The update steps are generally as follows:
+
+1. Update any variables and task definitions as necessary
+2. Create a plan for Terraform to apply
+3. Apply the new plan to your infrastrucure
+
+Note that the `terraform` CLI will output the details of the plan in addition to saving it to an output file (`./op-scim.plan`). The plan will contain the steps necessary to bring your deployment in line with the latest configuration depending on the changes that are detected. Feel free to inspect the output to get a better idea of the steps that will be taken.
+
+Below we go into detail about some common reasons that you would want to update your infrastructure.
+
+### Updating to the latest tag version
+
 To update your deployment to the latest version, edit the `task-definitions/scim.json` file and edit the following line:
 
 ```json
@@ -151,7 +165,27 @@ terraform plan -out=./op-scim.plan
 terraform apply ./op-scim.plan
 ```
 
-### December 2021 update changes
+### Updating to the latest configuration
+
+There may be situations where you want to update your deployment with the latest configuration changes available in this repository even if you are already on the latest `1password/scim` tag. The steps are fairly similar to updating the tag with a few minor differences.
+
+Update steps:
+
+1. [Optional] Verify that your Terraform variables (`./terraform.tfvars`) are correct and up to date
+2. [Optional] Reconcile the state between what Terraform knows about and your deployed infrastructure: `terraform refresh`
+3. Create an update plan to apply: `terraform plan -out=./op-scim.plan`
+4. Apply the plan to your infrastructure: `terraform apply ./op-scim.plan`
+5. Verify that there are no errors in the output as Terraform updates your infrastructure
+
+### April 2022 changes
+
+As of April 2022 we have updated the Redis deployment to require a maximum of 512 MB of memory. This meant that we also had to bump required memory for the "op-scim-bridge" task definition to 1024 MB.
+
+The Redis dataset maximum is set to 256Mb and an eviction policy will determine how keys are evicted when the maximum data set size is approached.
+
+This should prevent Redis from consuming large amounts of memory and eventually running out of available memory. The SCIM bridge is also restarted in instances where Redis runs into an out of memory error.
+
+### December 2021 changes
 
 As of December 2021, [the ALB health check path has changed](https://github.com/1Password/scim-examples/pull/162). If you are updating from a version earlier than 2.3.0, edit your `terraform.tf` file [to use `/app` instead of `/`](https://github.com/1Password/scim-examples/pull/162/commits/a876c46b9812e96f65e42e0441a772566ca32176#) for the health check before reapplying your Terraform settings.
 

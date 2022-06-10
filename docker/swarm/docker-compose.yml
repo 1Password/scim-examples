@@ -1,7 +1,7 @@
 version: "3.3"
 services:
   scim:
-    image: 1password/scim:v2.3.1
+    image: 1password/scim:v2.4.0
     deploy:
       replicas: 1
       restart_policy:
@@ -28,6 +28,7 @@ services:
         condition: any
     networks:
       - op-scim
+    env_file: redis.env
 
 networks:
   op-scim:

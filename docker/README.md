@@ -72,8 +72,8 @@ When using Docker Compose, you can create the environment variable `OP_SESSION` 
 
 ```bash
 # only needed for Docker Compose - use Docker Secrets when using Swarm
-# enter the ‘compose’ directory within `scim-examples/docker/`
-cd compose/
+# enter the compose directory (if you aren’t already in it)
+cd scim-examples/docker/compose/
 SESSION=$(cat /path/to/scimsession | base64 | tr -d "\n")
 sed -i '' -e "s/OP_SESSION=$/OP_SESSION=$SESSION/" ./scim.env
 ```
@@ -82,10 +82,31 @@ You’ll also need to set the environment variable `OP_LETSENCRYPT_DOMAIN` withi
 
 Ensure that `OP_LETSENCRYPT_DOMAIN` is set to the domain name you’ve set up before continuing.
 
+<details>
+<summary>Information for Google Workspace beta participants</summary>
+If you’re part of the Google Workspace provisioning beta, you will need to set up some additional secrets to use this functionality. Refer to our complete Google Workspace provisioning beta documentation for more complete information.
+
+First, edit the file located at `scim-examples/beta/workspace-settings.json` and enter in the appropriate details.
+
+Next, to create the necessary environment variables for Google Workspace:
+
+```bash
+# enter the compose directory (if you aren’t already in it)
+cd scim-examples/docker/compose/
+# this is the path of the JSON file you edited in the paragraph above
+wORKSPACE_SETTINGS=$(cat /path/to/workspace_settings.json | base64 | tr -d "\n")
+sed -i '' -e "s/OP_WORKSPACE_SETTINGS=$/OP_WORKSPACE_SETTINGS=$WORKSPACE_SETTINGS/" ./scim.env
+# replace <google keyfile> with the name of the file Google generated for your Google Service Account
+GOOGLE_CREDENTIALS=$(cat /path/to/<google keyfile>.json | base64 | tr -d "\n")
+sed -i '' -e "s/OP_WORKSPACE_CREDENTIALS=$/OP_WORKSPACE_CREDENTIALS=$GOOGLE_CREDENTIALS/" ./scim.env
+```
+</details>
+<br>
+
 And finally, use `docker-compose` to deploy:
 
 ```bash
-# enter the compose directory
+# enter the compose directory (if you aren’t already in it)
 cd scim-examples/docker/compose/
 # create the container
 docker-compose -f docker-compose.yml up --build -d
@@ -100,6 +121,24 @@ To use Docker Swarm to deploy, you’ll want to have run `docker swarm init` or 
 Unlike Docker Compose, you won’t need to set the `OP_SESSION` variable in `scim.env`, as we’ll be using Docker Secrets to store the `scimsession` file.
 
 You’ll still need to set the environment variable `OP_LETSENCRYPT_DOMAIN` within `scim.env` to the URL you selected during [PREPARATION.md](/PREPARATION.md). Open that in your preferred text editor and change `OP_LETSENCRYPT_DOMAIN` to that domain name.
+
+<details>
+<summary>Information for Google Workspace beta participants</summary>
+If you’re part of the Google Workspace provisioning beta, you will need to set up some additional secrets to use this functionality. Refer to our complete Google Workspace provisioning beta documentation for more complete information.
+
+First, edit the file located at `scim-examples/beta/workspace-settings.json` and enter in the appropriate details.
+
+Next, to create the necessary secrets for Google Workspace:
+
+```bash
+# this is the path of the JSON file you edited in the paragraph above
+cat /path/to/workspace-settings.json | docker secret create workspace-settings -
+# replace <google keyfile> with the name of the file Google generated for your Google Service Account
+cat /path/to/<google keyfile>.json | docker secret create workspace-settings -
+
+```
+</details>
+<br>
 
 Once that’s set up, you can do the following:
 
