@@ -41,14 +41,14 @@ You can then browse to the Kubernetes directory:
 cd scim-examples/kubernetes/
 ```
 
-## Create the `scimsession` Kubernetes secret
+## Create the `scimsession` Kubernetes Secret
 
-The following requires that you’ve completed the initial setup of Provisioning in your 1Password Account. [See here](https://support.1password.com/scim/#step-1-prepare-your-1password-account) for more details.
+The following requires that you’ve completed the initial setup of Automated User Provisioning in your 1Password account. See [our support article](https://support.1password.com/scim/#step-1-prepare-your-1password-account) for more details.
 
-Once complete, you must create a Kubernetes secret containing the `scimsession` file. Using `kubectl`, we can read the `scimsession` file and create the Kubernetes secret in one command:
+Once complete, create a Kubernetes Secret containing the contents of the `scimsession` credentials file. Using `--from-file=[key=]source` when [creating the Kubernetes Secret](https://kubernetes.io/docs/tasks/configmap-secret/managing-secret-using-kubectl/#create-a-secret), we can create the Kubernetes Secret named `scimsession`, specify the `scimsession` key, and set its value as the contents of the `scimsession` file in one command (replace `./scimsession` if the file is saved in another directory and/or with a different filename):
 
 ```bash
-kubectl create secret generic scimsession --from-file=/path/to/scimsession
+kubectl create secret generic scimsession --from-file=scimsession=./scimsession
 ```
 
 ## (Optional) Create the Google Workspace Kubernetes secrets
