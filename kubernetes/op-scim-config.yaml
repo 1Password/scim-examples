@@ -4,7 +4,7 @@ metadata:
   name: op-scim-configmap
 data:
   # Set this to the FQDN you've selected for your SCIM Bridge deployment
-  OP_LETSENCRYPT_DOMAIN: "scim.example.com"
+  OP_LETSENCRYPT_DOMAIN: ""
   # (advanced) only change the options below if you need to
   OP_REDIS_URL: "redis://op-scim-redis:6379"
   OP_SESSION: "/secret/scimsession"
