@@ -177,6 +177,28 @@ Update steps:
 4. Apply the plan to your infrastructure: `terraform apply ./op-scim.plan`
 5. Verify that there are no errors in the output as Terraform updates your infrastructure
 
+### Resource Recommendations
+
+The default resource recommendations for the SCIM bridge and Redis deployments are acceptable in most scenarios, but they fall short in high volume deployments where there is a large number of users and/or groups. 
+
+Our current default resource requirements (defined in [scim.json](https://github.com/1Password/scim-examples/blob/master/aws-ecsfargate-terraform/task-definitions/scim.json#L5)) are:
+
+```yaml
+  cpu: 128
+  memory: 512
+```
+
+Proposed recommendations for high volume deployments:
+
+```yaml
+  cpu: 512
+  memory: 1024
+```
+
+This is 4x the CPU, and 2x the memory.
+
+Please reach out to our support team if you need help with the configuration or to tweak the values for your deployment.
+
 ### April 2022 changes
 
 As of April 2022 we have updated the Redis deployment to require a maximum of 512 MB of memory. This meant that we also had to bump required memory for the "op-scim-bridge" task definition to 1024 MB.
