@@ -78,7 +78,7 @@ resource "aws_secretsmanager_secret" "scimsession" {
   tags                    = local.tags
 }
 
-resource "aws_secretsmanager_secret_version" "scimsession_1" {
+resource "aws_secretsmanager_secret_version" "scimsession" {
   secret_id     = aws_secretsmanager_secret.scimsession.id
   secret_string = base64encode(file("${path.module}/scimsession"))
 }
