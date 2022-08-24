@@ -31,6 +31,14 @@
       {
         "name": "OP_SESSION",
         "valueFrom": "${secret_arn}"
+      },
+      {
+        "name": "OP_WORKSPACE_CREDENTIALS",
+        "valueFrom": "${workspace_credentials}"
+      },
+      {
+        "name": "OP_WORKSPACE_SETTINGS",
+        "valueFrom": "${workspace_settings}"
       }
     ],
     "logConfiguration": {

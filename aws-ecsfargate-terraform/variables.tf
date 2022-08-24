@@ -39,3 +39,10 @@ variable "log_retention_days" {
   type        = number
   description = "Specifies the number of days to retain log events in CloudWatch. Set to the default of 0, the log is retained indefinitely."
 }
+
+# (For Google Workspace beta participants)
+variable "google_workspace_beta" {
+  type        = bool
+  default     = false
+  description = "Set to true to add the Google Workspace Beta configuration to 1Password SCIM bridge"
+}

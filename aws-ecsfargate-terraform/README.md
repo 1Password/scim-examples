@@ -27,6 +27,22 @@ Copy `terraform.tfvars.template` to `terraform.tfvars`:
 cp terraform.tfvars.template terraform.tfvars
 ```
 
+### Optional: Copy Google Worskpace credentials
+
+Copy the `workspace-settings.json` template file to this Terraform code directory:
+
+```bash
+cp ../beta/workspace-settings.json ./workspace-settings.json
+```
+
+**TODO(say something better here): Edit this blah…
+
+Copy your `workspace-credentials.json` file to this Terraform code directory:
+
+```bash
+cp <path>/workspace-credentials.json ./workspace-credentials.json
+```
+
 ### Copy `scimsession` file
 
 Copy the `scimsession` file in the Terraform code directory:

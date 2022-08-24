@@ -98,11 +98,13 @@ resource "aws_ecs_cluster" "op_scim_bridge" {
 
 resource "aws_ecs_task_definition" "op_scim_bridge" {
   family                   = var.name_prefix == "" ? "op_scim_bridge" : format("%s_%s",local.name_prefix,"scim_bridge")
-  container_definitions    = templatefile("task-definitions/scim.json",
-    { secret_arn     = aws_secretsmanager_secret.scimsession.arn,
-      aws_logs_group = aws_cloudwatch_log_group.op_scim_bridge.name,
-      region         = var.aws_region
-  })
+  container_definitions    = templatefile("${path.module}/task-definitions/scim.json",
+    { secret_arn            = aws_secretsmanager_secret.scimsession.arn,
+      aws_logs_group        = aws_cloudwatch_log_group.op_scim_bridge.name,
+      region                = var.aws_region,
+      workspace_credentials = module.google_workspace.credentials,
+      workspace_settings    = module.google_workspace.settings,
+    })
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   memory                   = 1024
@@ -295,4 +297,11 @@ resource "aws_route53_record" "op_scim_bridge" {
     zone_id                = aws_alb.op_scim_bridge.zone_id
     evaluate_target_health = true
   }
+}
+
+module "google_workspace" {
+  count  = var.google_workspace_beta ? 1 : 0
+
+  source = "../beta/aws-terraform-gw"
+    
 }

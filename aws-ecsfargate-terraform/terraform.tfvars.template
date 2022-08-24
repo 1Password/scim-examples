@@ -17,3 +17,6 @@ tags               = {
 
 # Uncomment the below line if you are *not* using Route 53
 #using_route53 = false
+
+# Uncomment the below line if you are participating in the Goolge Workspace beta
+#google_workspace_beta = true
