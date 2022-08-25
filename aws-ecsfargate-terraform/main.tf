@@ -296,3 +296,8 @@ resource "aws_route53_record" "op_scim_bridge" {
     evaluate_target_health = true
   }
 }
+
+moved {
+  from = aws_secretsmanager_secret_version.scimsession_1
+  to   = aws_secretsmanager_secret_version.scimsession  
+}
