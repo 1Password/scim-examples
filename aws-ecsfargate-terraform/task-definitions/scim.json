@@ -1,7 +1,7 @@
 [
   {
     "name": "op_scim_bridge",
-    "image": "1password/scim:v2.5.1",
+    "image": "1password/scim:v2.6.0",
     "cpu": 128,
     "memory": 512,
     "essential": true,

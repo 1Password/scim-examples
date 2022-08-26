@@ -116,7 +116,7 @@ You can now continue with the administration guide to configure your Identity Pr
 To update SCIM bridge, connect to your Kubernetes cluster and run the following command:
 
 ```bash
-kubectl set image deploy/op-scim-bridge op-scim-bridge=1password/scim:v2.5.1
+kubectl set image deploy/op-scim-bridge op-scim-bridge=1password/scim:v2.6.0
 ```
 
 This will upgrade your SCIM bridge to the latest version, which should take about 2-3 minutes for Kubernetes to process.
