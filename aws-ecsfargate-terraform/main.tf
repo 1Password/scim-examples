@@ -99,11 +99,11 @@ resource "aws_ecs_cluster" "op_scim_bridge" {
 resource "aws_ecs_task_definition" "op_scim_bridge" {
   family = var.name_prefix == "" ? "op_scim_bridge" : format("%s_%s", local.name_prefix, "scim_bridge")
   container_definitions = templatefile("${path.module}/task-definitions/scim.json",
-    { secret_arn            = aws_secretsmanager_secret.scimsession.arn,
-      aws_logs_group        = aws_cloudwatch_log_group.op_scim_bridge.name,
-      region                = var.aws_region,
-      workspace_credentials_arn = module.google_workspace[0].credentials.arn,
-      workspace_settings_arn    = module.google_workspace[0].settings.arn,
+    { secret_arn                = aws_secretsmanager_secret.scimsession.arn,
+      aws_logs_group            = aws_cloudwatch_log_group.op_scim_bridge.name,
+      region                    = var.aws_region,
+      workspace_credentials_arn = var.google_workspace_beta ? module.google_workspace[0].credentials.arn : "",
+      workspace_settings_arn    = var.google_workspace_beta ? module.google_workspace[0].settings.arn : "",
   })
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
