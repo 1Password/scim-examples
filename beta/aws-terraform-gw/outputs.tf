@@ -1,8 +1,10 @@
 output "settings" {
-  description = "Google Workspace "
+  description = "Google Workspace Settings"
   value       = aws_secretsmanager_secret.workspace_settings
 }
 
 output "credentials" {
-  value = aws_secretsmanager_secret.workspace_credentials
+  description = "Google Workspace Credentials"
+  value       = aws_secretsmanager_secret.workspace_credentials
+  sensitive   = true
 }

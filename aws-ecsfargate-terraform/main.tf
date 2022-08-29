@@ -78,7 +78,7 @@ resource "aws_secretsmanager_secret" "scimsession" {
   tags = local.tags
 }
 
-resource "aws_secretsmanager_secret_version" "scimsession_1" {
+resource "aws_secretsmanager_secret_version" "scimsession" {
   secret_id     = aws_secretsmanager_secret.scimsession.id
   secret_string = base64encode(file("${path.module}/scimsession"))
 }
@@ -102,8 +102,8 @@ resource "aws_ecs_task_definition" "op_scim_bridge" {
     { secret_arn            = aws_secretsmanager_secret.scimsession.arn,
       aws_logs_group        = aws_cloudwatch_log_group.op_scim_bridge.name,
       region                = var.aws_region,
-      workspace_credentials = module.google_workspace.credentials,
-      workspace_settings    = module.google_workspace.settings,
+      workspace_credentials = module.google_workspace[0].credentials.arn,
+      workspace_settings    = module.google_workspace[0].settings.arn,
   })
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
@@ -304,4 +304,6 @@ module "google_workspace" {
 
   source = "../beta/aws-terraform-gw"
 
+  name_prefix = local.name_prefix
+  tags        = local.tags
 }
