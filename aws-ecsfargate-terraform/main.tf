@@ -16,10 +16,10 @@ provider "aws" {
 locals {
   name_prefix = var.name_prefix != "" ? var.name_prefix : "op-scim-bridge"
   domain      = join(".", slice(split(".", var.domain_name), 1, length(split(".", var.domain_name))))
-  tags        = merge(var.tags, {
-                  application = "1Password SCIM Bridge",
-                  version     = trimprefix(jsondecode(file("task-definitions/scim.json"))[0].image, "1password/scim:v")
-                })
+  tags = merge(var.tags, {
+    application = "1Password SCIM Bridge",
+    version     = trimprefix(jsondecode(file("task-definitions/scim.json"))[0].image, "1password/scim:v")
+  })
 }
 
 data "aws_vpc" "this" {
@@ -31,7 +31,7 @@ data "aws_vpc" "this" {
 data "aws_subnet_ids" "public" {
   vpc_id = data.aws_vpc.this.id
   # Find the public subnets in the VPC
-  tags   = var.vpc_name != "" ? { SubnetTier = "public"} : {}
+  tags = var.vpc_name != "" ? { SubnetTier = "public" } : {}
 }
 
 data "aws_iam_policy_document" "assume_role_policy" {
@@ -58,24 +58,24 @@ data "aws_iam_policy_document" "scimsession" {
 }
 
 data "aws_acm_certificate" "wildcard_cert" {
-  count  =  !var.wildcard_cert ? 0 : 1
+  count = !var.wildcard_cert ? 0 : 1
 
   domain = "*.${local.domain}"
 }
 
 data "aws_route53_zone" "zone" {
-  count        = var.using_route53 ? 1 : 0
+  count = var.using_route53 ? 1 : 0
 
   name         = local.domain
   private_zone = false
 }
 
 resource "aws_secretsmanager_secret" "scimsession" {
-  name_prefix             = local.name_prefix
+  name_prefix = local.name_prefix
   # Allow `terraform destroy` to delete secret (hint: save your scimsession file in 1Password)
   recovery_window_in_days = 0
 
-  tags                    = local.tags
+  tags = local.tags
 }
 
 resource "aws_secretsmanager_secret_version" "scimsession_1" {
@@ -85,40 +85,40 @@ resource "aws_secretsmanager_secret_version" "scimsession_1" {
 
 resource "aws_cloudwatch_log_group" "op_scim_bridge" {
   name_prefix       = local.name_prefix
-  retention_in_days = var.log_retention_days 
-  
-  tags              = local.tags
+  retention_in_days = var.log_retention_days
+
+  tags = local.tags
 }
 
 resource "aws_ecs_cluster" "op_scim_bridge" {
-  name = var.name_prefix == "" ? "op-scim-bridge" : format("%s-%s",local.name_prefix,"scim-bridge")
+  name = var.name_prefix == "" ? "op-scim-bridge" : format("%s-%s", local.name_prefix, "scim-bridge")
 
   tags = local.tags
 }
 
 resource "aws_ecs_task_definition" "op_scim_bridge" {
-  family                   = var.name_prefix == "" ? "op_scim_bridge" : format("%s_%s",local.name_prefix,"scim_bridge")
-  container_definitions    = templatefile("${path.module}/task-definitions/scim.json",
+  family = var.name_prefix == "" ? "op_scim_bridge" : format("%s_%s", local.name_prefix, "scim_bridge")
+  container_definitions = templatefile("${path.module}/task-definitions/scim.json",
     { secret_arn            = aws_secretsmanager_secret.scimsession.arn,
       aws_logs_group        = aws_cloudwatch_log_group.op_scim_bridge.name,
       region                = var.aws_region,
       workspace_credentials = module.google_workspace.credentials,
       workspace_settings    = module.google_workspace.settings,
-    })
+  })
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   memory                   = 1024
   cpu                      = 256
   execution_role_arn       = aws_iam_role.op_scim_bridge.arn
 
-  tags                     = local.tags
+  tags = local.tags
 }
 
 resource "aws_iam_role" "op_scim_bridge" {
-  name_prefix = local.name_prefix
+  name_prefix        = local.name_prefix
   assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
 
-  tags               = local.tags
+  tags = local.tags
 }
 
 resource "aws_iam_role_policy_attachment" "op_scim_bridge" {
@@ -133,13 +133,13 @@ resource "aws_iam_role_policy" "scimsession" {
 }
 
 resource "aws_ecs_service" "op_scim_bridge" {
-  name             = format("%s_%s",local.name_prefix,"service")
+  name             = format("%s_%s", local.name_prefix, "service")
   cluster          = aws_ecs_cluster.op_scim_bridge.id
   task_definition  = aws_ecs_task_definition.op_scim_bridge.arn
   launch_type      = "FARGATE"
   platform_version = "1.4.0"
   desired_count    = 1
-  
+
   load_balancer {
     target_group_arn = aws_lb_target_group.op_scim_bridge.arn
     container_name   = jsondecode(file("task-definitions/scim.json"))[0].name
@@ -152,18 +152,18 @@ resource "aws_ecs_service" "op_scim_bridge" {
     security_groups  = [aws_security_group.service.id]
   }
 
-  tags             = local.tags
+  tags = local.tags
 
-  depends_on       = [aws_lb_listener.https]
+  depends_on = [aws_lb_listener.https]
 }
 
 resource "aws_alb" "op_scim_bridge" {
-  name               = var.name_prefix == "" ? "op-scim-bridge-alb" : format("%s-%s",local.name_prefix,"alb")
+  name               = var.name_prefix == "" ? "op-scim-bridge-alb" : format("%s-%s", local.name_prefix, "alb")
   load_balancer_type = "application"
   subnets            = data.aws_subnet_ids.public.ids
   security_groups    = [aws_security_group.alb.id]
-  
-  tags               = local.tags
+
+  tags = local.tags
 }
 
 resource "aws_security_group" "alb" {
@@ -193,18 +193,18 @@ resource "aws_security_group" "alb" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags   = local.tags
+  tags = local.tags
 }
 
 resource "aws_security_group" "service" {
   # Create a security group for the service
   vpc_id = data.aws_vpc.this.id
-  
+
   # Only allow traffic from the load balancer security group
   ingress {
-    from_port = 3002
-    to_port   = 3002
-    protocol  = "tcp"
+    from_port       = 3002
+    to_port         = 3002
+    protocol        = "tcp"
     security_groups = [aws_security_group.alb.id]
   }
 
@@ -219,7 +219,7 @@ resource "aws_security_group" "service" {
 }
 
 resource "aws_lb_target_group" "op_scim_bridge" {
-  name        = var.name_prefix == "" ? "op-scim-bridge-tg" : format("%s-%s",local.name_prefix,"tg")
+  name        = var.name_prefix == "" ? "op-scim-bridge-tg" : format("%s-%s", local.name_prefix, "tg")
   port        = 3002
   protocol    = "HTTP"
   target_type = "ip"
@@ -229,17 +229,17 @@ resource "aws_lb_target_group" "op_scim_bridge" {
     path    = "/app"
   }
 
-  tags        = local.tags
+  tags = local.tags
 }
 
 resource "aws_lb_listener" "https" {
   load_balancer_arn = aws_alb.op_scim_bridge.arn
   port              = 443
   protocol          = "HTTPS"
-  certificate_arn   = !var.wildcard_cert ? (
-                        var.using_route53 ?
-                          aws_acm_certificate_validation.op_scim_bridge[0].certificate_arn : aws_acm_certificate.op_scim_bridge[0].arn
-                        ) : data.aws_acm_certificate.wildcard_cert[0].arn
+  certificate_arn = !var.wildcard_cert ? (
+    var.using_route53 ?
+    aws_acm_certificate_validation.op_scim_bridge[0].certificate_arn : aws_acm_certificate.op_scim_bridge[0].arn
+  ) : data.aws_acm_certificate.wildcard_cert[0].arn
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.op_scim_bridge.arn
@@ -247,7 +247,7 @@ resource "aws_lb_listener" "https" {
 }
 
 resource "aws_acm_certificate" "op_scim_bridge" {
-  count             = !var.wildcard_cert ? 1 : 0
+  count = !var.wildcard_cert ? 1 : 0
 
   domain_name       = var.domain_name
   validation_method = "DNS"
@@ -258,7 +258,7 @@ resource "aws_acm_certificate" "op_scim_bridge" {
 }
 
 resource "aws_acm_certificate_validation" "op_scim_bridge" {
-  count                   = var.using_route53 && !var.wildcard_cert ? 1 : 0
+  count = var.using_route53 && !var.wildcard_cert ? 1 : 0
 
   certificate_arn         = aws_acm_certificate.op_scim_bridge[0].arn
   validation_record_fqdns = [for record in aws_route53_record.op_scim_bridge_validation : record.fqdn]
@@ -286,7 +286,7 @@ resource "aws_route53_record" "op_scim_bridge_validation" {
 }
 
 resource "aws_route53_record" "op_scim_bridge" {
-  count   = var.using_route53 ? 1 : 0
+  count = var.using_route53 ? 1 : 0
 
   zone_id = data.aws_route53_zone.zone[0].id
   name    = var.domain_name
@@ -300,8 +300,8 @@ resource "aws_route53_record" "op_scim_bridge" {
 }
 
 module "google_workspace" {
-  count  = var.google_workspace_beta ? 1 : 0
+  count = var.google_workspace_beta ? 1 : 0
 
   source = "../beta/aws-terraform-gw"
-    
+
 }

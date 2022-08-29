@@ -18,15 +18,15 @@ resource "aws_secretsmanager_secret_version" "creds" {
 
 
 resource "aws_secretsmanager_secret" "workspace_settings" {
-  name_prefix             = local.name_prefix
- 
+  name_prefix = local.name_prefix
+
   recovery_window_in_days = 0
 
-  tags                    = local.tags
+  tags = local.tags
 }
 
 resource "aws_secretsmanager_secret_version" "workspace_settings" {
-  secret_id = aws_secretsmanager_secret.workspace_settings.id
+  secret_id     = aws_secretsmanager_secret.workspace_settings.id
   secret_string = filebase64("../beta/workspace-settings.json")
 }
 
@@ -34,7 +34,7 @@ resource "aws_secretsmanager_secret" "workspace_credentials" {
   name_prefix             = local.name_prefix
   recovery_window_in_days = 0
 
-  tags                    = local.tags
+  tags = local.tags
 }
 
 resource "aws_secretsmanager_secret_version" "workspace_credentials" {
