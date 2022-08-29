@@ -34,11 +34,11 @@
       },
       {
         "name": "OP_WORKSPACE_CREDENTIALS",
-        "valueFrom": "${workspace_credentials}"
+        "valueFrom": "${workspace_credentials_arn}"
       },
       {
         "name": "OP_WORKSPACE_SETTINGS",
-        "valueFrom": "${workspace_settings}"
+        "valueFrom": "${workspace_settings_arn}"
       }
     ],
     "logConfiguration": {

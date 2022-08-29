@@ -34,8 +34,8 @@ Copy the `workspace-settings.json` template file to this Terraform code director
 ```bash
 cp ../beta/workspace-settings.json ./workspace-settings.json
 ```
+Edit this file and add the respective values for each variable according to those presented in our Google Workspace documentation.
 
-**TODO(say something better here): Edit this blah…
 
 Copy your `workspace-credentials.json` file to this Terraform code directory:
 
