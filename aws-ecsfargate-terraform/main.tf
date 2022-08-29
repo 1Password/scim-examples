@@ -102,8 +102,8 @@ resource "aws_ecs_task_definition" "op_scim_bridge" {
     { secret_arn                = aws_secretsmanager_secret.scimsession.arn,
       aws_logs_group            = aws_cloudwatch_log_group.op_scim_bridge.name,
       region                    = var.aws_region,
-      workspace_credentials_arn = var.google_workspace_beta ? module.google_workspace[0].credentials.arn : "",
-      workspace_settings_arn    = var.google_workspace_beta ? module.google_workspace[0].settings.arn : "",
+      workspace_credentials_arn = module.google_workspace[0].credentials.arn,
+      workspace_settings_arn    = module.google_workspace[0].settings.arn,
   })
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"

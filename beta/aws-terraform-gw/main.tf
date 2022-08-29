@@ -11,12 +11,6 @@ data "aws_iam_policy_document" "workspace_config" {
   }
 }
 
-resource "aws_iam_role_policy" "workspace_config" {
-  name_prefix = var.name_prefix
-  role        = aws_iam_role.workspace_config.id
-  policy      = data.aws_iam_policy_document.workspace_config.json
-}
-
 resource "aws_iam_role" "workspace_config" {
   name_prefix        = var.name_prefix
   assume_role_policy = data.aws_iam_policy_document.workspace_config.json
