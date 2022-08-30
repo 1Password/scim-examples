@@ -34,6 +34,7 @@ data "aws_subnet_ids" "public" {
   tags = var.vpc_name != "" ? { SubnetTier = "public" } : {}
 }
 
+# This allows the cluster to assume roles. 
 data "aws_iam_policy_document" "assume_role_policy" {
   statement {
     actions = ["sts:AssumeRole"]
@@ -298,6 +299,7 @@ resource "aws_route53_record" "op_scim_bridge" {
     evaluate_target_health = true
   }
 }
+
 
 module "google_workspace" {
   count = var.google_workspace_beta ? 1 : 0
