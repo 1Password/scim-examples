@@ -195,9 +195,9 @@ Proposed recommendations for high volume deployments:
   memory: 1024
 ```
 
-This is 4x the CPU, and 2x the memory.
+This proposal is 4x the CPU and 2x the memory of the default values.
 
-Please reach out to our support team if you need help with the configuration or to tweak the values for your deployment.
+Please reach out to our [support team](https://support.1password.com/contact/) if you need help with the configuration or to tweak the values for your deployment.
 
 ### April 2022 changes
 
