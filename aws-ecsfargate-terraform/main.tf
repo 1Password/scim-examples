@@ -115,6 +115,7 @@ resource "aws_ecs_task_definition" "op_scim_bridge" {
   tags = local.tags
 }
 
+# attaching the op_scim_bridge role to the assume role policy
 resource "aws_iam_role" "op_scim_bridge" {
   name_prefix        = local.name_prefix
   assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
