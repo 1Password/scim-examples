@@ -153,6 +153,38 @@ kubectl apply -f .
 kubectl scale deploy op-scim-bridge --replicas=0 && sleep 3 && kubectl scale deploy op-scim-bridge --replicas=1
 ```
 
+## Resource Recommendations
+
+The default resource recommendations for the SCIM bridge and Redis deployments are acceptable in most scenarios, but they fall short in high volume deployments where there is a large number of users and/or groups. 
+
+Our current default resource requirements (defined in [op-scim-deployment](https://github.com/1Password/scim-examples/blob/master/kubernetes/op-scim-deployment.yaml#L29) and [redis-deployment.yaml](https://github.com/1Password/scim-examples/blob/master/kubernetes/redis-deployment.yaml#L21)) are:
+
+```yaml
+requested:
+  cpu: 125m
+  memory: 256M
+
+limits:
+  cpu: 250m
+  memory: 512M
+```
+
+Proposed recommendations for high volume deployments:
+
+```yaml
+requested:
+  cpu: 0.5 (500m)
+  memory: 512M
+
+limits:
+  cpu: 1 (1000m)
+  memory: 1024M
+```
+
+This proposal is 4x the CPU and 2x the memory of the default values.
+
+Please reach out to our [support team](https://support.1password.com/contact/) if you need help with the configuration or to tweak the values for your deployment.
+
 ## Advanced deployments
 
 The following are helpful tips in case you wish to perform an advanced deployment.
