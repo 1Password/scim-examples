@@ -37,5 +37,11 @@ variable "using_route53" {
 
 variable "log_retention_days" {
   type        = number
-  description = "Specifies the number of days to retain log events in CloudWatch. Set to the default of 0, the log is retained indefinitely."
+}
+
+# (For customers using Google Workspace participants)
+variable "using_google_workspace" {
+  type        = bool
+  default     = false
+  description = "Set to true to add Google Workspace configuration to 1Password SCIM bridge"
 }
