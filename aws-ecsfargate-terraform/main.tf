@@ -18,7 +18,7 @@ locals {
   domain      = join(".", slice(split(".", var.domain_name), 1, length(split(".", var.domain_name))))
   tags = merge(var.tags, {
     application = "1Password SCIM Bridge",
-    version     = trimprefix(jsondecode(file("task-definitions/scim.json"))[0].image, "1password/scim:v")
+    version     = trimprefix(jsondecode(file("${path.module}/task-definitions/scim.json"))[0].image, "1password/scim:v")
   })
 
   # Define base configuration from ./task-definitions/scim.json
@@ -115,7 +115,7 @@ resource "aws_secretsmanager_secret" "scimsession" {
 
 resource "aws_secretsmanager_secret_version" "scimsession" {
   secret_id     = aws_secretsmanager_secret.scimsession.id
-  secret_string = base64encode(file("${path.module}/scimsession"))
+  secret_string = filebase64("${path.module}/scimsession")
 }
 
 resource "aws_cloudwatch_log_group" "op_scim_bridge" {
@@ -172,7 +172,7 @@ resource "aws_ecs_service" "op_scim_bridge" {
 
   load_balancer {
     target_group_arn = aws_lb_target_group.op_scim_bridge.arn
-    container_name   = jsondecode(file("task-definitions/scim.json"))[0].name
+    container_name   = jsondecode(file("${path.module}/task-definitions/scim.json"))[0].name
     container_port   = 3002
   }
 
