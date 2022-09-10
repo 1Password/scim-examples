@@ -27,6 +27,34 @@ Copy `terraform.tfvars.template` to `terraform.tfvars`:
 cp terraform.tfvars.template terraform.tfvars
 ```
 
+<details>
+  <summary>Optional: For customers using Google Workspace</summary>
+
+### Copy Google Worskpace credentials
+
+Copy the `workspace-settings.json` template file to this Terraform code directory:
+
+```bash
+cp ../beta/workspace-settings.json ./workspace-settings.json
+```
+Edit this file and add the respective values for each variable (see our [Google Workspace documentation](https://support.1password.com/scim-google-workspace/)).
+
+Copy your `workspace-credentials.json` file to this Terraform code directory:
+
+```bash
+cp <path>/workspace-credentials.json ./workspace-credentials.json
+```
+
+### Enable Google Workspace configuration
+
+Uncommment this line in `terraform.tfvars`:
+
+```terraform
+using_google_workspace = true
+```
+
+</details>
+
 ### Copy `scimsession` file
 
 Copy the `scimsession` file in the Terraform code directory:
