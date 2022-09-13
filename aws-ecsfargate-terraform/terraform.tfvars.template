@@ -1,14 +1,14 @@
 # Required: Set a domain name for your SCIM bridge
-domain_name   = "scim.example.com"
+domain_name = "scim.example.com"
 
 # Optional: Specify a different region
-aws_region    = "us-east-1"
+aws_region = "us-east-1"
 
 # Optional: Specify an existing VPC to use, add a common name prefix to all resources, specify the CloudWatch Logs retention period, and add tags for all supported resources.
 vpc_name           = ""
 name_prefix        = ""
 log_retention_days = 0
-tags               = {
+tags = {
   #key = "value"
 }
 
@@ -17,3 +17,6 @@ tags               = {
 
 # Uncomment the below line if you are *not* using Route 53
 #using_route53 = false
+
+# Uncomment the below line to enable Google Workspace configuraton for 1Password SCIM bridge
+#using_google_workspace = true

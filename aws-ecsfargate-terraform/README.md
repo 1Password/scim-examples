@@ -27,6 +27,34 @@ Copy `terraform.tfvars.template` to `terraform.tfvars`:
 cp terraform.tfvars.template terraform.tfvars
 ```
 
+<details>
+  <summary>Optional: For customers using Google Workspace</summary>
+
+### Copy Google Worskpace credentials
+
+Copy the `workspace-settings.json` template file to this Terraform code directory:
+
+```bash
+cp ../beta/workspace-settings.json ./workspace-settings.json
+```
+Edit this file and add the respective values for each variable (see our [Google Workspace documentation](https://support.1password.com/scim-google-workspace/)).
+
+Copy your `workspace-credentials.json` file to this Terraform code directory:
+
+```bash
+cp <path>/workspace-credentials.json ./workspace-credentials.json
+```
+
+### Enable Google Workspace configuration
+
+Uncommment this line in `terraform.tfvars`:
+
+```terraform
+using_google_workspace = true
+```
+
+</details>
+
 ### Copy `scimsession` file
 
 Copy the `scimsession` file in the Terraform code directory:
@@ -53,65 +81,70 @@ Set the `aws_region` variable in `terraform.tfvars` to the AWS region you're dep
 
 This example uses AWS Certificate Manager to manage the required TLS certificate. Save the full domain name you want to use as `domain_name` in `terraform.tfvars`:
 
-```
+```terraform
 domain_name = "<scim.example.com>"
 ```
 
-### (Optional) Use an existing ACM wildcard certificate
+<details>
+  <summary>Optional: Configure additional features</summary>
+
+
+### Use an existing ACM wildcard certificate
 
 If you would like to use an existing wildcard certificate in AWS Certificate Manager (`*.example.com`), uncommment this line in `terraform.tfvars`:
 
-```
+```terraform
 wildcard_cert = true
 ```
 
-### (Optional) External DNS 
+### External DNS 
 
-This deployment example uses Route 53 to create the required DNS record. If you are using another DNS provider, uncommment this line in `terraform.tfvars`:
+This deployment example uses Route 53 to create the required DNS record by default. If you are using another DNS provider, uncommment this line in `terraform.tfvars`:
 
-```
+```terraform
 using_route53 = false
 ```
 
 Create a CNAME record pointing to the `loadbalancer-dns-name` output printed out from `terraform apply`.
 
-### (Optional) Use an existing VPC
+### Use an existing VPC
 
 This deployment example uses the default VPC for your AWS region. If you would like to specify another VPC to use instead, set the value in the `vpc_name` in `terraform.tfvars`:
 
-```
+```terraform
 vpc_name           = "<name_of_VPC>"
 ```
 
-### (Optional) Specify a name prefix
+### Specify a name prefix
 
 If you would like to specify a common prefix for naming all supported AWS resources created by Terraform, set the value in the `name_prefix` variable in `terraform.tfvars`:
 
-```
+```terraform
 name_prefix        = "<prefix>"
-
 ```
 
-### (Optional) Set a log retention period
+### Set a log retention period
 
 Thw deployment example retains logs indifnietely by default. If you would like to set a differnet retention period, specify a number of days in the `log_retention_days` variable in `terraform.tfvars`:
 
-```
+```terraform
 log_retention_days = <number_of_days>
 
 ```
 
-### (Optional) Apply additional tags
+### Apply additional tags
 
-If you would apply additional tags to all supported AWS resources created by Terraform, add some to the `tags` variable in `terraform.tfvars`:
+To apply additional tags to all supported AWS resources created by Terraform, add keys and values to the `tags` variable in `terraform.tfvars`:
 
-```
+```terraform
 tags = {
   <key1> = "<some_value>"
   <key2> = "<some_value>"
   …
 }
 ```
+
+</details>
 
 ## Deploy
 

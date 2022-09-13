@@ -18,8 +18,43 @@ locals {
   domain      = join(".", slice(split(".", var.domain_name), 1, length(split(".", var.domain_name))))
   tags = merge(var.tags, {
     application = "1Password SCIM Bridge",
-    version     = trimprefix(jsondecode(file("task-definitions/scim.json"))[0].image, "1password/scim:v")
+    version     = trimprefix(jsondecode(file("${path.module}/task-definitions/scim.json"))[0].image, "1password/scim:v")
   })
+
+  # Define base configuration from ./task-definitions/scim.json
+  base_container_definitions_json = templatefile(
+    "${path.module}/task-definitions/scim.json",
+    {
+      secret_arn     = aws_secretsmanager_secret.scimsession.arn,
+      aws_logs_group = aws_cloudwatch_log_group.op_scim_bridge.name,
+      region         = var.aws_region,
+    }
+  )
+
+  # Split base config array into discrete container definitions
+  base_scim_bridge_container_definition = jsondecode(local.base_container_definitions_json)[0]
+  base_redis_container_definition       = jsondecode(local.base_container_definitions_json)[1]
+
+  # Conditionally merge Google Workspace config
+  scim_bridge_container_definition = !var.using_google_workspace ? local.base_scim_bridge_container_definition : merge(
+    local.base_scim_bridge_container_definition,
+    {
+      #Add Google Workspace secrets to current list
+      secrets = concat(
+        local.base_scim_bridge_container_definition.secrets,
+        module.google_workspace[0].secrets,
+      )
+    }
+  )
+
+  # Create local variable for merging in config to Redis container
+  redis_container_definition = local.base_redis_container_definition
+
+  # Combine discrete container definitions into list
+  container_definitions = [
+    local.scim_bridge_container_definition,
+    local.redis_container_definition,
+  ]
 }
 
 data "aws_vpc" "this" {
@@ -80,7 +115,7 @@ resource "aws_secretsmanager_secret" "scimsession" {
 
 resource "aws_secretsmanager_secret_version" "scimsession" {
   secret_id     = aws_secretsmanager_secret.scimsession.id
-  secret_string = base64encode(file("${path.module}/scimsession"))
+  secret_string = filebase64("${path.module}/scimsession")
 }
 
 resource "aws_cloudwatch_log_group" "op_scim_bridge" {
@@ -97,12 +132,9 @@ resource "aws_ecs_cluster" "op_scim_bridge" {
 }
 
 resource "aws_ecs_task_definition" "op_scim_bridge" {
-  family = var.name_prefix == "" ? "op_scim_bridge" : format("%s_%s", local.name_prefix, "scim_bridge")
-  container_definitions = templatefile("task-definitions/scim.json",
-    { secret_arn     = aws_secretsmanager_secret.scimsession.arn,
-      aws_logs_group = aws_cloudwatch_log_group.op_scim_bridge.name,
-      region         = var.aws_region
-  })
+  family                = var.name_prefix == "" ? "op_scim_bridge" : format("%s_%s", local.name_prefix, "scim_bridge")
+  container_definitions = jsonencode(local.container_definitions)
+
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   memory                   = 1024
@@ -140,7 +172,7 @@ resource "aws_ecs_service" "op_scim_bridge" {
 
   load_balancer {
     target_group_arn = aws_lb_target_group.op_scim_bridge.arn
-    container_name   = jsondecode(file("task-definitions/scim.json"))[0].name
+    container_name   = jsondecode(file("${path.module}/task-definitions/scim.json"))[0].name
     container_port   = 3002
   }
 
@@ -295,6 +327,17 @@ resource "aws_route53_record" "op_scim_bridge" {
     zone_id                = aws_alb.op_scim_bridge.zone_id
     evaluate_target_health = true
   }
+}
+
+module "google_workspace" {
+  count = var.using_google_workspace ? 1 : 0
+
+  source = "../beta/aws-terraform-gw"
+
+  name_prefix = local.name_prefix
+  tags        = local.tags
+  iam_role    = aws_iam_role.op_scim_bridge
+  enabled     = var.using_google_workspace
 }
 
 moved {

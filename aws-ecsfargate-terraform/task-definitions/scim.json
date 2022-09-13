@@ -14,7 +14,8 @@
     "portMappings": [
       {
         "containerPort": 3002,
-        "hostPort": 3002
+        "hostPort": 3002,
+        "protocol": "tcp"
       }
     ],
     "environment": [
@@ -40,7 +41,9 @@
         "awslogs-region": "${region}",
         "awslogs-stream-prefix": "ecs-scim"
       }
-    }
+    },
+    "mountPoints" : [],
+    "volumesFrom" : []
   },
   {
     "name": "redis",
@@ -60,7 +63,8 @@
     "portMappings": [
       {
         "containerPort": 6379,
-        "hostPort": 6379
+        "hostPort": 6379,
+        "protocol": "tcp"
       }
     ],
     "environment": [
@@ -68,6 +72,8 @@
         "name": "REDIS_ARGS",
         "value": "--maxmemory 256mb --maxmemory-policy volatile-lru"
       }
-    ]
+    ],
+    "mountPoints" : [],
+    "volumesFrom" : []
   }
 ]
