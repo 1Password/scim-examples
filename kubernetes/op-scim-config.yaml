@@ -15,5 +15,5 @@ data:
   # default: "1pw@[OP_LETSENCRYPT_DOMAIN]"
   #OP_LETSENCRYPT_EMAIL: "1pw@example.com"
   # (Workspace Beta) these settings are specific to those participating in the Google Workspace provisioning beta
-  OP_WORKSPACE_CREDENTIALS: "/secret/workspace-credentials"
-  OP_WORKSPACE_SETTINGS: "/secret/workspace-settings"
+  OP_WORKSPACE_CREDENTIALS: "/secret/workspace-credentials.json"
+  OP_WORKSPACE_SETTINGS: "/secret/workspace-settings.json"

@@ -23,7 +23,7 @@ spec:
             - name: http
               containerPort: 3002
           volumeMounts:
-            - name: scimsession
+            - name: secrets
               mountPath: "/secret"
               readOnly: false
           resources:
@@ -36,7 +36,14 @@ spec:
           envFrom:
             - configMapRef:
                 name: op-scim-configmap
+      # TODO: make workspace secrets optional, test deployment with/without workspace secrets
       volumes:
-        - name: scimsession
-          secret:
-            secretName: scimsession
+      - name: secrets
+        projected:
+          sources:
+          - secret:
+              name: scimsession
+          - secret:
+              name: workspace-credentials
+          - secret:
+              name: workspace-settings  
