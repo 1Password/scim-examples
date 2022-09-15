@@ -24,7 +24,7 @@ spec:
               containerPort: 3002
           volumeMounts:
             - name: secrets
-              mountPath: "/secret"
+              mountPath: "/secrets"
               readOnly: false
           resources:
             requests:
