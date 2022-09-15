@@ -36,7 +36,6 @@ spec:
           envFrom:
             - configMapRef:
                 name: op-scim-configmap
-      # TODO: make workspace secrets optional, test deployment with/without workspace secrets
       volumes:
       - name: secrets
         projected:
@@ -45,5 +44,7 @@ spec:
               name: scimsession
           - secret:
               name: workspace-credentials
+              optional: true
           - secret:
               name: workspace-settings  
+              optional: true
