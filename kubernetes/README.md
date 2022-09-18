@@ -194,30 +194,67 @@ Please reach out to our [support team](https://support.1password.com/contact/) i
 
 ## Advanced deployments
 
-The following are helpful tips in case you wish to perform an advanced deployment.
+Here are some helpful tips for customizing your 1Password SCIM bridge deployment:
 
 ### External load balancer
 
-In `op-scim-config.yaml`, you can set the `OP_LETSENCRYPT_DOMAIN` variable to blank, which will have the SCIM bridge serve on port 3002. You can then map your pre-existing webserver (Apache, NGINX, etc). You will no longer be issued a certificate by LetsEncrypt.
+To use your own TLS certificate, terminate TLS traffic on a public-facing load balancer or reverse proxy and redirect HTTP traffic to SCIM bridge within your private network. Skip the step to [configure Let's Encrypt](#configure-lets-encrypt), or revert to the default state by setting `OP_LETSENCRYPT_DOMAIN` to `""`:
 
-### External redis server
+```bash
+kubectl set env deploy/op-scim-bridge OP_LETSENCRYPT_DOMAIN=""
+```
 
-If you are using an existing redis instance that's not running on `redis://redis:6379`, you can change the `OP_REDIS_URL` variable in `op-scim-config.yaml`.
+Modify [`op-scim-service.yaml`](./op-scim-config.yaml) to use the alternate `http` port for the Service as noted within the manifest. Traffic from your TLS endpoint should be directed to this port (80, by default). If SCIM bridge has already been deployed, apply the amended Service manifest:
 
-You would then omit the the `redis-*.yaml` files when deploying to your Kubernetes cluster.
+```bash
+kubectl apply -f ./op-scim-service.yaml
+```
+
+In this configuration, 1Password SCIM bridge will listen for unencrypted traffic on the `http` port of the Pod.
+
+### External Redis
+
+If you prefer to use an existing Redis cache, omit the the `redis-*.yaml` files when deploying to your Kubernetes cluster. If you have already deployed SCIM bridge, you can delete the objects associated with Redis:
+
+```bash
+kubectl delete \
+  -f redis-config.yaml \
+  -f redis-deployment.yaml \
+  -f redis-service.yaml
+```
+
+Edit the value of the `OP_REDIS_URL` environment variable in [`op-scim-config.yaml`](./op-scim-config.yaml), or set it directly if you have already deployed 1Password SCIM bridge:
+
+```bash
+kubectl set env deploy/op-scim-bridge OP_REDIS_URL="redis[s]://server:port"
+```
 
 ### Human-Readable Logs
 
-You can set `OP_PRETTY_LOGS` to `1` if you would like the SCIM bridge to output logs in a human-readable format. This can be helpful if you aren’t planning on doing custom log ingestion in your environment.
+Set `OP_PRETTY_LOGS` to `1` if you would like the SCIM bridge to output logs in a human-readable format:
+
+```bash
+kubectl set env deploy/op-scim-bridge OP_PRETTY_LOGS=1
+```
+
+This may be helpful if you aren’t planning on doing custom log ingestion in your environment.
 
 ### Debug Mode
 
-You can set `OP_DEBUG` to `1` to enable debug output in the logs. Useful for troubleshooting or when contacting 1Password Support.
+Set `OP_DEBUG` to `1` to enable debug output in the logs:
+
+```bash
+kubectl set env deploy/op-scim-bridge OP_DEBUG=1
+```
+
+This may be useful for troubleshooting, or when contacting 1Password Support.
 
 ### Health Check Ping Server
 
-When using Let’s Encrypt on some Kubernetes clusters, health checks can fail for the SCIM bridge before the bridge is able to obtain a Let’s Encrypt certificate.
+When using Let’s Encrypt on some Kubernetes clusters, health checks can fail for the SCIM bridge before the bridge is able to obtain a Let’s Encrypt certificate. Set `OP_PING_SERVER` to `1` to enable a `/ping` endpoint on port `80` so that health checks will always be brought online:
 
-You can set `OP_PING_SERVER` to `1` to enable a `/ping` endpoint on port `80` so that health checks will always be brought online. For security reasons, no other endpoints (such as `/scim`) are exposed through this port.
+```bash
+kubectl set env deploy/op-scim-bridge OP_PING_SERVER=1
+```
 
-The endpoint is disabled if `OP_LETSENCRYPT_DOMAIN` is set to blank and TLS is not utilized.
+No other endpoints (such as `/scim`) are exposed through this port.
