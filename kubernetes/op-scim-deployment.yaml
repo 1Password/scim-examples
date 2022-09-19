@@ -23,8 +23,8 @@ spec:
             - name: http
               containerPort: 3002
           volumeMounts:
-            - name: scimsession
-              mountPath: "/secret"
+            - name: secrets
+              mountPath: "/secrets"
               readOnly: false
           resources:
             requests:
@@ -37,6 +37,14 @@ spec:
             - configMapRef:
                 name: op-scim-configmap
       volumes:
-        - name: scimsession
-          secret:
-            secretName: scimsession
+      - name: secrets
+        projected:
+          sources:
+          - secret:
+              name: scimsession
+          - secret:
+              name: workspace-credentials
+              optional: true
+          - secret:
+              name: workspace-settings  
+              optional: true

@@ -7,7 +7,7 @@ data:
   OP_LETSENCRYPT_DOMAIN: ""
   # (advanced) only change the options below if you need to
   OP_REDIS_URL: "redis://op-scim-redis:6379"
-  OP_SESSION: "/secret/scimsession"
+  OP_SESSION: "/secrets/scimsession"
   OP_PRETTY_LOGS: "0"
   OP_DEBUG: "0"
   OP_PING_SERVER: "0"
@@ -15,5 +15,5 @@ data:
   # default: "1pw@[OP_LETSENCRYPT_DOMAIN]"
   #OP_LETSENCRYPT_EMAIL: "1pw@example.com"
   # (Workspace Beta) these settings are specific to those participating in the Google Workspace provisioning beta
-  OP_WORKSPACE_CREDENTIALS: "/secret/workspace-credentials"
-  OP_WORKSPACE_SETTINGS: "/secret/workspace-settings"
+  OP_WORKSPACE_CREDENTIALS: "/secrets/workspace-credentials.json"
+  OP_WORKSPACE_SETTINGS: "/secrets/workspace-settings.json"
