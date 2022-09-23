@@ -82,13 +82,16 @@ You’ll also need to set the environment variable `OP_LETSENCRYPT_DOMAIN` withi
 
 Ensure that `OP_LETSENCRYPT_DOMAIN` is set to the domain name you’ve set up before continuing.
 
-<details>
-<summary>Information for Google Workspace beta participants</summary>
-If you’re part of the Google Workspace provisioning beta, you will need to set up some additional secrets to use this functionality. Refer to our complete Google Workspace provisioning beta documentation for more complete information.
+## For Google Workspace customers only
 
-First, edit the file located at `scim-examples/beta/workspace-settings.json` and enter in the appropriate details.
+**This section is only relevant if Google Workspace is your identity provider.** For more informatiion please visit [Connect Google Workspace to 1Password SCIM Bridge](https://support.1password.com/scim-google-workspace). 
 
-Next, to create the necessary environment variables for Google Workspace:
+### Create a Google service account
+You will need to create a Google service account and key as outlined in the 1Password support article [Connect Google Workspace to 1Password SCIM Bridge](https://support.1password.com/scim-google-workspace/#step-1-create-a-google-service-account-key-and-api-client). 
+
+Download the credentials file provided by Google and save a copy to your 1Password account. 
+
+### Create the necessary environment variables for Google Workspace:
 
 ```bash
 # enter the compose directory (if you aren’t already in it)
