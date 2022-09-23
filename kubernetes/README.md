@@ -87,8 +87,8 @@ Run the following command deploy SCIM bridge:
 kubectl apply -f .
 ```
 
-If you store your workspace-credentials.json and workspace-settings.json files in the same directory as your deployment files, you may see the following error after runing `kubectl apply -f .` below:
-```
+If you are a Google Workspace customer and have stored your `workspace-credentials.json` and `workspace-settings.json` files in the same directory as your deployment files, you may see the following error after runing `kubectl apply -f .` below:
+```bash
 error validating "workspace-credentials.json": error validating data: [apiVersion not set, kind not set]; if you choose to ignore these errors, turn validation off with --validate=false
 error validating "workspace-settings.json": error validating data: [apiVersion not set, kind not set]; if you choose to ignore these errors, turn validation off with --validate=false
 ```
