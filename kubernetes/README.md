@@ -79,7 +79,7 @@ In order to provide the SCIM bridge with necessary information about your Google
 Once you have edited the file, save it and run the following command to create a kubernetes secret from the settings file. 
 
 ```bash
-kubectl create secret generic workspace-settings --from-file=workspace-settings.json=/path/to/workspace-settings.json
+kubectl create secret generic workspace-settings --from-file=workspace-settings.json=../beta/workspace-settings.json
 ```
 
 ## Deploy to the Kubernetes cluster
