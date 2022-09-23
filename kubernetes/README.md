@@ -53,7 +53,7 @@ kubectl create secret generic scimsession --from-file=scimsession=./scimsession
 
 ## For Google Workspace customers only
 
-This section is only relevant if Google Workspace is your identity provider. If you do not connecting 1Password to Google Workspace, please proceed to [Deploy to the Kubernetes cluster](https://github.com/1Password/scim-examples/tree/master/kubernetes#deploy-to-the-kubernetes-cluster).
+This section is only relevant if Google Workspace is your identity provider. If you are not connecting 1Password to Google Workspace, please proceed to [Deploy to the Kubernetes cluster](https://github.com/1Password/scim-examples/tree/master/kubernetes#deploy-to-the-kubernetes-cluster).
 
 For more informatiion please visit [Connect Google Workspace to 1Password SCIM Bridge](https://support.1password.com/scim-google-workspace). 
 
