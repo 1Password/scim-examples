@@ -84,10 +84,9 @@ Ensure that `OP_LETSENCRYPT_DOMAIN` is set to the domain name you’ve set up be
 
 ## For Google Workspace customers only
 
-This section is only relevant if Google Workspace is your identity provider. If you are not connecting 1Password to Google Workspace, please proceed to [Deploy to the Kubernetes cluster](https://github.com/1Password/scim-examples/tree/master/kubernetes#deploy-to-the-kubernetes-cluster).
+**This section is only relevant if Google Workspace is your identity provider.** For more informatiion please visit [Connect Google Workspace to 1Password SCIM Bridge](https://support.1password.com/scim-google-workspace). 
 
 ### Create a Google service account
-
 You will need to create a Google service account and key as outlined in the 1Password support article [Connect Google Workspace to 1Password SCIM Bridge](https://support.1password.com/scim-google-workspace/#step-1-create-a-google-service-account-key-and-api-client). 
 
 Download the credentials file provided by Google and save a copy to your 1Password account. 
