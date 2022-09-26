@@ -111,7 +111,7 @@ echo " "
 echo "Please specify the following options."
 
 while ! [[ "$workspace" =~ ^([yY][eE][sS]|[yY]|[nN][oO]|[nN])$ ]]; do
-    read -p "Are you part of the Google Workspace beta? [y/n]: " workspace
+    read -p "Are you using Google Workspace as your Identity Provider? [y/n]: " workspace
     if [[ "$workspace" =~ ^([yY][eS][sS]|[yY])$ ]]
     then
         workspace_beta=true

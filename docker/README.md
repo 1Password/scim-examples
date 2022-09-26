@@ -26,6 +26,8 @@ For macOS users who use Homebrew, ensure you're using the _cask_ app-based versi
 
 ### Automatic Instructions
 
+These steps can be used for automatic deployments using either Docker Swarm or Docker Compose running [./docker/deploy.sh](deploy.sh).
+
 #### Docker Swarm
 
 For this, you will need to have joined a Docker Swarm with the target deployment node. Please refer to [the official Docker documentation](https://docs.docker.com/engine/swarm/swarm-tutorial/create-swarm/) on how to do that.
@@ -35,8 +37,9 @@ Once set up and you've logged into your Swarm with `docker swarm join` or create
 The script will do the following:
 
 1. Add your `scimsession` file as a Docker Secret within your Swarm cluster.
-2. Prompt you for your SCIM bridge domain name which will configure LetsEncrypt to automatically issue a certificate for your Bridge. This is the domain you selected in [PREPARATION.md](/PREPARATION.md).
-3. Deploy a container using `1password/scim`, and a `redis` container. The `redis` container is necessary to store LetsEncrypt certificates, as well as act as a cache for Identity Provider data.
+2. Prompt you if you are using Google Workspace as your Identity Provider and for configuration files to add them as a Docker Secrets within your Swarm cluster.
+3. Prompt you for your SCIM bridge domain name which will configure LetsEncrypt to automatically issue a certificate for your Bridge. This is the domain you selected in [PREPARATION.md](/PREPARATION.md).
+4. Deploy a container using `1password/scim`, and a `redis` container. The `redis` container is necessary to store LetsEncrypt certificates, as well as act as a cache for Identity Provider data.
 
 The logs from the SCIM bridge and Redis containers will be streamed to your machine. If everything seems to have deployed successfully, press Ctrl+C to exit, and the containers will remain running on the remote machine.
 
@@ -52,6 +55,8 @@ Run the [./docker/deploy.sh](deploy.sh) script as in the previous example.
 
 ### Manual Instructions
 
+These steps can be used for manual deployments using either Docker Swarm or Docker Compose.
+
 #### Cloning `scim-examples`
 
 As seen in [PREPARATION.md](/PREPARATION.md), you’ll need to clone this repository using `git` into a directory of your choice.
@@ -64,6 +69,45 @@ You can then browse to the Docker directory:
 
 ```bash
 cd scim-examples/docker/
+```
+
+#### Docker Swarm
+
+To use Docker Swarm to deploy, you’ll want to have run `docker swarm init` or `docker swarm join` on the target node and completed that portion of the setup. Refer to Docker’s documentation for more details.
+
+Unlike Docker Compose, you won’t need to set the `OP_SESSION` variable in `scim.env`, as we’ll be using Docker Secrets to store the `scimsession` file.
+
+You’ll still need to set the environment variable `OP_LETSENCRYPT_DOMAIN` within `scim.env` to the URL you selected during [PREPARATION.md](/PREPARATION.md). Open that in your preferred text editor and change `OP_LETSENCRYPT_DOMAIN` to that domain name.
+
+<details>
+<summary>Information for Google Workspace as your Identity Provider (IdP)</summary>
+If you’re using Google Workspace as your identity provider for provisioning, you will need to set up some additional secrets to use this functionality. Refer to our complete Google Workspace provisioning documentation for more complete information. For more informatiion please visit [Connect Google Workspace to 1Password SCIM Bridge](https://support.1password.com/scim-google-workspace). 
+
+First, edit the file located at `scim-examples/beta/workspace-settings.json` and enter in the appropriate details.
+
+Next, to create the necessary secrets for Google Workspace:
+
+```bash
+# this is the path of the JSON file you edited in the paragraph above
+cat /path/to/workspace-settings.json | docker secret create workspace-settings -
+# replace <google keyfile> with the name of the file Google generated for your Google Service Account
+cat /path/to/<google keyfile>.json | docker secret create workspace-credentials -
+
+```
+</details>
+<br>
+
+Once that’s set up, you can do the following:
+
+```bash
+# enter the swarm directory
+cd scim-examples/docker/swarm/
+# sets up a Docker Secret on your Swarm
+cat /path/to/scimsession | docker secret create scimsession -
+# deploy your Stack
+docker stack deploy -c docker-compose.yml op-scim
+# (optional) view the service logs
+docker service logs --raw -f op-scim_scim
 ```
 
 #### Docker Compose
@@ -83,8 +127,8 @@ You’ll also need to set the environment variable `OP_LETSENCRYPT_DOMAIN` withi
 Ensure that `OP_LETSENCRYPT_DOMAIN` is set to the domain name you’ve set up before continuing.
 
 <details>
-<summary>Information for Google Workspace beta participants</summary>
-If you’re part of the Google Workspace provisioning beta, you will need to set up some additional secrets to use this functionality. Refer to our complete Google Workspace provisioning beta documentation for more complete information.
+<summary>Information for Google Workspace as your Identity Provider (IdP)</summary>
+If you’re using Google Workspace as your identity provider for provisioning, you will need to set up some additional secrets to use this functionality. Refer to our complete Google Workspace provisioning documentation for more complete information. For more informatiion please visit [Connect Google Workspace to 1Password SCIM Bridge](https://support.1password.com/scim-google-workspace). 
 
 First, edit the file located at `scim-examples/beta/workspace-settings.json` and enter in the appropriate details.
 
@@ -112,45 +156,6 @@ cd scim-examples/docker/compose/
 docker-compose -f docker-compose.yml up --build -d
 # (optional) view the container logs
 docker-compose -f docker-compose.yml logs -f
-```
-
-#### Docker Swarm
-
-To use Docker Swarm to deploy, you’ll want to have run `docker swarm init` or `docker swarm join` on the target node and completed that portion of the setup. Refer to Docker’s documentation for more details.
-
-Unlike Docker Compose, you won’t need to set the `OP_SESSION` variable in `scim.env`, as we’ll be using Docker Secrets to store the `scimsession` file.
-
-You’ll still need to set the environment variable `OP_LETSENCRYPT_DOMAIN` within `scim.env` to the URL you selected during [PREPARATION.md](/PREPARATION.md). Open that in your preferred text editor and change `OP_LETSENCRYPT_DOMAIN` to that domain name.
-
-<details>
-<summary>Information for Google Workspace beta participants</summary>
-If you’re part of the Google Workspace provisioning beta, you will need to set up some additional secrets to use this functionality. Refer to our complete Google Workspace provisioning beta documentation for more complete information.
-
-First, edit the file located at `scim-examples/beta/workspace-settings.json` and enter in the appropriate details.
-
-Next, to create the necessary secrets for Google Workspace:
-
-```bash
-# this is the path of the JSON file you edited in the paragraph above
-cat /path/to/workspace-settings.json | docker secret create workspace-settings -
-# replace <google keyfile> with the name of the file Google generated for your Google Service Account
-cat /path/to/<google keyfile>.json | docker secret create workspace-settings -
-
-```
-</details>
-<br>
-
-Once that’s set up, you can do the following:
-
-```bash
-# enter the swarm directory
-cd scim-examples/docker/swarm/
-# sets up a Docker Secret on your Swarm
-cat /path/to/scimsession | docker secret create scimsession -
-# deploy your Stack
-docker stack deploy -c docker-compose.yml op-scim
-# (optional) view the service logs
-docker service logs --raw -f op-scim_scim
 ```
 
 ### Testing

@@ -18,6 +18,16 @@ services:
         uid: "999"
         gid: "999"
         mode: 0440
+        - source: workspace-settings
+        target: workspace-settings
+        uid: "999"
+        gid: "999"
+        mode: 0440
+      - source: workspace-credentials
+        target: workspace-credentials
+        uid: "999"
+        gid: "999"
+        mode: 0440
     env_file: scim.env
     depends_on: [ 'redis' ]
   redis:
@@ -35,4 +45,8 @@ networks:
 
 secrets:
   scimsession:
+    external: true
+ workspace-settings:
+    external: true
+  workspace-credentials:
     external: true
