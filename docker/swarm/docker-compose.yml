@@ -46,7 +46,7 @@ networks:
 secrets:
   scimsession:
     external: true
- workspace-settings:
+  workspace-settings:
     external: true
- workspace-credentials:
+  workspace-credentials:
     external: true
