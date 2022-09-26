@@ -18,7 +18,7 @@ services:
         uid: "999"
         gid: "999"
         mode: 0440
-        - source: workspace-settings
+      - source: workspace-settings
         target: workspace-settings
         uid: "999"
         gid: "999"
