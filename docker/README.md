@@ -81,7 +81,7 @@ You’ll still need to set the environment variable `OP_LETSENCRYPT_DOMAIN` with
 
 <details>
 <summary>Information for Google Workspace as your Identity Provider (IdP)</summary>
-If you’re using Google Workspace as your identity provider for provisioning, you will need to set up some additional secrets to use this functionality. Refer to our complete Google Workspace provisioning documentation for more complete information, https://support.1password.com/scim-google-workspace. 
+If you’re using Google Workspace as your identity provider for provisioning, you will need to set up some additional secrets to use this functionality as detailed below. Refer to our complete Google Workspace provisioning documentation for more complete information, https://support.1password.com/scim-google-workspace. 
 
 First, edit the file located at `scim-examples/beta/workspace-settings.json` and enter in the appropriate details.
 
@@ -128,7 +128,7 @@ Ensure that `OP_LETSENCRYPT_DOMAIN` is set to the domain name you’ve set up be
 
 <details>
 <summary>Information for Google Workspace as your Identity Provider (IdP)</summary>
-If you’re using Google Workspace as your identity provider for provisioning, you will need to set up some additional secrets to use this functionality. Refer to our complete Google Workspace provisioning documentation for more complete information, https://support.1password.com/scim-google-workspace. 
+If you’re using Google Workspace as your identity provider for provisioning, you will need to set up some additional secrets to use this functionality as detailed below. Refer to our complete Google Workspace provisioning documentation for more complete information, https://support.1password.com/scim-google-workspace. 
 
 First, edit the file located at `scim-examples/beta/workspace-settings.json` and enter in the appropriate details.
 
