@@ -24,7 +24,7 @@ For macOS users who use Homebrew, ensure you're using the _cask_ app-based versi
 
 ## Setting up Docker
 
-### Automatic Instructions
+### Automatic Deployment Instructions
 
 These steps can be used for automatic deployments using either Docker Swarm or Docker Compose running [./docker/deploy.sh](deploy.sh).
 
@@ -36,10 +36,11 @@ Once set up and you've logged into your Swarm with `docker swarm join` or create
 
 The script will do the following:
 
-1. Add your `scimsession` file as a Docker Secret within your Swarm cluster.
-2. Prompt you if you are using Google Workspace as your Identity Provider and for configuration files to add them as a Docker Secrets within your Swarm cluster.
+1. Prompt you if you are using Google Workspace as your Identity Provider and for configuration files locations to add them as a Docker Secrets within your Swarm cluster.
+2. Prompt if you are deploying using Docker Swarm or Docker Compose.
 3. Prompt you for your SCIM bridge domain name which will configure LetsEncrypt to automatically issue a certificate for your Bridge. This is the domain you selected in [PREPARATION.md](/PREPARATION.md).
-4. Deploy a container using `1password/scim`, and a `redis` container. The `redis` container is necessary to store LetsEncrypt certificates, as well as act as a cache for Identity Provider data.
+4. Prompt you for your `scimsession` file location to add your `scimsession` file as a Docker Secret within your Swarm cluster.
+5. Deploy a container using `1password/scim`, and a `redis` container. The `redis` container is necessary to store LetsEncrypt certificates, as well as act as a cache for Identity Provider data.
 
 The logs from the SCIM bridge and Redis containers will be streamed to your machine. If everything seems to have deployed successfully, press Ctrl+C to exit, and the containers will remain running on the remote machine.
 
@@ -51,7 +52,10 @@ You will need to have a Docker machine set up either locally or remotely. Refer 
 
 Once set up, ensure your environment is set up with `eval %{docker-machine env $machine_name}`, with whatever machine name you decided upon.
 
-Run the [./docker/deploy.sh](deploy.sh) script as in the previous example.
+Run the [./docker/deploy.sh](deploy.sh) script as in the previous example above for Docker Swarm selecting Compose as the deployment method in step 2. Any references for Docker Secrets will be added to the Docker Compose deployment as environment variables.
+
+<details>
+<summary> Manual Deployment Steps</summary>
 
 ### Manual Instructions
 
@@ -97,7 +101,7 @@ cat /path/to/<google keyfile>.json | docker secret create workspace-credentials 
 </details>
 <br>
 
-Once that’s set up, you can do the following:
+Once that’s set up, you can do the following (using the alternate command for the stack deployment if using Google Workspace as your Identity Provider):
 
 ```bash
 # enter the swarm directory
@@ -108,6 +112,13 @@ cat /path/to/scimsession | docker secret create scimsession -
 docker stack deploy -c docker-compose.yml op-scim
 # (optional) view the service logs
 docker service logs --raw -f op-scim_scim
+```
+
+Alternate Google Workspace stack deployment command:
+
+``` bash
+# deploy your Stack with Google Workspace settings
+docker stack deploy -c docker-compose.yml -c gw-docker-compose.yml op-scim
 ```
 
 #### Docker Compose
@@ -157,6 +168,7 @@ docker-compose -f docker-compose.yml up --build -d
 # (optional) view the container logs
 docker-compose -f docker-compose.yml logs -f
 ```
+</details>
 
 ### Testing
 
@@ -174,10 +186,24 @@ Upgrading the SCIM bridge should be relatively simple.
 
 First, you `git pull` the latest versions from this repository. Then, you re-apply the `.yml` file.
 
+#### For Docker Swarm Upgrades:
+
 ```bash
 cd scim-examples/
 git pull
-cd docker/{swarm or compose}/
+cd docker/swarm/
+# For Docker Swarm updates: 
+# add second yaml if using Google Workspace docker stack deploy -c docker-compose.yml -c gw-docker-compose.yml op-scim
+docker stack deploy -c docker-compose.yml op-scim
+```
+
+#### For Docker Compose Upgrades:
+
+```bash
+cd scim-examples/
+git pull
+cd docker/compose/
+# for Docker Compose updates:
 docker-compose -f docker-compose.yml up --build -d
 ```
 
