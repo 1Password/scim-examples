@@ -22,13 +22,11 @@ You'll also need to install `docker-compose` and `docker-machine` command line t
 
 For macOS users who use Homebrew, ensure you're using the _cask_ app-based version of Docker, not the default CLI version. (i.e: `brew cask install docker`)
 
-## Setting up Docker
-
-### Automatic Deployment Instructions
+## Automatic Deployment Instructions
 
 These steps can be used for automatic deployments using either Docker Swarm or Docker Compose running [./docker/deploy.sh](deploy.sh).
 
-#### Docker Swarm
+### Docker Swarm
 
 For this, you will need to have joined a Docker Swarm with the target deployment node. Please refer to [the official Docker documentation](https://docs.docker.com/engine/swarm/swarm-tutorial/create-swarm/) on how to do that.
 
@@ -46,13 +44,17 @@ The logs from the SCIM bridge and Redis containers will be streamed to your mach
 
 At this point you should set the DNS record for the domain name you prepared to the IP address of the `op-scim` container. You can also continue setting up your Identity Provider at this point.
 
-#### Docker Compose
+### Docker Compose
 
 You will need to have a Docker machine set up either locally or remotely. Refer to [the docker-compose documentation](https://docs.docker.com/machine/reference/create/) on how to do that. For a local installation, you can use the `virtualbox` driver.
 
 Once set up, ensure your environment is set up with `eval %{docker-machine env $machine_name}`, with whatever machine name you decided upon.
 
 Run the [./docker/deploy.sh](deploy.sh) script as in the previous example above for Docker Swarm selecting Compose as the deployment method in step 2. Any references for Docker Secrets will be added to the Docker Compose deployment as environment variables.
+
+<hr>
+
+## Manual Deployment Steps
 
 <details>
 <summary> Manual Deployment Steps</summary>
@@ -61,7 +63,7 @@ Run the [./docker/deploy.sh](deploy.sh) script as in the previous example above 
 
 These steps can be used for manual deployments using either Docker Swarm or Docker Compose.
 
-#### Cloning `scim-examples`
+### Cloning `scim-examples`
 
 As seen in [PREPARATION.md](/PREPARATION.md), you’ll need to clone this repository using `git` into a directory of your choice.
 
@@ -75,16 +77,15 @@ You can then browse to the Docker directory:
 cd scim-examples/docker/
 ```
 
-#### Docker Swarm
+### Docker Swarm
 
-To use Docker Swarm to deploy, you’ll want to have run `docker swarm init` or `docker swarm join` on the target node and completed that portion of the setup. Refer to Docker’s documentation for more details.
+To use Docker Swarm to deploy, you’ll want to have run `docker swarm init` or `docker swarm join` on the target node and completed that portion of the setup. Refer to [Docker’s documentation for more details](https://docs.docker.com/engine/swarm/swarm-tutorial/create-swarm/).
 
 Unlike Docker Compose, you won’t need to set the `OP_SESSION` variable in `scim.env`, as we’ll be using Docker Secrets to store the `scimsession` file.
 
 You’ll still need to set the environment variable `OP_LETSENCRYPT_DOMAIN` within `scim.env` to the URL you selected during [PREPARATION.md](/PREPARATION.md). Open that in your preferred text editor and change `OP_LETSENCRYPT_DOMAIN` to that domain name.
 
-<details>
-<summary>Information for Google Workspace as your Identity Provider (IdP)</summary>
+### Information for Google Workspace as your Identity Provider (IdP)
 If you’re using Google Workspace as your identity provider for provisioning, you will need to set up some additional secrets to use this functionality as detailed below. Refer to our complete Google Workspace provisioning documentation for more complete information, https://support.1password.com/scim-google-workspace. 
 
 First, edit the file located at `scim-examples/beta/workspace-settings.json` and enter in the appropriate details.
@@ -98,7 +99,6 @@ cat /path/to/workspace-settings.json | docker secret create workspace-settings -
 cat /path/to/<google keyfile>.json | docker secret create workspace-credentials -
 
 ```
-</details>
 <br>
 
 Once that’s set up, you can do the following (using the alternate command for the stack deployment if using Google Workspace as your Identity Provider):
@@ -121,7 +121,7 @@ Alternate Google Workspace stack deployment command:
 docker stack deploy -c docker-compose.yml -c gw-docker-compose.yml op-scim
 ```
 
-#### Docker Compose
+### Docker Compose
 
 When using Docker Compose, you can create the environment variable `OP_SESSION` manually by doing the following:
 
@@ -137,8 +137,7 @@ You’ll also need to set the environment variable `OP_LETSENCRYPT_DOMAIN` withi
 
 Ensure that `OP_LETSENCRYPT_DOMAIN` is set to the domain name you’ve set up before continuing.
 
-<details>
-<summary>Information for Google Workspace as your Identity Provider (IdP)</summary>
+### Information for Google Workspace as your Identity Provider (IdP)
 If you’re using Google Workspace as your identity provider for provisioning, you will need to set up some additional secrets to use this functionality as detailed below. Refer to our complete Google Workspace provisioning documentation for more complete information, https://support.1password.com/scim-google-workspace. 
 
 First, edit the file located at `scim-examples/beta/workspace-settings.json` and enter in the appropriate details.
@@ -155,7 +154,6 @@ sed -i '' -e "s/OP_WORKSPACE_SETTINGS=$/OP_WORKSPACE_SETTINGS=$WORKSPACE_SETTING
 GOOGLE_CREDENTIALS=$(cat /path/to/<google keyfile>.json | base64 | tr -d "\n")
 sed -i '' -e "s/OP_WORKSPACE_CREDENTIALS=$/OP_WORKSPACE_CREDENTIALS=$GOOGLE_CREDENTIALS/" ./scim.env
 ```
-</details>
 <br>
 
 And finally, use `docker-compose` to deploy:
@@ -169,8 +167,9 @@ docker-compose -f docker-compose.yml up --build -d
 docker-compose -f docker-compose.yml logs -f
 ```
 </details>
+<hr>
 
-### Testing
+## Testing
 
 To test if your SCIM bridge came online, you can browse to the public IP address of your SCIM bridge’s Docker Host with a web browser, and input your Bearer Token into the provided Bearer Token field.
 
@@ -180,24 +179,24 @@ You can also use the following `curl` command to test the SCIM bridge from the c
 curl --header "Authorization: Bearer TOKEN_GOES_HERE" https://<domain>/scim/Users
 ```
 
-### Upgrading
+## Upgrading
 
 Upgrading the SCIM bridge should be relatively simple.
 
 First, you `git pull` the latest versions from this repository. Then, you re-apply the `.yml` file.
 
-#### For Docker Swarm Upgrades:
+### For Docker Swarm Upgrades:
 
 ```bash
 cd scim-examples/
 git pull
 cd docker/swarm/
 # For Docker Swarm updates: 
-# add second yaml if using Google Workspace docker stack deploy -c docker-compose.yml -c gw-docker-compose.yml op-scim
+# add second yaml if using Google Workspace `docker stack deploy -c docker-compose.yml -c gw-docker-compose.yml op-scim`
 docker stack deploy -c docker-compose.yml op-scim
 ```
 
-#### For Docker Compose Upgrades:
+### For Docker Compose Upgrades:
 
 ```bash
 cd scim-examples/
@@ -219,7 +218,7 @@ With the release of SCIM bridge 2.0, the environment variables `OP_REDIS_HOST` a
 
 Unless you have customized your Redis deployment, there shouldn’t be any action you need to take.
 
-### Advanced `scim.env` file options
+## Advanced `scim.env` file options
 
 The following options are available for advanced or custom deployments. Unless you have a specific need, these options do not need to be modified.
 
@@ -229,6 +228,6 @@ The following options are available for advanced or custom deployments. Unless y
 * `OP_DEBUG` - can be set to `1` to enable debug output in the logs. Useful for troubleshooting or when contacting 1Password Support.
 * `OP_PING_SERVER` - can be set to `1` to enable an optional `/ping` endpoint on port `80`. Useful for health checks. Disabled if `OP_LETSENCRYPT_DOMAIN` is unset and TLS is not utilized.
 
-#### Generating `scim.env` file on Windows
+## Generating `scim.env` file on Windows
 
 On Windows, you can refer to the [./docker/compose/generate-env.bat](generate-env.bat) file on how to generate the `base64` string for `OP_SESSION`.

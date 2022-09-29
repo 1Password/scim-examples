@@ -14,14 +14,14 @@ run_docker_compose() {
 
     # this command populates an .env file which allows the container to have a needed environment variable without needing to store the scimsession file itself
     SESSION=$(cat $scimsession_file | base64 | tr -d "\n")
-    sed -i '' -e "s/^OP_SESSION=.*$/OP_SESSION=$SESSION/" $docker_path/$docker_type/scim.env
+    sed -i  -e "s/^OP_SESSION=.*$/OP_SESSION=$SESSION/" $docker_file_path/scim.env
     if $workspaceIdP
     then
         WORKSPACE_FILE=$(cat $workspace_settings | base64 | tr -d "\n")
-        sed -i '' -e "s/^OP_WORKSPACE_SETTINGS=.*$/OP_WORKSPACE_SETTINGS=$WORKSPACE_FILE/" $docker_path/$docker_type/scim.env
+        sed -i  -e "s/^OP_WORKSPACE_SETTINGS=.*$/OP_WORKSPACE_SETTINGS=$WORKSPACE_FILE/" $docker_file_path/scim.env
 
         GOOGLE_KEY_FILE=$(cat $google_credentials | base64 | tr -d "\n")
-        sed -i '' -e "s/^OP_WORKSPACE_CREDENTIALS=.*$/OP_WORKSPACE_CREDENTIALS=$GOOGLE_KEY_FILE/" $docker_path/$docker_type/scim.env
+        sed -i  -e "s/^OP_WORKSPACE_CREDENTIALS=.*$/OP_WORKSPACE_CREDENTIALS=$GOOGLE_KEY_FILE/" $docker_file_path/scim.env
     fi
 
     if ! docker-compose -f $docker_file up --build -d
@@ -93,14 +93,6 @@ run_docker_swarm() {
             sleep 1
             exit 1
         fi
-    fi
-
-    if ! docker stack deploy -c $docker_file op-scim
-    then
-        echo " "
-        echo "Failed to deploy to Docker Swarm; investigate the error before proceeding"
-        sleep 1
-        exit 1
     fi
 
     read -p "Do you want to view the logs? [Y/n]: " view_logs
@@ -215,8 +207,7 @@ gw_docker_file=$docker_file_path/gw-docker-compose.yml
 docker_backup_file=$docker_file_path/docker-compose.yml.bak
 gw_docker_backup_file=$docker_file_path/gw_docker-compose.yml.bak
 cp $docker_file $docker_backup_file
-cp $gw_docker_file $gw_docker_backup_file
-sed -i '' -e "s/^OP_LETSENCRYPT_DOMAIN=.*$/OP_LETSENCRYPT_DOMAIN=$domain_name/" $docker_path/$docker_type/scim.env
+sed -i  -e "s/^OP_LETSENCRYPT_DOMAIN=.*$/OP_LETSENCRYPT_DOMAIN=$domain_name/" $docker_file_path/scim.env
 
 # run the function associated with the Docker type selected
 if [[ "$docker_type" == "compose" ]]
@@ -224,6 +215,7 @@ then
     run_docker_compose
 elif [[ "$docker_type" == "swarm" ]]
 then
+    cp $gw_docker_file $gw_docker_backup_file
     run_docker_swarm
 fi
 
