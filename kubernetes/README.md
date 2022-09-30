@@ -19,7 +19,7 @@ The deployment process consists of these steps:
 - [`op-scim-deployment.yaml`](./op-scim-deployment.yaml): The Deployment object for the SCIM bridge container.
 - [`op-scim-service.yaml`](./op-scim-service.yaml): Public load balancer for SCIM bridge to enable connectivity for your idenitty provider.
 - [`op-scim-config.yaml`](./op-scim-config.yaml): Configuration for the SCIM bridge Deployment.
-- [`redis-deployment.yaml`](./redis-deployment.yaml):  A Redis cache deployed in the cluster.
+- [`redis-deployment.yaml`](./redis-deployment.yaml): A Redis cache deployed in the cluster.
 - [`redis-service.yaml`](./op-scim-service.yaml): Kubernetes Service for the Redis cache to enable connectivity inside the cluster.
 - [`redis-config.yaml`](./redis-config.yaml): Configuration for the Redis cache.
 
@@ -76,10 +76,12 @@ kubectl apply -f .
 ```
 
 If you store your workspace-credentials.json and workspace-settings.json files in the same directory as your deployment files, you may see the following error after runing `kubectl apply -f .` below:
+
 ```
 error validating "workspace-credentials.json": error validating data: [apiVersion not set, kind not set]; if you choose to ignore these errors, turn validation off with --validate=false
 error validating "workspace-settings.json": error validating data: [apiVersion not set, kind not set]; if you choose to ignore these errors, turn validation off with --validate=false
 ```
+
 You can safely ignore these errors, or move the workspace-credentials.json and workspace-settings.json to a different directory when running `kubectl apply -f .`.
 
 ## Create the DNS record
@@ -130,7 +132,7 @@ This will upgrade your SCIM bridge to the latest version, which should take abou
 
 ### October 2020 Upgrade Changes
 
-As of October 2020, the `scim-examples` Kubernetes deployment now uses `op-scim-config.yaml` to set the configuration needed for your SCIM bridge, and has changed the deployment names from `op-scim` to `op-scim-bridge`, and `redis` to `op-scim-redis` for clarity and consistency. 
+As of October 2020, the `scim-examples` Kubernetes deployment now uses `op-scim-config.yaml` to set the configuration needed for your SCIM bridge, and has changed the deployment names from `op-scim` to `op-scim-bridge`, and `redis` to `op-scim-redis` for clarity and consistency.
 
 You’ll need to re-configure your options in `op-scim-config.yaml`, particularly `OP_LETSENCRYPT_DOMAIN`. You may also want to delete your previous `op-scim` and `redis` deployments to prevent conflict between the two versions.
 
@@ -162,7 +164,7 @@ kubectl scale deploy op-scim-bridge --replicas=0 && sleep 3 && kubectl scale dep
 
 ## Resource Recommendations
 
-The default resource recommendations for the SCIM bridge and Redis deployments are acceptable in most scenarios, but they fall short in high volume deployments where there is a large number of users and/or groups. 
+The default resource recommendations for the SCIM bridge and Redis deployments are acceptable in most scenarios, but they fall short in high volume deployments where there is a large number of users and/or groups.
 
 Our current default resource requirements (defined in [op-scim-deployment](https://github.com/1Password/scim-examples/blob/master/kubernetes/op-scim-deployment.yaml#L29) and [redis-deployment.yaml](https://github.com/1Password/scim-examples/blob/master/kubernetes/redis-deployment.yaml#L21)) are:
 

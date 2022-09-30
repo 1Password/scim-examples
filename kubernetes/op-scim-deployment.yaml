@@ -37,14 +37,14 @@ spec:
             - configMapRef:
                 name: op-scim-configmap
       volumes:
-      - name: secrets
-        projected:
-          sources:
-          - secret:
-              name: scimsession
-          - secret:
-              name: workspace-credentials
-              optional: true
-          - secret:
-              name: workspace-settings  
-              optional: true
+        - name: secrets
+          projected:
+            sources:
+              - secret:
+                  name: scimsession
+              - secret:
+                  name: workspace-credentials
+                  optional: true
+              - secret:
+                  name: workspace-settings
+                  optional: true
