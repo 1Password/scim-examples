@@ -57,7 +57,7 @@ This section is only relevant if Google Workspace is your identity provider. If 
 
 ### Create a Google service account
 
-You will need to create a Google service account and key as outlined in the 1Password support article [Connect Google Workspace to 1Password SCIM Bridge](https://support.1password.com/scim-google-workspace/#step-1-create-a-google-service-account-key-and-api-client). 
+Create a Google service account and key as outlined in the 1Password support article [Connect Google Workspace to 1Password SCIM Bridge](https://support.1password.com/scim-google-workspace/#step-1-create-a-google-service-account-key-and-api-client). 
 
 Download the credentials file provided by Google and save a copy to your 1Password account. 
 
@@ -96,7 +96,7 @@ If you are a Google Workspace customer and have stored your `workspace-credentia
 error validating "workspace-credentials.json": error validating data: [apiVersion not set, kind not set]; if you choose to ignore these errors, turn validation off with --validate=false
 error validating "workspace-settings.json": error validating data: [apiVersion not set, kind not set]; if you choose to ignore these errors, turn validation off with --validate=false
 ```
-You can safely ignore these errors, or move the `workspace-credentials.json` and `workspace-settings.json` to a different directory when running `kubectl apply -f .`.
+You can safely ignore these errors, or move the `workspace-credentials.json` and `workspace-settings.json` to a different directory before running `kubectl apply -f .`.
 
 ## Create the DNS record
 
