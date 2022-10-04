@@ -1,7 +1,7 @@
 [
   {
     "name": "op_scim_bridge",
-    "image": "1password/scim:v2.6.0",
+    "image": "1password/scim:v2.6.2",
     "cpu": 128,
     "memory": 512,
     "essential": true,
@@ -42,8 +42,8 @@
         "awslogs-stream-prefix": "ecs-scim"
       }
     },
-    "mountPoints" : [],
-    "volumesFrom" : []
+    "mountPoints": [],
+    "volumesFrom": []
   },
   {
     "name": "redis",
@@ -73,7 +73,7 @@
         "value": "--maxmemory 256mb --maxmemory-policy volatile-lru"
       }
     ],
-    "mountPoints" : [],
-    "volumesFrom" : []
+    "mountPoints": [],
+    "volumesFrom": []
   }
 ]
