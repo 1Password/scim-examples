@@ -14,14 +14,14 @@ run_docker_compose() {
 
     # this command populates an .env file which allows the container to have a needed environment variable without needing to store the scimsession file itself
     SESSION=$(cat $scimsession_file | base64 | tr -d "\n")
-    sed -i '' -e "s/^OP_SESSION=.*$/OP_SESSION=$SESSION/" $docker_path/$docker_type/scim.env
-    if $workspace_beta
+    sed -i  -e "s/^OP_SESSION=.*$/OP_SESSION=$SESSION/" $docker_file_path/scim.env
+    if $workspaceIdP
     then
         WORKSPACE_FILE=$(cat $workspace_settings | base64 | tr -d "\n")
-        sed -i '' -e "s/^OP_WORKSPACE_SETTINGS=.*$/OP_WORKSPACE_SETTINGS=$WORKSPACE_FILE/" $docker_path/$docker_type/scim.env
+        sed -i  -e "s/^OP_WORKSPACE_SETTINGS=.*$/OP_WORKSPACE_SETTINGS=$WORKSPACE_FILE/" $docker_file_path/scim.env
 
         GOOGLE_KEY_FILE=$(cat $google_credentials | base64 | tr -d "\n")
-        sed -i '' -e "s/^OP_WORKSPACE_CREDENTIALS=.*$/OP_WORKSPACE_CREDENTIALS=$GOOGLE_KEY_FILE/" $docker_path/$docker_type/scim.env
+        sed -i  -e "s/^OP_WORKSPACE_CREDENTIALS=.*$/OP_WORKSPACE_CREDENTIALS=$GOOGLE_KEY_FILE/" $docker_file_path/scim.env
     fi
 
     if ! docker-compose -f $docker_file up --build -d
@@ -62,8 +62,16 @@ run_docker_swarm() {
         exit 1
     fi
 
-    if $workspace_beta
+    if ! $workspaceIdP
     then
+        if ! docker stack deploy -c $docker_file op-scim
+        then
+            echo " "
+            echo "Failed to deploy to Docker Swarm; investigate the error before proceeding"
+            sleep 1
+            exit 1
+        fi
+    else
         if ! cat $workspace_settings | docker secret create workspace-settings -
         then
             echo " "
@@ -78,14 +86,13 @@ run_docker_swarm() {
             sleep 1
             exit 1
         fi
-    fi
-
-    if ! docker stack deploy -c $docker_file op-scim
-    then
-        echo " "
-        echo "Failed to deploy to Docker Swarm; investigate the error before proceeding"
-        sleep 1
-        exit 1
+        if ! docker stack deploy -c $docker_file -c $gw_docker_file op-scim
+        then
+            echo " "
+            echo "Failed to deploy to Docker Swarm; investigate the error before proceeding"
+            sleep 1
+            exit 1
+        fi
     fi
 
     read -p "Do you want to view the logs? [Y/n]: " view_logs
@@ -104,22 +111,22 @@ run_docker_swarm() {
 # Begin main script
 
 docker_path=$(dirname $(realpath $0))
-workspace_beta=false
+workspaceIdP=false
 
 echo "Initiating 1Password SCIM Bridge Deployment to Docker Swarm"
 echo " "
 echo "Please specify the following options."
 
 while ! [[ "$workspace" =~ ^([yY][eE][sS]|[yY]|[nN][oO]|[nN])$ ]]; do
-    read -p "Are you part of the Google Workspace beta? [y/n]: " workspace
+    read -p "Are you using Google Workspace as your Identity Provider? [y/n]: " workspace
     if [[ "$workspace" =~ ^([yY][eS][sS]|[yY])$ ]]
     then
-        workspace_beta=true
+        workspaceIdP=true
         break
     fi
 done
 
-if $workspace_beta
+if $workspaceIdP
 then
     while :
     do
@@ -176,9 +183,9 @@ echo "Using the following parameters to deploy the SCIM Bridge"
 echo "Deployment type:" $docker_type
 echo "scimsession file path:" $scimsession_file
 echo "Domain name:" $domain_name
-echo "Google Workspace beta program:" $workspace
+echo "Google Workspace as IdP:" $workspace
 
-if $workspace_beta
+if $workspaceIdP
 then
     echo "Workspace settings file path:" $workspace_settings
     echo "Google Service Account credentials file path:" $google_credentials
@@ -196,9 +203,11 @@ done
 # place the domain name into the deployment file, in a backup
 docker_file_path=$docker_path/$docker_type
 docker_file=$docker_file_path/docker-compose.yml
+gw_docker_file=$docker_file_path/gw-docker-compose.yml
 docker_backup_file=$docker_file_path/docker-compose.yml.bak
+gw_docker_backup_file=$docker_file_path/gw_docker-compose.yml.bak
 cp $docker_file $docker_backup_file
-sed -i '' -e "s/^OP_LETSENCRYPT_DOMAIN=.*$/OP_LETSENCRYPT_DOMAIN=$domain_name/" $docker_path/$docker_type/scim.env
+sed -i  -e "s/^OP_LETSENCRYPT_DOMAIN=.*$/OP_LETSENCRYPT_DOMAIN=$domain_name/" $docker_file_path/scim.env
 
 # run the function associated with the Docker type selected
 if [[ "$docker_type" == "compose" ]]
@@ -206,6 +215,7 @@ then
     run_docker_compose
 elif [[ "$docker_type" == "swarm" ]]
 then
+    cp $gw_docker_file $gw_docker_backup_file
     run_docker_swarm
 fi
 
