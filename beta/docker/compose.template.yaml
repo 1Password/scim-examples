@@ -1,0 +1,62 @@
+name: op-scim-bridge
+services:
+  redis:
+    image: redis
+    configs:
+      - source: redis
+        target: /usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
+    networks:
+      - op-scim
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.125"
+          memory: 256M
+        limits:
+          cpus: "0.25"
+          memory: 512M
+      # TODO: replace `restart` below when `any` is supported
+      # restart_policy:
+      #   condition: any
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      interval: 1s
+      timeout: 3s
+      retries: 5
+  scim:
+    image: 1password/scim:v2.6.2
+    depends_on:
+      redis:
+        condition: service_healthy
+    secrets:
+      - scimsession
+    env_file: ./scim.env
+    environment:
+      - OP_LETSENCRYPT_DOMAIN
+    networks:
+      - op-scim
+    ports:
+      - "443:8443"
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.125"
+          memory: 256M
+        limits:
+          cpus: "0.25"
+          memory: 512M
+      # TODO: replace `restart` below when `any` is supported
+      # restart_policy:
+      #   condition: any
+    restart: always
+networks:
+  op-scim:
+    name: op-scim
+configs:
+  redis:
+    file: ./redis.conf
+secrets:
+  scimsession:
+    file: ./scimsession

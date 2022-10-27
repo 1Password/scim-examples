@@ -1,0 +1,14 @@
+name: op-scim-bridge
+services:
+  scim:
+    secrets:
+      - workspace-credentials
+      - workspace-secrets
+    environment:
+      - OP_WORKSPACE_CREDENTIALS=/run/secrets/workspace-credentials.json
+      - OP_WORKSPACE_SETTINGS=/run/secrets/workspace-settings.json
+secrets:
+  workspace-settings:
+    file: ./workspace-settings.json
+  workspace-credentials:
+    file: ./workspace-credentials.json
