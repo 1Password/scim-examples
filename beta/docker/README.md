@@ -3,8 +3,8 @@
 ## Prerequisites
 
 - Linux server with port 443 open
-- Docker Engine (see [Docker Engine installation overview](https://docs.docker.com/engine/install/#server))
-- Docker Compose (see [Install Docker Compose](https://docs.docker.com/compose/install/))
+- Docker Engine (v20.10.3+) (see [Docker Engine installation overview](https://docs.docker.com/engine/install/#server))
+- Docker Compose (v2.0+) (see [Install Docker Compose](https://docs.docker.com/compose/install/))
 
 > **Note:**
 >
