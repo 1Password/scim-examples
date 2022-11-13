@@ -21,6 +21,7 @@ Advanced deployment are recommended when you have particular requirements for yo
 - [AWS EC2 with terraform](/aws-terraform) [deprecated]
 - [AWS ECS Fargate with Terraform](/aws-ecsfargate-terraform)
 - [Azure Kubernetes Service](https://support.1password.com/cs/scim-deploy-azure/)
+- [Heroku](/heroku)
 
 ## Support
 

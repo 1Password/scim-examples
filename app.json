@@ -1,0 +1,39 @@
+{
+  "name": "1Password SCIM Bridge",
+  "description": "1Passwords SCIM Bridge for Business accounts",
+  "keywords": [
+    "1password",
+    "scim"
+  ],
+  "logo": "https://i.1password.com/media/buttons-and-icons/scim-bridge.svg",
+  "repository": "https://github.com/1Password/scim-examples",
+  "stack": "container",
+  "formation": {
+    "web": {
+      "quantity": 1
+    }
+  },
+  "env": {
+    "OP_SESSION": {
+      "description": "Base64-encoded scimsession file 1Password provides you",
+      "required": true
+    },
+    "OP_WORKSPACE_CREDENTIALS": {
+      "description": "Google Workspace only: base64-encoded credentials",
+      "required": false
+    },
+    "OP_WORKSPACE_SETTINGS": {
+      "description": "Google Workspace only: base64-encoded setttings",
+      "required": false
+    }
+  },
+  "addons": [
+    {
+      "plan": "heroku-redis:mini",
+      "as": "OP_REDIS",
+      "options": {
+        "maxmemory_policy": "volatile-lru"
+      }
+    }
+  ]
+}
