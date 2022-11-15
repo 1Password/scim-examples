@@ -220,7 +220,7 @@ To use your own TLS certificate, terminate TLS traffic on a public-facing load b
 kubectl set env deploy/op-scim-bridge OP_LETSENCRYPT_DOMAIN=""
 ```
 
-Modify [`op-scim-service.yaml`](./op-scim-config.yaml) to use the alternate `http` port for the Service as noted within the manifest. Traffic from your TLS endpoint should be directed to this port (80, by default). If SCIM bridge has already been deployed, apply the amended Service manifest:
+Modify [`op-scim-service.yaml`](./op-scim-service.yaml) to use the alternate `http` port for the Service as noted within the manifest. Traffic from your TLS endpoint should be directed to this port (80, by default). If SCIM bridge has already been deployed, apply the amended Service manifest:
 
 ```bash
 kubectl apply -f ./op-scim-service.yaml
