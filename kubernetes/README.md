@@ -139,7 +139,7 @@ You can now continue with the administration guide to configure your Identity Pr
 To update SCIM bridge, connect to your Kubernetes cluster and run the following command:
 
 ```bash
-kubectl set image deploy/op-scim-bridge op-scim-bridge=1password/scim:v2.6.2
+kubectl set image deploy/op-scim-bridge op-scim-bridge=1password/scim:v2.7.0
 ```
 
 This will upgrade your SCIM bridge to the latest version, which should take about 2-3 minutes for Kubernetes to process.
@@ -286,6 +286,16 @@ kubectl set env deploy/op-scim-bridge OP_DEBUG=1
 ```
 
 This may be useful for troubleshooting, or when contacting 1Password Support.
+
+### Trace Mode
+
+Set `OP_TRACE` to `1` to enable Trace-level debug output in the logs:
+
+```bash
+kubectl set env deploy/op-scim-bridge OP_TRACE=1
+```
+
+This may be useful for troubleshooting Let’s Encrypt integration issues.
 
 ### Health Check Ping Server
 
