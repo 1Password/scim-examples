@@ -178,7 +178,7 @@ kubectl scale deploy op-scim-bridge --replicas=0 && sleep 3 && kubectl scale dep
 
 ## Resource Recommendations
 
-The default resource recommendations for the SCIM bridge and Redis deployments are acceptable in most scenarios, but they fall short in high volume deployments where there is a large number of users and/or groups.
+The default resource recommendations for the SCIM bridge and Redis deployments are acceptable in most scenarios, but they fall short in high volume deployments where there is a large number of users and/or groups. We strongly recommend increasing both the SCIM bridge and Redis deployments.
 
 Our current default resource requirements (defined in [op-scim-deployment](https://github.com/1Password/scim-examples/blob/master/kubernetes/op-scim-deployment.yaml#L29) and [redis-deployment.yaml](https://github.com/1Password/scim-examples/blob/master/kubernetes/redis-deployment.yaml#L21)) are:
 
@@ -192,19 +192,41 @@ limits:
   memory: 512M
 ```
 
-Proposed recommendations for high volume deployments:
+Below are the proposed recommendations for high volume deployments. Note that these are the recommended `requests` and `limits` values for both the SCIM bridge and Redis containers.
 
 ```yaml
 requested:
-  cpu: 0.5 (500m)
+  cpu: 500m
   memory: 512M
 
 limits:
-  cpu: 1 (1000m)
+  cpu: 1000m
   memory: 1024M
 ```
 
-This proposal is 4x the CPU and 2x the memory of the default values.
+This proposal is 4x the CPU and 2x the memory of the default values. These values can be scaled down again after the high volume deployment. 
+
+Configuring these values can be done with Kubernetes commands. You can get the names of the deployments with `kubectl get deployments`.
+
+```
+# scale down deployment
+kubectl scale --replicas=0 deployment/op-scim-bridge
+
+# scale down redis deployment
+kubectl scale --replicas=0 deployment/op-scim-bridge-redis-master
+
+# update op-scim-redis resources
+kubectl set resources deployment op-scim-bridge-redis-master -c=redis --requests=cpu=250m,memory=512M --limits=cpu=500m,memory=1024M
+
+# update op-scim-bridge resources
+kubectl set resources deployment op-scim-bridge -c=op-scim-bridge --requests=cpu=500m,memory=512M --limits=cpu=1000m,memory=1024M
+
+# scale up deployment
+kubectl scale --replicas=1 deployment/op-scim-bridge-redis-master
+
+# scale up deployment
+kubectl scale --replicas=1 deployment/op-scim-bridge
+```
 
 Please reach out to our [support team](https://support.1password.com/contact/) if you need help with the configuration or to tweak the values for your deployment.
 
