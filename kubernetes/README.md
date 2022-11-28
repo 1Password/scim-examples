@@ -208,7 +208,7 @@ This proposal is 4x the CPU and 2x the memory of the default values. These value
 
 Configuring these values can be done with Kubernetes commands. You can get the names of the deployments with `kubectl get deployments`.
 
-```
+```bash
 # scale down deployment
 kubectl scale --replicas=0 deployment/op-scim-bridge
 
