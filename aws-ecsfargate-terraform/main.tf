@@ -199,16 +199,7 @@ resource "aws_alb" "op_scim_bridge" {
 resource "aws_security_group" "alb" {
   # Create a security group for the load balancer
   vpc_id = data.aws_vpc.this.id
-
-  # Allow HTTP traffic from anywhere
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  # Allow HTTPS traffic from anywhere
+  # Allow HTTPS traffic to the load balancer from anywhere
   ingress {
     from_port   = 443
     to_port     = 443
