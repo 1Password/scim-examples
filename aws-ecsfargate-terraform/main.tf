@@ -222,7 +222,7 @@ resource "aws_security_group" "service" {
   # Create a security group for the service
   vpc_id = data.aws_vpc.this.id
 
-  # Only allow traffic from the load balancer security group
+  # Restrict incoming traffic to the service from the load balancer security group
   ingress {
     from_port       = 3002
     to_port         = 3002
