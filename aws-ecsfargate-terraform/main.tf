@@ -207,11 +207,12 @@ resource "aws_security_group" "alb" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # Restrict outgoing traffic from the load balancer to the ECS service
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    from_port       = 3002
+    to_port         = 3002
+    protocol        = "tcp"
+    cidr_blocks      = [data.aws_vpc.this.cidr_block]
   }
 
   tags = local.tags
