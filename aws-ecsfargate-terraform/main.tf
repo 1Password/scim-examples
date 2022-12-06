@@ -199,16 +199,7 @@ resource "aws_alb" "op_scim_bridge" {
 resource "aws_security_group" "alb" {
   # Create a security group for the load balancer
   vpc_id = data.aws_vpc.this.id
-
-  # Allow HTTP traffic from anywhere
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  # Allow HTTPS traffic from anywhere
+  # Allow HTTPS traffic to the load balancer from anywhere
   ingress {
     from_port   = 443
     to_port     = 443
@@ -216,11 +207,12 @@ resource "aws_security_group" "alb" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # Restrict outgoing traffic from the load balancer to the ECS service
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    from_port   = 3002
+    to_port     = 3002
+    protocol    = "tcp"
+    cidr_blocks = [data.aws_vpc.this.cidr_block]
   }
 
   tags = local.tags
@@ -230,7 +222,7 @@ resource "aws_security_group" "service" {
   # Create a security group for the service
   vpc_id = data.aws_vpc.this.id
 
-  # Only allow traffic from the load balancer security group
+  # Restrict incoming traffic to the service from the load balancer security group
   ingress {
     from_port       = 3002
     to_port         = 3002
@@ -238,10 +230,11 @@ resource "aws_security_group" "service" {
     security_groups = [aws_security_group.alb.id]
   }
 
+  # Allow HTTPS traffic from the service to anywhere (to allow TCP traffic to 1Password servers)
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
