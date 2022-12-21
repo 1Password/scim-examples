@@ -99,7 +99,7 @@ For example, with `curl`:
 
 <!-- TODO: update to path on main -->
 ```sh
-curl -s https://raw.githubusercontent.com/1Password/scim-examples/pike/do-app-platform-refresh/digitalocean-app-platform/op-scim-bridge.yaml | op inject | doctl apps create --spec - --wait
+curl -s https://raw.githubusercontent.com/1Password/scim-examples/pike/do-app-platform-op-cli/beta/do-app-platform-op-cli/op-scim-bridge.yaml | op inject | doctl apps create --spec - --wait
 ```
 
 1Password SCIM bridge deploys with a live URL output to the terminal (found under the `Default Ingress` column). Use this with your bearer token to [connect to 1Password SCIM bridge from your supported identity provider](https://support.1password.com/scim/#step-3-connect-your-identity-provider).
@@ -114,7 +114,7 @@ curl -s https://raw.githubusercontent.com/1Password/scim-examples/pike/do-app-pl
 TODO: Add instructions for updating to latest release UPSERT FTW
 
 ```sh
-curl -s https://raw.githubusercontent.com/1Password/scim-examples/pike/do-app-platform-refresh/digitalocean-app-platform/op-scim-bridge.yaml | op inject | doctl apps create --spec - --wait --upsert
+curl -s https://raw.githubusercontent.com/1Password/scim-examples/pike/do-app-platform-op-cli/beta/do-app-platform-op-cli/op-scim-bridge.yaml | op inject | doctl apps create --spec - --wait --upsert
 ```
 
 -->
@@ -125,7 +125,7 @@ If you chose your own name for the vault and items where you saved your SCIM bri
 
 <!-- TODO: update to path on main -->
 ```sh
-curl -s https://raw.githubusercontent.com/1Password/scim-examples/pike/do-app-platform-refresh/digitalocean-app-platform/op-scim-bridge.yaml | VAULT="vault name" ITEM="item name" op inject | doctl apps create --spec - --wait
+curl -s https://raw.githubusercontent.com/1Password/scim-examples/pike/do-app-platform-op-cli/beta/do-app-platform-op-cli/op-scim-bridge.yaml | VAULT="vault name" ITEM="item name" op inject | doctl apps create --spec - --wait
 ```
 
 ### Propose the app spec
@@ -134,7 +134,7 @@ Without loading any secrets from your 1Password account, you can optionally prop
 
 <!-- TODO: update to path on main -->
 ```sh
-curl -s https://raw.githubusercontent.com/1Password/scim-examples/pike/do-app-platform-refresh/digitalocean-app-platform/op-scim-bridge.yaml | doctl apps propose --spec -
+curl -s https://raw.githubusercontent.com/1Password/scim-examples/pike/do-app-platform-op-cli/beta/do-app-platform-op-cli/op-scim-bridge.yaml | doctl apps propose --spec -
 ```
 
 <!--
