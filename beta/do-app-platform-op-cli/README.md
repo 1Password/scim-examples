@@ -84,7 +84,7 @@ The `scimsession` credentials will be saved as an environment variable in App Pl
 Use 1Password CLI to [read the file using its secret reference](https://developer.1password.com/docs/cli/reference/commands/read), encode the credentials, and store them as a new field in the "scimession file" item saved in your 1Password account:
 
 ```sh
-op item edit "scimsession file" --vault "op-scim" base64_encoded=$(op read "op://op-scim/scimsession file/scimsession" | base64)
+op item edit "scimsession file" --vault "op-scim" base64_encoded=$(op read "op://op-scim/scimsession file/scimsession" | base64 | tr -d "\n")
 ```
 
 > **Note**
