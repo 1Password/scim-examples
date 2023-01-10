@@ -39,7 +39,7 @@ TODO: Investigate Windows Terminal, Powershell, WSL
 Install the following on your Mac or Linux machine:
 
 - 1Password 8 for [Mac](https://1password.com/downloads/mac/) or [Linux](https://1password.com/downloads/linux/)
-- [1Password CLI 2.9.0](https://app-updates.agilebits.com/product_history/CLI2) or later
+- [1Password CLI 2.9.0](https://developer.1password.com/docs/cli/get-started/#install) or later
 - [`doctl`](https://docs.digitalocean.com/reference/doctl/how-to/install/#step-1-install-doctl)
   > **Note**
   >
