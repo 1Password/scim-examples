@@ -29,9 +29,6 @@ Deploying 1Password SCIM bridge on App Platform comes with a few benefits:
   >
   > If you don't have a DigitalOcean account, you can sign up for a free trial with starting credit: <https://try.digitalocean.com/freetrialoffer/>
 - A Mac or Linux terminal with Bash, Zsh, or Fish
-<!--
-TODO: Investigate Windows Terminal, Powershell, WSL
--->
 
 ## Getting started
 
@@ -136,11 +133,10 @@ You can optionally propose the raw app spec template to verify the cost before d
 curl -s https://raw.githubusercontent.com/1Password/scim-examples/beta/do-app-platform-op-cli/op-scim-bridge.yaml | doctl apps propose --spec -
 ```
 
-<!--
-TODO: Add instructions for vertical scaling
+## TODO
 
-### Scaling
+Notes for future improvements to this deployment example:
 
- -->
-
-<!-- TODO: Allow Workspace credentials to be loaded -->
+- [ ] Add instructions for vertically scaling SCIM bridge for large-scale deployments
+- [ ] Enable Google Workspace credentials to be automatically injected with deployment
+- [ ] Document workaround for deploying from a Windows terminal
