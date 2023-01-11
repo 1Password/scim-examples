@@ -96,7 +96,7 @@ Stream the app spec template from this repository, use [`op inject`](https://dev
 For example, with `curl`:
 
 ```sh
-curl -s https://raw.githubusercontent.com/1Password/scim-examples/beta/do-app-platform-op-cli/op-scim-bridge.yaml | op inject | doctl apps create --spec - --wait
+curl -s https://raw.githubusercontent.com/1Password/scim-examples/master/beta/do-app-platform-op-cli/op-scim-bridge.yaml | op inject | doctl apps create --spec - --wait
 ```
 
 1Password SCIM bridge deploys with a live URL output to the terminal (found under the `Default Ingress` column). Use your bearer token with the URL to test the connection to 1Password. For example:
@@ -114,7 +114,7 @@ You can also access your SCIM bridge by visting the URL in your web browser. Sig
 If you chose your own name for the vault and items where you saved your SCIM bridge credentials, you can override the defaults using the `VAULT` and `ITEM` variables in the secret references. For example:
 
 ```sh
-curl -s https://raw.githubusercontent.com/1Password/scim-examples/beta/do-app-platform-op-cli/op-scim-bridge.yaml | VAULT="vault name" ITEM="item name" op inject | doctl apps create --spec - --wait
+curl -s https://raw.githubusercontent.com/1Password/scim-examples/master/beta/do-app-platform-op-cli/op-scim-bridge.yaml | VAULT="vault name" ITEM="item name" op inject | doctl apps create --spec - --wait
 ```
 
 ### Update 1Password SCIM bridge
@@ -122,7 +122,7 @@ curl -s https://raw.githubusercontent.com/1Password/scim-examples/beta/do-app-pl
 The latest version of 1Password SCIM bridge is posted on our [Release Notes](https://app-updates.agilebits.com/product_history/SCIM) website, where you can find details about the latest changes. The most recent version should also be pinned in [`op-scim-bridge.yaml`](./op-scim-bridge.yaml), so you can update using the same command as above with the `--upsert` parameter:
 
 ```sh
-curl -s https://raw.githubusercontent.com/1Password/scim-examples/beta/do-app-platform-op-cli/op-scim-bridge.yaml | op inject | doctl apps create --spec - --wait --upsert
+curl -s https://raw.githubusercontent.com/1Password/scim-examples/master/beta/do-app-platform-op-cli/op-scim-bridge.yaml | op inject | doctl apps create --spec - --wait --upsert
 ```
 
 ### Propose the app spec
@@ -130,7 +130,7 @@ curl -s https://raw.githubusercontent.com/1Password/scim-examples/beta/do-app-pl
 You can optionally propose the raw app spec template to verify the cost before deploying to DigitalOcean:
 
 ```sh
-curl -s https://raw.githubusercontent.com/1Password/scim-examples/beta/do-app-platform-op-cli/op-scim-bridge.yaml | doctl apps propose --spec -
+curl -s https://raw.githubusercontent.com/1Password/scim-examples/master/beta/do-app-platform-op-cli/op-scim-bridge.yaml | doctl apps propose --spec -
 ```
 
 ## TODO
