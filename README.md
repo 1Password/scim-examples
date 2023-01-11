@@ -18,9 +18,23 @@ The easiest way to deploy the SCIM bridge is with our one-click installations cu
 Advanced deployment are recommended when you have particular requirements for your environment. They are easily customizable and adaptable to your situation.
 - [Kubernetes](/kubernetes)
 - [Docker Compose & Docker Swarm](/docker)
-- [AWS EC2 with terraform](/aws-terraform) [deprecated]
 - [AWS ECS Fargate with Terraform](/aws-ecsfargate-terraform)
 - [Azure Kubernetes Service](https://support.1password.com/cs/scim-deploy-azure/)
+
+## Beta deployments
+
+These are beta versions of 1Password SCIM bridge deployments and components. These deployments *should* work, but come with no guarantees, and will change in the future.
+
+- **NEW** [DigitalOcean App Platform with 1Password CLI](/beta/do-app-platform-op-cli/)
+- [Google Workspace settings](/beta/workspace-settings.json)
+- [Google Workspace module for Terraform](/beta/aws-terraform-gw/)
+
+## Deprecated deployments
+
+These are deprecated 1Password SCIM bridge deployments. At the time of deprecation, these deployments were still fully functional, but may no longer be updated and will eventually be removed:
+
+- [AWS EC2 with terraform](/deprecated/aws-terraform/)
+- [DigitalOcean App Platform](/deprecated/digitalocean-app-platform/)
 
 ## Support
 
