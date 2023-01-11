@@ -15,6 +15,7 @@ Deploying 1Password SCIM bridge on App Platform comes with a few benefits:
 
 - For standard deployments, App Platform will host your SCIM bridge for a predictable cost of $10 USD/month (at the time of last review).
 - You do not need to manage a DNS record. DigitalOcean automatically provides a unique URL for your SCIM bridge.
+- App Platform automatically handles TLS certificate management on your behalf to ensure a secure connection from your identity provider.
 - You will deploy 1Password SCIM bridge directly to DigitalOcean from your local terminal. There is no requirement to clone this repository for this deployment.
 
 ## Prerequisites
