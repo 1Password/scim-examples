@@ -190,8 +190,9 @@ Our current default resource requirements (defined in [op-scim-deployment](https
 
 <details>
   <summary>Default</summary>
+  
     ```yaml
-    requested:
+    requests:
       cpu: 125m
       memory: 256M
 
@@ -205,8 +206,9 @@ Our current default resource requirements (defined in [op-scim-deployment](https
 
 <details>
   <summary>High Deployment</summary>
+ 
     ```yaml
-    requested:
+    requests:
       cpu: 500m
       memory: 512M
 
@@ -218,8 +220,9 @@ Our current default resource requirements (defined in [op-scim-deployment](https
 
 <details>
   <summary>Very High Deployment</summary>
+  
     ```yaml
-    requested:
+    requests:
       cpu: 1000m
       memory: 1024M
 
