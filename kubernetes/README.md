@@ -180,31 +180,54 @@ kubectl scale deploy op-scim-bridge --replicas=0 && sleep 3 && kubectl scale dep
 
 The default resource recommendations for the SCIM bridge and Redis deployments are acceptable in most scenarios, but they fall short in high volume deployments where there is a large number of users and/or groups. We strongly recommend increasing both the SCIM bridge and Redis deployments.
 
+| Expected Provisioned Users |  Resources |
+| ------- | ------- |
+| 1-100  |  default  |
+| 100-2000  |  high volume deployment  |
+| 2000+  |  very high volume deployment  |
+
 Our current default resource requirements (defined in [op-scim-deployment](https://github.com/1Password/scim-examples/blob/master/kubernetes/op-scim-deployment.yaml#L29) and [redis-deployment.yaml](https://github.com/1Password/scim-examples/blob/master/kubernetes/redis-deployment.yaml#L21)) are:
 
-```yaml
-requested:
-  cpu: 125m
-  memory: 256M
+<details>
+  <summary>Default</summary>
+    ```yaml
+    requested:
+      cpu: 125m
+      memory: 256M
 
-limits:
-  cpu: 250m
-  memory: 512M
-```
+    limits:
+      cpu: 250m
+      memory: 512M
+    ```
+</details>
 
-Below are the proposed recommendations for high volume deployments. Note that these are the recommended `requests` and `limits` values for both the SCIM bridge and Redis containers.
+ Note that these are the recommended `requests` and `limits` values for both the SCIM bridge and Redis containers. These values can be scaled down again after the high volume deployment.
 
-```yaml
-requested:
-  cpu: 500m
-  memory: 512M
+<details>
+  <summary>High Deployment</summary>
+    ```yaml
+    requested:
+      cpu: 500m
+      memory: 512M
 
-limits:
-  cpu: 1000m
-  memory: 1024M
-```
+    limits:
+      cpu: 1000m
+      memory: 1024M
+    ```
+</details>  
 
-This proposal is 4x the CPU and 2x the memory of the default values. These values can be scaled down again after the high volume deployment. 
+<details>
+  <summary>Very High Deployment</summary>
+    ```yaml
+    requested:
+      cpu: 1000m
+      memory: 1024M
+
+    limits:
+      cpu: 2000m
+      memory: 2048M
+    ```
+</details> 
 
 Configuring these values can be done with Kubernetes commands. You can get the names of the deployments with `kubectl get deployments`.
 
