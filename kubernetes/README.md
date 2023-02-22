@@ -191,15 +191,15 @@ Our current default resource requirements (defined in [op-scim-deployment](https
 <details>
   <summary>Default</summary>
   
-    ```yaml
-    requests:
-      cpu: 125m
-      memory: 256M
+  ```yaml
+  requests:
+    cpu: 125m
+    memory: 256M
 
-    limits:
-      cpu: 250m
-      memory: 512M
-    ```
+  limits:
+    cpu: 250m
+    memory: 512M
+  ```
 </details>
 
  Note that these are the recommended `requests` and `limits` values for both the SCIM bridge and Redis containers. These values can be scaled down again after the high volume deployment.
@@ -207,29 +207,29 @@ Our current default resource requirements (defined in [op-scim-deployment](https
 <details>
   <summary>High Deployment</summary>
  
-    ```yaml
-    requests:
-      cpu: 500m
-      memory: 512M
+  ```yaml
+  requests:
+    cpu: 500m
+    memory: 512M
 
-    limits:
-      cpu: 1000m
-      memory: 1024M
-    ```
+  limits:
+    cpu: 1000m
+    memory: 1024M
+  ```
 </details>  
 
 <details>
   <summary>Very High Deployment</summary>
   
-    ```yaml
-    requests:
-      cpu: 1000m
-      memory: 1024M
+  ```yaml
+  requests:
+    cpu: 1000m
+    memory: 1024M
 
-    limits:
-      cpu: 2000m
-      memory: 2048M
-    ```
+  limits:
+    cpu: 2000m
+    memory: 2048M
+  ```
 </details> 
 
 Configuring these values can be done with Kubernetes commands. You can get the names of the deployments with `kubectl get deployments`.
