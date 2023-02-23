@@ -4,16 +4,22 @@ metadata:
   name: op-scim-configmap
 data:
   # Set this to the FQDN you've selected for your SCIM Bridge deployment
-  OP_LETSENCRYPT_DOMAIN: ""
+  # this will enable the complimentary LetsEncrypt challenge server if OP_TLS_CERT_FILE and OP_TLS_KEY_FILE are not set (or valid)
+  OP_TLS_DOMAIN: ""
   # (advanced) only change the options below if you need to
   OP_REDIS_URL: "redis://op-scim-redis:6379"
-  OP_SESSION: "/secrets/scimsession"
   OP_PRETTY_LOGS: "0"
   OP_DEBUG: "0"
   OP_TRACE: "0"
   OP_PING_SERVER: "0"
+  OP_SESSION: "/secrets/scimsession"
+  # OP_TLS_KEY_FILE and OP_TLS_CERT_FILE define the path of a valid SSL key/cert files
+  # if not present, Let's Encrypt will be used to acquire a TLS certificate
+  # NOTE: both of these variables must be defined together to work as expected
+  OP_TLS_KEY_FILE: "/secrets/tls-key"
+  OP_TLS_CERT_FILE: "/secrets/tls-certificate"
   # (optional) uncomment this line to change the email that is used when Let's Encrypt issues your SCIM bridge a certificate
-  # default: "1pw@[OP_LETSENCRYPT_DOMAIN]"
+  # default: "1pw@[OP_TLS_DOMAIN]"
   #OP_LETSENCRYPT_EMAIL: "1pw@example.com"
   # (Workspace Beta) these settings are specific to those participating in the Google Workspace provisioning beta
   OP_WORKSPACE_CREDENTIALS: "/secrets/workspace-credentials.json"
