@@ -36,9 +36,9 @@ The script will do the following:
 
 1. Prompt you if you are using Google Workspace as your Identity Provider and for configuration files locations to add them as a Docker Secrets within your Swarm cluster.
 2. Prompt if you are deploying using Docker Swarm or Docker Compose.
-3. Prompt you for your SCIM bridge domain name which will configure LetsEncrypt to automatically issue a certificate for your Bridge. This is the domain you selected in [PREPARATION.md](/PREPARATION.md).
+3. Prompt you for your SCIM bridge domain name which will configure Let's Encrypt to automatically issue a certificate for your Bridge. This is the domain you selected in [PREPARATION.md](/PREPARATION.md).
 4. Prompt you for your `scimsession` file location to add your `scimsession` file as a Docker Secret within your Swarm cluster.
-5. Deploy a container using `1password/scim`, and a `redis` container. The `redis` container is necessary to store LetsEncrypt certificates, as well as act as a cache for Identity Provider data.
+5. Deploy a container using `1password/scim`, and a `redis` container. The `redis` container is necessary to store Let's Encrypt certificates, as well as act as a cache for Identity Provider data.
 
 The logs from the SCIM bridge and Redis containers will be streamed to your machine. If everything seems to have deployed successfully, press Ctrl+C to exit, and the containers will remain running on the remote machine.
 
@@ -83,7 +83,7 @@ To use Docker Swarm to deploy, you’ll want to have run `docker swarm init` or 
 
 Unlike Docker Compose, you won’t need to set the `OP_SESSION` variable in `scim.env`, as we’ll be using Docker Secrets to store the `scimsession` file.
 
-You’ll still need to set the environment variable `OP_LETSENCRYPT_DOMAIN` within `scim.env` to the URL you selected during [PREPARATION.md](/PREPARATION.md). Open that in your preferred text editor and change `OP_LETSENCRYPT_DOMAIN` to that domain name.
+You’ll still need to set the environment variable `OP_TLS_DOMAIN` within `scim.env` to the URL you selected during [PREPARATION.md](/PREPARATION.md). Open that in your preferred text editor and change `OP_TLS_DOMAIN` to that domain name.
 
 ### Information for Google Workspace as your Identity Provider (IdP)
 If you’re using Google Workspace as your identity provider for provisioning, you will need to set up some additional secrets to use this functionality as detailed below. Refer to our complete Google Workspace provisioning documentation for more complete information, https://support.1password.com/scim-google-workspace. 
@@ -133,9 +133,9 @@ SESSION=$(cat /path/to/scimsession | base64 | tr -d "\n")
 sed -i '' -e "s/OP_SESSION=$/OP_SESSION=$SESSION/" ./scim.env
 ```
 
-You’ll also need to set the environment variable `OP_LETSENCRYPT_DOMAIN` within `scim.env` to the URL you selected during [PREPARATION.md](/PREPARATION.md). Open that in your preferred text editor and change `OP_LETSENCRYPT_DOMAIN` to that domain name.
+You’ll also need to set the environment variable `OP_TLS_DOMAIN` within `scim.env` to the URL you selected during [PREPARATION.md](/PREPARATION.md). Open that in your preferred text editor and change `OP_TLS_DOMAIN` to that domain name.
 
-Ensure that `OP_LETSENCRYPT_DOMAIN` is set to the domain name you’ve set up before continuing.
+Ensure that `OP_TLS_DOMAIN` is set to the domain name you’ve set up before continuing.
 
 ### Information for Google Workspace as your Identity Provider (IdP)
 If you’re using Google Workspace as your identity provider for provisioning, you will need to set up some additional secrets to use this functionality as detailed below. Refer to our complete Google Workspace provisioning documentation for more complete information, https://support.1password.com/scim-google-workspace. 
@@ -221,12 +221,13 @@ Unless you have customized your Redis deployment, there shouldn’t be any actio
 
 The following options are available for advanced or custom deployments. Unless you have a specific need, these options do not need to be modified.
 
-* `OP_PORT` - when `OP_LETSENCRYPT_DOMAIN` is set to blank, you can use `OP_PORT` to change the default port from 3002 to one of your choosing.
+* `OP_TLS_CERT_FILE` and `OP_TLS_KEY_FILE` - these two variables can be set to the paths of a key file and certificate file, which then disables Let's Encrypt functionality, causing the SCIM bridge to utilize your own manually-defined certificate when `OP_TLS_DOMAIN` is also defined. Note that this is only supported under Docker Swarm, not under Docker Compose.
+* `OP_PORT` - when `OP_TLS_DOMAIN` is set to blank, you can use `OP_PORT` to change the default port from 3002 to one of your choosing.
 * `OP_REDIS_URL` - you can specify `redis://` or `rediss://` (for TLS) URL here to point towards an alternative Redis host. You can then strip out the sections in `docker-compose.yml` that refer to Redis to not deploy that container. Note that Redis is still required for the SCIM bridge to function.
 * `OP_PRETTY_LOGS` - can be set to `1` if you would like the SCIM bridge to output logs in a human-readable format. This can be helpful if you aren’t planning on doing custom log ingestion in your environment.
 * `OP_DEBUG` - can be set to `1` to enable debug output in the logs. Useful for troubleshooting or when contacting 1Password Support.
 * `OP_TRACE` - can be set to `1` to enable Trace-level log output. Useful for debugging Let’s Encrypt integration errors.
-* `OP_PING_SERVER` - can be set to `1` to enable an optional `/ping` endpoint on port `80`. Useful for health checks. Disabled if `OP_LETSENCRYPT_DOMAIN` is unset and TLS is not utilized.
+* `OP_PING_SERVER` - can be set to `1` to enable an optional `/ping` endpoint on port `80`. Useful for health checks. Disabled if `OP_TLS_DOMAIN` is unset and TLS is not utilized.
 
 ## Generating `scim.env` file on Windows
 

@@ -20,9 +20,11 @@ For general deployment, the SCIM bridge requires three things to function correc
 
 You will need to be able to create a DNS record with the SCIM bridge domain name decided. However, you'll need to have the IP address of the host, which necessitates deploying the SCIM bridge first, unless you have a static IP already assigned. Follow the steps in each respective deployment guide on when to finish setting up your DNS record.
 
-### SSL Certificates
+### TLS Certificates
 
-SSL certificates are handled through the [https://letsencrypt.org/](LetsEncrypt) service which automatically generates and renews an SSL certificate based on the domain name you've decided on. On your firewall, you should ensure that the service can access Port 80 and Port 443, as Port 80 is required for the LetsEncrypt service to complete its domain challenge and issue your SCIM bridge an SSL certificate. Note that a TLS connection is mandatory for connecting to the 1Password service.
+Identity Providers typically require a TLS certificate when communicating to the SCIM bridge under most circumstances.
+
+By default, TLS certificates are handled through a complimentary [Let's Encrypt](https://letsencrypt.org/) service integration, which automatically generates and renews an TLS certificate based on the domain name you've decided on. On your firewall, you should ensure that the service can access port `443`, as port `443` is required for the Let's Encrypt service to complete its domain challenge and issue your SCIM bridge a TLS certificate. 
 
 ## Clone this repository
 

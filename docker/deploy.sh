@@ -207,7 +207,7 @@ gw_docker_file=$docker_file_path/gw-docker-compose.yml
 docker_backup_file=$docker_file_path/docker-compose.yml.bak
 gw_docker_backup_file=$docker_file_path/gw_docker-compose.yml.bak
 cp $docker_file $docker_backup_file
-sed -i  -e "s/^OP_LETSENCRYPT_DOMAIN=.*$/OP_LETSENCRYPT_DOMAIN=$domain_name/" $docker_file_path/scim.env
+sed -i  -e "s/^OP_TLS_DOMAIN=.*$/OP_TLS_DOMAIN=$domain_name/" $docker_file_path/scim.env
 
 # run the function associated with the Docker type selected
 if [[ "$docker_type" == "compose" ]]

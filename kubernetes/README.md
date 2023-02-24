@@ -114,10 +114,10 @@ Create a public DNS record pointing to this address as outlined in [the preparat
 
 ## Configure Let's Encrypt
 
-After the DNS record above has propagated, run the following command to set the `OP_LETSENCRYPT_DOMAIN` environment variable to the fully-qualified domain name (FQDN) for SCIM bridge based on this record (replace `scim.example.com` with the FQDN):
+After the DNS record above has propagated, run the following command to set the `OP_TLS_DOMAIN` environment variable to the fully-qualified domain name (FQDN) for SCIM bridge based on this record (replace `scim.example.com` with the FQDN):
 
 ```bash
-kubectl set env deploy/op-scim-bridge OP_LETSENCRYPT_DOMAIN=scim.example.com
+kubectl set env deploy/op-scim-bridge OP_TLS_DOMAIN=scim.example.com
 ```
 
 SCIM bridge will restart and acquire a TLS certificate using Let's Encrypt.
@@ -139,7 +139,7 @@ You can now continue with the administration guide to configure your Identity Pr
 To update SCIM bridge, connect to your Kubernetes cluster and run the following command:
 
 ```bash
-kubectl set image deploy/op-scim-bridge op-scim-bridge=1password/scim:v2.7.3
+kubectl set image deploy/op-scim-bridge op-scim-bridge=1password/scim:v2.7.4
 ```
 
 This will upgrade your SCIM bridge to the latest version, which should take about 2-3 minutes for Kubernetes to process.
@@ -148,7 +148,7 @@ This will upgrade your SCIM bridge to the latest version, which should take abou
 
 As of October 2020, the `scim-examples` Kubernetes deployment now uses `op-scim-config.yaml` to set the configuration needed for your SCIM bridge, and has changed the deployment names from `op-scim` to `op-scim-bridge`, and `redis` to `op-scim-redis` for clarity and consistency.
 
-You’ll need to re-configure your options in `op-scim-config.yaml`, particularly `OP_LETSENCRYPT_DOMAIN`. You may also want to delete your previous `op-scim` and `redis` deployments to prevent conflict between the two versions.
+You’ll need to re-configure your options in `op-scim-config.yaml`, particularly `OP_TLS_DOMAIN`. You may also want to delete your previous `op-scim` and `redis` deployments to prevent conflict between the two versions.
 
 ```bash
 kubectl delete deployment/op-scim deployment/redis
@@ -260,12 +260,16 @@ Please reach out to our [support team](https://support.1password.com/contact/) i
 
 Here are some helpful tips for customizing your 1Password SCIM bridge deployment:
 
-### External load balancer
+### Self-Managed TLS
 
-To use your own TLS certificate, terminate TLS traffic on a public-facing load balancer or reverse proxy and redirect HTTP traffic to SCIM bridge within your private network. Skip the step to [configure Let's Encrypt](#configure-lets-encrypt), or revert to the default state by setting `OP_LETSENCRYPT_DOMAIN` to `""`:
+There are two ways to use a self-managed TLS certificate, which disables Let's Encrypt functionality.
+
+#### Load Balancer
+
+The first is to terminate TLS traffic on a public-facing load balancer or reverse proxy and redirect HTTP traffic to SCIM bridge within your private network. Skip the step to [configure Let's Encrypt](#configure-lets-encrypt), or revert to the default state by setting `OP_TLS_DOMAIN` to `""`:
 
 ```bash
-kubectl set env deploy/op-scim-bridge OP_LETSENCRYPT_DOMAIN=""
+kubectl set env deploy/op-scim-bridge OP_TLS_DOMAIN=""
 ```
 
 Modify [`op-scim-service.yaml`](./op-scim-service.yaml) to use the alternate `http` port for the Service as noted within the manifest. Traffic from your TLS endpoint should be directed to this port (80, by default). If SCIM bridge has already been deployed, apply the amended Service manifest:
@@ -275,6 +279,15 @@ kubectl apply -f ./op-scim-service.yaml
 ```
 
 In this configuration, 1Password SCIM bridge will listen for unencrypted traffic on the `http` port of the Pod.
+
+#### Manually-Provided Key/Certificate
+
+Alternatively, you can create new secrets containing your key and certificate files, which can then be used by the SCIM bridge. This will also disable Let's Encrypt functionality.
+
+```bash
+kubectl create secret generic tls-key --from-file=scimsession=/path/to/key.pem
+kubectl create secret generic tls-certificate --from-file=scimsession=/path/to/cert.pem
+```
 
 ### External Redis
 

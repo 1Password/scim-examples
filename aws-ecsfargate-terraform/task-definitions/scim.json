@@ -1,7 +1,7 @@
 [
   {
     "name": "op_scim_bridge",
-    "image": "1password/scim:v2.7.3",
+    "image": "1password/scim:v2.7.4",
     "cpu": 128,
     "memory": 512,
     "essential": true,
@@ -24,7 +24,7 @@
         "value": "redis://localhost:6379"
       },
       {
-        "name": "OP_LETSENCRYPT_DOMAIN",
+        "name": "OP_TLS_DOMAIN",
         "value": ""
       }
     ],
