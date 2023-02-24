@@ -182,8 +182,8 @@ The default resource recommendations for the SCIM bridge and Redis deployments a
 
 | Expected Provisioned Users |  Resources |
 | ------- | ------- |
-| 1-100  |  Default  |
-| 100-5000  |  High Volume Deployment  |
+| 1-1000  |  Default  |
+| 1000-5000  |  High Volume Deployment  |
 | 5000+  |  Very High Volume Deployment  |
 
 Our current default resource requirements (defined in [op-scim-deployment](https://github.com/1Password/scim-examples/blob/master/kubernetes/op-scim-deployment.yaml#L29) and [redis-deployment.yaml](https://github.com/1Password/scim-examples/blob/master/kubernetes/redis-deployment.yaml#L21)) are:
@@ -205,7 +205,7 @@ Our current default resource requirements (defined in [op-scim-deployment](https
  Note that these are the recommended `requests` and `limits` values for both the SCIM bridge and Redis containers. These values can be scaled down again after the high volume deployment.
 
 <details>
-  <summary>High Deployment</summary>
+  <summary>High Volume Deployment</summary>
  
   ```yaml
   requests:
@@ -219,7 +219,7 @@ Our current default resource requirements (defined in [op-scim-deployment](https
 </details>  
 
 <details>
-  <summary>Very High Deployment</summary>
+  <summary>Very High Volume Deployment</summary>
   
   ```yaml
   requests:
