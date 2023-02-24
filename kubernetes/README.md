@@ -202,7 +202,7 @@ Our current default resource requirements (defined in [op-scim-deployment](https
   ```
 </details>
 
- Note that these are the recommended `requests` and `limits` values for both the SCIM bridge and Redis containers. These values can be scaled down again after the high volume deployment.
+Note that these are the recommended `requests` and `limits` values for both the SCIM bridge and Redis containers. These values can be scaled down again to the default values after the initial large provisioning event.
 
 <details>
   <summary>High Volume Deployment</summary>
