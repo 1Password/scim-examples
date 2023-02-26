@@ -48,3 +48,11 @@ spec:
           - secret:
               name: workspace-settings  
               optional: true
+          - secret:
+              name: op-scim-tls
+              optional: true
+              items:
+                - key: tls.crt
+                  path: tls.crt
+                - key: tls.key
+                  path: tls.key

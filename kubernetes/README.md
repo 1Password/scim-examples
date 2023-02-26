@@ -285,8 +285,7 @@ In this configuration, 1Password SCIM bridge will listen for unencrypted traffic
 Alternatively, you can create new secrets containing your key and certificate files, which can then be used by the SCIM bridge. This will also disable Let's Encrypt functionality.
 
 ```bash
-kubectl create secret generic tls-key --from-file=scimsession=/path/to/key.pem
-kubectl create secret generic tls-certificate --from-file=scimsession=/path/to/cert.pem
+kubectl create secret tls op-scim-tls --cert=./certificate.pem --key=./key.pem
 ```
 
 ### External Redis
