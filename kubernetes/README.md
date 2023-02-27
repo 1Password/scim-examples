@@ -282,11 +282,24 @@ In this configuration, 1Password SCIM bridge will listen for unencrypted traffic
 
 #### Manually-Provided Key/Certificate
 
-Alternatively, you can create new secrets containing your key and certificate files, which can then be used by the SCIM bridge. This will also disable Let's Encrypt functionality.
+Alternatively, you can create a TLS Secret containing your key and certificate files, which can then be used by your SCIM bridge. This will also disable Let's Encrypt functionality.
+
+Assuming these files exist in the working directory, create the Secret and set the `OP_TLS_CERT_FILE` and `OP_TLS_KEY_FILE` variables to redeploy SCIM bridge using your certificate:
 
 ```bash
 kubectl create secret tls op-scim-tls --cert=./certificate.pem --key=./key.pem
+kubectl set env deploy op-scim-bridge \
+  OP_TLS_CERT_FILE="/secrets/tls.crt" \
+  OP_TLS_KEY_FILE="/secrets/tls.key"
 ```
+
+> **Note**
+>
+> If your certificate and key files are located elsewhere or have different names, replace `./certificate.pem` and `./key.pem` with the paths to these files, i.e.:
+>
+> ```sh
+> kubectl create secret tls op-scim-tls --cert=path/to/cert/file --key=path/to/key/file
+> ```
 
 ### External Redis
 
