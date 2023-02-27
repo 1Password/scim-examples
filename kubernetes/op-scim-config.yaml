@@ -16,8 +16,8 @@ data:
   # OP_TLS_KEY_FILE and OP_TLS_CERT_FILE define the path of a valid SSL key/cert files
   # if not present, Let's Encrypt will be used to acquire a TLS certificate
   # NOTE: both of these variables must be defined together to work as expected
-  OP_TLS_KEY_FILE: "/secrets/tls-key"
-  OP_TLS_CERT_FILE: "/secrets/tls-certificate"
+  #OP_TLS_KEY_FILE: "/secrets/tls.key"
+  #OP_TLS_CERT_FILE: "/secrets/tls.crt"
   # (optional) uncomment this line to change the email that is used when Let's Encrypt issues your SCIM bridge a certificate
   # default: "1pw@[OP_TLS_DOMAIN]"
   #OP_LETSENCRYPT_EMAIL: "1pw@example.com"
