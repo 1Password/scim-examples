@@ -6,11 +6,11 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 3.0"
     }
+    cloudflare = {
+      source  = "cloudflare/cloudflare"
+      version = "~> 3"
+    }
   }
-}
-
-provider "aws" {
-  region = var.aws_region
 }
 
 locals {
@@ -66,7 +66,7 @@ data "aws_vpc" "this" {
 data "aws_subnet_ids" "public" {
   vpc_id = data.aws_vpc.this.id
   # Find the public subnets in the VPC
-  tags = var.vpc_name != "" ? { SubnetTier = "public" } : {}
+  tags = var.vpc_name != "" ? { VpcTier = "public" } : {}
 }
 
 data "aws_iam_policy_document" "assume_role_policy" {
@@ -98,13 +98,6 @@ data "aws_acm_certificate" "wildcard_cert" {
   domain = "*.${local.domain}"
 }
 
-data "aws_route53_zone" "zone" {
-  count = var.using_route53 ? 1 : 0
-
-  name         = local.domain
-  private_zone = false
-}
-
 resource "aws_secretsmanager_secret" "scimsession" {
   name_prefix = local.name_prefix
   # Allow `terraform destroy` to delete secret (hint: save your scimsession file in 1Password)
@@ -115,7 +108,7 @@ resource "aws_secretsmanager_secret" "scimsession" {
 
 resource "aws_secretsmanager_secret_version" "scimsession" {
   secret_id     = aws_secretsmanager_secret.scimsession.id
-  secret_string = filebase64("${path.module}/scimsession")
+  secret_string = base64encode(var.scimsession)
 }
 
 resource "aws_cloudwatch_log_group" "op_scim_bridge" {
@@ -237,6 +230,12 @@ resource "aws_security_group" "service" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+  egress {
+    from_port   = 53
+    to_port     = 53
+    protocol    = "udp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
   tags = local.tags
 }
@@ -260,7 +259,7 @@ resource "aws_lb_listener" "https" {
   port              = 443
   protocol          = "HTTPS"
   certificate_arn = !var.wildcard_cert ? (
-    var.using_route53 ?
+    var.using_cloudflare ?
     aws_acm_certificate_validation.op_scim_bridge[0].certificate_arn : aws_acm_certificate.op_scim_bridge[0].arn
   ) : data.aws_acm_certificate.wildcard_cert[0].arn
   default_action {
@@ -281,16 +280,21 @@ resource "aws_acm_certificate" "op_scim_bridge" {
 }
 
 resource "aws_acm_certificate_validation" "op_scim_bridge" {
-  count = var.using_route53 && !var.wildcard_cert ? 1 : 0
+  count = var.using_cloudflare && !var.wildcard_cert ? 1 : 0
 
   certificate_arn         = aws_acm_certificate.op_scim_bridge[0].arn
-  validation_record_fqdns = [for record in aws_route53_record.op_scim_bridge_validation : record.fqdn]
+  validation_record_fqdns = [for record in cloudflare_record.op_scim_bridge_validation : record.hostname]
 }
 
+data "cloudflare_zone" "cf_zone" {
+  count = var.using_cloudflare ? 1 : 0
 
-resource "aws_route53_record" "op_scim_bridge_validation" {
+  name = var.cloudflare_zone_domain
+}
+
+resource "cloudflare_record" "op_scim_bridge_validation" {
   for_each = (
-    var.using_route53 && !var.wildcard_cert ?
+    var.using_cloudflare && !var.wildcard_cert ?
     {
       for dvo in aws_acm_certificate.op_scim_bridge[0].domain_validation_options : dvo.domain_name => {
         name   = dvo.resource_record_name
@@ -300,26 +304,27 @@ resource "aws_route53_record" "op_scim_bridge_validation" {
     } : {}
   )
 
-  allow_overwrite = true
-  name            = each.value.name
-  records         = [each.value.record]
+  zone_id = data.cloudflare_zone.cf_zone[0].id
+
+  name  = each.value.name
+  type  = each.value.type
+  value = each.value.record
+
   ttl             = 60
-  type            = each.value.type
-  zone_id         = data.aws_route53_zone.zone[0].id
+  allow_overwrite = true
+  proxied         = false
 }
 
-resource "aws_route53_record" "op_scim_bridge" {
-  count = var.using_route53 ? 1 : 0
+resource "cloudflare_record" "op_scim_bridge" {
+  count = var.using_cloudflare ? 1 : 0
 
-  zone_id = data.aws_route53_zone.zone[0].id
-  name    = var.domain_name
-  type    = "A"
+  zone_id = data.cloudflare_zone.cf_zone[0].id
 
-  alias {
-    name                   = aws_alb.op_scim_bridge.dns_name
-    zone_id                = aws_alb.op_scim_bridge.zone_id
-    evaluate_target_health = true
-  }
+  name  = var.domain_name
+  type  = "CNAME"
+  value = aws_alb.op_scim_bridge.dns_name
+
+  proxied = false
 }
 
 module "google_workspace" {

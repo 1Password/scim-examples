@@ -10,5 +10,5 @@ output "cloudwatch_log_group" {
 
 output "loadbalancer_dns_name" {
   description = "The name of the load balancer to target in your DNS"
-  value       = var.using_route53 ? null : aws_alb.op_scim_bridge.dns_name
+  value       = var.using_cloudflare ? null : aws_alb.op_scim_bridge.dns_name
 }

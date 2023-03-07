@@ -29,15 +29,27 @@ variable "wildcard_cert" {
   description = "Set to true to use an existing wildcard certificate in ACM for the load balancer."
 }
 
-variable "using_route53" {
+variable "using_cloudflare" {
   type        = bool
   default     = true
   description = "Set to false to use an external DNS provider"
 }
 
+variable "cloudflare_zone_domain" {
+  type        = string
+  default     = ""
+  description = "If using cloudflare, the zone to create DNS records in"
+}
+
 variable "log_retention_days" {
   type        = number
   description = "Specifies the number of days to retain log events in CloudWatch. The log is retained indefinitely whne set to 0."
+}
+
+variable "scimsession" {
+  type        = string
+  description = "String content of the scimsession file"
+  sensitive   = true
 }
 
 # (For customers using Google Workspace participants)
