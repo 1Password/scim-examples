@@ -1,7 +1,7 @@
 [
   {
     "name": "op_scim_bridge",
-    "image": "1password/scim:v2.7.4",
+    "image": "1password/scim:v2.8.0",
     "cpu": 128,
     "memory": 512,
     "essential": true,
@@ -26,6 +26,10 @@
       {
         "name": "OP_TLS_DOMAIN",
         "value": ""
+      },
+      {
+        "name": "OP_CONFIRMATION_INTERVAL",
+        "value": 300
       }
     ],
     "secrets": [
