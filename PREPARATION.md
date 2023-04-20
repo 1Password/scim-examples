@@ -24,7 +24,29 @@ You will need to be able to create a DNS record with the SCIM bridge domain name
 
 Identity Providers typically require a TLS certificate when communicating to the SCIM bridge under most circumstances.
 
-By default, TLS certificates are handled through a complimentary [Let's Encrypt](https://letsencrypt.org/) service integration, which automatically generates and renews an TLS certificate based on the domain name you've decided on. On your firewall, you should ensure that the service can access port `443`, as port `443` is required for the Let's Encrypt service to complete its domain challenge and issue your SCIM bridge a TLS certificate. 
+By default, TLS certificates are handled through a complimentary [Let's Encrypt](https://letsencrypt.org/) service integration, which automatically generates and renews an TLS certificate based on the domain name you've decided on.
+
+There are two ways you can use Let's Encrypt service to issue a certificate for your SCIM bridge.
+
+### TLS-ALPN-01
+
+The default and easiest way of using Let's Encrypt with the SCIM bridge is the [TLS-ALPN-01](https://letsencrypt.org/docs/challenge-types/#tls-alpn-01) challenge type. 
+
+During setup of the SCIM bridge, you will end up setting the `OP_TLS_DOMAIN` configuration variable to the domain name you've selected for your bridge (i.e: `op-scim-bridge.example.com`). In the background, Let's Encrypt is ensuring that it can communicate to the SCIM bridge through port `443` and receive some special challenge tokens from the bridge. This completes the authentication portion, and Let's Encrypt then issues the SCIM bridge a new TLS certificate, which is automatically loaded. The SCIM bridge then stores this certificate in the `redis` cache for later use.
+
+To continue using this challenge type, you will **need to keep port 443 accessible to the internet at all times** for this to work. This is fine under usual circumstances, but if you have more specific requirements, such as an internally-hosted IdP, it can be somewhat troublesome unless you are able to provide your own certificates.
+
+### DNS-01
+
+`DNS-01` is a different authentication method which does not require the bridge to be publicly-accessible at all. Instead, the bridge must be able to communicate with one of the DNS providers currently supported by the bridge. As of April 2023, this is Google Cloud DNS, CloudFlare DNS, and Azure DNS. You would then then provide secrets for those DNS services in the setup process.
+
+Importantly, each DNS service tends to have its own unique way of configuring credentials to authenticate with them. For example, CloudFlare DNS typically only requires an API key (1 credential), whereas Azure DNS requires five separate configuration parameters to fully authenticate with the service.
+
+During the authentication procedure with Let's Encrypt, the SCIM bridge modifies the DNS records of a given name (i.e: `op-scim-bridge.example.com`) with certain records that Let's Encrypt is expecting to confirm DNS ownership. Once DNS ownership is confirmed, Let's Encrypt issues a certificate as usual, and the SCIM bridge removes those temporary DNS records.
+
+The one major advantage is that the bridge does not need to be publicly-accessible at all times to ensure a TLS certificate is available. This also allows for more advanced firewall techniques to be applied if required. While not as convenient as `TLS-ALPN-01`, it can open up more options for your deployment environment.
+
+An example configuration file can be found [here](./dns01-example.json).
 
 ## Clone this repository
 
