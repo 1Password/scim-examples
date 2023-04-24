@@ -1,0 +1,20 @@
+{
+    "provider": "googlecloud",
+    "configuration": {
+        "googlecloud": {
+            "gcp_project": "op-scim-bridge",
+            "gcp_application_default":"/path/to/serviceaccount.json"
+        },
+        "azure": {
+            "tenant_id": "tenant-id-goes-here",
+            "client_id": "client-id-goes-here",
+            "client_secret": "secret-goes-here",
+            "subscription_id": "subscription-id-goes-here",
+            "resource_group_name": "resource-group-name-goes-here"
+        },
+        "cloudflare": {
+            "api_token": "API-TOKEN-GOES-HERE"
+        }
+    }
+}
+

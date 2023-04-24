@@ -1,7 +1,7 @@
 version: "3.3"
 services:
   scim:
-    image: 1password/scim:v2.7.4
+    image: 1password/scim:v2.8.0
     deploy:
       replicas: 1
       restart_policy:
@@ -15,6 +15,11 @@ services:
     secrets:
       - source: scimsession
         target: scimsession
+        uid: "999"
+        gid: "999"
+        mode: 0440
+      - source: dns01-config
+        target: dns01-config
         uid: "999"
         gid: "999"
         mode: 0440
