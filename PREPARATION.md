@@ -46,7 +46,7 @@ During the authentication procedure with Let's Encrypt, the SCIM bridge modifies
 
 The one major advantage is that the bridge does not need to be publicly-accessible at all times to ensure a TLS certificate is available. This also allows for more advanced firewall techniques to be applied if required. While not as convenient as `TLS-ALPN-01`, it can open up more options for your deployment environment.
 
-An example configuration file can be found [here](./dns01-example.json).
+An example configuration file can be found [here](./dns01.example.json).
 
 ## Clone this repository
 
