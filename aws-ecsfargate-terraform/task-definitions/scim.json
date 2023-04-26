@@ -29,7 +29,7 @@
       },
       {
         "name": "OP_CONFIRMATION_INTERVAL",
-        "value": 300
+        "value": "300"
       }
     ],
     "secrets": [
