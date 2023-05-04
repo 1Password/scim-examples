@@ -1,6 +1,6 @@
 # Preparing to deploy 1Password SCIM Bridge
 
-*Learn how to prepare your environment and processes for 1Password SCIM Bridge.*
+*Learn how to prepare your environment and 1Password account to integrate with 1Password SCIM Bridge.*
 
 ## Overview
 
