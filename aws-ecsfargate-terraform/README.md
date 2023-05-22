@@ -187,7 +187,7 @@ To update the SCIM bridge:
 
 The `terraform` CLI will output the details of the plan in addition to saving it to an output file (`./op-scim.plan`). The plan will contain the steps necessary to bring your deployment in line with the latest configuration depending on the changes that are detected. Feel free to inspect the output to get a better idea of the steps that will be taken.
 
-Below you can learn about some common reasons you may want to update your infrastructure.
+Below you can learn about some common update scenarios.
 
 ### Update to the latest tag version
 
@@ -197,9 +197,9 @@ To update your deployment to the latest version, edit the `task-definitions/scim
     "image": "1password/scim:v2.x.x",
 ```
 
-Change `v2.x.x` to the latest version [seen here](https://app-updates.agilebits.com/product_history/SCIM).
+Change `v2.x.x` to the latest version [found on the SCIM bridge release notes page](https://app-updates.agilebits.com/product_history/SCIM).
 
-Then, reapply your Terraform settings:
+Then reapply your Terraform settings:
 
 ```bash
 terraform plan -out=./op-scim.plan
@@ -208,19 +208,17 @@ terraform apply ./op-scim.plan
 
 ### Update to the latest configuration
 
-There may be situations where you want to update your deployment with the latest configuration changes available in this repository even if you are already on the latest `1password/scim` tag. The steps are fairly similar to updating the tag with a few minor differences.
+There may be situations where you want to update your deployment with the latest configuration changes available in this repository even if you are already on the latest `1password/scim` tag. The steps are fairly similar to updating the tag, with a few minor differences:
 
-Update steps:
-
-1. [Optional] Verify that your Terraform variables (`./terraform.tfvars`) are correct and up to date
-2. [Optional] Reconcile the state between what Terraform knows about and your deployed infrastructure: `terraform refresh`
+1. [Optional] Verify that your Terraform variables (`./terraform.tfvars`) are correct and up to date.
+2. [Optional] Reconcile the state between what Terraform knows about and your deployed infrastructure: `terraform refresh`.
 3. Create an update plan to apply: `terraform plan -out=./op-scim.plan`
 4. Apply the plan to your infrastructure: `terraform apply ./op-scim.plan`
-5. Verify that there are no errors in the output as Terraform updates your infrastructure
+5. Verify that there are no errors in the output as Terraform updates your infrastructure.
 
 ### Resource Recommendations
 
-The default resource recommendations for the SCIM bridge and Redis deployments are acceptable in most scenarios, but they fall short in high volume deployments where there is a large number of users and/or groups. 
+The default resource recommendations for 1Password SCIM Bridge and Redis deployments are acceptable in most scenarios, but they fall short in high-volume deployments where there's a large number of users and/or groups. 
 
 Our current default resource requirements (defined in [scim.json](https://github.com/1Password/scim-examples/blob/master/aws-ecsfargate-terraform/task-definitions/scim.json#L5)) are:
 
@@ -229,24 +227,22 @@ Our current default resource requirements (defined in [scim.json](https://github
   memory: 512
 ```
 
-Proposed recommendations for high volume deployments:
+The following are recommendations for high-volume deployments:
 
 ```yaml
   cpu: 512
   memory: 1024
 ```
 
-This proposal is 4x the CPU and 2x the memory of the default values.
+This recommendation is 4x the CPU and 2x the memory of the default values.
 
-Please reach out to our [support team](https://support.1password.com/contact/) if you need help with the configuration or to tweak the values for your deployment.
+If you need help with the configuration, [contact 1Password Support](https://support.1password.com/contact/).
 
 ### April 2022 changes
 
-As of April 2022 we have updated the Redis deployment to require a maximum of 512 MB of memory. This meant that we also had to bump required memory for the "op-scim-bridge" task definition to 1024 MB.
+In April 2022, the Redis deployment was updated to require a maximum of 512 MB of memory. This included an increase in required memory for the `op-scim-bridge` task definition to 1024 MB.
 
-The Redis dataset maximum is set to 256Mb and an eviction policy will determine how keys are evicted when the maximum data set size is approached.
-
-This should prevent Redis from consuming large amounts of memory and eventually running out of available memory. The SCIM bridge is also restarted in instances where Redis runs into an out of memory error.
+The Redis dataset maximum is set to 256 MB and an eviction policy will determine how keys are evicted when the maximum data set size is approached. This should prevent Redis from consuming large amounts of memory and eventually running out of available memory. 1Password SCIM Bridge is also restarted in instances where Redis runs out of memory.
 
 ### December 2021 changes
 
@@ -256,12 +252,12 @@ As of December 2021, [the ALB health check path has changed](https://github.com/
 
 ### Logs
 
-If you want to view the logs for your SCIM bridge within AWS, go to **Cloudwatch -> Log Groups** and you should see the log group that was printed out at the end of your `terraform apply`. Look for `op_scim_bridge` and `redis` for your logs in this section.
+If you want to view the logs for your SCIM bridge within AWS, go to **Cloudwatch > Log Groups** and you should see the log group that was printed out at the end of your `terraform apply`. Look for `op_scim_bridge` and `redis` for your logs in this section.
 
 ### Specific issues
 
-#### Prompted to Sign In
+#### If you're prompted to sign in
 
-If you browse to the domain name of your SCIM bridge and are met with a `Sign In With 1Password` link, this means the `scimsession` file was not properly installed. Due to the nature of the ECS deployment, **this “sign in” option cannot be used** to complete the setup of your SCIM bridge.
+If you open your SCIM bridge domain in a browser and see a `Sign In With 1Password` button, the `scimsession` file was not properly installed. Due to the nature of the ECS deployment, **this “sign in” option cannot be used** to complete the setup of your SCIM bridge.
 
-To fix this, be sure to retry [the instructions of Step 2 of Configuration](#copy-`scimsession`-file). You will also need to restart your `op_scim_bridge` task in order for the changes to take effect after you update the `scimsession` secret.
+To fix this, [copy the `scimsession` file](#copy-`scimsession`-file) again and restart your `op_scim_bridge` task to apply the changes.
