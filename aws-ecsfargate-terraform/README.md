@@ -1,12 +1,22 @@
-# Deploying the 1Password SCIM Bridge on AWS Fargate with Terraform
+# Deploy 1Password SCIM Bridge on AWS Fargate with Terraform
 
-This guide will run you through a deployment of the 1Password SCIM bridge on AWS Fargate using Terraform. 
+This guide will walk you through a deployment of 1Password SCIM Bridge on AWS Fargate using Terraform. 
 
-Note that due to the highly advanced and customizable nature of Amazon Web Services, this is only a suggested starting point. You may modify it to your needs to fit within your existing infrastructure.
+Note that due to the highly advanced and customizable nature of Amazon Web Services, this is only a suggested starting point. You may modify it to fit your existing infrastructure.
 
-## Prerequisites
+#### Table of contents
 
-Before beginning, familiarize yourself with [PREPARATION.md](/PREPARATION.md) and complete the necessary steps there.
+- [Before you begin](#before-you-begin)
+- [Sign in with `aws`](#sign-in-with-aws)
+- [Step 1: Configure the bridge](#step-1-configure-the-bridge)
+- [Step 2: Deploy the bridge](#step-2-deploy-the-bridge)
+- [Step 3: Connect your identity provider](#step-3-connect-your-identity-provider)
+- [Update the bridge](#update-the-bridge)
+- [Troubleshooting](#troubleshooting)
+
+## Before you begin
+
+Before you begin, familiarize yourself with [PREPARATION.md](/PREPARATION.md) and complete the necessary steps there. Then:
 
 - Install [Terraform](https://www.terraform.io/downloads)
 - Have your `scimsession` file and bearer token (as seen in `PREPARATION.md`) ready
@@ -17,7 +27,7 @@ Ensure you are authenticated with the `aws` tool in your local environment.
 
 See [Terraform AWS Authentication](https://registry.terraform.io/providers/hashicorp/aws/latest/docs#authentication) for more details.
 
-## Configuration
+## Step 1: Configure the bridge
 
 ### Copy configuration template
 
@@ -28,9 +38,8 @@ cp terraform.tfvars.template terraform.tfvars
 ```
 
 <details>
-  <summary>Optional: For customers using Google Workspace</summary>
-
-### Copy Google Worskpace credentials
+  <summary>Optional: If you use Google Workspace</summary>
+### Copy Google Workspace credentials
 
 Copy the `workspace-settings.json` template file to this Terraform code directory:
 
@@ -73,11 +82,11 @@ cat <path>/scimsession | base64
 # copy the output to Secrets Manager
 ```
 
-### Region
+### Set the region
 
 Set the `aws_region` variable in `terraform.tfvars` to the AWS region you're deploying in (the default is `us-east-1`).
 
-### Domain name
+### Set the domain name
 
 This example uses AWS Certificate Manager to manage the required TLS certificate. Save the full domain name you want to use as `domain_name` in `terraform.tfvars`:
 
@@ -88,7 +97,6 @@ domain_name = "<scim.example.com>"
 <details>
   <summary>Optional: Configure additional features</summary>
 
-
 ### Use an existing ACM wildcard certificate
 
 If you would like to use an existing wildcard certificate in AWS Certificate Manager (`*.example.com`), uncommment this line in `terraform.tfvars`:
@@ -97,7 +105,7 @@ If you would like to use an existing wildcard certificate in AWS Certificate Man
 wildcard_cert = true
 ```
 
-### External DNS 
+### External DNS
 
 This deployment example uses Route 53 to create the required DNS record by default. If you are using another DNS provider, uncommment this line in `terraform.tfvars`:
 
@@ -117,7 +125,7 @@ vpc_name           = "<name_of_VPC>"
 
 ### Specify a name prefix
 
-If you would like to specify a common prefix for naming all supported AWS resources created by Terraform, set the value in the `name_prefix` variable in `terraform.tfvars`:
+If you'd like to specify a common prefix for naming all supported AWS resources created by Terraform, set the value in the `name_prefix` variable in `terraform.tfvars`:
 
 ```terraform
 name_prefix        = "<prefix>"
@@ -125,7 +133,7 @@ name_prefix        = "<prefix>"
 
 ### Set a log retention period
 
-Thw deployment example retains logs indifnietely by default. If you would like to set a differnet retention period, specify a number of days in the `log_retention_days` variable in `terraform.tfvars`:
+The deployment example retains logs indefinitely by default. If you'd like to set a different retention period, specify a number of days in the `log_retention_days` variable in `terraform.tfvars`:
 
 ```terraform
 log_retention_days = <number_of_days>
@@ -146,7 +154,7 @@ tags = {
 
 </details>
 
-## Deploy
+## Step 2: Deploy the bridge
 
 Run the following commands to create the necessary configuration settings:
 
@@ -155,33 +163,33 @@ terraform init
 terraform plan -out=./op-scim.plan
 ```
 
-You will now be asked to validate your configuration. Once you are sure it is correct, run the following:
+You'll be asked to validate your configuration. Check it to make sure it's correct, then run the following to deploy the SCIM bridge:
 
 ```bash
 terraform apply ./op-scim.plan
 ```
 
-After a few minutes and the DNS update has had time to take effect, go to the SCIM Bridge URL you set, and you should be able to enter your bearer token to verify that your SCIM bridge is up and running.
+After a few minutes, and once the DNS has updated, go to the SCIM Bridge URL you set. You should be able to enter your bearer token to verify that your SCIM bridge is up and running.
 
-## Complete setup
+## Step 3: Connect your identity provider
 
-Connect to your Identity Provider following [the remainder of our setup guide](https://support.1password.com/scim/#step-2-deploy-the-scim-bridge).
+To finish setting up automated user provisioning, [connect your identity provider to the SCIM bridge](https://support.1password.com/scim/#step-3-connect-your-identity-provider).
 
-## Updating
+---
 
-The process for updating your infrastructure involes a few key steps. Lucky for us most of the heavy lifting is done by the `terraform` CLI.
+## Update the bridge
 
-The update steps are generally as follows:
+To update the SCIM bridge:
 
-1. Update any variables and task definitions as necessary
-2. Create a plan for Terraform to apply
-3. Apply the new plan to your infrastrucure
+1. Update any variables and task definitions.
+2. Create a plan for Terraform to apply.
+3. Apply the new plan to your infrastructure.
 
-Note that the `terraform` CLI will output the details of the plan in addition to saving it to an output file (`./op-scim.plan`). The plan will contain the steps necessary to bring your deployment in line with the latest configuration depending on the changes that are detected. Feel free to inspect the output to get a better idea of the steps that will be taken.
+The `terraform` CLI will output the details of the plan in addition to saving it to an output file (`./op-scim.plan`). The plan will contain the steps necessary to bring your deployment in line with the latest configuration depending on the changes that are detected. Feel free to inspect the output to get a better idea of the steps that will be taken.
 
-Below we go into detail about some common reasons that you would want to update your infrastructure.
+Below you can learn about some common reasons you may want to update your infrastructure.
 
-### Updating to the latest tag version
+### Update to the latest tag version
 
 To update your deployment to the latest version, edit the `task-definitions/scim.json` file and edit the following line:
 
@@ -198,7 +206,7 @@ terraform plan -out=./op-scim.plan
 terraform apply ./op-scim.plan
 ```
 
-### Updating to the latest configuration
+### Update to the latest configuration
 
 There may be situations where you want to update your deployment with the latest configuration changes available in this repository even if you are already on the latest `1password/scim` tag. The steps are fairly similar to updating the tag with a few minor differences.
 
