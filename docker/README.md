@@ -1,4 +1,4 @@
-# Deploying 1Password SCIM Bridge using Docker
+# Deploy 1Password SCIM Bridge with Docker
 
 *Learn how to deploy 1Password SCIM Bridge using Docker Compose or Docker Swarm.*
 
@@ -19,9 +19,9 @@ Before you begin, read the [PREPARATION.md](/PREPARATION.md) document.
 
 ## Step 1: Choose a deployment option
 
-Using Docker, you have two deployment options: `docker-compose` and Docker Swarm.
+Using Docker, you have two deployment options: Docker Compose and Docker Swarm.
 
-Docker Swarm is the recommended option, but either option can be used depending on your deployment needs. While setting up a Docker host is beyond the scope of this documentation, you can either set one up on your own infrastructure, or on a cloud provider of your choice.
+**Docker Swarm** is the recommended option, but Docker Compose can also be used depending on your deployment needs. You can either set one up a Docker host on your own infrastructure or on a cloud provider of your choice.
 
 The `scimsession` file is passed into the docker container via an environment variable, which is less secure than Docker Swarm secrets, Kubernetes secrets, or AWS Secrets Manager, all of which are supported and recommended for production use.
 
@@ -190,7 +190,9 @@ curl --header "Authorization: Bearer TOKEN_GOES_HERE" https://<domain>/scim/User
 
 ## Update 1Password SCIM Bridge
 
-To upgrade the SCIM bridge, `git pull` the latest versions from this repository. Then re-apply the `.yml` file.
+👍 Check for 1Password SCIM Bridge updates on the [SCIM bridge release page](https://app-updates.agilebits.com/product_history/SCIM).
+
+To upgrade your SCIM bridge, `git pull` the latest versions from this repository. Then re-apply the `.yml` file. For example:
 
 ### Docker Swarm
 
@@ -229,14 +231,14 @@ Unless you have customized your Redis deployment, there shouldn’t be any actio
 
 The following options are available for advanced or custom deployments. Unless you have a specific need, these options do not need to be modified.
 
-* `OP_TLS_CERT_FILE` and `OP_TLS_KEY_FILE` - these two variables can be set to the paths of a key file and certificate file, which then disables Let's Encrypt functionality, causing the SCIM bridge to utilize your own manually-defined certificate when `OP_TLS_DOMAIN` is also defined. Note that this is only supported under Docker Swarm, not under Docker Compose.
-* `OP_PORT` - when `OP_TLS_DOMAIN` is set to blank, you can use `OP_PORT` to change the default port from 3002 to one of your choosing.
-* `OP_REDIS_URL` - you can specify `redis://` or `rediss://` (for TLS) URL here to point towards an alternative Redis host. You can then strip out the sections in `docker-compose.yml` that refer to Redis to not deploy that container. Note that Redis is still required for the SCIM bridge to function.
-* `OP_PRETTY_LOGS` - can be set to `1` if you would like the SCIM bridge to output logs in a human-readable format. This can be helpful if you aren’t planning on doing custom log ingestion in your environment.
-* `OP_DEBUG` - can be set to `1` to enable debug output in the logs. Useful for troubleshooting or when contacting 1Password Support.
-* `OP_TRACE` - can be set to `1` to enable Trace-level log output. Useful for debugging Let’s Encrypt integration errors.
-* `OP_PING_SERVER` - can be set to `1` to enable an optional `/ping` endpoint on port `80`. Useful for health checks. Disabled if `OP_TLS_DOMAIN` is unset and TLS is not utilized.
+* `OP_TLS_CERT_FILE` and `OP_TLS_KEY_FILE`: These two variables can be set to the paths of a key file and certificate file, which will disable Let's Encrypt functionality, causing the SCIM bridge to use your own manually-defined certificate when `OP_TLS_DOMAIN` is also defined. This is only supported with Docker Swarm, not Docker Compose.
+* `OP_PORT`: When `OP_TLS_DOMAIN` is set to blank, you can use `OP_PORT` to change the default port from 3002 to one you choose.
+* `OP_REDIS_URL`: You can specify a `redis://` or `rediss://` (for TLS) URL here to point towards a different Redis host. You can then remove the sections in `docker-compose.yml` that refer to Redis to not deploy that container. Redis is still required for the SCIM bridge to function.
+* `OP_PRETTY_LOGS`: You can set this to `1` if you'd like the SCIM bridge to output logs in a human-readable format. This can be helpful if you aren't planning on doing custom log ingestion in your environment.
+* `OP_DEBUG`: You can set this to `1` to enable debug output in the logs, which is useful for troubleshooting or working with 1Password Support to diagnose an issue.
+* `OP_TRACE`: You can set this to `1` to enable trace-level log output, which is useful for debugging Let’s Encrypt integration errors.
+* `OP_PING_SERVER`: You can set this to `1` to enable an optional `/ping` endpoint on port `80`, which is useful for health checks. It's disabled if `OP_TLS_DOMAIN` is unset and TLS is not in use.
 
 ## Generate `scim.env` on Windows
 
-On Windows, you can refer to the [./docker/compose/generate-env.bat](generate-env.bat) file on how to generate the `base64` string for `OP_SESSION`.
+On Windows, refer to [./docker/compose/generate-env.bat](generate-env.bat) to learn how to generate the `base64` string for `OP_SESSION`.
