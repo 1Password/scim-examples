@@ -13,7 +13,7 @@
 - [Step 1: Configure the bridge](#step-1-configure-the-bridge)
 - [Step 2: Deploy 1Password SCIM Bridge](#step-2-deploy-1password-scim-bridge)
 - [Step 3: Connect your identity provider](#step-3-connect-your-identity-provider)
-- [Update 1Password SCIM Bridge](#update-1password-scim-bridge)
+- [Update your SCIM Bridge](#update-your-scim-bridge)
 - [Troubleshooting](#troubleshooting)
 
 ## Before you begin
@@ -22,12 +22,7 @@ Before you begin, familiarize yourself with [PREPARATION.md](/PREPARATION.md) an
 
 - Install [Terraform](https://www.terraform.io/downloads)
 - Have your `scimsession` file and bearer token (as seen in `PREPARATION.md`) ready
-
-## Sign in with `aws`
-
-Ensure you are authenticated with the `aws` tool in your local environment.
-
-See [Terraform AWS Authentication](https://registry.terraform.io/providers/hashicorp/aws/latest/docs#authentication) for more details.
+- Make sure you're authenticated with the `aws` command-line tool in your local environment. Learn more in the [Terraform AWS Provider documentation](https://registry.terraform.io/providers/hashicorp/aws/latest/docs).
 
 ## Step 1: Configure the bridge
 
@@ -179,7 +174,7 @@ To finish setting up automated user provisioning, [connect your identity provide
 
 ---
 
-## Update 1Password SCIM Bridge
+## Update your SCIM Bridge
 
 👍 Check for 1Password SCIM Bridge updates on the [SCIM bridge release page](https://app-updates.agilebits.com/product_history/SCIM).
 

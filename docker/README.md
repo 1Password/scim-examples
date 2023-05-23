@@ -9,9 +9,9 @@
 - [Step 2: Install Docker tools](#step-2-install-docker-tools)
 - [Step 3: Deploy 1Password SCIM Bridge](#step-3-deploy-1password-scim-bridge)
 - [Step 4: Test the bridge](#step-4-test-the-bridge)
-- [Update 1Password SCIM Bridge](#update-1password-scim-bridge)
-- [Advanced `scim.env` options](#advanced-scimenv-options)
-- [Generate `scim.env` on Windows](#generate-scimenv-on-windows)
+- [Update your SCIM Bridge](#update-your-scim-bridge)
+- [Appendix: Advanced `scim.env` options](#appendix-advanced-scimenv-options)
+- [Appendix: Generate `scim.env` on Windows](#appendix-generate-scimenv-on-windows)
 
 ## Before you begin
 
@@ -85,11 +85,9 @@ cd scim-examples/docker/
 
 ### Docker Swarm manual deployment
 
-To use Docker Swarm to deploy, you’ll want to have run `docker swarm init` or `docker swarm join` on the target node and completed that portion of the setup. Refer to [Docker’s documentation for more details](https://docs.docker.com/engine/swarm/swarm-tutorial/create-swarm/).
+To use Docker Swarm, run `docker swarm init` or `docker swarm join` on the target node and complete that portion of the setup. Refer to [Docker’s documentation for more details](https://docs.docker.com/engine/swarm/swarm-tutorial/create-swarm/).
 
-Unlike Docker Compose, you won’t need to set the `OP_SESSION` variable in `scim.env`, as we’ll be using Docker Secrets to store the `scimsession` file.
-
-You’ll still need to set the environment variable `OP_TLS_DOMAIN` within `scim.env` to the URL you selected during [PREPARATION.md](/PREPARATION.md). Open that in your preferred text editor and change `OP_TLS_DOMAIN` to that domain name.
+Unlike Docker Compose, you won't need to set the `OP_SESSION` variable in `scim.env`. Instead, you'll use Docker Secrets to store the `scimsession` file. You'll still need to set the environment variable `OP_TLS_DOMAIN` within `scim.env` to the URL you selected during [PREPARATION.md](/PREPARATION.md). Open that in your preferred text editor and change `OP_TLS_DOMAIN` to that domain name.
 
 #### If you use Google Workspace as your identity provider
 
@@ -177,7 +175,6 @@ Learn more about [connecting Google Workspace to 1Password SCIM Bridge](https://
 </details>
 
 <hr>
-
 ## Step 4: Test the bridge
 
 To test if your SCIM bridge came online, open the public IP address of the Docker Host for your bridge in a web browser. You should be able to enter your bearer token to verify that your SCIM bridge is up and running.
@@ -188,7 +185,7 @@ You can also use the following `curl` command to test the SCIM bridge from the c
 curl --header "Authorization: Bearer TOKEN_GOES_HERE" https://<domain>/scim/Users
 ```
 
-## Update 1Password SCIM Bridge
+## Update your SCIM Bridge
 
 👍 Check for 1Password SCIM Bridge updates on the [SCIM bridge release page](https://app-updates.agilebits.com/product_history/SCIM).
 
@@ -227,7 +224,7 @@ With the release of SCIM bridge 2.0, the environment variables `OP_REDIS_HOST` a
 
 Unless you have customized your Redis deployment, there shouldn’t be any action you need to take.
 
-## Advanced `scim.env` options
+## Appendix: Advanced `scim.env` options
 
 The following options are available for advanced or custom deployments. Unless you have a specific need, these options do not need to be modified.
 
@@ -237,8 +234,8 @@ The following options are available for advanced or custom deployments. Unless y
 * `OP_PRETTY_LOGS`: You can set this to `1` if you'd like the SCIM bridge to output logs in a human-readable format. This can be helpful if you aren't planning on doing custom log ingestion in your environment.
 * `OP_DEBUG`: You can set this to `1` to enable debug output in the logs, which is useful for troubleshooting or working with 1Password Support to diagnose an issue.
 * `OP_TRACE`: You can set this to `1` to enable trace-level log output, which is useful for debugging Let’s Encrypt integration errors.
-* `OP_PING_SERVER`: You can set this to `1` to enable an optional `/ping` endpoint on port `80`, which is useful for health checks. It's disabled if `OP_TLS_DOMAIN` is unset and TLS is not in use.
+* `OP_PING_SERVER`: You can set this to `1` to enable an optional `/ping` endpoint on port `80`, which is useful for health checks. It's disabled if `OP_TLS_DOMAIN` is unset and TLS is not in use.
 
-## Generate `scim.env` on Windows
+## Appendix: Generate `scim.env` on Windows
 
 On Windows, refer to [./docker/compose/generate-env.bat](generate-env.bat) to learn how to generate the `base64` string for `OP_SESSION`.
