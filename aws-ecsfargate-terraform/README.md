@@ -1,8 +1,10 @@
 # Deploy 1Password SCIM Bridge on AWS Fargate with Terraform
 
-This guide will walk you through a deployment of 1Password SCIM Bridge on AWS Fargate using Terraform. 
+*Learn how to deploy 1Password SCIM Bridge on AWS Fargate using Terraform.*
 
-Note that due to the highly advanced and customizable nature of Amazon Web Services, this is only a suggested starting point. You may modify it to fit your existing infrastructure.
+> **NOTE:**
+>
+> Due to the highly advanced and customizable nature of Amazon Web Services, this is only a suggested starting point. You can modify it to fit your existing infrastructure.
 
 #### Table of contents
 

@@ -1,6 +1,6 @@
 # Deploying 1Password SCIM Bridge using Docker
 
-This example describes the methods of deploying 1Password SCIM Bridge using Docker. The Docker Compose and Docker Swarm managers are available and deployment using each manager is described below.
+*Learn how to deploy 1Password SCIM Bridge using Docker Compose or Docker Swarm.*
 
 #### Table of contents
 
