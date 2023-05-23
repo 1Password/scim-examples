@@ -1,71 +1,77 @@
-# Deploying the 1Password SCIM bridge using Docker
+# Deploying 1Password SCIM Bridge using Docker
 
-This example describes the methods of deploying the 1Password SCIM bridge using Docker. The Docker Compose and Docker Swarm managers are available and deployment using each manager is described below.
+This example describes the methods of deploying 1Password SCIM Bridge using Docker. The Docker Compose and Docker Swarm managers are available and deployment using each manager is described below.
 
-## Preparing
+#### Table of contents
 
-Ensure you've read through the [PREPARATION.md](/PREPARATION.md) document before beginning deployment.
+- [Before you begin](#before-you-begin)
+- [Step 1: Choose a deployment option](#step-1-choose-a-deployment-option)
+- [Step 2: Install Docker tools](#step-2-install-docker-tools)
+- [Step 3: Deploy 1Password SCIM Bridge](#step-3-deploy-1password-scim-bridge)
+- [Step 4: Test the bridge](#step-4-test-the-bridge)
+- [Update 1Password SCIM Bridge](#update-1password-scim-bridge)
+- [Advanced `scim.env` options](#advanced-scimenv-options)
+- [Generate `scim.env` on Windows](#generate-scimenv-on-windows)
 
-## Docker Compose vs Docker Swarm
+## Before you begin
 
-Using Docker, you have two different deployment options: `docker-compose` and Docker Swarm.
+Before you begin, read the [PREPARATION.md](/PREPARATION.md) document.
 
-Docker Swarm is the recommended option, but both options can be used successfully depending on your deployment needs. While setting up a Docker host is beyond the scope of this documentation, you can either set one up on your own infrastructure, or on a cloud provider of your choice.
+## Step 1: Choose a deployment option
+
+Using Docker, you have two deployment options: `docker-compose` and Docker Swarm.
+
+Docker Swarm is the recommended option, but either option can be used depending on your deployment needs. While setting up a Docker host is beyond the scope of this documentation, you can either set one up on your own infrastructure, or on a cloud provider of your choice.
 
 The `scimsession` file is passed into the docker container via an environment variable, which is less secure than Docker Swarm secrets, Kubernetes secrets, or AWS Secrets Manager, all of which are supported and recommended for production use.
 
-## Install Docker tools
+## Step 2: Install Docker tools
 
-Install [Docker for Desktop](https://www.docker.com/products/docker-desktop) on your local machine and _start Docker_ before continuing, as it will be needed to continue with the deployment process.
+1. On your local machine, install [Docker for Desktop](https://www.docker.com/products/docker-desktop) and start Docker.
+2. Install the `docker-compose` and `docker-machine` command-line tools on your local machine. If you're using macOS and Homebrew, make sure you're using the _cask_ app-based version of Docker (`brew cask install docker`), not the default CLI version.
 
-You'll also need to install `docker-compose` and `docker-machine` command line tools for your platform.
+## Step 3: Deploy 1Password SCIM Bridge
 
-For macOS users who use Homebrew, ensure you're using the _cask_ app-based version of Docker, not the default CLI version. (i.e: `brew cask install docker`)
-
-## Automatic Deployment Instructions
-
-These steps can be used for automatic deployments using either Docker Swarm or Docker Compose running [./docker/deploy.sh](deploy.sh).
+To automatically deploy 1Password SCIM Bridge with [Docker Swarm](#docker-swarm) or [Docker Compose](#docker-compose), use our script, [./docker/deploy.sh](deploy.sh).
 
 ### Docker Swarm
 
-For this, you will need to have joined a Docker Swarm with the target deployment node. Please refer to [the official Docker documentation](https://docs.docker.com/engine/swarm/swarm-tutorial/create-swarm/) on how to do that.
+For this method, you'll need to have joined a Docker Swarm with the target deployment node. Learn how to [create a swarm](https://docs.docker.com/engine/swarm/swarm-tutorial/create-swarm/).
 
-Once set up and you've logged into your Swarm with `docker swarm join` or created a new one with `docker swarm init`, it's recommended to use the provided the bash script [./docker/deploy.sh](deploy.sh) to deploy your SCIM bridge.
+After you've created a swarm, log in with `docker swarm join`. Then use the provided the bash script [./docker/deploy.sh](deploy.sh) to deploy your SCIM bridge. The script will do the following:
 
-The script will do the following:
-
-1. Prompt you if you are using Google Workspace as your Identity Provider and for configuration files locations to add them as a Docker Secrets within your Swarm cluster.
-2. Prompt if you are deploying using Docker Swarm or Docker Compose.
-3. Prompt you for your SCIM bridge domain name which will configure Let's Encrypt to automatically issue a certificate for your Bridge. This is the domain you selected in [PREPARATION.md](/PREPARATION.md).
-4. Prompt you for your `scimsession` file location to add your `scimsession` file as a Docker Secret within your Swarm cluster.
-5. Deploy a container using `1password/scim`, and a `redis` container. The `redis` container is necessary to store Let's Encrypt certificates, as well as act as a cache for Identity Provider data.
+1. Prompt whether you're using Google Workspace as your identity provider so you can add your configuration files as Docker Secrets within your Swarm cluster.
+2. Prompt whether you're deploying using Docker Swarm or Docker Compose.
+3. Prompt for your SCIM bridge domain name so you can automatically get a TLS certificate from Let's Encrypt. This is the domain you selected in [PREPARATION.md](/PREPARATION.md).
+4. Prompt for your `scimsession` file location to add your `scimsession` file as a Docker Secret within your Swarm cluster.
+5. Deploy a container using `1password/scim`, as well as a `redis` container. The `redis` container is necessary to store Let's Encrypt certificates, as well as act as a cache for your identity provider information.
 
 The logs from the SCIM bridge and Redis containers will be streamed to your machine. If everything seems to have deployed successfully, press Ctrl+C to exit, and the containers will remain running on the remote machine.
 
-At this point you should set the DNS record for the domain name you prepared to the IP address of the `op-scim` container. You can also continue setting up your Identity Provider at this point.
+At this point, you should set a DNS record routing the domain name to the IP address of the `op-scim` container.
+
+You can now [connect your identity provider](https://support.1password.com/scim/#step-3-connect-your-identity-provider).
 
 ### Docker Compose
 
-You will need to have a Docker machine set up either locally or remotely. Refer to [the docker-compose documentation](https://docs.docker.com/machine/reference/create/) on how to do that. For a local installation, you can use the `virtualbox` driver.
+To deploy with Docker Compose, you'll need Docker Desktop set up either locally or remotely. Learn how to [set up Docker Desktop](https://docs.docker.com/desktop/). Then follow these steps:
 
-Once set up, ensure your environment is set up with `eval %{docker-machine env $machine_name}`, with whatever machine name you decided upon.
-
-Run the [./docker/deploy.sh](deploy.sh) script as in the previous example above for Docker Swarm selecting Compose as the deployment method in step 2. Any references for Docker Secrets will be added to the Docker Compose deployment as environment variables.
+1. Make sure your environment is set up with `eval %{docker-machine env $machine_name}`, using the machine name you've chosen.
+2. Run the [./docker/deploy.sh](deploy.sh) script.
+3. Choose Compose as the deployment method when prompted. Any references for Docker Secrets will be added to the Docker Compose deployment as environment variables.
 
 <hr>
 
-## Manual Deployment Steps
+## Advanced: Manual deployment
 
 <details>
-<summary> Manual Deployment Steps</summary>
+<summary>How to manually deploy 1Password SCIM Bridge</summary>
 
-### Manual Instructions
+You can also manually deploy the SCIM bridge with [Docker Swarm](#docker-swarm-manual-deployment) or [Docker Compose](#docker-compose-manual-deployment).
 
-These steps can be used for manual deployments using either Docker Swarm or Docker Compose.
+### Clone `scim-examples`
 
-### Cloning `scim-examples`
-
-As seen in [PREPARATION.md](/PREPARATION.md), you’ll need to clone this repository using `git` into a directory of your choice.
+You’ll need to clone this repository using `git` into a directory of your choice:
 
 ```bash
 git clone https://github.com/1Password/scim-examples.git
@@ -77,7 +83,7 @@ You can then browse to the Docker directory:
 cd scim-examples/docker/
 ```
 
-### Docker Swarm
+### Docker Swarm manual deployment
 
 To use Docker Swarm to deploy, you’ll want to have run `docker swarm init` or `docker swarm join` on the target node and completed that portion of the setup. Refer to [Docker’s documentation for more details](https://docs.docker.com/engine/swarm/swarm-tutorial/create-swarm/).
 
@@ -85,12 +91,11 @@ Unlike Docker Compose, you won’t need to set the `OP_SESSION` variable in `sci
 
 You’ll still need to set the environment variable `OP_TLS_DOMAIN` within `scim.env` to the URL you selected during [PREPARATION.md](/PREPARATION.md). Open that in your preferred text editor and change `OP_TLS_DOMAIN` to that domain name.
 
-### Information for Google Workspace as your Identity Provider (IdP)
-If you’re using Google Workspace as your identity provider for provisioning, you will need to set up some additional secrets to use this functionality as detailed below. Refer to our complete Google Workspace provisioning documentation for more complete information, https://support.1password.com/scim-google-workspace. 
+#### If you use Google Workspace as your identity provider
 
-First, edit the file located at `scim-examples/beta/workspace-settings.json` and enter in the appropriate details.
+If you use Google Workspace as your identity provider, you'll need to set up some additional secrets.
 
-Next, to create the necessary secrets for Google Workspace:
+First, edit the file located at `scim-examples/beta/workspace-settings.json` and enter in the appropriate details. Then create the necessary secrets for Google Workspace:
 
 ```bash
 # this is the path of the JSON file you edited in the paragraph above
@@ -101,7 +106,7 @@ cat /path/to/<google keyfile>.json | docker secret create workspace-credentials 
 ```
 <br>
 
-Once that’s set up, you can do the following (using the alternate command for the stack deployment if using Google Workspace as your Identity Provider):
+After that’s set up, you can do the following (using the alternate command for the stack deployment if using Google Workspace as your identity provider):
 
 ```bash
 # enter the swarm directory
@@ -121,7 +126,9 @@ Alternate Google Workspace stack deployment command:
 docker stack deploy -c docker-compose.yml -c gw-docker-compose.yml op-scim
 ```
 
-### Docker Compose
+Learn more about [connecting Google Workspace to 1Password SCIM Bridge](https://support.1password.com/scim-google-workspace/).
+
+### Docker Compose manual deployment
 
 When using Docker Compose, you can create the environment variable `OP_SESSION` manually by doing the following:
 
@@ -135,13 +142,13 @@ sed -i '' -e "s/OP_SESSION=$/OP_SESSION=$SESSION/" ./scim.env
 
 You’ll also need to set the environment variable `OP_TLS_DOMAIN` within `scim.env` to the URL you selected during [PREPARATION.md](/PREPARATION.md). Open that in your preferred text editor and change `OP_TLS_DOMAIN` to that domain name.
 
-Ensure that `OP_TLS_DOMAIN` is set to the domain name you’ve set up before continuing.
+Ensure that `OP_TLS_DOMAIN` is set to the domain name you’ve set up before you continue.
 
-### Information for Google Workspace as your Identity Provider (IdP)
-If you’re using Google Workspace as your identity provider for provisioning, you will need to set up some additional secrets to use this functionality as detailed below. Refer to our complete Google Workspace provisioning documentation for more complete information, https://support.1password.com/scim-google-workspace. 
+#### If you use Google Workspace as your identity provider
 
-First, edit the file located at `scim-examples/beta/workspace-settings.json` and enter in the appropriate details.
-Next, to create the necessary environment variables for Google Workspace:
+If you use Google Workspace as your identity provider, you'll need to set up some additional secrets.
+
+First, edit the file located at `scim-examples/beta/workspace-settings.json` and enter in the appropriate details. Then create the necessary secrets for Google Workspace:
 
 ```bash
 # enter the compose directory (if you aren’t already in it)
@@ -165,12 +172,15 @@ docker-compose -f docker-compose.yml up --build -d
 # (optional) view the container logs
 docker-compose -f docker-compose.yml logs -f
 ```
+Learn more about [connecting Google Workspace to 1Password SCIM Bridge](https://support.1password.com/scim-google-workspace/).
+
 </details>
+
 <hr>
 
-## Testing
+## Step 4: Test the bridge
 
-To test if your SCIM bridge came online, you can browse to the public IP address of your SCIM bridge’s Docker Host with a web browser, and input your Bearer Token into the provided Bearer Token field.
+To test if your SCIM bridge came online, open the public IP address of the Docker Host for your bridge in a web browser. You should be able to enter your bearer token to verify that your SCIM bridge is up and running.
 
 You can also use the following `curl` command to test the SCIM bridge from the command line:
 
@@ -178,13 +188,11 @@ You can also use the following `curl` command to test the SCIM bridge from the c
 curl --header "Authorization: Bearer TOKEN_GOES_HERE" https://<domain>/scim/Users
 ```
 
-## Upgrading
+## Update 1Password SCIM Bridge
 
-Upgrading the SCIM bridge should be relatively simple.
+To upgrade the SCIM bridge, `git pull` the latest versions from this repository. Then re-apply the `.yml` file.
 
-First, you `git pull` the latest versions from this repository. Then, you re-apply the `.yml` file.
-
-### For Docker Swarm Upgrades:
+### Docker Swarm
 
 ```bash
 cd scim-examples/
@@ -195,7 +203,7 @@ cd docker/swarm/
 docker stack deploy -c docker-compose.yml op-scim
 ```
 
-### For Docker Compose Upgrades:
+### Docker Compose
 
 ```bash
 cd scim-examples/
@@ -205,7 +213,7 @@ cd docker/compose/
 docker-compose -f docker-compose.yml up --build -d
 ```
 
-This should seamlessly upgrade your SCIM bridge to the latest version. The process takes about 2-3 minutes for the Bridge to come back online.
+After 2-3 minutes, the bridge should come back online with the latest version.
 
 #### October 2020 Update
 
@@ -217,7 +225,7 @@ With the release of SCIM bridge 2.0, the environment variables `OP_REDIS_HOST` a
 
 Unless you have customized your Redis deployment, there shouldn’t be any action you need to take.
 
-## Advanced `scim.env` file options
+## Advanced `scim.env` options
 
 The following options are available for advanced or custom deployments. Unless you have a specific need, these options do not need to be modified.
 
@@ -229,6 +237,6 @@ The following options are available for advanced or custom deployments. Unless y
 * `OP_TRACE` - can be set to `1` to enable Trace-level log output. Useful for debugging Let’s Encrypt integration errors.
 * `OP_PING_SERVER` - can be set to `1` to enable an optional `/ping` endpoint on port `80`. Useful for health checks. Disabled if `OP_TLS_DOMAIN` is unset and TLS is not utilized.
 
-## Generating `scim.env` file on Windows
+## Generate `scim.env` on Windows
 
 On Windows, you can refer to the [./docker/compose/generate-env.bat](generate-env.bat) file on how to generate the `base64` string for `OP_SESSION`.

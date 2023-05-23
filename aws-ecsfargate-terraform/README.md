@@ -9,9 +9,9 @@ Note that due to the highly advanced and customizable nature of Amazon Web Servi
 - [Before you begin](#before-you-begin)
 - [Sign in with `aws`](#sign-in-with-aws)
 - [Step 1: Configure the bridge](#step-1-configure-the-bridge)
-- [Step 2: Deploy the bridge](#step-2-deploy-the-bridge)
+- [Step 2: Deploy 1Password SCIM Bridge](#step-2-deploy-1password-scim-bridge)
 - [Step 3: Connect your identity provider](#step-3-connect-your-identity-provider)
-- [Update the bridge](#update-the-bridge)
+- [Update 1Password SCIM Bridge](#update-1password-scim-bridge)
 - [Troubleshooting](#troubleshooting)
 
 ## Before you begin
@@ -154,7 +154,7 @@ tags = {
 
 </details>
 
-## Step 2: Deploy the bridge
+## Step 2: Deploy 1Password SCIM Bridge
 
 Run the following commands to create the necessary configuration settings:
 
@@ -177,7 +177,7 @@ To finish setting up automated user provisioning, [connect your identity provide
 
 ---
 
-## Update the bridge
+## Update 1Password SCIM Bridge
 
 To update the SCIM bridge:
 
@@ -260,4 +260,4 @@ If you want to view the logs for your SCIM bridge within AWS, go to **Cloudwatch
 
 If you open your SCIM bridge domain in a browser and see a `Sign In With 1Password` button, the `scimsession` file was not properly installed. Due to the nature of the ECS deployment, **this “sign in” option cannot be used** to complete the setup of your SCIM bridge.
 
-To fix this, [copy the `scimsession` file](#copy-`scimsession`-file) again and restart your `op_scim_bridge` task to apply the changes.
+To fix this, [copy the `scimsession` file](#copy-`scimsession`-file) again and restart your `op_scim_bridge` task to apply the changes.
