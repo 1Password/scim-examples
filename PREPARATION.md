@@ -1,14 +1,18 @@
-# Preparing to deploy 1Password SCIM Bridge
+# Prepare to deploy 1Password SCIM Bridge
 
 *Learn how to prepare your environment and 1Password account to integrate with 1Password SCIM Bridge.*
 
 ## Overview
 
-1Password SCIM Bridge uses the [SCIM protocol](http://www.simplecloud.info/) to act as an intermediary between your identity provider, such as Okta or Azure Directory, and your 1Password instance. It allows you to centralize user management to your identity provider so you can automatically provision and manage users and groups in 1Password based on assignments in your identity provider.
+1Password SCIM Bridge uses [System for Cross-domain Identity Management](https://en.wikipedia.org/wiki/System_for_Cross-domain_Identity_Management) (SCIM) to act as an intermediary between your identity provider, such as Okta or Azure Directory, and your 1Password instance. It allows you to centralize user management to your identity provider so you can automatically provision and manage users and groups in 1Password based on assignments in your identity provider.
+
+> **Note**
+> 
+> In code and the command line, "1Password" is often referred to as `op`. For example, `op-scim`.
 
 ### Technical components
 
-For general deployment, the SCIM bridge requires three components:
+For general deployment, the SCIM bridge requires these components:
 
 * the `op-scim` service
 * a [redis](https://redis.io/) cache
@@ -16,13 +20,13 @@ For general deployment, the SCIM bridge requires three components:
 
 ### DNS record
 
-You'll need to be able to create a DNS record with the SCIM bridge domain name you want to use. However, you'll need to have the IP address of the host, so the bridge will need to be deployed first, unless you have a static IP already assigned. Follow the steps in the deployment guide you use for guidelines on when to finish setting up your DNS record.
+You'll need to be able to create a DNS record with the SCIM bridge domain name you want to use. However, you'll need to have the IP address of the host, so the bridge will need to be deployed first, unless you have a static IP already assigned. Follow the steps in the deployment example for guidelines on when to finish setting up your DNS record.
 
-### TLS certificates
+### TLS certificate
 
-Identity providers typically require a TLS certificate when communicating with the SCIM bridge. By default, TLS certificates are handled through a complimentary [Let's Encrypt](https://letsencrypt.org/) service integration, which automatically generates and renews a certificate based on the domain you're using.
+Identity providers typically require a TLS certificate when communicating with the SCIM bridge. By default, TLS certificates are handled by a complimentary [Let's Encrypt](https://letsencrypt.org/) service integration, which automatically generates and renews a certificate based on the domain you're using.
 
-There are two ways you can use the Let's Encrypt service to issue a certificate for your SCIM bridge:
+If you require TLS certificate management, there are two ways you can use the Let's Encrypt service to issue a certificate for your SCIM bridge:
 
 #### TLS-ALPN-01
 
@@ -48,7 +52,8 @@ To use this method, you'll provide secrets for the DNS service you choose during
 
 There are a few things to consider before you deploy 1Password SCIM Bridge:
 
-* After you turn on provisioning, your identity provider will  become the _authoritative source_ of user and group information for your 1Password account. You'll need to change the _display name_ and _account status_ of users in your identity provider; it's not currently possible to do this on 1Password.com when provisioning is turned on. You can still [recover accounts](https://support.1password.com/recovery/) for users who can't sign in.
+* You'll be provided with a bearer token, which contains the credentials for the automated provisioning integration. This integration will create, confirm, and suspend users, and create and manage access to groups. These secrets are required to connect to the 1Password service. Learn more [about 1Password SCIM Bridge security](https://support.1password.com/scim-security/).
+* After you turn on provisioning, your identity provider will become the _authoritative source_ of user and group information for your 1Password account. You'll need to change the _display name_ and _account status_ of users in your identity provider; it's not currently possible to do this on 1Password.com when provisioning is turned on. You can still [recover accounts](https://support.1password.com/recovery/) for users who can't sign in.
 * Do not attempt to perform a provisioning sync until the setup has been completed.
 * You should only have one instance of 1Password SCIM Bridge running at a time. The SCIM bridge is not considered a high-availability service and running multiple SCIM bridges is not supported.
 * 1Password SCIM Bridge Version 1.6.0 and newer allow you to enforce email address changes through your identity provider. When you do, users will be required to confirm email changes the next time they sign in to 1Password since their email address is used when generating the encryption keys for their account.
@@ -67,29 +72,8 @@ git clone https://github.com/1Password/scim-examples.git
 
 Alternatively, you can download a .zip of the repo by choosing Code > Download ZIP.
 
-## Prepare your 1Password Account
+## Prepare your 1Password account
 
-Sign in to your 1Password account on 1Password.com and click [Integrations](https://start.1password.com/integrations/directory/) in the sidebar, then choose your identity provider and follow the onscreen instructions. Before you begin, you can also learn more about the steps to [automate provisioning with 1Password Business using SCIM](https://support.1password.com/scim/).
+To begin setting up automated provisioning, sign in to your 1Password account on 1Password.com and click [Integrations](https://start.1password.com/integrations/directory/) in the sidebar, then choose your identity provider and follow the onscreen instructions. Deploy your SCIM bridge using an example listed in the [README](/README.md#before-you-begin) for this repo.
 
-### Security (IMPORTANT)
-
-All SCIM requests must be secured via TLS using an API gateway (self-configured web server) or the provided load balancer.
-
-You'll be provided with two secrets:
-
-* a `scimsession` file
-* a bearer token
-
-The `scimsession` is created for you during setup and it contains the credentials for the automated provisioning integration. This integration will create, confirm, and suspend users, and create and manage access to groups. These secrets are required to connect to the 1Password service.
-
-**Do not share these secrets!**
-
-The bearer token must be provided to your Identity Provider, but beyond that it should be kept safe and **not shared with anyone else.** The `scimsession` file should only be shared with the SCIM bridge itself.
-
-These secrets can be used to authenticate as the automated provisioning integration. It is a major security concern if they're not kept safe.
-
-Learn more [about 1Password SCIM Bridge security](https://support.1password.com/scim-security/).
-
-### If you have a Provision Manager
-
-If you were previously using a Provision Manager with the SCIM bridge integration, learn how to [upgrade your provisioning integration](https://support.1password.com/cs/upgrade-provisioning-integration/).
+Learn more [automating provisioning with 1Password using SCIM](https://support.1password.com/scim/).

@@ -1,4 +1,4 @@
-# Deploying the 1Password SCIM bridge on Kubernetes
+# Deploy 1Password SCIM Bridge on Kubernetes
 
 This example explains how to deploy the 1Password SCIM bridge on a Kubernetes cluster. It assumes your Kubernetes cluster supports "load balancer" services.
 
@@ -190,7 +190,7 @@ Our current default resource requirements (defined in [op-scim-deployment](https
 
 <details>
   <summary>Default</summary>
-  
+
   ```yaml
   requests:
     cpu: 125m
@@ -206,7 +206,7 @@ Note that these are the recommended `requests` and `limits` values for both the 
 
 <details>
   <summary>High Volume Deployment</summary>
- 
+
   ```yaml
   requests:
     cpu: 500m
@@ -220,7 +220,7 @@ Note that these are the recommended `requests` and `limits` values for both the 
 
 <details>
   <summary>Very High Volume Deployment</summary>
-  
+
   ```yaml
   requests:
     cpu: 1000m
