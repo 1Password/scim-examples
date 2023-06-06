@@ -10,6 +10,7 @@
 - [Step 3: Create a DNS record](#step-3-create-a-dns-record)
 - [Step 4: Configure Let's Encrypt](#step-4-configure-lets-encrypt)
 - [Step 5: Test the SCIM bridge](#step-5-test-the-scim-bridge)
+- [Step 6: Connect your identity provider](#step-6-connect-your-identity-provider)
 - [Update your SCIM Bridge](#update-your-scim-bridge)
 - [Appendix: Resource recommendations](#appendix-resource-recommendations)
 - [Appendix: Customize your deployment](#appendix-customize-your-deployment)
@@ -114,6 +115,10 @@ curl --header "Authorization: Bearer TOKEN_GOES_HERE" https://<domain>/scim/User
 ```
 
 After the bridge tests successfully, you can [connect your identity provider](https://support.1password.com/scim/#step-3-connect-your-identity-provider).
+
+## Step 6: Connect your identity provider
+
+To finish setting up automated user provisioning, [connect your identity provider to the SCIM bridge](https://support.1password.com/scim/#step-3-connect-your-identity-provider).
 
 ## Update your SCIM bridge
 
@@ -297,7 +302,7 @@ kubectl delete \
   -f redis-service.yaml
 ```
 
-Edit the value of the `OP_REDIS_URL` environment variable in [`op-scim-config.yaml`](./op-scim-config.yaml). Or set it directly if you have already deployed the bridge:
+Edit the value of the `OP_REDIS_URL` environment variable in [`op-scim-config.yaml`](./op-scim-config.yaml). Or set it directly if you have already deployed the bridge:
 
 ```bash
 kubectl set env deploy/op-scim-bridge OP_REDIS_URL="redis[s]://server:port"

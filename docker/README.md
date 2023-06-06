@@ -8,7 +8,8 @@
 - [Step 1: Choose a deployment option](#step-1-choose-a-deployment-option)
 - [Step 2: Install Docker tools](#step-2-install-docker-tools)
 - [Step 3: Deploy 1Password SCIM Bridge](#step-3-deploy-1password-scim-bridge)
-- [Step 4: Test the bridge](#step-4-test-the-bridge)
+- [Step 4: Test the SCIM bridge](#step-4-test-the-scim-bridge)
+- [Step 5: Connect your identity provider](#step-5-connect-your-identity-provider)
 - [Update your SCIM Bridge](#update-your-scim-bridge)
 - [Appendix: Advanced `scim.env` options](#appendix-advanced-scimenv-options)
 - [Appendix: Generate `scim.env` on Windows](#appendix-generate-scimenv-on-windows)
@@ -49,8 +50,6 @@ After you've created a swarm, log in with `docker swarm join`. Then use the prov
 The logs from the SCIM bridge and Redis containers will be streamed to your machine. If everything seems to have deployed successfully, press Ctrl+C to exit, and the containers will remain running on the remote machine.
 
 At this point, you should set a DNS record routing the domain name to the IP address of the `op-scim` container.
-
-You can now [connect your identity provider](https://support.1password.com/scim/#step-3-connect-your-identity-provider).
 
 ### Docker Compose
 
@@ -175,7 +174,8 @@ Learn more about [connecting Google Workspace to 1Password SCIM Bridge](https://
 </details>
 
 <hr>
-## Step 4: Test the bridge
+
+## Step 4: Test the SCIM bridge
 
 To test if your SCIM bridge came online, open the public IP address of the Docker Host for your bridge in a web browser. You should be able to enter your bearer token to verify that your SCIM bridge is up and running.
 
@@ -184,6 +184,10 @@ You can also use the following `curl` command to test the SCIM bridge from the c
 ```bash
 curl --header "Authorization: Bearer TOKEN_GOES_HERE" https://<domain>/scim/Users
 ```
+
+## Step 5: Connect your identity provider
+
+To finish setting up automated user provisioning, [connect your identity provider to the SCIM bridge](https://support.1password.com/scim/#step-3-connect-your-identity-provider).
 
 ## Update your SCIM Bridge
 
