@@ -9,7 +9,6 @@
 #### Table of contents
 
 - [Before you begin](#before-you-begin)
-- [Sign in with `aws`](#sign-in-with-aws)
 - [Step 1: Configure the bridge](#step-1-configure-the-bridge)
 - [Step 2: Deploy 1Password SCIM Bridge](#step-2-deploy-1password-scim-bridge)
 - [Step 3: Connect your identity provider](#step-3-connect-your-identity-provider)
