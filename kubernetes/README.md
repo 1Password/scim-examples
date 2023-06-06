@@ -5,7 +5,7 @@
 #### Table of contents
 
 - [Before you begin](#before-you-begin)
-- [Step 1: Choose a deployment option](#step-1-choose-a-deployment-option)
+- [Step 1: Create the `scimsession` Kubenetes Secret](#step-1-create-the-scimsession-kubernetes-secret)
 - [Step 2: Deploy 1Password SCIM Bridge to the Kubernetes cluster](#step-2-deploy-1password-scim-bridge-to-the-kubernetes-cluster)
 - [Step 3: Create a DNS record](#step-3-create-a-dns-record)
 - [Step 4: Configure Let's Encrypt](#step-4-configure-lets-encrypt)
