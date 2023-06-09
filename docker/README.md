@@ -218,16 +218,6 @@ docker-compose -f docker-compose.yml up --build -d
 
 After 2-3 minutes, the bridge should come back online with the latest version.
 
-#### October 2020 Update
-
-As of October 2020, if you’re upgrading from a previous version of the repository, ensure that you’ve reconfigured your environment variables within `scim.env` before upgrading.
-
-#### April 2021 Update (SCIM bridge 2.0)
-
-With the release of SCIM bridge 2.0, the environment variables `OP_REDIS_HOST` and `OP_REDIS_PORT` have been deprecated in favour of `OP_REDIS_URL`, which takes a full `redis://` or `rediss://` (for TLS) Redis URL. For example: `OP_REDIS_URL=redis://redis:6379`
-
-Unless you have customized your Redis deployment, there shouldn’t be any action you need to take.
-
 ## Appendix: Advanced `scim.env` options
 
 The following options are available for advanced or custom deployments. Unless you have a specific need, these options do not need to be modified.

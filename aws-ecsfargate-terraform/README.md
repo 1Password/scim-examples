@@ -236,16 +236,6 @@ This recommendation is 4x the CPU and 2x the memory of the default values.
 
 If you need help with the configuration, [contact 1Password Support](https://support.1password.com/contact/).
 
-### April 2022 changes
-
-In April 2022, the Redis deployment was updated to require a maximum of 512 MB of memory. This included an increase in required memory for the `op-scim-bridge` task definition to 1024 MB.
-
-The Redis dataset maximum is set to 256 MB and an eviction policy will determine how keys are evicted when the maximum data set size is approached. This should prevent Redis from consuming large amounts of memory and eventually running out of available memory. 1Password SCIM Bridge is also restarted in instances where Redis runs out of memory.
-
-### December 2021 changes
-
-As of December 2021, [the ALB health check path has changed](https://github.com/1Password/scim-examples/pull/162). If you are updating from a version earlier than 2.3.0, edit your `terraform.tf` file [to use `/app` instead of `/`](https://github.com/1Password/scim-examples/pull/162/commits/a876c46b9812e96f65e42e0441a772566ca32176#) for the health check before reapplying your Terraform settings.
-
 ## Troubleshooting
 
 ### Logs
