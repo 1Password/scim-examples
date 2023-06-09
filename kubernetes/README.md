@@ -6,7 +6,7 @@
 >
 > If you use Azure Kubernetes Service, learn how to [deploy the SCIM bridge there](https://support.1password.com/scim-deploy-azure/).
 
-#### Table of contents
+**Table of contents:**
 
 - [Before you begin](#before-you-begin)
 - [Step 1: Create the `scimsession` Kubenetes Secret](#step-1-create-the-scimsession-kubernetes-secret)

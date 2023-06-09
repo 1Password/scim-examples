@@ -2,7 +2,7 @@
 
 *Learn how to deploy 1Password SCIM Bridge using Docker Compose or Docker Swarm.*
 
-#### Table of contents
+**Table of contents:**
 
 - [Before you begin](#before-you-begin)
 - [Step 1: Choose a deployment option](#step-1-choose-a-deployment-option)

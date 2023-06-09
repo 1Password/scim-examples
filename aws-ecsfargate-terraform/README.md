@@ -6,7 +6,7 @@
 > 
 > Due to the highly advanced and customizable nature of Amazon Web Services, this is only a suggested starting point. You can modify it to fit your existing infrastructure.
 
-#### Table of contents
+**Table of contents:**
 
 - [Before you begin](#before-you-begin)
 - [Step 1: Configure the bridge](#step-1-configure-the-bridge)
