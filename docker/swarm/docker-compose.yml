@@ -18,11 +18,11 @@ services:
         uid: "999"
         gid: "999"
         mode: 0440
-      - source: dns01-config
-        target: dns01-config
-        uid: "999"
-        gid: "999"
-        mode: 0440
+      # - source: dns01-config
+      #   target: dns01-config
+      #   uid: "999"
+      #   gid: "999"
+      #   mode: 0440
     env_file: scim.env
     depends_on: [ 'redis' ]
   redis:
