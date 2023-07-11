@@ -88,7 +88,7 @@ Resources:
           Essential: true
           DependsOn:
             - ContainerName: redis
-              Condition: START
+              Condition: HEALTHY
           Environment:
             - Name: OP_REDIS_URL
               Value: 'redis://localhost:6379'
@@ -113,6 +113,10 @@ Resources:
             - ContainerPort: 6379
               HostPort: 6379
               Protocol: tcp
+          HealthCheck:
+            Command:
+                - "CMD-SHELL"
+                - "redis-cli ping | grep PONG"
   LogGroup:
     Type: 'AWS::Logs::LogGroup'
     Properties: {}
