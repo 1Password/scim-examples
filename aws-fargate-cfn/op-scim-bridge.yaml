@@ -12,14 +12,14 @@ Metadata:
           default: ""
         Parameters: 
           - VPCCIDR
-          - Route53HostedZone
+          - Route53HostedZoneID
           - DomainName
           - SCIMBridgeVersion
           - scimsession
     ParameterLabels: 
       VPCCIDR: 
         default: "VPC CIDR"
-      Route53HostedZone:
+      Route53HostedZoneID:
         default: "Route 53 hosted zone"
       DomainName:
         default: "1Password SCIM bridge domain name"
@@ -30,7 +30,7 @@ Parameters:
     Type: String
     Default: 10.0.0.0/16
     Description: A CIDR block for the VPC to be created
-  Route53HostedZone:
+  Route53HostedZoneID:
     Type: 'AWS::Route53::HostedZone::Id'
     Description: >-
       The Route 53 hosted zone in which to create DNS records for ACM validation and the ALB
@@ -258,7 +258,7 @@ Resources:
   DNSRecord:
     Type: 'AWS::Route53::RecordSet'
     Properties:
-      HostedZoneId: !Ref Route53HostedZone
+      HostedZoneId: !Ref Route53HostedZoneID
       Comment: DNS record pointing to load balancer for 1Password SCIM bridge
       Name: !Ref DomainName
       Type: A
@@ -272,7 +272,7 @@ Resources:
       ValidationMethod: DNS
       DomainValidationOptions:
         - DomainName: !Ref DNSRecord
-          HostedZoneId: !Ref Route53HostedZone
+          HostedZoneId: !Ref Route53HostedZoneID
   TaskRole:
     Type: 'AWS::IAM::Role'
     Properties:
