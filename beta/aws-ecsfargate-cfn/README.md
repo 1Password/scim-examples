@@ -138,55 +138,59 @@ A clickable link of the URL for your SCIM bridge is available in the Outputs tab
 ```sh
 curl --header "Authorization: Bearer mF_9.B5f-4.1JqM" https://scim.example.com/Users
 ```
+
 Replace `mF_9.B5f-4.1JqM` with your bearer token and `scim.example.com` with the domain name of your SCIM bridge.
 
-*Example response:*
+<details>
+<summary>Example JSON response</summary>
 
-```json
-{
-  "Resources": [
-    {
-      "active": true,
-      "displayName": "Eggs Ample",
-      "emails": [
-        {
-          "primary": true,
-          "type": "",
-          "value": "eggs.ample@example.com"
-        }
-      ],
-      "externalId": "",
-      "groups": [
-        {
-          "value": "f7eqriu7ht27mq5zmm63gf2dhq",
-          "ref": "https://scim.example.com/Groups/f7eqriu7ht27mq5zmm63gf2dhq"
-        }
-      ],
-      "id": "FECPUMYBHZB2PB6K4WKM4Q2HAU",
-      "meta": {
-        "created": "",
-        "lastModified": "",
-        "location": "",
-        "resourceType": "User",
-        "version": ""
-      },
-      "name": {
-        "familyName": "Ample",
-        "formatted": "Eggs Ample",
-        "givenName": "Ample",
-        "honorificPrefix": "",
-        "honorificSuffix": "",
-        "middleName": ""
-      },
-      "schemas": [
-        "urn:ietf:params:scim:schemas:core:2.0:User"
-      ],
-      "userName": "eggs.ample@example.com"
-    },
-    …
-  ]
-}
-```
+> ```json
+> {
+>   "Resources": [
+>     {
+>       "active": true,
+>       "displayName": "Eggs Ample",
+>       "emails": [
+>         {
+>           "primary": true,
+>           "type": "",
+>           "value": "eggs.ample@example.com"
+>         }
+>       ],
+>       "externalId": "",
+>       "groups": [
+>         {
+>           "value": "f7eqriu7ht27mq5zmm63gf2dhq",
+>           "ref": "https://scim.example.com/Groups/f7eqriu7ht27mq5zmm63gf2dhq"
+>         }
+>       ],
+>       "id": "FECPUMYBHZB2PB6K4WKM4Q2HAU",
+>       "meta": {
+>         "created": "",
+>         "lastModified": "",
+>         "location": "",
+>         "resourceType": "User",
+>         "version": ""
+>       },
+>       "name": {
+>         "familyName": "Ample",
+>         "formatted": "Eggs Ample",
+>         "givenName": "Ample",
+>         "honorificPrefix": "",
+>         "honorificSuffix": "",
+>         "middleName": ""
+>       },
+>       "schemas": [
+>         "urn:ietf:params:scim:schemas:core:2.0:User"
+>       ],
+>       "userName": "eggs.ample@example.com"
+>     },
+>     ...
+>   ]
+> }
+> ```
+
+</details>
 
 ## Connect your identity provider
 
@@ -211,5 +215,6 @@ aws cloudformation deploy \
 > **Note**
 >
 > Our [1Password SCIM Bridge release notes page](https://app-updates.agilebits.com/product_history/SCIM) does not include `v` in each release version, but this character must be included in the value of the `SCIMBridgeVersion` parameter to match the corresponding [image tag in Docker Hub](https://hub.docker.com/r/1password/scim/tags):
+>
 > - ❌ `2.8.1`
 > - ✅ `v2.8.1`
