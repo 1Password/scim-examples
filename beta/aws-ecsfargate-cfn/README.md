@@ -44,10 +44,17 @@ This template is a working example to be used as a base for your SCIM bridge dep
 
 Before deploying 1Password SCIM bridge, consult the [Preparation Guide](/PREPARATION.md) in this repository. Since this CloudFormation template will create all necessary resources, you do not need to seperately create a DNS record for your SCIM bridge, nor use its certificate manager component to create and manage a TLS certificate.
 
-1. Clone this repository or download [`op-scim-bridge.yaml`](./op-scim-bridge.yaml) to a working directory on your machine.
+1. Clone this repository and switch to this directory:
+
+   ```sh
+   git clone https://github.com/1Password/scim-examples.git
+   cd ./scim-examples/beta/aws-ecsfargate-cfn
+   ```
+
+   or, download the template file [`op-scim-bridge.yaml`](./op-scim-bridge.yaml) to a working directory on your computer.
 2. Follow the steps in [Automate provisioning in 1Password Business using SCIM](https://support.1password.com/scim/#step-1-set-up-and-deploy-1password-scim-bridge) to generate credentials for your SCIM bridge.
 3. Save the `scimession` credentials file and the associated bearer token as items in your 1Password account.
-4. Download the `scimsession` file to a working directory on your computer to use for the next steps.
+4. Download the `scimsession` file to the same working directory.
 
 ## Deploy 1Password SCIM bridge
 
