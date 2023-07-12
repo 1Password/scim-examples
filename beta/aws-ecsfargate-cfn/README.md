@@ -113,7 +113,7 @@ aws cloudformation deploy \
 6. Ensure your `scimsession` file is located in the working directory, or replace the path specified in the subshell command (for example, `scimsession=$(cat path/to/scimsession.filename)`).
    > **Note**
    >
-   > 💻 If you saved your `scimsession` file as an item in your 1Password account, you can [use 1Password CLI to pass this value](https://developer.1password.com/docs/cli/secrets-scripts#option-2-use-op-read-to-read-secrets) (for example, `scimsession=$(op read "op://Private/bearer token/credential")`)
+   > 💻 If you saved your `scimsession` file as an item in your 1Password account, you can [use 1Password CLI to pass this value](https://developer.1password.com/docs/cli/secrets-scripts#option-2-use-op-read-to-read-secrets) (for example, `scimsession=$(op read "op://Private/scimsession file/scimsession")`)
 7. Optionally, uncomment the appropriate lines and add tags as key-value pairs to apply to all supported resources in the stack.
 
 You should see:
