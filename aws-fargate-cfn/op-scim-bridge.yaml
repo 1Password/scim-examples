@@ -102,7 +102,7 @@ Resources:
             Options:
               awslogs-region: !Ref 'AWS::Region'
               awslogs-group: !Ref LogGroup
-              awslogs-stream-prefix: ecs
+              awslogs-stream-prefix: ecs-scim
         - Name: redis
           Image: 'redis:latest'
           Environment:
