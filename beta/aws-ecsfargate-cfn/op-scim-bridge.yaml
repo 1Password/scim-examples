@@ -90,8 +90,6 @@ Resources:
           Environment:
             - Name: OP_REDIS_URL
               Value: 'redis://localhost:6379'
-            - Name: OP_DEBUG
-              Value: 1
           Secrets:
             - Name: OP_SESSION
               ValueFrom: !Ref scimsessionSecret
