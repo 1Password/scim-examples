@@ -117,6 +117,12 @@ Resources:
             Command:
                 - "CMD-SHELL"
                 - "redis-cli ping | grep PONG"
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-region: !Ref 'AWS::Region'
+              awslogs-group: !Ref LogGroup
+              awslogs-stream-prefix: ecs-redis
   LogGroup:
     Type: 'AWS::Logs::LogGroup'
     Properties: {}
