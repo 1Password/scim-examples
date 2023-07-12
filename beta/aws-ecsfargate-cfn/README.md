@@ -131,10 +131,61 @@ More detailed information is available in the CloudFormation console. A success 
 
 ## Test your SCIM bridge
 
-A clickable link of the URL for your SCIM bridge is available in the Outputs tab (for example, <https://scim.example.com/>). You can sign in to this URL with the bearer token for your SCIM bridge to test, view status information, or retrieve logs. You can also send aan authenticated request to the SCIM bridge from the command line, for example:
+A clickable link of the URL for your SCIM bridge is available in the Outputs tab of the CloudFormation console (for example, <https://scim.example.com/>). You can sign in to this URL with the bearer token for your SCIM bridge to test, view status information, or retrieve logs. You can also send an authenticated SCIM API request to your SCIM bridge from the command line.
+
+*Example command:*
 
 ```sh
+curl --header "Authorization: Bearer mF_9.B5f-4.1JqM" https://scim.example.com/Users
+```
+Replace `mF_9.B5f-4.1JqM` with your bearer token and `scim.example.com` with the domain name of your SCIM bridge.
 
+*Example response:*
+
+```json
+{
+  "Resources": [
+    {
+      "active": true,
+      "displayName": "Eggs Ample",
+      "emails": [
+        {
+          "primary": true,
+          "type": "",
+          "value": "eggs.ample@example.com"
+        }
+      ],
+      "externalId": "",
+      "groups": [
+        {
+          "value": "f7eqriu7ht27mq5zmm63gf2dhq",
+          "ref": "https://scim.example.com/Groups/f7eqriu7ht27mq5zmm63gf2dhq"
+        }
+      ],
+      "id": "FECPUMYBHZB2PB6K4WKM4Q2HAU",
+      "meta": {
+        "created": "",
+        "lastModified": "",
+        "location": "",
+        "resourceType": "User",
+        "version": ""
+      },
+      "name": {
+        "familyName": "Ample",
+        "formatted": "Eggs Ample",
+        "givenName": "Ample",
+        "honorificPrefix": "",
+        "honorificSuffix": "",
+        "middleName": ""
+      },
+      "schemas": [
+        "urn:ietf:params:scim:schemas:core:2.0:User"
+      ],
+      "userName": "eggs.ample@example.com"
+    },
+    …
+  ]
+}
 ```
 
 ## Connect your identity provider
