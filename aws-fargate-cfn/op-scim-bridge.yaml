@@ -51,9 +51,7 @@ Parameters:
     Type: String
     Default: 'v2.8.1'
     Description: >-
-      The tag of the 1Password SCIM bridge image to pull from Docker Hub (see
-      https://app-updates.agilebits.com/product_history/SCIM for detailed
-      release notes)
+      The tag of the 1Password SCIM bridge image to pull from Docker Hub
 Resources:
   scimsessionSecret:
     Type: 'AWS::SecretsManager::Secret'
