@@ -395,7 +395,7 @@ Resources:
       SubnetId: !Ref PublicSubnet2
       RouteTableId: !Ref RouteTable
 Outputs:
-  ScimBridgeUrl:
+  SCIMBridgeURL:
     Description: >-
       The URL for your SCIM bridge. Use this and your bearer token to connect
       your identity provider to 1Password.
