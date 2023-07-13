@@ -175,7 +175,7 @@ Replace `mF_9.B5f-4.1JqM` with your bearer token and `scim.example.com` with the
 >       "name": {
 >         "familyName": "Ample",
 >         "formatted": "Eggs Ample",
->         "givenName": "Ample",
+>         "givenName": "Eggs",
 >         "honorificPrefix": "",
 >         "honorificSuffix": "",
 >         "middleName": ""
