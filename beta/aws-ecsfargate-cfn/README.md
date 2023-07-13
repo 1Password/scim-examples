@@ -108,7 +108,7 @@ aws cloudformation deploy \
    >
    > 📄 We use `op-scim-bridge` as a shorthand for 1Password SCIM Bridge throughout our examples and supporting documentation, but the choice is arbitrary. CloudFormation will use the stack name (or a truncated version where needed) as a prefix when naming the created AWS resources.
 3. Leave the default value for the VPC CIDR range (`VPCCIDR`). If you require something different for your environment, you can uncomment this line and replace the CIDR range with your own value.
-4. Replace `Z2ABCDEF123456` above with the ID of the hosted zone if using AWS CLI.
+4. Replace `Z2ABCDEF123456` above with the ID of the Route 53 hosted zone in which to create DNS records.
 5. Replace `scim.example.com` with a domain name for your SCIM bridge that is in the domain of this hosted zone.
 6. Ensure your `scimsession` file is located in the working directory, or replace the path specified in the subshell command (for example, `scimsession=$(cat path/to/scimsession.filename)`).
    > **Note**
