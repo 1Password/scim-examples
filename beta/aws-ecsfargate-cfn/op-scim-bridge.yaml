@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: >-
-  Deploys 1Password SCIM bridge using Amazon ECS and AWS Fargate. Provisions and
+  Deploys 1Password SCIM Bridge using Amazon ECS and AWS Fargate. Provisions and
   configures a VPC, 2 public subnets, an internet gateway, a route table, an
   ALB, an ACM certificate, Route 53 DNS records, an AWS secret to store
   credentials for your SCIM bridge, security groups, and required IAM roles.
@@ -22,9 +22,9 @@ Metadata:
       Route53HostedZoneID:
         default: "Route 53 hosted zone"
       DomainName:
-        default: "1Password SCIM bridge domain name"
+        default: "1Password SCIM Bridge domain name"
       SCIMBridgeVersion:
-        default: "1Password SCIM bridge version"
+        default: "1Password SCIM Bridge version"
 Parameters:
   VPCCIDR:
     Type: String
@@ -51,7 +51,7 @@ Parameters:
     Type: String
     Default: 'v2.8.1'
     Description: >-
-      The tag of the 1Password SCIM bridge image to pull from Docker Hub
+      The tag of the 1Password SCIM Bridge image to pull from Docker Hub
 Resources:
   scimsessionSecret:
     Type: 'AWS::SecretsManager::Secret'
@@ -178,7 +178,7 @@ Resources:
     Properties:
       GroupDescription: >-
         Allow public HTTPS ingress to the load balancer from the identity
-        provider, restrict egress to the VPC for 1Password SCIM bridge
+        provider, restrict egress to the VPC for 1Password SCIM Bridge
       VpcId: !Ref VPC
       SecurityGroupIngress:
         - IpProtocol: tcp
@@ -195,7 +195,7 @@ Resources:
     Properties:
       GroupDescription: >-
         Restrict ingress to ECS Service from load balancer, allow egress to
-        1Password.com for 1Password SCIM bridge.
+        1Password.com for 1Password SCIM Bridge.
       VpcId: !Ref VPC
       SecurityGroupIngress:
         - IpProtocol: tcp
@@ -265,7 +265,7 @@ Resources:
     Type: 'AWS::Route53::RecordSet'
     Properties:
       HostedZoneId: !Ref Route53HostedZoneID
-      Comment: DNS record pointing to load balancer for 1Password SCIM bridge
+      Comment: DNS record pointing to load balancer for 1Password SCIM Bridge
       Name: !Ref DomainName
       Type: A
       AliasTarget:
