@@ -56,7 +56,7 @@ Before deploying 1Password SCIM Bridge, consult the [Preparation Guide](/PREPARA
 
 ## 🏗️ Deploy 1Password SCIM Bridge
 
-Use the AWS CloudFormation console to [create a stack](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-console-create-stack.html) or deploy 1Password SCIM Bridge [using AWS CLI](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-using-cli.html):
+Create a stack for your SCIM bridge [in the AWS CloudFormation console](#-use-the-aws-cloudformation-console) or [using AWS CLI](#-use-aws-cli):
 
 ### 🖼 Use the AWS CloudFormation console
 
@@ -116,7 +116,7 @@ Edit the example above with the following:
    > 💻 If you saved your `scimsession` file as an item in your 1Password account, you can [use 1Password CLI to pass this value](https://developer.1password.com/docs/cli/secrets-scripts#option-2-use-op-read-to-read-secrets) (for example, `scimsession=$(op read "op://Private/scimsession file/scimsession")`)
 7. Optionally, uncomment the appropriate lines and add tags as key-value pairs to apply to all supported resources in the stack.
 
-You should see:
+After you run the command, you should see:
 
 > ```sh
 > Waiting for changeset to be created..
