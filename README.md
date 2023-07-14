@@ -25,7 +25,8 @@ Advanced deployment are recommended when you have particular requirements for yo
 
 These are beta versions of 1Password SCIM bridge deployments and components. These deployments *should* work, but come with no guarantees, and will change in the future.
 
-- **NEW** [DigitalOcean App Platform with 1Password CLI](/beta/do-app-platform-op-cli/)
+- ✨ **NEW** [AWS with CloudFormation](/beta/aws-ecsfargate-cfn)
+- [DigitalOcean App Platform with 1Password CLI](/beta/do-app-platform-op-cli/)
 - [Google Workspace settings](/beta/workspace-settings.json)
 - [Google Workspace module for Terraform](/beta/aws-terraform-gw/)
 
