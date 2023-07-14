@@ -73,7 +73,7 @@ For a GUI deployment, you can create a stack in the CloudFormation console:
 8. Select the Route 53 hosted zone for DNS records.
 9. Replace `scim.example.com` with a domain name for your SCIM bridge that is in the domain of this hosted zone.
 10. Open the `scimsession` file in a text editor. Select all text in the file and copy it to your clipboard.
-11. Paste the contents into the `scimession` field (it will be masked on input). Click Next.
+11. Paste the contents into the `scimession` field (it will be masked on input), then click Next.
 12. Optionally, click "Add new tag" to add tags to all supported resources in the stack. Click Next.
 13. Review the stack configuration. Under Capabilities, check "I acknowledge that AWS CloudFormation might create IAM resource.". Click Submit.
 
