@@ -20,7 +20,7 @@ The included template can be used to deploy 1Password SCIM Bridge as a [stack](h
 - a target group targeting the SCIM bridge container
 - 2 security groups to restrict traffic to and from the ALB and the ECS cluster, respectively
 - an AWS Certificate Manager (ACM) TLS certificate for the ALB
-- 2 Route 53 DNS `A` records:
+- 2 Route 53 DNS records:
   - for the domain name of your SCIM bridge (e.g. `scim.example.com`)
   - to validate the requested ACM certificate
 - an AWS Secrets Manager secret to store the `scimsession` credentials for your SCIM bridge
@@ -60,22 +60,24 @@ Create a stack for your SCIM bridge [in the AWS CloudFormation console](#-use-th
 
 ### 🖼 Use the AWS CloudFormation console
 
-For a GUI deployment, you can create a stack in the CloudFormation console:
+For a GUI deployment, you can create a stack in the CloudFormation console.
 
-1. [Create a new stack](https://console.aws.amazon.com/cloudformation/home#/stacks/create) in the CloudFormation console.
-2. In the "Specify template" section, choose "Upload a template file".
-3. Click Choose File, then upload the `op-scim-bridge.yaml` file from the working directory on your computer.
-5. Click Next and type a name for the stack in the "Stack name" field.
-   > **Note**
-   >
-   > 📄 We use `op-scim-bridge` as a shorthand for 1Password SCIM Bridge throughout our examples and supporting documentation, but the choice is arbitrary. CloudFormation will use the stack name (or a truncated version where needed) as a prefix when naming the created AWS resources.
-7. Leave the default value "VPC CIDR range" unless you require something different for your environment.
-8. Select the Route 53 hosted zone for DNS records.
-9. Replace `scim.example.com` with a domain name for your SCIM bridge that is in the domain of this hosted zone.
-10. Open the `scimsession` file in a text editor. Select all text in the file and copy it to your clipboard.
-11. Paste the contents into the `scimession` field (it will be masked on input), then click Next.
-12. Optionally, click "Add new tag" to add tags to all supported resources in the stack, then click Next.
-13. Review the stack configuration. When you're finished click "I acknowledge that AWS CloudFormation might create IAM resource." below Capabilities, then click Submit.
+1. [Create a stack](https://console.aws.amazon.com/cloudformation/home#/stacks/create) with new resources:
+   - In the "Specify template" section, choose "Upload a template file".
+   - Click "↑ Choose file" and upload the `op-scim-bridge.yaml` file from the working directory on your computer.
+   - Click Next.
+2. Specify stack details. Use the following options (for everything else, use the provided defaults or your own preferences):
+   - Type `op-scim-bridge` in the "Stack name" field. CloudFormation will use the stack name (or a truncated version where needed) as a prefix when naming the created AWS resources.
+     > **Note**
+     >
+     > 📄 We use `op-scim-bridge` as a shorthand for 1Password SCIM Bridge throughout our examples and supporting documentation, but the choice is arbitrary.
+   - Select the Route 53 hosted zone for DNS records.
+   - Replace `scim.example.com` with a domain name for your SCIM bridge that is in the domain of this hosted zone.
+   - Open the `scimsession` file from your working directory in a text editor. Select all text in the file and copy it to your clipboard. Paste the contents into the `scimession` field (it will be masked on input), then click Next.
+3. Configure stack options:
+   - Click "Add new tag" to add any tags you require to all supported resources in the stack.
+   - Review the options, using the provided defaults or your own options as required or preferred. Click Next.
+4. Review the stack configuration. When you're finished, click "I acknowledge that AWS CloudFormation might create IAM resources." below Capabilities, then click Submit.
 
 The console will display the stack status as `ℹ️ CREATE_IN_PROGRESS` during the deployment. The stack is expected to take several minutes to create (generally a bit more than 5 minutes when this document was written). After the stack is created, the status will change to `✅ CREATE_COMPLETE`.
 
@@ -103,17 +105,17 @@ aws cloudformation deploy \
 Edit the example above with the following:
 
 1. If the template file was saved with a different file name or somewhere other than the working directory, replace `./op-scim-bridge.yaml` with the actual path (for example, `--template-file path/to/template.file`).
-2. If desired, set your own value for the `--stack-name` flag in the above command to choose your own name (for example, `--stack-name your-stack-name`).
+2. If you prefer, set your own value for the `--stack-name` flag in the above command to choose your own name (for example, `--stack-name your-stack-name`). CloudFormation will use the stack name (or a truncated version where needed) as a prefix when naming the created AWS resources.
    > **Note**
    >
-   > 📄 We use `op-scim-bridge` as a shorthand for 1Password SCIM Bridge throughout our examples and supporting documentation, but the choice is arbitrary. CloudFormation will use the stack name (or a truncated version where needed) as a prefix when naming the created AWS resources.
+   > 📄 We use `op-scim-bridge` as a shorthand for 1Password SCIM Bridge throughout our examples and supporting documentation, but the choice is arbitrary.
 3. Leave the default value for the VPC CIDR range (`VPCCIDR`). If you require something different for your environment, you can uncomment this line and replace the CIDR range with your own value.
-4. Replace `Z2ABCDEF123456` with the ID of the Route 53 hosted zone in which to create DNS records.
+4. Replace `Z2ABCDEF123456` with the ID of the Route 53 hosted zone for DNS records.
 5. Replace `scim.example.com` with a domain name for your SCIM bridge that is in the domain of this hosted zone.
 6. Ensure your `scimsession` file is located in the working directory, or replace the path specified in the subshell command (for example, `scimsession=$(cat path/to/scimsession.filename)`).
    > **Note**
    >
-   > 💻 If you saved your `scimsession` file as an item in your 1Password account, you can [use 1Password CLI to pass this value](https://developer.1password.com/docs/cli/secrets-scripts#option-2-use-op-read-to-read-secrets) (for example, `scimsession=$(op read "op://Private/scimsession file/scimsession")`)
+   > 💻 If you saved your `scimsession` file as an item in your 1Password account, you can [use 1Password CLI to pass this value](https://developer.1password.com/docs/cli/secrets-scripts#option-2-use-op-read-to-read-secrets). For example: `scimsession=$(op read "op://Private/scimsession file/scimsession")`
 7. Optionally, uncomment the appropriate lines and add tags as key-value pairs to apply to all supported resources in the stack.
 
 After you run the command, you should see:
@@ -123,7 +125,7 @@ After you run the command, you should see:
 > Waiting for stack create/update to complete
 > ```
 
-More detailed information is available in the CloudFormation console. A success message will be returned when the stack is created, for example:
+More detailed information is available in [the CloudFormation console](https://console.aws.amazon.com/cloudformation/home#/stacks). A success message will be returned when the stack is created, for example:
 
 > ```sh
 > Successfully created/updated stack - op-scim-bridge
@@ -131,7 +133,7 @@ More detailed information is available in the CloudFormation console. A success 
 
 ## Test your SCIM bridge
 
-A clickable link of the URL for your SCIM bridge is available in the Outputs tab of the CloudFormation console (for example, `https://scim.example.com/`). You can sign in to this URL with the bearer token for your SCIM bridge to test, view status information, or retrieve logs. You can also send an authenticated SCIM API request to your SCIM bridge from the command line.
+A clickable link of the URL for your SCIM bridge is available in the Outputs tab of the CloudFormation console (for example, <https://scim.example.com/>). You can sign in to this URL with the bearer token for your SCIM bridge to test the connection, view status information, or retrieve logs. You can also send an authenticated SCIM API request to your SCIM bridge from the command line.
 
 *Example command:*
 
@@ -139,7 +141,11 @@ A clickable link of the URL for your SCIM bridge is available in the Outputs tab
 curl --header "Authorization: Bearer mF_9.B5f-4.1JqM" https://scim.example.com/Users
 ```
 
-Replace `mF_9.B5f-4.1JqM` with your bearer token and `scim.example.com` with the domain name of your SCIM bridge.
+Replace `mF_9.B5f-4.1JqM` with your bearer token and `scim.example.com` with the domain name of your SCIM bridge in the example above.
+
+> **Note**
+   >
+   > 💻 If you saved your bearer token as an item in your 1Password account, you can [use 1Password CLI to pass the bearer token](https://developer.1password.com/docs/cli/secrets-scripts#option-2-use-op-read-to-read-secrets) instead of writing it out in the console. For example: `--header "Authorization: Bearer $(op read "op://Private/bearer token/credential")"`
 
 <details>
 <summary>Example JSON response</summary>
@@ -216,5 +222,5 @@ aws cloudformation deploy \
 >
 > Our [1Password SCIM Bridge release notes page](https://app-updates.agilebits.com/product_history/SCIM) does not include `v` in each release version, but this character must be included in the value of the `SCIMBridgeVersion` parameter to match the corresponding [image tag in Docker Hub](https://hub.docker.com/r/1password/scim/tags):
 >
-> - ❌ `2.8.1`
 > - ✅ `v2.8.1`
+> - ❌ `2.8.1`
