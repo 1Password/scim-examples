@@ -64,8 +64,7 @@ For a GUI deployment, you can create a stack in the CloudFormation console:
 
 1. [Create a new stack](https://console.aws.amazon.com/cloudformation/home#/stacks/create) in the CloudFormation console.
 2. In the "Specify template" section, choose "Upload a template file".
-3. Click Choose File.
-4. Upload the `op-scim-bridge.yaml` file from the working directory on your computer.
+3. Click Choose File, then upload the `op-scim-bridge.yaml` file from the working directory on your computer.
 5. Click Next.
 6. Type a name for the stack in the "Stack name" field.
    > **Note**
