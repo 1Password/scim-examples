@@ -69,7 +69,7 @@ For a GUI deployment, you can create a stack in the CloudFormation console:
    > **Note**
    >
    > 📄 We use `op-scim-bridge` as a shorthand for 1Password SCIM Bridge throughout our examples and supporting documentation, but the choice is arbitrary. CloudFormation will use the stack name (or a truncated version where needed) as a prefix when naming the created AWS resources.
-7. Leave the default value already supplied for "VPC CIDR range" unless you require something different for your environment.
+7. Leave the default value "VPC CIDR range" unless you require something different for your environment.
 8. Select the Route 53 hosted zone in which to create DNS records.
 9. Replace `scim.example.com` with a domain name for your SCIM bridge that is in the domain of this hosted zone.
 10. Open the `scimsession` file in a text editor. Select all text in the file and copy it to your clipboard.
