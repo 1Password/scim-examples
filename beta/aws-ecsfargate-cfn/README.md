@@ -65,8 +65,7 @@ For a GUI deployment, you can create a stack in the CloudFormation console:
 1. [Create a new stack](https://console.aws.amazon.com/cloudformation/home#/stacks/create) in the CloudFormation console.
 2. In the "Specify template" section, choose "Upload a template file".
 3. Click Choose File, then upload the `op-scim-bridge.yaml` file from the working directory on your computer.
-5. Click Next.
-6. Type a name for the stack in the "Stack name" field.
+5. Click Next and type a name for the stack in the "Stack name" field.
    > **Note**
    >
    > 📄 We use `op-scim-bridge` as a shorthand for 1Password SCIM Bridge throughout our examples and supporting documentation, but the choice is arbitrary. CloudFormation will use the stack name (or a truncated version where needed) as a prefix when naming the created AWS resources.
