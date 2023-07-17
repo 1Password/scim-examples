@@ -75,8 +75,14 @@ Both methods need the Container App Extension added to the AZ tool, using `az ex
     ContainerAppEnvironment="op-scim-bridge-con-app-env"
     ContainerAppName="op-scim-bridge-con-app"
     ```
-3. Create the resource group ```az group create --name $ResourceGroup --location $Location```
-4. Create the Container App Environment ```az containerapp env create --name $ContainerAppEnvironment --resource-group $ResourceGroup --location $Location```
+3. Create the resource group 
+    ```
+    az group create --name $ResourceGroup --location $Location
+    ```
+4. Create the Container App Environment 
+    ```
+    az containerapp env create --name $ContainerAppEnvironment --resource-group $ResourceGroup --location $Locatio
+    ```
 5. Create the base Container App:
     ```
     az containerapp create -n $ContainerAppName -g $ResourceGroup --container-name op-scim-bridge \
@@ -93,21 +99,24 @@ Both methods need the Container App Extension added to the AZ tool, using `az ex
    2. Find the `scimsession` file that you saved to your computer and choose it.
    3. Make note of the upload destination, then click Complete.
 7. Create Azure Container App Secret:
-
-    ```az containerapp secret set -n $ContainerAppName -g $ResourceGroup --secrets scimsession="$(cat /home/$USER/scimsession | base64)"```
-
-8. Update your Comtainer App with the required secondary container for Redis:
+    ```
+    az containerapp secret set -n $ContainerAppName -g $ResourceGroup --secrets scimsession="$(cat /home/$USER/scimsession | base64)"
+    ```
+8. Update your Container App with the required secondary container for Redis:
     ```
     az containerapp update -n $ContainerAppName -g $ResourceGroup --container-name op-scim-redis \
     --image docker.io/redis --cpu 0.25 --memory 0.5Gi --set-env-vars 'REDIS_ARGS=--maxmemory 256mb --maxmemory-policy volatile-lru'
     ```
-9. Update your Comtainer App with to point your SCIM bridge container to use the secret you have created:
+9. Update your Container App to allow your SCIM bridge container to use the secret you have created:
     ```
     az containerapp update -n $ContainerAppName -g $ResourceGroup --container-name op-scim-bridge \
     --set-env-vars 'OP_REDIS_URL=redis://localhost:6379' 'OP_SESSION=secretref:scimsession'
     ```
-10. Find your fdqn of your deployed application: ```az containerapp ingress show -n $ContainerAppName -g $ResourceGroup```
-11. You should be prompted to log into the SCIM bridge with your `bearer token`.
+10. Find your fdqn of your deployed application, this will be known as your SCIM bridge URL:
+    ```
+    az containerapp ingress show -n $ContainerAppName -g $ResourceGroup
+    ```
+11. Open the fqdn listed in a seperate browser tab, where you can test your connection. You should be prompted to log into the SCIM bridge with your `bearer token`.
 
 ### Step 3: Follow the steps to connect your Identity provider to the SCIM bridge.
  - [Connect your Identity Provider](https://support.1password.com/scim/#step-3-connect-your-identity-provider)
