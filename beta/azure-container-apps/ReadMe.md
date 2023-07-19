@@ -131,7 +131,7 @@ Both methods need the Container App Extension added to the AZ tool, using `az ex
 
 ### Step 1: Deploy your base SCIM bridge within Azure Container Apps
 
-1. First we create a new Container App from the [Azure Container Apps Portal](https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/Microsoft.App%2FcontainerApps).
+1. Create a new Container App from the [Azure Container Apps Portal](https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/Microsoft.App%2FcontainerApps).
 2. Either use an existing Resource Group or select Create New under the **Resource Group** Section.
 3. Enter the **Container app name**, for example *op-scim-con-app*.
 4. Select your **Region** for the deployment.
