@@ -143,7 +143,7 @@ Both methods need the Container App Extension added to the AZ tool, using `az ex
     1. Uncheck **Use quickstart image**.
     2. Change the name of the container to *op-scim-bridge*.
     3. Select **Docker Hub** for the image source.
-    4. Enter **1password/scim:v2.8.1** for the **Image and Tag**.
+    4. Enter **1password/scim:v2.8.2** for the **Image and Tag**.
     5. Leave the CPU and Memory as 0.25 CPU cores, 0.5 Gi memory.
     6. Add the following Environment variables:
         1. **OP_SESSION** currently with of **""** for now.
