@@ -2,7 +2,7 @@
 
 This deployment example describes how to deploy 1Password SCIM Bridge as an app on Azure's [Container Apps](https://azure.microsoft.com/en-us/products/container-apps/#overview) service.
 
-The deployment consists of two [containers](https://learn.microsoft.com/en-us/azure/container-apps/containers), the SCIM bridge cntainer and a Redis container and an [ingress](https://learn.microsoft.com/en-us/azure/container-apps/ingress-overview) for the SCIM bridge container.
+The deployment consists of two [containers](https://learn.microsoft.com/en-us/azure/container-apps/containers), the SCIM bridge container and a Redis container and an [ingress](https://learn.microsoft.com/en-us/azure/container-apps/ingress-overview) for the SCIM bridge container.
 
 ## In this folder
 
