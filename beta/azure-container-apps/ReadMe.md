@@ -163,7 +163,7 @@ Both methods need the Container App Extension added to the AZ tool, using `az ex
 1. Within Azure Container App browser tab, Select **Secrets** along the left hand side.
     1. Select **Add**.
     2. Enter **scimsession** as the **Key field**.
-    3. Enter the base 64 value into the **Value** field. (This is what we added to your 1Password **scimsession file item** in the getting started section)
+    3. Enter the base64 value into the **Value** field. (This is what we added to your 1Password **scimsession file item** in the getting started section)
     4. Select **Add**.
     5. Allow the secret to finish creating.
 2. Select **Containers** along the left hand side.
