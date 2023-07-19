@@ -40,7 +40,7 @@ Deploying 1Password SCIM Bridge on Azure Container Apps comes with a few benefit
 5. Use the "Save in 1Password" buttons for both the `scimsession` file and `bearer token` to save them as items in your 1Password account. 
 6. Also use the download icon next to the `scimsession` file to save this file on your system.
 
-### Step 2: Configure the `scimession` credentials for passing to Container App
+### Step 2: Configure the `scimsession` credentials for passing to Container App
 
 The `scimsession` credentials will be saved as an secret variable in Container App. These credentials have to be Base64-encoded to pass them into the environment, but they're saved as a plain-text file when you download them or save in 1Password during the setup.
 
