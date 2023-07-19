@@ -198,9 +198,9 @@ Both methods need the Container App Extension added to the AZ tool, using `az ex
 ### Troubleshooting
 
 Logs for a container app can be viewed from the **Log Stream**, there is a separate log stream for both containers of the revision that is active. Often reviewing the logs of the **op-scim-bridge** container can help understand any startup issues.
-
 ### Update 1Password SCIM Bridge
 
+#### Update using the `az` CLI
 The latest version of 1Password SCIM Bridge is posted on our [Release Notes](https://app-updates.agilebits.com/product_history/SCIM) website, where you can find details about the latest changes. 
 
 1. Start the Azure Cloud Shell from the navigation bar of your [Azure Portal](https://portal.azure.com).
@@ -208,8 +208,7 @@ The latest version of 1Password SCIM Bridge is posted on our [Release Notes](htt
 ```az containerapp update -n $ContainerAppName -g $ResourceGroup --container-name op-scim-bridge --image docker.io/1password/scim:v2.8.2```
 3. Log into your SCIM bridge URL with your bearer token to validate in the top left hand side that you are running the version of the SCIM Bridge. (logging in with the bearer token will also update your Automated User Provisioning page with the latest access time and with the current version).
 
-<details>
-<summary> Manual Azure Portal Upgrade Steps</summary>
+#### Update using the Azure Portal
 
 1. Within Container App from the [Azure Container Apps Portal](https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/Microsoft.App%2FcontainerApps), Select **Containers** from the left hand side.
 2. Select **Edit and deploy** along the top.
@@ -218,7 +217,6 @@ The latest version of 1Password SCIM Bridge is posted on our [Release Notes](htt
 5. Select **Save**.
 6. Select **Create** to deploy a new revision using the updating image.
 7. Log into your SCIM bridge URL with your bearer token to validate in the top left hand side that you are running the version of the SCIM Bridge. (logging in with the bearer token will also update your Automated User Provisioning page with the latest access time and with the current version).
-</details>
 
 ## TODO
 
