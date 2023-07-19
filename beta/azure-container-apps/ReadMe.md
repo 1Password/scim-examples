@@ -204,7 +204,7 @@ Logs for a container app can be viewed from the **Log Stream**, there is a separ
 The latest version of 1Password SCIM Bridge is posted on our [Release Notes](https://app-updates.agilebits.com/product_history/SCIM) website, where you can find details about the latest changes. 
 
 1. Start the Azure Cloud Shell from the navigation bar of your [Azure Portal](https://portal.azure.com).
-2. Run the following command, replacing $ContainerAppName ResourceGroup with the names from your deployment. Also ensure to change the version number 2.8.2 to match the latest version from our [SCIM Bridge Release Notes page](https://app-updates.agilebits.com/product_history/SCIM).
+2. Run the following command, replacing `$ContainerAppName` and `$ResourceGroup` with the names from your deployment. Also ensure to change the version number 2.8.2 to match the latest version from our [SCIM Bridge Release Notes page](https://app-updates.agilebits.com/product_history/SCIM).
 ```az containerapp update -n $ContainerAppName -g $ResourceGroup --container-name op-scim-bridge --image docker.io/1password/scim:v2.8.2```
 3. Log into your SCIM bridge URL with your bearer token to validate in the top left hand side that you are running the version of the SCIM Bridge. (logging in with the bearer token will also update your Automated User Provisioning page with the latest access time and with the current version).
 
