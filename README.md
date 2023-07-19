@@ -1,6 +1,6 @@
 # 1Password SCIM Bridge deployment examples
 
-You can deploy 1Password SCIM Bridge on various public and private cloud providers. Here you'll find configuration files and best practices to help you with the deployment. Learn more about [automating 1Password provisioning with SCIM](https://support.1password.com/scim/).
+You can deploy 1Password SCIM Bridge on any supported infrastructure that allows ingress by your identity provider and egress to 1Password servers. Here you'll find configuration files and best practices to help with your deployment. Learn more about [automating 1Password provisioning with SCIM](https://support.1password.com/scim/).
 
 ## Automatic (one-click) deployment
 
@@ -11,11 +11,11 @@ The easiest way to deploy 1Password SCIM Bridge is with our one-click apps, whic
 
 ## Advanced deployment
 
-If you have particular requirements for your environment, an advanced deployment is recommended. These deployments are easily customizable and adaptable to your situation.
+If you have particular requirements for your environment, an advanced deployment is recommended. These example configurations can be used as a base for a customized deployment.
 
 ### Before you begin
 
-Before you begin deploying 1Password SCIM Bridge, review the [Preparation Guide](https://github.com/1Password/scim-examples/blob/master/PREPARATION.md). The guide will help you plan for some of the technical components of the deployment and consider some issues you may encounter along the way.
+Before you begin deploying 1Password SCIM Bridge, review the [Preparation Guide](/PREPARATION.md). The guide will help you plan for some of the technical components of the deployment and consider some issues you may encounter along the way.
 
 After you've read the preparation guide, refer to the deployment example for your infrastructure:
 

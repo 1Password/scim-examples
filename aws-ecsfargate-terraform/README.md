@@ -9,7 +9,7 @@
 **Table of contents:**
 
 - [Before you begin](#before-you-begin)
-- [Step 1: Configure the bridge](#step-1-configure-the-bridge)
+- [Step 1: Configure the deployment](#step-1-configure-the-deployment)
 - [Step 2: Deploy 1Password SCIM Bridge](#step-2-deploy-1password-scim-bridge)
 - [Step 3: Connect your identity provider](#step-3-connect-your-identity-provider)
 - [Update your SCIM Bridge](#update-your-scim-bridge)
@@ -23,7 +23,7 @@ Before you begin, familiarize yourself with [PREPARATION.md](/PREPARATION.md) an
 - Have your `scimsession` file and bearer token (as seen in `PREPARATION.md`) ready
 - Make sure you're authenticated with the `aws` command-line tool in your local environment. Learn more in the [Terraform AWS Provider documentation](https://registry.terraform.io/providers/hashicorp/aws/latest/docs).
 
-## Step 1: Configure the bridge
+## Step 1: Configure the deployment
 
 ### Copy configuration template
 
@@ -248,4 +248,4 @@ If you want to view the logs for your SCIM bridge within AWS, go to **Cloudwatch
 
 If you open your SCIM bridge domain in a browser and see a `Sign In With 1Password` button, the `scimsession` file was not properly installed. Due to the nature of the ECS deployment, **this “sign in” option cannot be used** to complete the setup of your SCIM bridge.
 
-To fix this, [copy the `scimsession` file](#copy-`scimsession`-file) again and restart your `op_scim_bridge` task to apply the changes.
+To fix this, [copy the `scimsession` file](#copy-`scimsession`-file) again and stop the ECS task for your SCIM bridge. The ECS service will ensure that the task is restarted to reboot your SCIM bridge and apply the changes.
