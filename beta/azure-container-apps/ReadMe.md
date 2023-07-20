@@ -47,19 +47,23 @@ Deploying 1Password SCIM Bridge on Azure Container Apps comes with a few benefit
 
 The `scimsession` credentials will be saved as an secret variable in Container App. These credentials have to be Base64-encoded to pass them into the environment, but they're saved as a plain-text file when you download them or save in 1Password during the setup.
 
-1. Create the base64 value of your scimsession file: 
-
-   - On a **macOS** or **Linux** this can be done with: `cat <path>/scimsession | base64`. Copy the output value, it will be needed to create the secret for the deployment.
-   - On a **Windows** this can be done with: `[Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path $PWD.Path 'scimsession')))`, copy the value it will be needed to create the secret for the deployment.
-
-2. Now that you have the base64 value copied, store this value in your scimsession 1Password item you saved earilier. 
-
-   - Locate the **scimsession file item** in your 1Password account.
-   - Click **edit**.
-   - Select **Add another field**.
-   - Select **Password**. 
-   - Paste the base64 value into the password field. 
-   - Rename the Password label above the value you just pasted, to something like `Base64 Value`. 
+1. Get the Base64 encoded contents of your `scimsession` file: 
+   - Using bash (Cloud Shell, macOS, or Linux):
+     ```bash
+     cat ./scimsession | base64`
+     ```
+   - Using PowerShell (Cloud Shell, Windows, macOS, or Linux):
+     ```pwsh
+     [Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path $PWD.Path 'scimsession')))`, copy the value it will be needed to create the secret for the deployment.
+     ```
+   Copy the output value from the terminal to your clipboard. It will be needed to create the secret for the deployment.
+2. Save the encoded value in your 1Password account for future use: 
+   - Locate the "scimsession file" item in your 1Password account.
+   - Click Edit.
+   - Select "Add another field".
+   - Select Password.
+   - Rename the Password label above the value you just pasted, to something like `Base64 value`. 
+   - Paste the Base64 value from your clipboard into the password field. 
    - Select **Save**.
 
 ## Deploy 1Password SCIM Bridge to Azure Container App
