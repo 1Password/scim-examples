@@ -28,6 +28,8 @@ services:
       - redis
     secrets:
       - scimsession
+    environment:
+      - OP_TLS_DOMAIN
     env_file: ./scim.env
     networks:
       - op-scim
@@ -53,4 +55,4 @@ configs:
 secrets:
   scimsession:
     name: scimsession
-    external: true
+    file: ./scimsession
