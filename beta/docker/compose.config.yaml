@@ -1,0 +1,8 @@
+services:
+  scim:
+    environment:
+      - OP_TLS_DOMAIN
+secrets:
+  scimsession:
+    name: scimsession
+    file: ./scimses
