@@ -1,4 +1,16 @@
-# Docker Compose v2
+# Deploy 1Password SCIM Bridge in a single-node Docker Swarm
+
+This example includes a Docker Compose template file in [the Compose specification](https://docs.docker.com/compose/compose-file/) format and describes how to deploy 1Password SCIM Bridge as a stack to a single-node Docker swarm.
+
+## In this folder
+
+- [`README.md`](./README.md): the document that you are reading. 👋😃
+- [`compose.template.yaml`](./compose.template.yaml): a [Compose file](https://docs.docker.com/compose/compose-file/03-compose-file/) used as a base configuration for 1Password SCIM Bridge.
+- [`compose.gw.yaml`](./compose.gw.yaml): an override configuration to merge the configuration necessary for customers integrating with Google Workspace.
+- [`redis.conf`](./redis.conf): a Redis confguration file for configuring the Redis cache
+- [`scim.env`](./scim.env): an environment file for configuring SCIM bridge
+
+## Overview
 
 ## Prerequisites
 
@@ -22,7 +34,7 @@
 
    ```sh
    docker swarm init
-   ``````
+   ```
 
 4. Copy your `scimsesion` file to the working directory.
 
@@ -72,31 +84,40 @@ If integrating 1Password with Google Workspace, additional cofiguration is requi
 
 ## Deploy 1Password SCIM bridge
 
-After the DNS record has propagated, set the DNS name for your SCIM bridge configuration and pipe the templated configuration to create a Docker Swarm Secret and deploy SCIM bridge.
+After the DNS record has propagated, set the DNS name for your SCIM bridge configuration, use the template to create a canonical configuration, the pipe the output to create a Docker Swarm Secret and deploy SCIM bridge.
 
 *Example command:*
 
 ```sh
-   OP_TLS_DOMAIN=scim.example.com docker stack config \
-       --compose-file ./compose.template.yaml |
-           docker stack deploy --compose-file - op-scim-bridge
+OP_TLS_DOMAIN=scim.example.com docker stack config \
+    --compose-file ./compose.base.yaml \
+    --compose-file ./compose.config.yaml |
+        docker stack deploy --compose-file - op-scim-bridge
 ```
 
 Replace `scim.example.com` with the DNS name that points to your Docker host, then run the command to deploy SCIM bridge.
 
 ### Connect your SCIM bridge to Google Workspace
 
-If you are integrating with Google Workspace, you can create the additional Docker Swarm Secrets for Workspace and redeploy your SCIM bridge by merging the `compose.gw.yaml` configuration:
+If you are integrating with Google Workspace, you can create the additional Docker Swarm Secrets for Workspace and redeploy your SCIM bridge by merging the `compose.gw.yaml` configuration.
+
+*Example command:*
 
 ```sh
-   OP_TLS_DOMAIN=scim.example.com docker stack config \
-       --compose-file ./compose.template.yaml \
-       --compose-file ./compose.gw.yaml |
-           docker stack deploy --compose-file - op-scim-bridge
+OP_TLS_DOMAIN=scim.example.com docker stack config \
+    --compose-file ./compose.base.yaml \
+    --compose-file ./compose.gw.yaml |
+        docker stack deploy --compose-file - op-scim-bridge
 ```
+
+Replace `scim.example.com` with the DNS name that points to your Docker host, then run the command to restart SCIM bridge in the new configuration.
 
 ## Appendix
 
 ### Update 1Password SCIM bridge
 
-<!-- TODO -->
+Update you SCIM bridge to the latest version by updating its service definition:
+
+```sh
+docker service update op-scim-bridge_scim --image 1password/scim:v2.8.2
+```
