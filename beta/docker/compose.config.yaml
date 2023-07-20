@@ -5,4 +5,4 @@ services:
 secrets:
   scimsession:
     name: scimsession
-    file: ./scimses
+    file: ./scimsession
