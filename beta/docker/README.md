@@ -2,50 +2,55 @@
 
 ## Prerequisites
 
-- Linux server with port 443 open
+- Linux server supporting Docker Engine
 - Docker Engine (v20.10.3+) (see [Docker Engine installation overview](https://docs.docker.com/engine/install/#server))
 - Docker Compose (v2.0+) (see [Install Docker Compose](https://docs.docker.com/compose/install/))
-
-> **Note**
->
-> This deployment example assumes Docker Compose is run locally on the Docker
-> host. Deploying to a remote Docker host (i.e. using `docker context`) is
-> _not_ supported.
+- public DNS record pointing to the Docker host
 
 ## Get started
 
 1. Create a DNS record that points to your Docker host, e.g. `scim.example.com`.
 
-2. On the Docker host, clone this repository and switch to this directory:
+2. Clone this repository and switch to this directory:
 
     ```sh
     git clone https://github.com/1Password/scim-examples.git
     cd ./scim-examples/beta/docker
     ```
 
-3. Copy your `scimsesion` file to the working directory on the Docker host, e.g.:
+3. Initialize the Docker Swarm. Run this command on your Docker host:
 
-    ```sh
-    scp local/path/to/scimsession user@host:scim-examples/beta/docker/scimsession
-    ```
+   ```sh
+   docker swarm init
+   ``````
 
-4. From the working directory on the Docker host, create a canonical configuration (replace `scim.example.com` with the DNS record from Step 1):
+4. Copy your `scimsesion` file to the working directory.
 
-    ```sh
-    OP_LETSENCRYPT_DOMAIN=scim.example.com docker compose -f compose.template.yaml convert > compose.yaml
-    ```
+   > **Note**
+   >
+   > If you are deploying SCIM bridge directly on a remote Docker host, you will need to transfer the `scimsession` file
+   > from your local machine that is signed in to your 1Password account, for example:
+   >
+   > ```sh
+   > scp ./scimsession user@host:scim-examples/beta/docker/scimsession
+   > ```
 
 ### Configure 1Password SCIM bridge to connect to Google Workspace
 
 If integrating 1Password with Google Workspace, additional cofiguration is required. See [Connect Google Workspace to 1Password SCIM Bridge](https://support.1password.com/scim-google-workspace/#step-1-create-a-google-service-account-key-and-api-client) for instructions to create the service account, key, and API client.
 
-1. Copy the Google Workspace service account key to this working directory on the Docker host, e.g.:
+1. Copy the Google Workspace service account key to the working directory.
 
-    ```sh
-     scp local/path/to/workspace-credentials.json user@host:scim-examples/beta/docker/workspace-credentials.json
-    ```
+   > **Note**
+   >
+   > If you are deploying SCIM bridge directly on a remote Docker host, you will need to transfer the Workspace credentials file
+   > from your local machine that is signed in to your 1Password account, for example:
+   >
+   > ```sh
+   >  scp local/path/to/workspace-credentials.json user@host:scim-examples/beta/docker/workspace-credentials.json
+   > ```
 
-2. From the working directory on the Docker host, copy the [settings file template](/beta/workspace-settings.json) from this repository:
+2. Copy the [settings file template](/beta/workspace-settings.json) from this repository:
 
     ```sh
     cp ../workspace-settings.json ./workspace-settings.json
@@ -65,62 +70,33 @@ If integrating 1Password with Google Workspace, additional cofiguration is requi
 
     Save the file.
 
-3. Update the canonical configuration for SCIM bridge to include the overlay configuration for Google Workspace (replace `scim.example.com` with the DNS record for your SCIM bridge):
-
-    ```sh
-    OP_LETSENCRYPT_DOMAIN=scim.example.com docker compose -f compose.template.yaml -f compose.gw.yaml convert > compose.yaml
-    ```
-
 ## Deploy 1Password SCIM bridge
 
-After the DNS record has propagated, deploy 1Password SCIM bridge using Docker Compose:
+After the DNS record has propagated, set the DNS name for your SCIM bridge configuration and pipe the templated configuration to create a Docker Swarm Secret and deploy SCIM bridge.
+
+*Example command:*
 
 ```sh
-docker compose up -d
+   OP_TLS_DOMAIN=scim.example.com docker stack config \
+       --compose-file ./compose.template.yaml |
+           docker stack deploy --compose-file - op-scim-bridge
+```
+
+Replace `scim.example.com` with the DNS name that points to your Docker host, then run the command to deploy SCIM bridge.
+
+### Connect your SCIM bridge to Google Workspace
+
+If you are integrating with Google Workspace, you can create the additional Docker Swarm Secrets for Workspace and redeploy your SCIM bridge by merging the `compose.gw.yaml` configuration:
+
+```sh
+   OP_TLS_DOMAIN=scim.example.com docker stack config \
+       --compose-file ./compose.template.yaml \
+       --compose-file ./compose.gw.yaml |
+           docker stack deploy --compose-file - op-scim-bridge
 ```
 
 ## Appendix
 
 ### Update 1Password SCIM bridge
 
-You can monitor the [1Password SCIM bridge release notes](https://app-updates.agilebits.com/product_history/SCIM) page to see the latest version.
-
-To update your SCIM bridge, switch to this directory, pull the latest version of this repository, and apply the updated `.yaml` (replace `scim.example.com` with the DNS record pointing to your SCIM bridge):
-
-```sh
-cd scim-examples/beta/docker
-git pull
-OP_LETSENCRYPT_DOMAIN=scim.example.com docker compose -f compose.template.yaml [-f compose.gw.yaml] convert > compose.yaml
-docker compose up -d
-```
-
-### Use regenerated credentials
-
-The bearer token and `scimsession` file are cryptographically linked. If you want to use a new bearer token or `scimsession` file:
-
-1. Visit the [Integrations](https://start.1password.com/integrations/provisioning) page at 1Password.com and click Regenerate Credentials.
-
-2. Copy the new `scimsession` file to the Docker host, e.g.:
-
-    ```sh
-    scp local/path/to/scimsession user@host:scim-examples/beta/docker/scimsession
-    ```
-
-3. Restart SCIM bridge:
-
-    ```sh
-    cd scim-examples/beta/docker
-    docker compose restart scim
-    ```
-
-4. Update the configuration in your identity provider to use the new bearer token.
-
-### Change the DNS name
-
-To use a new DNS name for your SCIM bridge, create a new record pointing to your bridge, wait for it to propagate, then redeploy, i.e.:
-
-```sh
-cd scim-examples/beta/docker
-OP_LETSENCRYPT_DOMAIN=new-name.example.com docker compose -f compose.template.yaml [-f compose.gw.yaml] convert > compose.yaml
-docker compose up -d
-```
+<!-- TODO -->

@@ -1,4 +1,3 @@
-name: op-scim-bridge
 services:
   scim:
     secrets:

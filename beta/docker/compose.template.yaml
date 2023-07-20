@@ -1,4 +1,3 @@
-name: op-scim-bridge
 services:
   redis:
     image: redis
@@ -16,25 +15,22 @@ services:
         limits:
           cpus: "0.25"
           memory: 512M
-      # TODO: replace `restart` below when `any` is supported
-      # restart_policy:
-      #   condition: any
-    restart: always
+      restart_policy:
+        condition: any
     healthcheck:
       test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
       interval: 1s
       timeout: 3s
       retries: 5
   scim:
-    image: 1password/scim:v2.6.2
+    image: 1password/scim:v2.8.2
     depends_on:
-      redis:
-        condition: service_healthy
+      - redis
     secrets:
       - scimsession
     env_file: ./scim.env
     environment:
-      - OP_LETSENCRYPT_DOMAIN
+      - OP_TLS_DOMAIN
     networks:
       - op-scim
     ports:
@@ -47,10 +43,8 @@ services:
         limits:
           cpus: "0.25"
           memory: 512M
-      # TODO: replace `restart` below when `any` is supported
-      # restart_policy:
-      #   condition: any
-    restart: always
+      restart_policy:
+        condition: any
 networks:
   op-scim:
     name: op-scim
