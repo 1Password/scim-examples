@@ -84,33 +84,31 @@ If integrating 1Password with Google Workspace, additional cofiguration is requi
 
 ## Deploy 1Password SCIM bridge
 
-After the DNS record has propagated, set the DNS name for your SCIM bridge configuration, use the template to create a canonical configuration, the pipe the output to create a Docker Swarm Secret and deploy SCIM bridge.
+After the DNS record has propagated, set the DNS name for your SCIM bridge, use the template to output a canonical configuration,  create a Docker Swarm Secret, and deploy SCIM bridge. it will be configured to use Let's Encrypt to create and manage a TLS certificate using its domain name.
 
 *Example command:*
 
 ```sh
-OP_TLS_DOMAIN=scim.example.com docker stack config \
-    --compose-file ./compose.base.yaml \
-    --compose-file ./compose.config.yaml |
-        docker stack deploy --compose-file - op-scim-bridge
+OP_TLS_DOMAIN=scim.example.com docker stack config --compose-file ./compose.base.yaml |
+    docker stack deploy --compose-file - op-scim-bridge
 ```
 
-Replace `scim.example.com` with the DNS name that points to your Docker host, then run the command to deploy SCIM bridge.
+Replace `scim.example.com` with the DNS name that points to your Docker host, then run the command to deploy your SCIM bridge.
 
 ### Connect your SCIM bridge to Google Workspace
 
-If you are integrating with Google Workspace, you can create the additional Docker Swarm Secrets for Workspace and redeploy your SCIM bridge by merging the `compose.gw.yaml` configuration.
+If you are integrating with Google Workspace,use `compose.gw.yaml` to create the additional Docker Swarm Secrets needed for Workspace.
 
 *Example command:*
 
 ```sh
 OP_TLS_DOMAIN=scim.example.com docker stack config \
-    --compose-file ./compose.base.yaml \
+    --compose-file ./compose.template.yaml \
     --compose-file ./compose.gw.yaml |
         docker stack deploy --compose-file - op-scim-bridge
 ```
 
-Replace `scim.example.com` with the DNS name that points to your Docker host, then run the command to restart SCIM bridge in the new configuration.
+Replace `scim.example.com` with the DNS name that points to your Docker host, then run the command to deploy SCIM bridge with access to the required configuration and credentials.
 
 ## Appendix
 
