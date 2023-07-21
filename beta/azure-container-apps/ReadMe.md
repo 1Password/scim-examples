@@ -43,87 +43,105 @@ Deploying 1Password SCIM Bridge on Azure Container Apps comes with a few benefit
 5. Use the "Save in 1Password" buttons for both the `scimsession` file and `bearer token` to save them as items in your 1Password account. 
 6. Also use the download icon next to the `scimsession` file to save this file on your system.
 
-### Step 2: Configure the `scimsession` credentials for passing to Container App
-
-The `scimsession` credentials will be saved as an secret variable in Container App. These credentials have to be Base64-encoded to pass them into the environment, but they're saved as a plain-text file when you download them or save in 1Password during the setup.
-
-1. Get the Base64 encoded contents of your `scimsession` file: 
-   - Using bash (Cloud Shell, macOS, or Linux):
-     ```bash
-     cat ./scimsession | base64`
-     ```
-   - Using PowerShell (Cloud Shell, Windows, macOS, or Linux):
-     ```pwsh
-     [Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path $PWD.Path 'scimsession')))`, copy the value it will be needed to create the secret for the deployment.
-     ```
-   Copy the output value from the terminal to your clipboard. It will be needed to create the secret for the deployment.
-2. Save the encoded value in your 1Password account for future use: 
-   - Locate the "scimsession file" item in your 1Password account.
-   - Click Edit.
-   - Select "Add another field".
-   - Select Password.
-   - Rename the Password label above the value you just pasted, to something like `Base64 value`. 
-   - Paste the Base64 value from your clipboard into the password field. 
-   - Select **Save**.
-
 ## Deploy 1Password SCIM Bridge to Azure Container App
 
 ## Automatic Azure Deployment Steps using Azure CLI
 
 Using the Azure Cloud Shell can be easier (the assumption for the commands below is that you are using the Bash Cloud Shell), but this can also been done directly on yours system with the Azure CLI tool with the ContainerApp Extension
 
-Both methods need the Container App Extension added to the AZ tool, using `az extension add --name containerapp --upgrade`
+Both methods need the Container App Extension added to the AZ tool of choice, using `az extension add --name containerapp --upgrade`
 
 1. Start the Azure Cloud Shell from the navigation bar of your [Azure Portal](https://portal.azure.com).
-2. Define your variables for the deployment by entering the following text on the Cloud Shell after updating it to meet your deployment:
-    ```
+2. Define variables for the deployment using the following example in the Cloud Shell. Update the values in a text editor before pasting it into the terminal:
+    - Using bash
+    ```bash
     ResourceGroup="op-scim-bridge-rg"
     Location="canadacentral"
     ContainerAppEnvironment="op-scim-bridge-con-app-env"
     ContainerAppName="op-scim-bridge-con-app"
     ```
-3. Create the resource group 
+    - Using PowerShell 
+    ```pwsh
+    $ResourceGroup="op-scim-bridge-rg"
+    $Location="canadacentral"
+    $ContainerAppEnvironment="op-scim-bridge-con-app-env"
+    $ContainerAppName="op-scim-bridge-con-app"
     ```
-    az group create --name $ResourceGroup --location $Location
-    ```
-4. Create the Container App Environment 
-    ```
-    az containerapp env create --name $ContainerAppEnvironment --resource-group $ResourceGroup --location $Locatio
-    ```
-5. Create the base Container App:
-    ```
-    az containerapp create -n $ContainerAppName -g $ResourceGroup --container-name op-scim-bridge \
-    --image docker.io/1password/scim:v2.8.2 --environment $ContainerAppEnvironment --ingress external \
-    --target-port 3002 --cpu 0.25 --memory 0.5Gi --min-replicas 1 --max-replicas 1 \
-    --env-vars 'OP_REDIS_URL=redis://localhost:6379' 'OP_SESSION=""'
-    ```
-    > **Note:** 
-    > 
-    >If you are prompted to enable the ContainerApp extension, with the error `The command requires the extension containerapp. Do you want to install it now? The command will continue to run after the extension is installed. (Y/n):`, type Y.
 
-6. Before you create the container Secret, upload your scimsession file to the Cloud Shell:
-   1. Click the “Upload/Download files” button and choose Upload.
-   2. Find the `scimsession` file that you saved to your computer and choose it.
-   3. Make note of the upload destination, then click Complete.
-7. Create Azure Container App Secret:
+3. Create the resource group:
+
+   ```
+   az group create --name $ResourceGroup --location $Location
+   ```
+
+4. Create the Container App Environment:
+
+   ```
+   az containerapp env create --name $ContainerAppEnvironment --resource-group $ResourceGroup --location $Location
+   ```
+
+5. Upload your `scimsession` file to the Cloud Shell:
+   - Click the “Upload/Download files” button and choose Upload.
+   - Find the `scimsession` file that you saved to your computer and choose it.
+   - Make a note of the upload destination, then click Complete.
+
+6. Create the base Container App and Secret for your Base64-encoded `scimsession` credentials:
+    - Using bash
+    ```bash
+    az containerapp create -n $ContainerAppName -g $ResourceGroup \
+        --container-name op-scim-bridge \
+        --image docker.io/1password/scim:v2.8.2 \
+        --environment $ContainerAppEnvironment \
+        --ingress external --target-port 3002 \
+        --cpu 0.25 --memory 0.5Gi \
+        --min-replicas 1 --max-replicas 1 \
+        --secrets scimsession="$(cat /home/$USER/scimsession | base64)" \
+        --env-vars OP_REDIS_URL="redis://localhost:6379" OP_SESSION=secretref:scimsession
     ```
-    az containerapp secret set -n $ContainerAppName -g $ResourceGroup --secrets scimsession="$(cat /home/$USER/scimsession | base64)"
+    - Using PowerShell 
+    ```pwsh
+    az containerapp create -n $ContainerAppName -g $ResourceGroup `
+    --container-name op-scim-bridge `
+    --image docker.io/1password/scim:v2.8.2 `
+    --environment $ContainerAppEnvironment `
+    --ingress external --target-port 3002 `
+    --cpu 0.25 --memory 0.5Gi `
+    --min-replicas 1 --max-replicas 1 `
+    --secrets scimsession="$([Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path /home/$Env:USER/ 'scimsession'))) )" `
+    --env-vars OP_REDIS_URL="redis://localhost:6379" OP_SESSION=secretref:scimsession
     ```
-8. Update your Container App with the required secondary container for Redis:
+
+    > **Note**
+    >
+    > You may be prompted to install the ContainerApp extension with this message:
+    >
+    > ```bash
+    > The command requires the extension containerapp. Do you want to install it now? The command will continue to run after the extension is installed. (Y/n):
+    > ```
+    >
+    > The ContainerApp extension is required to deploy Container Apps from the command line. Type `Y` and press enter to install the extension.
+
+7. Update your Container App to add the Redis container and get the fully qualified domain name to use as the URL for your SCIM bridge:
+    - Using bash
+    ```bash
+    az containerapp update -n $ContainerAppName -g $ResourceGroup \
+       --container-name op-scim-redis \
+       --image docker.io/redis \
+       --cpu 0.25 --memory 0.5Gi \
+       --set-env-vars REDIS_ARGS="--maxmemory 256mb --maxmemory-policy volatile-lru" \
+       --query properties.configuration.ingress.fqdn
     ```
-    az containerapp update -n $ContainerAppName -g $ResourceGroup --container-name op-scim-redis \
-    --image docker.io/redis --cpu 0.25 --memory 0.5Gi --set-env-vars 'REDIS_ARGS=--maxmemory 256mb --maxmemory-policy volatile-lru'
+    - Using PowerShell
+    ```pwsh
+    az containerapp update -n $ContainerAppName -g $ResourceGroup `
+    --container-name op-scim-redis `
+    --image docker.io/redis `
+    --cpu 0.25 --memory 0.5Gi `
+    --set-env-vars REDIS_ARGS="--maxmemory 256mb --maxmemory-policy volatile-lru" `
+    --query properties.configuration.ingress.fqdn
     ```
-9. Update your Container App to allow your SCIM bridge container to use the secret you have created:
-    ```
-    az containerapp update -n $ContainerAppName -g $ResourceGroup --container-name op-scim-bridge \
-    --set-env-vars 'OP_REDIS_URL=redis://localhost:6379' 'OP_SESSION=secretref:scimsession'
-    ```
-10. Find your fdqn of your deployed application, this will be known as your SCIM bridge URL:
-    ```
-    az containerapp ingress show -n $ContainerAppName -g $ResourceGroup
-    ```
-11. Open the fqdn listed in a seperate browser tab, where you can test your connection. You should be prompted to log into the SCIM bridge with your `bearer token`.
+
+8. Open the domain name listed in a separate browser tab to test your connection. You can sign in to your SCIM bridge using your bearer token.
 
 ### Step 3: Follow the steps to connect your Identity provider to the SCIM bridge.
  - [Connect your Identity Provider](https://support.1password.com/scim/#step-3-connect-your-identity-provider)
@@ -136,7 +154,35 @@ Both methods need the Container App Extension added to the AZ tool, using `az ex
 <details>
 <summary> Manual Azure Portal Deployment Steps</summary>
 
-### Step 1: Deploy your base SCIM bridge within Azure Container Apps
+### Step 1: Configure the `scimsession` credentials for passing to Container App
+
+The `scimsession` credentials will be saved as an secret variable in Container App. These credentials have to be Base64-encoded to pass them into the environment, but they're saved as a plain-text file when you download them or save in 1Password during the setup.
+
+> **Note**
+    >
+    >You will need to update the path to the scimsession file you download in the getting started section.
+
+1. Get the Base64 encoded contents of your `scimsession` file: 
+   
+   - Using bash (Cloud Shell, macOS, or Linux):
+     ```bash
+     cat ./scimsession | base64
+     ```
+   - Using PowerShell (Cloud Shell, Windows, macOS, or Linux):
+     ```pwsh
+     [Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path $PWD.Path 'scimsession')))
+     ```
+   Copy the output value from the terminal to your clipboard. It will be needed to create the secret for the deployment.
+2. Save the encoded value in your 1Password account for future use: 
+   - Locate the "scimsession file" item in your 1Password account.
+   - Click Edit.
+   - Select "Add another field".
+   - Select Password.
+   - Rename the Password label above the value you just pasted, to something like `Base64 value`. 
+   - Paste the Base64 value from your clipboard into the password field. 
+   - Select **Save**.
+
+### Step 2: Deploy your base SCIM bridge within Azure Container Apps
 
 1. Create a new Container App from the [Azure Container Apps Portal](https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/Microsoft.App%2FcontainerApps).
 2. Either use an existing Resource Group or select Create New under the **Resource Group** section.
@@ -165,7 +211,7 @@ Both methods need the Container App Extension added to the AZ tool, using `az ex
 
 > **Note:** Expect the deployment to fail as it is expecting the second container to deploy successfully.
 
-### Step 2: Finalize your SCIM bridge deployment to use your scimsession secret and add the Redis Container.
+### Step 3: Finalize your SCIM bridge deployment to use your scimsession secret and add the Redis Container.
 
 1. Within Azure Container App browser tab, Select **Secrets** along the left hand side.
     1. Select **Add**.
@@ -194,7 +240,7 @@ Both methods need the Container App Extension added to the AZ tool, using `az ex
     17. On the right hand side, click on the Application Url (this is your SCIM bridge URL), to access and test your SCIM bridge.
     18. You should be prompted to log into the SCIM bridge with your `bearer token`.
 
-### Step 3: Follow the steps to connect your Identity provider to the SCIM bridge.
+### Step 4: Follow the steps to connect your Identity provider to the SCIM bridge.
  - [Connect your Identity Provider](https://support.1password.com/scim/#step-3-connect-your-identity-provider)
 
 </details>
