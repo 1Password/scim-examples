@@ -12,7 +12,7 @@ This example describes how to deploy 1Password SCIM Bridge as a stack using [Doc
 
 ## Overview
 
-The open source Docker Engine tooling can be used to deploy 1Password SCIM Bridge on any supported Linux distribution. A single-node swarm is sufficient. This example assumes that the Linux server is exposed directly to the public internet with Docker acting as a reverse proxy to the SCIM bridge container. Other configurations are possible, but not documented in this deployment example. 
+The open source Docker Engine tooling can be used to deploy 1Password SCIM Bridge on any supported Linux distribution. A single-node swarm is sufficient. This example assumes that the Linux server is exposed directly to the public internet with Docker acting as a reverse proxy to the SCIM bridge container. Other configurations are possible, but not documented in this deployment example.
 
 ## Prerequisites
 
@@ -56,7 +56,7 @@ The open source Docker Engine tooling can be used to deploy 1Password SCIM Bridg
     cd ./scim-examples/beta/docker
     ```
 
-6. Save your `scimsesion` file to the working directory.
+6. Save your `scimsession` file to the working directory.
 
    > **Note**
    >
@@ -75,7 +75,7 @@ If integrating 1Password with Google Workspace, additional cofiguration is requi
 
    > **Note**
    >
-   > If you are deploying SCIM bridge directly on a remote Docker host, you will need to transfer the Workspace credentials file
+   > If you are deploying SCIM bridge directly on the Linux server, you will need to transfer the Workspace credentials file
    > from your local machine that is signed in to Google (or your 1Password account if you saved the credentials there), for example:
    >
    > ```sh
@@ -85,7 +85,7 @@ If integrating 1Password with Google Workspace, additional cofiguration is requi
 2. Copy the [settings file template](/beta/workspace-settings.json) from this repository:
 
     ```sh
-    cp ../../workspace-settings.json ./workspace-settings.json
+    cp ../workspace-settings.json ./workspace-settings.json
     ```
 
     Edit the file. Replace the values for each key:
