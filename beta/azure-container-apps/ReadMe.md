@@ -15,7 +15,7 @@ Deploying 1Password SCIM Bridge on Azure Container Apps comes with a few benefit
 - For standard deployments, Azure Container Apps will host your SCIM bridge for ~$16 USD/month (when this document was written)
   > **Note**
   >
-  > Conatiner Apps pricing is variable based on activity. Details can be found on [Microsoft's pricing page](https://azure.microsoft.com/en-us/pricing/details/container-apps/).
+  > Container Apps pricing is variable based on activity. Details can be found on [Microsoft's pricing page](https://azure.microsoft.com/en-us/pricing/details/container-apps/).
 - No manual DNS record creation required. Azure Container Apps automatically provides a unique DNS record for your SCIM bridge URL.
 - Azure Container Apps automatically handles TLS certificate management on your behalf.
 - You will deploy 1Password SCIM Bridge directly to Azure from your Azure Portal or some commands can be performed from your local terminal. There is no requirement to clone this repository for this deployment.
