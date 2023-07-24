@@ -11,4 +11,3 @@ terraform.tfvars
 .terraform*
 *.plan
 workspace-*.json
-*/docker/compose.yaml
