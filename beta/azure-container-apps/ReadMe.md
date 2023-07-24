@@ -198,7 +198,7 @@ The `scimsession` credentials will be saved as an secret variable in Container A
     3. Select **Docker Hub** for the image source.
     4. Enter `1password/scim:v2.8.2` for the **Image and Tag**.
     5. Leave the CPU and Memory as 0.25 CPU cores, 0.5 Gi memory.
-    6. Add the following Environment variables:
+    6. Add the following **Environment variables**:
         1. `OP_SESSION` currently with of `""` for now.
         2. `OP_REDIS_URL` with a value of `redis://localhost:6379`
 7. Select **Next : Ingress >** to continue the container app creation.
@@ -229,8 +229,8 @@ The `scimsession` credentials will be saved as an secret variable in Container A
     7. Select **Docker Hub** for the image source.
     8. Enter **redis** for the **Image and Tag**.
     9. Change the CPU and Memory to 0.25 CPU cores, 0.5 Gi memory.
-    10. Add the following Environment variables:
-        1. `REDIS_ARGS` with of `--maxmemory 256mb --maxmemory-policy volatile-lru`.
+    10. Add the following **Environment variables**:
+        1. `REDIS_ARGS` with value of `--maxmemory 256mb --maxmemory-policy volatile-lru`.
     11. Select **Add**.
     12. Select **Next : Scale >**.
     13. Drag both circles so the min and max are both set to 1.
