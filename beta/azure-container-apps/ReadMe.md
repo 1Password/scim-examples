@@ -47,12 +47,12 @@ Deploying 1Password SCIM Bridge on Azure Container Apps comes with a few benefit
 
 ## Automatic Azure Deployment Steps using Azure CLI
 
-Using the Azure Cloud Shell can be easier (the assumption for the commands below is that you are using the Bash Cloud Shell), but this can also been done directly on yours system with the Azure CLI tool with the ContainerApp Extension
+Using the Azure Cloud Shell can be easier (the assumption for the commands below is that you are using the Cloud Shell), but this can also been done directly on your system with the Azure CLI tool with the ContainerApp Extension
 
 Both methods need the Container App Extension added to the AZ tool of choice, using `az extension add --name containerapp --upgrade`
 
 1. Start the Azure Cloud Shell from the navigation bar of your [Azure Portal](https://portal.azure.com).
-2. Define variables for the deployment using the following example in the Cloud Shell. Update the values in a text editor before pasting it into the terminal:
+2. Define variables for the deployment using the following example in the Cloud Shell, _(using the bash or PowerShell syntax for the commands)_. Update the values in a text editor before pasting it into the terminal:
     - Using bash
     ```bash
     ResourceGroup="op-scim-bridge-rg"
@@ -85,7 +85,7 @@ Both methods need the Container App Extension added to the AZ tool of choice, us
    - Find the `scimsession` file that you saved to your computer and choose it.
    - Make a note of the upload destination, then click Complete.
 
-6. Create the base Container App and Secret for your Base64-encoded `scimsession` credentials:
+6. Create the base Container App and Secret for your Base64-encoded `scimsession` credentials, _(using the bash or PowerShell syntax for the commands)_:
     - Using bash
     ```bash
     az containerapp create -n $ContainerAppName -g $ResourceGroup \
@@ -121,7 +121,7 @@ Both methods need the Container App Extension added to the AZ tool of choice, us
     >
     > The ContainerApp extension is required to deploy Container Apps from the command line. Type `Y` and press enter to install the extension.
 
-7. Update your Container App to add the Redis container and get the fully qualified domain name to use as the URL for your SCIM bridge:
+7. Update your Container App to add the Redis container and get the fully qualified domain name to use as the URL for your SCIM bridge, _(using the bash or PowerShell syntax for the commands)_:
     - Using bash
     ```bash
     az containerapp update -n $ContainerAppName -g $ResourceGroup \
@@ -162,7 +162,7 @@ The `scimsession` credentials will be saved as an secret variable in Container A
     >
     >You will need to update the path to the scimsession file you download in the getting started section.
 
-1. Get the Base64 encoded contents of your `scimsession` file: 
+1. Get the Base64 encoded contents of your `scimsession` file, _(using the bash or PowerShell syntax for the commands)_: 
    
    - Using bash (Cloud Shell, macOS, or Linux):
      ```bash
