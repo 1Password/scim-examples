@@ -199,8 +199,8 @@ The `scimsession` credentials will be saved as an secret variable in Container A
     4. Enter `1password/scim:v2.8.2` for the **Image and Tag**.
     5. Leave the CPU and Memory as 0.25 CPU cores, 0.5 Gi memory.
     6. Add the following Environment variables:
-        1. **OP_SESSION** currently with of **""** for now.
-        2. **OP_REDIS_URL** with a value of **redis://localhost:6379**
+        1. `OP_SESSION` currently with of `""` for now.
+        2. `OP_REDIS_URL` with a value of `redis://localhost:6379`
 7. Select **Next : Ingress >** to continue the container app creation.
     1. Enable the Ingress by checking the checkbox.
     2. Change the **Ingress Traffic** to Accepting traffic from anywhere.
