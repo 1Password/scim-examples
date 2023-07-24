@@ -230,7 +230,7 @@ The `scimsession` credentials will be saved as an secret variable in Container A
     8. Enter **redis** for the **Image and Tag**.
     9. Change the CPU and Memory to 0.25 CPU cores, 0.5 Gi memory.
     10. Add the following Environment variables:
-        1. **REDIS_ARGS** with of **--maxmemory 256mb --maxmemory-policy volatile-lru**.
+        1. `REDIS_ARGS` with of `--maxmemory 256mb --maxmemory-policy volatile-lru`.
     11. Select **Add**.
     12. Select **Next : Scale >**.
     13. Drag both circles so the min and max are both set to 1.
