@@ -41,7 +41,7 @@ Deploying 1Password SCIM Bridge on Azure Container Apps comes with a few benefit
 3. Choose your identity provider from the User Provisioning section.
 4. Choose "Custom deployment".
 5. Use the "Save in 1Password" buttons for both the `scimsession` file and `bearer token` to save them as items in your 1Password account. 
-6. Also use the download icon next to the `scimsession` file to save this file on your system.
+6. Use the download icon next to the `scimsession` file to save this file on your system.
 
 ## Deploy 1Password SCIM Bridge to Azure Container App
 
