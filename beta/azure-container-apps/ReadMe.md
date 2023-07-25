@@ -45,7 +45,7 @@ Deploying 1Password SCIM Bridge on Azure Container Apps comes with a few benefit
 
 ## Deploy 1Password SCIM Bridge to Azure Container App
 
-## Automatic Azure Deployment Steps using Azure CLI
+### Automatic Azure Deployment Steps using Azure CLI
 
 Using the Azure Cloud Shell can be easier (the assumption for the commands below is that you are using the Cloud Shell), but this can also been done directly on your system with the Azure CLI tool with the ContainerApp Extension
 
