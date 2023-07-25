@@ -156,7 +156,7 @@ Both methods need the Container App Extension added to the AZ tool of choice, us
 
 ### Step 1: Configure the `scimsession` credentials for passing to Container App
 
-The `scimsession` credentials will be saved as an secret variable in Container App. These credentials have to be Base64-encoded to pass them into the environment, but they're saved as a plain-text file when you download them or save in 1Password during the setup.
+The `scimsession` credentials will be saved as a secret variable in Container App. These credentials have to be Base64-encoded to pass them into the environment, but they're saved as a plain-text file when you download them or save in 1Password during the setup.
 
 > **Note**
     >
