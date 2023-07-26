@@ -20,7 +20,7 @@ For general deployment, the SCIM bridge requires these components:
 
 ### DNS record
 
-You'll need to be able to create a DNS record with the SCIM bridge domain name you want to use. However, you'll need to have the IP address of the host, so the bridge will need to be deployed first, unless you have a static IP already assigned. Follow the steps in the deployment example for guidelines on when to finish setting up your DNS record.
+You'll need to create a DNS record with your SCIM bridge domain name after the bridge is deployed. Follow the steps in each respective deployment guide to finish setting up your DNS record at the appropriate time.
 
 ### TLS certificate
 

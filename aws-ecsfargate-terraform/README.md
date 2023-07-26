@@ -35,6 +35,7 @@ cp terraform.tfvars.template terraform.tfvars
 
 <details>
   <summary>Optional: If you use Google Workspace</summary>
+
 ### Copy Google Workspace credentials
 
 Copy the `workspace-settings.json` template file to this Terraform code directory:
