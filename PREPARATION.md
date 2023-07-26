@@ -8,7 +8,7 @@
 
 > **Note**
 > 
-> In code and the command line, "1Password" is often referred to as `op`. For example, `op-scim`.
+> In code and on the command line, "1Password" is often referred to as `op`. For example, `op-scim`.
 
 ### Technical components
 
@@ -46,7 +46,7 @@ Importantly, each DNS service tends to have its own unique way of configuring cr
 
 During the authentication procedure with Let's Encrypt, the SCIM bridge modifies the DNS records of a given name (for example, `op-scim-bridge.example.com`) with certain records that Let's Encrypt is expecting to confirm DNS ownership. Once DNS ownership is confirmed, Let's Encrypt issues a certificate as usual, and the SCIM bridge removes those temporary DNS records.
 
-To use this method, you'll provide secrets for the DNS service you choose during setup process. You can find an example configuration file at the root of this repository: [`dns01.example.json`](/dns01.example.json).
+To use this method, you'll provide secrets for the DNS service you choose during the setup process. You can find an example configuration file at the root of this repository: [`dns01.example.json`](/dns01.example.json).
 
 ## Considerations
 

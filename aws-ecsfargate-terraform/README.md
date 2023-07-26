@@ -19,8 +19,8 @@
 
 Before you begin, familiarize yourself with [PREPARATION.md](/PREPARATION.md) and complete the necessary steps there. Then:
 
-- Install [Terraform](https://www.terraform.io/downloads)
-- Have your `scimsession` file and bearer token (as seen in `PREPARATION.md`) ready
+- Install [Terraform](https://www.terraform.io/downloads).
+- Have your `scimsession` file and bearer token (as seen in [PREPARATION.md](/PREPARATION.md)) ready.
 - Make sure you're authenticated with the `aws` command-line tool in your local environment. Learn more in the [Terraform AWS Provider documentation](https://registry.terraform.io/providers/hashicorp/aws/latest/docs).
 
 ## Step 1: Configure the deployment
@@ -214,7 +214,7 @@ There may be situations where you want to update your deployment with the latest
 4. Apply the plan to your infrastructure: `terraform apply ./op-scim.plan`
 5. Verify that there are no errors in the output as Terraform updates your infrastructure.
 
-### Resource Recommendations
+### Resource recommendations
 
 The default resource recommendations for 1Password SCIM Bridge and Redis deployments are acceptable in most scenarios, but they fall short in high-volume deployments where there's a large number of users and/or groups. 
 
