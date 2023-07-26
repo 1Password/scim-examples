@@ -3,7 +3,7 @@
 *Learn how to deploy 1Password SCIM Bridge on AWS Fargate using Terraform.*
 
 > **Note**
-> 
+>
 > Due to the highly advanced and customizable nature of Amazon Web Services, this is only a suggested starting point. You can modify it to fit your existing infrastructure.
 
 **Table of contents:**
@@ -61,7 +61,7 @@ using_google_workspace = true
 
 </details>
 
-### Copy `scimsession` file
+### 1.1: Copy `scimsession` file
 
 Copy the `scimsession` file in the Terraform code directory:
 
@@ -79,11 +79,11 @@ cat <path>/scimsession | base64
 # copy the output to Secrets Manager
 ```
 
-### Set the region
+### 1.2: Set the region
 
 Set the `aws_region` variable in `terraform.tfvars` to the AWS region you're deploying in (the default is `us-east-1`).
 
-### Set the domain name
+### 1.3: Set the domain name
 
 This example uses AWS Certificate Manager to manage the required TLS certificate. Save the full domain name you want to use as `domain_name` in `terraform.tfvars`:
 
@@ -94,7 +94,7 @@ domain_name = "<scim.example.com>"
 <details>
   <summary>Optional: Configure additional features</summary>
 
-### Use an existing ACM wildcard certificate
+### 1.4: Use an existing ACM wildcard certificate
 
 If you would like to use an existing wildcard certificate in AWS Certificate Manager (`*.example.com`), uncommment this line in `terraform.tfvars`:
 
@@ -102,7 +102,7 @@ If you would like to use an existing wildcard certificate in AWS Certificate Man
 wildcard_cert = true
 ```
 
-### External DNS
+### 1.5: External DNS
 
 This deployment example uses Route 53 to create the required DNS record by default. If you are using another DNS provider, uncommment this line in `terraform.tfvars`:
 
@@ -112,7 +112,7 @@ using_route53 = false
 
 Create a CNAME record pointing to the `loadbalancer-dns-name` output printed out from `terraform apply`.
 
-### Use an existing VPC
+### 1.6: Use an existing VPC
 
 This deployment example uses the default VPC for your AWS region. If you would like to specify another VPC to use instead, set the value in the `vpc_name` in `terraform.tfvars`:
 
@@ -120,7 +120,7 @@ This deployment example uses the default VPC for your AWS region. If you would l
 vpc_name           = "<name_of_VPC>"
 ```
 
-### Specify a name prefix
+### 1.7: Specify a name prefix
 
 If you'd like to specify a common prefix for naming all supported AWS resources created by Terraform, set the value in the `name_prefix` variable in `terraform.tfvars`:
 
@@ -128,7 +128,7 @@ If you'd like to specify a common prefix for naming all supported AWS resources 
 name_prefix        = "<prefix>"
 ```
 
-### Set a log retention period
+### 1.8: Set a log retention period
 
 The deployment example retains logs indefinitely by default. If you'd like to set a different retention period, specify a number of days in the `log_retention_days` variable in `terraform.tfvars`:
 
@@ -137,7 +137,7 @@ log_retention_days = <number_of_days>
 
 ```
 
-### Apply additional tags
+### 1.9: Apply additional tags
 
 To apply additional tags to all supported AWS resources created by Terraform, add keys and values to the `tags` variable in `terraform.tfvars`:
 
@@ -217,7 +217,7 @@ There may be situations where you want to update your deployment with the latest
 
 ### Resource recommendations
 
-The default resource recommendations for 1Password SCIM Bridge and Redis deployments are acceptable in most scenarios, but they fall short in high-volume deployments where there's a large number of users and/or groups. 
+The default resource recommendations for 1Password SCIM Bridge and Redis deployments are acceptable in most scenarios, but they fall short in high-volume deployments where there's a large number of users and/or groups.
 
 Our current default resource requirements (defined in [scim.json](https://github.com/1Password/scim-examples/blob/master/aws-ecsfargate-terraform/task-definitions/scim.json#L5)) are:
 

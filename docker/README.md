@@ -16,11 +16,11 @@
 
 ## Before you begin
 
-Before you begin, read the [PREPARATION.md](/PREPARATION.md) document.
+Before you begin, familiarize yourself with [PREPARATION.md](/PREPARATION.md) and complete the necessary steps there.
 
 ## Step 1: Choose a deployment option
 
-Using Docker, you have two deployment options: Docker Compose and Docker Swarm.
+Using Docker, you have two deployment options: [Docker Compose](https://docs.docker.com/compose/) and [Docker Swarm](https://docs.docker.com/engine/swarm/).
 
 **Docker Swarm** is the recommended option, but Docker Compose can also be used depending on your deployment needs. You can set up a Docker host on your own infrastructure or on a cloud provider of your choice.
 
@@ -201,7 +201,7 @@ To upgrade your SCIM bridge, `git pull` the latest versions from this repository
 cd scim-examples/
 git pull
 cd docker/swarm/
-# For Docker Swarm updates: 
+# For Docker Swarm updates:
 # add second yaml if using Google Workspace `docker stack deploy -c docker-compose.yml -c gw-docker-compose.yml op-scim`
 docker stack deploy -c docker-compose.yml op-scim
 ```

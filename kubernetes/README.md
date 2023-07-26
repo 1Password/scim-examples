@@ -21,7 +21,7 @@
 
 ## Before you begin
 
-Before you begin, read the [Preparation Guide](/PREPARATION.md) document at the root of this repository.
+Before you begin, familiarize yourself with [PREPARATION.md](/PREPARATION.md) and complete the necessary steps there.
 
 ### In this folder
 
@@ -79,19 +79,15 @@ You can safely ignore these errors, or move the `workspace-credentials.json` and
 
 The [`op-scim-bridge` Service](./op-scim-service.yaml) creates a public load balancer attached to your cluster, which forwards TLS traffic to SCIM bridge.
 
-Run the following command:
-
-```bash
-kubectl get service
-```
-
-Copy the address listed under the `External IP` column for the `op-scim-bridge` Service from the output.
-
-> **Note**
->
-> It can take a few minutes before the public address becomes available. Run the command again if doesn't appear in the output.
-
-After you copy the address, create a public DNS record pointing to this address, as outlined in [the preparation guide](/PREPARATION.md).
+1. Run the following command:
+	```bash
+	kubectl get service
+	```
+2. Copy the address listed under the `External IP` column for the `op-scim-bridge` Service from the output.
+	> **Note**
+	>
+	> It can take a few minutes before the public address becomes available. Run the command again if doesn't appear in the output.
+3. After you copy the address, create a public DNS record pointing to this address, as outlined in [the preparation guide](/PREPARATION.md).
 
 ## Step 4: Configure Let's Encrypt
 
@@ -169,7 +165,7 @@ Note that these are the recommended `requests` and `limits` values for both the 
     cpu: 1000m
     memory: 1024M
   ```
-</details>  
+</details>
 
 <details>
   <summary>Very High Volume Deployment</summary>
@@ -183,7 +179,7 @@ Note that these are the recommended `requests` and `limits` values for both the 
     cpu: 2000m
     memory: 2048M
   ```
-</details> 
+</details>
 
 Configuring these values can be done with Kubernetes commands. You can get the names of the deployments with `kubectl get deployments`.
 
