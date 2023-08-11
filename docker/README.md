@@ -121,6 +121,19 @@ Alternate Google Workspace stack deployment command:
 docker stack deploy -c docker-compose.yml -c gw-docker-compose.yml op-scim
 ```
 
+### Self-managed TLS for Docker Swarm
+
+Providing your own key and cert files to the deployment as secrets, which disables Let's Encrypt functionality. In order to utilize self managed TLS key and certificate files, you need to define these as secrets using the following commands and uncomment sections of both the scim.env and docker-compose.yml
+
+```bash
+cat /path/to/private.key | docker secret create op-tls-key -
+cat /path/to/cert.crt | docker secret create op-tls-crt -
+```
+Open the `scim.env` in your preferred text editor and uncomment the `OP_TLS_CERT_FILE` and `OP_TLS_KEY_FILE` lines.
+Edit the `docker-compose.yml` to uncomment the scim service secret section for op-tls-key and op-tls-crt. Also uncomment the stack deployment section regarding the op-tls-key and op-tls-crt secrets.
+Perform the normal deployment commands above to either update your existing stack or create the new stack. 
+
+
 ### Docker Compose
 
 When using Docker Compose, you can create the environment variable `OP_SESSION` manually by doing the following:
@@ -147,7 +160,7 @@ Next, to create the necessary environment variables for Google Workspace:
 # enter the compose directory (if you aren’t already in it)
 cd scim-examples/docker/compose/
 # this is the path of the JSON file you edited in the paragraph above
-wORKSPACE_SETTINGS=$(cat /path/to/workspace_settings.json | base64 | tr -d "\n")
+WORKSPACE_SETTINGS=$(cat /path/to/workspace_settings.json | base64 | tr -d "\n")
 sed -i '' -e "s/OP_WORKSPACE_SETTINGS=$/OP_WORKSPACE_SETTINGS=$WORKSPACE_SETTINGS/" ./scim.env
 # replace <google keyfile> with the name of the file Google generated for your Google Service Account
 GOOGLE_CREDENTIALS=$(cat /path/to/<google keyfile>.json | base64 | tr -d "\n")
@@ -221,7 +234,7 @@ Unless you have customized your Redis deployment, there shouldn’t be any actio
 
 The following options are available for advanced or custom deployments. Unless you have a specific need, these options do not need to be modified.
 
-* `OP_TLS_CERT_FILE` and `OP_TLS_KEY_FILE` - these two variables can be set to the paths of a key file and certificate file, which then disables Let's Encrypt functionality, causing the SCIM bridge to utilize your own manually-defined certificate when `OP_TLS_DOMAIN` is also defined. Note that this is only supported under Docker Swarm, not under Docker Compose.
+* `OP_TLS_CERT_FILE` and `OP_TLS_KEY_FILE` - these two variables can be uncommented to enable self-managed TLS using cert and key secrets, which then disables Let's Encrypt functionality, causing the SCIM bridge to utilize your own manually-defined certificate when `OP_TLS_DOMAIN` is also defined. Note that this is only supported under Docker Swarm, not under Docker Compose. Note the additional steps above for enabling this feature.
 * `OP_PORT` - when `OP_TLS_DOMAIN` is set to blank, you can use `OP_PORT` to change the default port from 3002 to one of your choosing.
 * `OP_REDIS_URL` - you can specify `redis://` or `rediss://` (for TLS) URL here to point towards an alternative Redis host. You can then strip out the sections in `docker-compose.yml` that refer to Redis to not deploy that container. Note that Redis is still required for the SCIM bridge to function.
 * `OP_PRETTY_LOGS` - can be set to `1` if you would like the SCIM bridge to output logs in a human-readable format. This can be helpful if you aren’t planning on doing custom log ingestion in your environment.
