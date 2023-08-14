@@ -8,6 +8,12 @@ This folder contains 1Password SCIM Bridge deployment methods that have been dep
 
 {% endnote %}
 
+{% note %}
+
+**Note:** Owners and administrators can add outside collaborators to a repository.
+
+{% endnote %}
+
 ## Deployments
  - [aws-terraform](./aws-terraform) 
  - [DigitalOcean App Platform](./digitalocean-app-platform/)
