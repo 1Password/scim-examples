@@ -34,12 +34,20 @@ These are beta versions of 1Password SCIM Bridge deployments and components. The
 - [Google Workspace settings](/beta/workspace-settings.json)
 - [Google Workspace module for Terraform](/beta/aws-terraform-gw/)
 
-### Deprecated deployments
+## Deprecated deployments
 
-The following are deprecated 1Password SCIM Bridge deployments. At the time of deprecation, these deployments were still fully functional, but may no longer be updated and will eventually be removed.
+A list of recently-deprecated deployments can be found in [`/deprecated`](./deprecated/). At the time of deprecation, these deployments were still fully functional, but will no longer be updated and will be deleted three months after deprecation.
 
-- [AWS EC2 with terraform](/deprecated/aws-terraform/)
-- [DigitalOcean App Platform](/deprecated/digitalocean-app-platform/)
+> 💡 **Note** that it is solely the _deployment method_ that is deprecated. Deprecating a deployment method is independent of the 1Password SCIM bridge itself, or a specific version of the 1Password SCIM bridge. For information about the latest SCIM bridge version, please see the [changelog](https://app-updates.agilebits.com/product_history/SCIM).
+
+### Deprecation schedule
+
+When a deployment method is deprecated, we will simultaneously post a notice to this README and move the corresponding example to [`/deprecated`](./deprecated/).
+
+Deprecated deployments will remain in [`/deprecated`](./deprecated/) for **three months**, after which time they will be deleted. The deletion date of deprecated deployments will be posted in [`/deprecated/README.md`](./deprecated/README.md).
+
+Where possible, we will provide suggested alternatives in [`/deprecated/README.md`](./deprecated/README.md). 
+
 
 ## Get help
 
