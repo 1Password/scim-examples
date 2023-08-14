@@ -26,7 +26,7 @@ After you've read the preparation guide, refer to the deployment example for you
 
 ### Beta deployment
 
-These are beta versions of 1Password SCIM Bridge deployments and components. These deployments *should* work, but aren't guaranteed and will change in the future.
+These are beta versions of 1Password SCIM Bridge deployments and components. These deployments _should_ work, but aren't guaranteed and will change in the future.
 
 - ✨ **NEW** [AWS with CloudFormation](/beta/aws-ecsfargate-cfn)
 - ✨ **NEW** [Azure Container App](/beta/azure-container-apps)
@@ -38,7 +38,12 @@ These are beta versions of 1Password SCIM Bridge deployments and components. The
 
 A list of recently-deprecated deployments can be found in [`/deprecated`](./deprecated/). At the time of deprecation, these deployments were still fully functional, but will no longer be updated and will be deleted three months after deprecation.
 
-> 💡 **Note** that it is solely the _deployment method_ that is deprecated. Deprecating a deployment method is independent of the 1Password SCIM bridge itself, or a specific version of the 1Password SCIM bridge. For information about the latest SCIM bridge version, please see the [changelog](https://app-updates.agilebits.com/product_history/SCIM).
+> 💡 **Note** that it is solely the _deployment method_ that is deprecated. Deprecating a deployment method is independent of the 1Password SCIM Bridge itself, or a specific version of the 1Password SCIM Bridge. For information about the latest 1Password SCIM Bridge version, please see the [changelog](https://app-updates.agilebits.com/product_history/SCIM).
+
+| Deployment                                                           | Deprecation Date | Deletion Date | Suggested Alternative                                                                                                              |
+| -------------------------------------------------------------------- | ---------------- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| [aws-ec2-terraform](./deprecated/aws-terraform/)                     | 2020-12-21       | 2023-09-14    | [AWS ECS Fargate with Terraform](./aws-ecsfargate-terraform/) or [AWS ECS Fargate with CloudFormation](./beta/aws-ecsfargate-cfn/) |
+| [DigitalOcean App Platform](./deprecated/digitalocean-app-platform/) | 2022-12-21       | 2023-09-14    | [Digital Ocean App Platform with `op` CLI](./beta/do-app-platform-op-cli/) or [Azure Container Apps](./beta/azure-container-apps/) |
 
 ### Deprecation schedule
 
@@ -46,8 +51,7 @@ When a deployment method is deprecated, we will simultaneously post a notice to 
 
 Deprecated deployments will remain in [`/deprecated`](./deprecated/) for **three months**, after which time they will be deleted. The deletion date of deprecated deployments will be posted in [`/deprecated/README.md`](./deprecated/README.md).
 
-Where possible, we will provide suggested alternatives in [`/deprecated/README.md`](./deprecated/README.md). 
-
+Where possible, we will provide suggested alternatives in [`/deprecated/README.md`](./deprecated/README.md).
 
 ## Get help
 
