@@ -10,4 +10,4 @@ This folder contains 1Password SCIM Bridge deployment methods that have been dep
 | --------------------------------------------------------- | ---------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
 | [aws-ec2-terraform](./aws-terraform)                      | 2020-12-21       | 2023-09-14    | [AWS ECS Fargate with Terraform](../aws-ecsfargate-terraform/) or [AWS ECS Fargate with CloudFormation](./beta/aws-ecsfargate-cfn/)  |
 | [DigitalOcean App Platform](./digitalocean-app-platform/) | 2022-12-21       | 2023-09-14    | [Digital Ocean App Platform with `op` CLI](../beta/do-app-platform-op-cli/) or [Azure Container Apps](../beta/azure-container-apps/) |
-|                                                           |                  |               |
+
