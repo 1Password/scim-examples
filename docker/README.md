@@ -132,7 +132,11 @@ Providing your own key and cert files to the deployment as secrets, which disabl
 cat /path/to/private.key | docker secret create op-tls-key -
 cat /path/to/cert.crt | docker secret create op-tls-crt -
 ```
-Open the `scim.env` in your preferred text editor and uncomment the `OP_TLS_CERT_FILE` and `OP_TLS_KEY_FILE` lines. Edit the `docker-compose.yml` to uncomment the scim service secret section for op-tls-key and op-tls-crt. Also uncomment the stack deployment section regarding the op-tls-key and op-tls-crt secrets. Perform the normal deployment commands above to either update your existing stack or create the new stack. 
+Open the `scim.env` in your preferred text editor and uncomment the `OP_TLS_CERT_FILE` and `OP_TLS_KEY_FILE` lines. 
+
+Edit the `docker-compose.yml` to uncomment the scim service secret section for `op-tls-key` and `op-tls-crt`. There is also a section to uncomment in the stack deployment section regarding the `op-tls-key` and `op-tls-crt` secrets. 
+
+Perform the normal deployment commands above to either update your existing stack or create the new stack. 
 
 ### Docker Compose manual deployment
 
