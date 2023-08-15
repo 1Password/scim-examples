@@ -34,22 +34,17 @@ These are beta versions of 1Password SCIM Bridge deployments and components. The
 - [Google Workspace settings](/beta/workspace-settings.json)
 - [Google Workspace module for Terraform](/beta/aws-terraform-gw/)
 
-## Deprecated deployments
+## Deprecated deployment methods
 
-A list of recently-deprecated deployments can be found in [`/deprecated`](./deprecated/). At the time of deprecation, these deployments were still fully functional, but will no longer be updated and will be deleted three months after deprecation.
+A list of recently-deprecated deployments can be found in [`/deprecated`](./deprecated/). At the time of deprecation, these deployments were fully functional, but will no longer be updated.
 
-> 💡 **Note** that it is solely the _deployment method_ that is deprecated. Deprecating a deployment method is independent of the 1Password SCIM Bridge itself, or a specific version of the 1Password SCIM Bridge. For information about the latest 1Password SCIM Bridge version, please see the [changelog](https://app-updates.agilebits.com/product_history/SCIM).
-
-| Deployment                                                           | Deprecation Date | Deletion Date | Suggested Alternative                                                                                                              |
-| -------------------------------------------------------------------- | ---------------- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| [aws-ec2-terraform](./deprecated/aws-terraform/)                     | 2020-12-21       | 2023-09-14    | [AWS ECS Fargate with Terraform](./aws-ecsfargate-terraform/) or [AWS ECS Fargate with CloudFormation](./beta/aws-ecsfargate-cfn/) |
-| [DigitalOcean App Platform](./deprecated/digitalocean-app-platform/) | 2022-12-21       | 2023-09-14    | [Digital Ocean App Platform with `op` CLI](./beta/do-app-platform-op-cli/) or [Azure Container Apps](./beta/azure-container-apps/) |
+* [**List of deprecated deployment methods**](./deprecated/README.md#deprecated-deployments)
 
 ### Deprecation schedule
 
-When a deployment method is deprecated, we will simultaneously post a notice to this README and move the corresponding example to [`/deprecated`](./deprecated/).
+When a deployment method is deprecated, we will simultaneously append a deprecation notice to the deployment name listed in this README and move all files associated with the deployment method to [`/deprecated`](./deprecated/). 
 
-Deprecated deployments will remain in [`/deprecated`](./deprecated/) for **three months**, after which time they will be deleted. The deletion date of deprecated deployments will be posted in [`/deprecated/README.md`](./deprecated/README.md).
+Deprecated deployments will remain in [`/deprecated`](./deprecated/) for approximately **three months**, after which time they will be deleted. The deletion date of deprecated deployments will be posted in [`/deprecated/README.md`](./deprecated/README.md).
 
 Where possible, we will provide suggested alternatives in [`/deprecated/README.md`](./deprecated/README.md).
 
