@@ -4,7 +4,7 @@ This folder contains 1Password SCIM Bridge deployment methods that have been dep
 
 > 💡 **Note** that it is solely the _deployment method_ that is deprecated. Deprecating a deployment method is independent of the 1Password SCIM Bridge itself, or a specific version of the 1Password SCIM Bridge. For information about the latest version of 1Password SCIM Bridge, please see the [changelog](https://app-updates.agilebits.com/product_history/SCIM).
 
-## Deprecated deployment list
+## Deprecated deployment method list
 
 The following deployment methods are deprecated and will be removed from the repository on or around the Deletion Date.
 
@@ -13,7 +13,7 @@ The following deployment methods are deprecated and will be removed from the rep
 | [aws-ec2-terraform](./aws-terraform)                      | 2020-12-21       | 2023-09-14    | [AWS ECS Fargate with Terraform](../aws-ecsfargate-terraform/) or [AWS ECS Fargate with CloudFormation](./beta/aws-ecsfargate-cfn/)  |
 | [DigitalOcean App Platform](./digitalocean-app-platform/) | 2022-12-21       | 2023-09-14    | [Digital Ocean App Platform with `op` CLI](../beta/do-app-platform-op-cli/) or [Azure Container Apps](../beta/azure-container-apps/) |
 
-### No longer supported
+### Deleted deployment methods
 
 The following is a list of deployment methods that are no longer supported and were removed from the repository upon expiration of their deperecation period. These deployment methods are no longer supported. If you previously depended on one of these deployment methods, consider one of the suggested alternatives.
 
@@ -25,10 +25,10 @@ The following is a list of deployment methods that are no longer supported and w
 
 Generally speaking we try to improve existing deployment methods or create additional deployment methods. However, where updating existing deployment methods is not feasible, we will resort to deprecation.
 
-There are many reasons a deployment method may be slated for deprecation. A deployment method may be deprecated for a variety of reasons, along or in combination. Common reasons a deployment method may be deprecated include:
+Common reasons a deployment method may be deprecated include one or more of:
 
 - It relies on tooling, utilities, or technologies that have themselves been deprecated or where new versions of the utility/technology introduced breaking changes.
-- It is complex, unreliable, inflexible, or costly, and often leads to poor experiences. A similar deployment method on the same platform or leveraging similar technologies may or may not exist as a replacement.
+- A superior deployment method using the same or similar technologies on the same or similar platform (if applicable) has been developed.
 
 ### Steps to deprecate a deployment method
 
@@ -39,7 +39,7 @@ All deprecations will take place through a merge request and must be approved by
 2. Open a new branch with a name conforming to `deprecate/<deployment-method-name>`
 3. Move all assets related to the deployment method to `./deprecated/<deployment-method-name>`
 4. Update READMEs
-   - To the [Deprecated Deployments table](../deprecated/README.md#deployments-list) in `deprecated/README.md`:
+   - To the [Deprecated Deployments table](README.md#deprecated-deployment-method-list) in `deprecated/README.md`:
      - Add the name and link to the updated path of the deployment in `/deprecated`
      - Set `Deprecation Date` to be the current date (to be updated at merge time to the date of the merge)
      - Set `Deletion Date` to be approximately three months from the deprecation date (considering weekends, holidays, or other events). This may or may not be updated along with the deprecation date at merge time.
@@ -52,14 +52,14 @@ All deprecations will take place through a merge request and must be approved by
    - Suggestions for existing alternatives, if any
    - Use internal tooling to set a reminder for both User Lifecycle Developers and Solutions Architects to delete the deprecated method on it's Deletion Date. 
 
-### Deleting a deprecated deployment
+### Steps to delete a deprecated deployment method
 
 Deleting a deprecated deployment that has reached it's Deletion Date will take place through a merge request and must be approved by a 1Password employee. 
 
 1. Open a new branch with a name conforming to `remove/<deployment-method-name>`
 2. On that branch, remove the directories and files associated with that deployment method. 
 3. Updated READMEs
-    - Remove the deployment method from the [Deprecated Deployments table](../deprecated/README.md#deployments-list) in `deprecated/README.md` 
-    - Add the deployment to the [No longer supported](../deprecated/README.md#no-longer-supported) table. 
+    - Remove the deployment method from the [Deprecated deployment method table](README.md#deprecated-deployment-method-list) in `deprecated/README.md` 
+    - Add the deployment to the [Deleted deployment methods](README.md#deleted-deployment-methods) table. 
     - Remove the deployment method from [README in the repository root](../README.md)
 4. Put your MR up for review and approval. 
