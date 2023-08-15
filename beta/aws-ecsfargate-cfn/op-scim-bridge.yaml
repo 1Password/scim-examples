@@ -1,0 +1,398 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  Deploys 1Password SCIM Bridge using Amazon ECS and AWS Fargate. Provisions and
+  configures a VPC, 2 public subnets, an internet gateway, a route table, an
+  ALB, an ACM certificate, Route 53 DNS records, an AWS secret to store
+  credentials for your SCIM bridge, security groups, and required IAM roles.
+Metadata: 
+  AWS::CloudFormation::Interface: 
+    ParameterGroups:
+      - 
+        Label: 
+          default: ""
+        Parameters: 
+          - VPCCIDR
+          - Route53HostedZoneID
+          - DomainName
+          - SCIMBridgeVersion
+          - scimsession
+    ParameterLabels: 
+      VPCCIDR: 
+        default: "VPC CIDR"
+      Route53HostedZoneID:
+        default: "Route 53 hosted zone"
+      DomainName:
+        default: "1Password SCIM Bridge domain name"
+      SCIMBridgeVersion:
+        default: "1Password SCIM Bridge version"
+Parameters:
+  VPCCIDR:
+    Type: String
+    Default: 10.0.0.0/16
+    Description: A CIDR block for the VPC to be created
+  Route53HostedZoneID:
+    Type: 'AWS::Route53::HostedZone::Id'
+    Description: >-
+      The Route 53 hosted zone in which to create DNS records for ACM validation and the ALB
+  DomainName:
+    Type: String
+    Default: scim.example.com
+    Description: >-
+      A fully qualified domain name for your SCIM bridge; this must be in the
+      domain of the selected Route 53 hosted zone (where the record will be
+      created)
+  scimsession:
+    Type: String
+    Description: >-
+      The plain text contents of the scimsession file created during the
+      automated user provisioning setup in your 1Password account
+    NoEcho: true
+  SCIMBridgeVersion:
+    Type: String
+    Default: 'v2.8.2'
+    Description: >-
+      The tag of the 1Password SCIM Bridge image to pull from Docker Hub
+Resources:
+  scimsessionSecret:
+    Type: 'AWS::SecretsManager::Secret'
+    Properties:
+      SecretString: !Base64
+        Ref: scimsession
+  ECSCluster:
+    Type: 'AWS::ECS::Cluster'
+    Properties:
+      CapacityProviders:
+        - FARGATE
+      DefaultCapacityProviderStrategy:
+        - CapacityProvider: FARGATE
+          Weight: 1
+  ECSTaskDefinition:
+    Type: 'AWS::ECS::TaskDefinition'
+    Properties:
+      RequiresCompatibilities:
+        - FARGATE
+      NetworkMode: awsvpc
+      Cpu: 512
+      Memory: 1024
+      ExecutionRoleArn: !GetAtt ExecutionRole.Arn
+      TaskRoleArn: !Ref TaskRole
+      ContainerDefinitions:
+        - Name: op-scim-bridge
+          Image: !Sub '1password/scim:${SCIMBridgeVersion}'
+          PortMappings:
+            - ContainerPort: 3002
+              HostPort: 3002
+              Protocol: tcp
+          Essential: true
+          DependsOn:
+            - ContainerName: redis
+              Condition: HEALTHY
+          Environment:
+            - Name: OP_REDIS_URL
+              Value: 'redis://localhost:6379'
+          Secrets:
+            - Name: OP_SESSION
+              ValueFrom: !Ref scimsessionSecret
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-region: !Ref 'AWS::Region'
+              awslogs-group: !Ref LogGroup
+              awslogs-stream-prefix: ecs-scim
+        - Name: redis
+          Image: 'redis:latest'
+          Environment:
+            - Name: REDIS_ARGS
+              Value: '--maxmemory 256mb --maxmemory-policy volatile-lru'
+          Essential: true
+          PortMappings:
+            - ContainerPort: 6379
+              HostPort: 6379
+              Protocol: tcp
+          HealthCheck:
+            Command:
+                - "CMD-SHELL"
+                - "redis-cli ping | grep PONG"
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-region: !Ref 'AWS::Region'
+              awslogs-group: !Ref LogGroup
+              awslogs-stream-prefix: ecs-redis
+  LogGroup:
+    Type: 'AWS::Logs::LogGroup'
+    Properties: {}
+  ECSService:
+    Type: 'AWS::ECS::Service'
+    DependsOn: HTTPSListener
+    Properties:
+      Cluster: !Ref ECSCluster
+      TaskDefinition: !Ref ECSTaskDefinition
+      DeploymentConfiguration:
+        MaximumPercent: 100
+        MinimumHealthyPercent: 0
+      DesiredCount: 1
+      HealthCheckGracePeriodSeconds: 60
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          Subnets:
+            - !Ref PublicSubnet1
+            - !Ref PublicSubnet2
+          SecurityGroups:
+            - !Ref ServiceSecurityGroup
+      LoadBalancers:
+        - ContainerName: op-scim-bridge
+          ContainerPort: 3002
+          TargetGroupArn: !Ref TargetGroup
+  TargetGroup:
+    Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
+    Properties:
+      HealthCheckIntervalSeconds: 10
+      HealthCheckPath: /app
+      Matcher:
+        HttpCode: '200,301,302'
+      HealthCheckTimeoutSeconds: 5
+      UnhealthyThresholdCount: 2
+      HealthyThresholdCount: 2
+      Port: 3002
+      Protocol: HTTP
+      TargetGroupAttributes:
+        - Key: deregistration_delay.timeout_seconds
+          Value: 60
+      TargetType: ip
+      VpcId: !Ref VPC
+  LoadBalancer:
+    DependsOn: GatewayAttachment
+    Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer'
+    Properties:
+      Scheme: internet-facing
+      Subnets:
+        - !Ref PublicSubnet1
+        - !Ref PublicSubnet2
+      SecurityGroups:
+        - !Ref LoadBalancerSecurityGroup
+  LoadBalancerSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: >-
+        Allow public HTTPS ingress to the load balancer from the identity
+        provider, restrict egress to the VPC for 1Password SCIM Bridge
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 3002
+          ToPort: 3002
+          CidrIp: !GetAtt VPC.CidrBlock
+  ServiceSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: >-
+        Restrict ingress to ECS Service from load balancer, allow egress to
+        1Password.com for 1Password SCIM Bridge.
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3002
+          ToPort: 3002
+          SourceSecurityGroupId: !Ref LoadBalancerSecurityGroup
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+  HTTPSListener:
+    Type: 'AWS::ElasticLoadBalancingV2::Listener'
+    Properties:
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref TargetGroup
+      LoadBalancerArn: !Ref LoadBalancer
+      Port: 443
+      Protocol: HTTPS
+      Certificates:
+        - CertificateArn: !Ref TLSCertificate
+  ExecutionRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Sid: ''
+            Effect: Allow
+            Principal:
+              Service:
+                - ecs-tasks.amazonaws.com
+            Action: 'sts:AssumeRole'
+      Policies:
+        - PolicyName: secrets_manager_policy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'secretsmanager:GetSecretValue'
+                Resource:
+                  - !Ref scimsessionSecret
+        - PolicyName: inlined_managed_policy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'ec2:AuthorizeSecurityGroupIngress'
+                  - 'ec2:Describe*'
+                  - 'ecr:BatchCheckLayerAvailability'
+                  - 'ecr:BatchGetImage'
+                  - 'ecr:GetAuthorizationToken'
+                  - 'ecr:GetDownloadUrlForLayer'
+                  - 'elasticloadbalancing:DeregisterInstancesFromLoadBalancer'
+                  - 'elasticloadbalancing:DeregisterTargets'
+                  - 'elasticloadbalancing:Describe*'
+                  - 'elasticloadbalancing:RegisterInstancesWithLoadBalancer'
+                  - 'elasticloadbalancing:RegisterTargets'
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                Resource: '*'
+  DNSRecord:
+    Type: 'AWS::Route53::RecordSet'
+    Properties:
+      HostedZoneId: !Ref Route53HostedZoneID
+      Comment: DNS record pointing to load balancer for 1Password SCIM Bridge
+      Name: !Ref DomainName
+      Type: A
+      AliasTarget:
+        DNSName: !GetAtt LoadBalancer.DNSName
+        HostedZoneId: !GetAtt LoadBalancer.CanonicalHostedZoneID
+  TLSCertificate:
+    Type: 'AWS::CertificateManager::Certificate'
+    Properties:
+      DomainName: !Ref DNSRecord
+      ValidationMethod: DNS
+      DomainValidationOptions:
+        - DomainName: !Ref DNSRecord
+          HostedZoneId: !Ref Route53HostedZoneID
+  TaskRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ecs-tasks.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      Policies:
+        - PolicyName: cloudwatch_logging
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                Resource: '*'
+        - PolicyName: vpc_access
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'ec2:CreateNetworkInterface'
+                  - 'ec2:DescribeNetworkInterfaces'
+                  - 'ec2:DeleteNetworkInterface'
+                Resource: '*'
+        - PolicyName: task_execution_role_policy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'ecr:GetAuthorizationToken'
+                  - 'ecr:BatchCheckLayerAvailability'
+                  - 'ecr:GetDownloadUrlForLayer'
+                  - 'ecr:BatchGetImage'
+                Resource: '*'
+  VPC:
+    Type: 'AWS::EC2::VPC'
+    Properties:
+      CidrBlock: !Ref VPCCIDR
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+  PublicSubnet1:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      AvailabilityZone:
+        'Fn::Select':
+          - 0
+          - 'Fn::GetAZs':
+              Ref: 'AWS::Region'
+      VpcId: !Ref VPC
+      CidrBlock:
+        'Fn::Select':
+          - 0
+          - 'Fn::Cidr':
+              - !GetAtt VPC.CidrBlock
+              - 16
+              - 12
+  PublicSubnet2:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      AvailabilityZone:
+        'Fn::Select':
+          - 1
+          - 'Fn::GetAZs':
+              Ref: 'AWS::Region'
+      VpcId: !Ref VPC
+      CidrBlock:
+        'Fn::Select':
+          - 1
+          - 'Fn::Cidr':
+              - !GetAtt VPC.CidrBlock
+              - 16
+              - 12
+  InternetGateway:
+    Type: 'AWS::EC2::InternetGateway'
+  GatewayAttachment:
+    Type: 'AWS::EC2::VPCGatewayAttachment'
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref InternetGateway
+  RouteTable:
+    Type: 'AWS::EC2::RouteTable'
+    Properties:
+      VpcId: !Ref VPC
+  Route:
+    Type: 'AWS::EC2::Route'
+    DependsOn: GatewayAttachment
+    Properties:
+      RouteTableId: !Ref RouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+  PublicSubnet1RouteTableAssociation:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      SubnetId: !Ref PublicSubnet1
+      RouteTableId: !Ref RouteTable
+  PublicSubnet2RouteTableAssociation:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      SubnetId: !Ref PublicSubnet2
+      RouteTableId: !Ref RouteTable
+Outputs:
+  SCIMBridgeURL:
+    Description: >-
+      The URL for your SCIM bridge. Use this and your bearer token to connect
+      your identity provider to 1Password.
+    Value: !Sub 'https://${DNSRecord}/'
