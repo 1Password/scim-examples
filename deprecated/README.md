@@ -11,40 +11,40 @@ This folder contains 1Password SCIM Bridge deployment methods that have been dep
 | [aws-ec2-terraform](./aws-terraform)                      | 2020-12-21       | 2023-09-14    | [AWS ECS Fargate with Terraform](../aws-ecsfargate-terraform/) or [AWS ECS Fargate with CloudFormation](./beta/aws-ecsfargate-cfn/)  |
 | [DigitalOcean App Platform](./digitalocean-app-platform/) | 2022-12-21       | 2023-09-14    | [Digital Ocean App Platform with `op` CLI](../beta/do-app-platform-op-cli/) or [Azure Container Apps](../beta/azure-container-apps/) |
 
-
 ### No longer supported
-The following is a list of deployment methods that are no longer supported and were removed from the repository upon expiration of their deperecation period. These deployment methods are no longer supported. If you previously depended on one of these deployment methods, consider one of the suggested alternatives. 
 
-| Deployment                                                | Deprecation Date | Deletion Date | Suggested Alternative                                                                                                                |
-| --------------------------------------------------------- | ---------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| [aws-ec2-terraform](./aws-terraform)                      | 2020-12-21       | 2023-09-14    | [AWS ECS Fargate with Terraform](../aws-ecsfargate-terraform/) or [AWS ECS Fargate with CloudFormation](./beta/aws-ecsfargate-cfn/)  |
-| [DigitalOcean App Platform](./digitalocean-app-platform/) | 2022-12-21       | 2023-09-14    | [Digital Ocean App Platform with `op` CLI](../beta/do-app-platform-op-cli/) or [Azure Container Apps](../beta/azure-container-apps/) |
+The following is a list of deployment methods that are no longer supported and were removed from the repository upon expiration of their deperecation period. These deployment methods are no longer supported. If you previously depended on one of these deployment methods, consider one of the suggested alternatives.
 
+| Deployment | Deprecation Date | Deletion Date | Suggested Alternative |
+| ---------- | ---------------- | ------------- | --------------------- |
+| -          | -                | -             | -                     |
 
 ## Process for deprecating deployment methods
 
 Generally speaking we try to improve existing deployment methods or create additional deployment methods. However, where updating existing deployment methods is not feasible, we will resort to deprecation.
 
 There are many reasons a deployment method may be slated for deprecation. A deployment method may be deprecated for a variety of reasons, along or in combination. Common reasons a deployment method may be deprecated include:
-* It relies on tooling, utilities, or technologies that have themselves been deprecated or where new versions of the utility/technology introduced breaking changes.
-* It is complex, unreliable, inflexible, or costly, and often leads to poor experiences. A similar deployment method on the same platform or leveraging similar technologies may or may not exist as a replacement. 
+
+- It relies on tooling, utilities, or technologies that have themselves been deprecated or where new versions of the utility/technology introduced breaking changes.
+- It is complex, unreliable, inflexible, or costly, and often leads to poor experiences. A similar deployment method on the same platform or leveraging similar technologies may or may not exist as a replacement.
 
 ### Steps to deprecate a deployment method
-All deprecations will take place through a merge request which must be approved by a 1Password employee.  
 
-1. Identify a candidate for deprecation using the [above criteria](#process-for-deprecating-deployment-methods) along with insights from Integrations Support, your experience, and changes to dependencies, required utilities, host platforms, and technologies.  
-    * There are no hard and fast rules here, and no single criteria. When making deprecation decisions, the focus should be on ensuring the best possible experience for 1Password SCIM Bridge users. 
+All deprecations will take place through a merge request which must be approved by a 1Password employee.
+
+1. Identify a candidate for deprecation using the [above criteria](#process-for-deprecating-deployment-methods) along with insights from Integrations Support, your experience, and changes to dependencies, required utilities, host platforms, and technologies.
+   - There are no hard and fast rules here, and no single criteria. When making deprecation decisions, the focus should be on ensuring the best possible experience for 1Password SCIM Bridge users.
 2. Open a new branch with a name conforming to `deprecate/<deployment-method-name>`
 3. Move all assets related to the deployment method to `./deprecated/<deployment-method-name>`
 4. Update READMEs
-    * To the [Deprecated Deployments table](../deprecated/README.md#deployments-list) in `deprecated/README.md`:
-      * Add the name and link to the updated path of the deployment in `/deprecated`.
-      * Set `Deprecation Date` to be the current date (to be updated at merge time to the date of the merge).
-      * Set `Deletion Date` to be approximately three months from the deprecation date (considering weekends, holidays, or other events). This may or may not be updated along with the deprecation date at merge time.  
-    * To the [README in the repository root](../README.md) add:
-      * Suffix the name of the deployment in the list with `**(⚠️ Deprecated)**`. 
-      * Update the URL of the linked text point to the new path of the deployment in `/deprecated`.
+   - To the [Deprecated Deployments table](../deprecated/README.md#deployments-list) in `deprecated/README.md`:
+     - Add the name and link to the updated path of the deployment in `/deprecated`.
+     - Set `Deprecation Date` to be the current date (to be updated at merge time to the date of the merge).
+     - Set `Deletion Date` to be approximately three months from the deprecation date (considering weekends, holidays, or other events). This may or may not be updated along with the deprecation date at merge time.
+   - To the [README in the repository root](../README.md) add:
+     - Suffix the name of the deployment in the list with `**(⚠️ Deprecated)**`.
+     - Update the URL of the linked text point to the new path of the deployment in `/deprecated`.
 5. Put your MR up for review and approval. In your MR, please include:
-    * Justification for the deprecation.
-    * Why updating or improving the deployment method is not possible or practical.
-    * Suggestions for existing alternatives, if any. 
+   - Justification for the deprecation.
+   - Why updating or improving the deployment method is not possible or practical.
+   - Suggestions for existing alternatives, if any.
