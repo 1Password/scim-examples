@@ -10,7 +10,7 @@ The following deployment methods are deprecated and will be removed from the rep
 
 | Deployment                                                | Deprecation Date | Deletion Date | Suggested Alternative                                                                                                                |
 | --------------------------------------------------------- | ---------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| [aws-ec2-terraform](./aws-terraform)                      | 2020-12-21       | 2023-09-14    | [AWS ECS Fargate with Terraform](../aws-ecsfargate-terraform/) or [AWS ECS Fargate with CloudFormation](./beta/aws-ecsfargate-cfn/)  |
+| [aws-ec2-terraform](./aws-terraform)                      | 2020-12-21       | 2023-09-14    | [AWS ECS Fargate with Terraform](../aws-ecsfargate-terraform/) or [AWS ECS Fargate with CloudFormation](../beta/aws-ecsfargate-cfn/)  |
 | [DigitalOcean App Platform](./digitalocean-app-platform/) | 2022-12-21       | 2023-09-14    | [Digital Ocean App Platform with `op` CLI](../beta/do-app-platform-op-cli/) or [Azure Container Apps](../beta/azure-container-apps/) |
 
 ### Deleted deployment methods
