@@ -4,7 +4,9 @@ This folder contains 1Password SCIM Bridge deployment methods that have been dep
 
 > 💡 **Note** that it is solely the _deployment method_ that is deprecated. Deprecating a deployment method is independent of the 1Password SCIM Bridge itself, or a specific version of the 1Password SCIM Bridge. For information about the latest version of 1Password SCIM Bridge, please see the [changelog](https://app-updates.agilebits.com/product_history/SCIM).
 
-## Deployments list
+## Deprecated deployment list
+
+The following deployment methods are deprecated and will be removed from the repository on or around the Deletion Date.
 
 | Deployment                                                | Deprecation Date | Deletion Date | Suggested Alternative                                                                                                                |
 | --------------------------------------------------------- | ---------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
@@ -30,7 +32,7 @@ There are many reasons a deployment method may be slated for deprecation. A depl
 
 ### Steps to deprecate a deployment method
 
-All deprecations will take place through a merge request which must be approved by a 1Password employee.
+All deprecations will take place through a merge request and must be approved by a 1Password employee.
 
 1. Identify a candidate for deprecation using the [above criteria](#process-for-deprecating-deployment-methods) along with insights from Integrations Support, your experience, and changes to dependencies, required utilities, host platforms, and technologies.
    - There are no hard and fast rules here, and no single criteria. When making deprecation decisions, the focus should be on ensuring the best possible experience for 1Password SCIM Bridge users.
@@ -38,13 +40,26 @@ All deprecations will take place through a merge request which must be approved 
 3. Move all assets related to the deployment method to `./deprecated/<deployment-method-name>`
 4. Update READMEs
    - To the [Deprecated Deployments table](../deprecated/README.md#deployments-list) in `deprecated/README.md`:
-     - Add the name and link to the updated path of the deployment in `/deprecated`.
-     - Set `Deprecation Date` to be the current date (to be updated at merge time to the date of the merge).
+     - Add the name and link to the updated path of the deployment in `/deprecated`
+     - Set `Deprecation Date` to be the current date (to be updated at merge time to the date of the merge)
      - Set `Deletion Date` to be approximately three months from the deprecation date (considering weekends, holidays, or other events). This may or may not be updated along with the deprecation date at merge time.
    - To the [README in the repository root](../README.md) add:
      - Suffix the name of the deployment in the list with `**(⚠️ Deprecated)**`.
      - Update the URL of the linked text point to the new path of the deployment in `/deprecated`.
 5. Put your MR up for review and approval. In your MR, please include:
-   - Justification for the deprecation.
-   - Why updating or improving the deployment method is not possible or practical.
-   - Suggestions for existing alternatives, if any.
+   - Justification for the deprecation
+   - Why updating or improving the deployment method is not possible or practical
+   - Suggestions for existing alternatives, if any
+   - Use internal tooling to set a reminder for both User Lifecycle Developers and Solutions Architects to delete the deprecated method on it's Deletion Date. 
+
+### Deleting a deprecated deployment
+
+Deleting a deprecated deployment that has reached it's Deletion Date will take place through a merge request and must be approved by a 1Password employee. 
+
+1. Open a new branch with a name conforming to `remove/<deployment-method-name>`
+2. On that branch, remove the directories and files associated with that deployment method. 
+3. Updated READMEs
+    - Remove the deployment method from the [Deprecated Deployments table](../deprecated/README.md#deployments-list) in `deprecated/README.md` 
+    - Add the deployment to the [No longer supported](../deprecated/README.md#no-longer-supported) table. 
+    - Remove the deployment method from [README in the repository root](../README.md)
+4. Put your MR up for review and approval. 
