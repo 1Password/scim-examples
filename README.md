@@ -26,7 +26,7 @@ After you've read the preparation guide, refer to the deployment example for you
 
 ### Beta deployment
 
-These are beta versions of 1Password SCIM Bridge deployments and components. These deployments *should* work, but aren't guaranteed and will change in the future.
+These are beta versions of 1Password SCIM Bridge deployments and components. These deployments _should_ work, but aren't guaranteed and will change in the future.
 
 - ✨ **NEW** [AWS with CloudFormation](/beta/aws-ecsfargate-cfn)
 - ✨ **NEW** [Azure Container App](/beta/azure-container-apps)
@@ -34,12 +34,19 @@ These are beta versions of 1Password SCIM Bridge deployments and components. The
 - [Google Workspace settings](/beta/workspace-settings.json)
 - [Google Workspace module for Terraform](/beta/aws-terraform-gw/)
 
-### Deprecated deployments
+## Deprecated deployment methods
 
-The following are deprecated 1Password SCIM Bridge deployments. At the time of deprecation, these deployments were still fully functional, but may no longer be updated and will eventually be removed.
+A list of recently-deprecated deployments can be found in [`/deprecated`](./deprecated/). At the time of deprecation, these deployments were fully functional, but will soon become unsupported.
 
-- [AWS EC2 with terraform](/deprecated/aws-terraform/)
-- [DigitalOcean App Platform](/deprecated/digitalocean-app-platform/)
+* [**List of deprecated deployment methods**](./deprecated/README.md#deprecated-deployments)
+
+### Deprecation schedule
+
+When a deployment method is deprecated, we will simultaneously append a deprecation notice to the deployment name listed in this README and move all files associated with the deployment method to [`/deprecated`](./deprecated/). 
+
+Deprecated deployments will remain in [`/deprecated`](./deprecated/) for approximately **three months**, after which time they will be deleted. The deletion date of deprecated deployments will be posted in [`/deprecated/README.md`](./deprecated/README.md).
+
+Where possible, we will provide suggested alternatives in [`/deprecated/README.md`](./deprecated/README.md).
 
 ## Get help
 
