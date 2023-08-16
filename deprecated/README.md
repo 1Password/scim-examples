@@ -23,7 +23,7 @@ The following is a list of deployment methods that are no longer supported and w
 
 ## Process for deprecating deployment methods
 
-Generally speaking we try to improve existing deployment methods or create additional deployment methods. However, where updating existing deployment methods is not feasible, we will resort to deprecation.
+Generally speaking we try to improve existing deployment methods or create additional deployment methods. However, sometimes deployment methods become no longer relevant and so may be deprecated. 
 
 Common reasons a deployment method may be deprecated include one or more of:
 
@@ -35,7 +35,7 @@ Common reasons a deployment method may be deprecated include one or more of:
 All deprecations will take place through a pull request and must be approved by a 1Password employee.
 
 1. Identify a candidate for deprecation using the [above criteria](#process-for-deprecating-deployment-methods) along with insights from Integrations Support, your experience, and changes to dependencies, required utilities, host platforms, and technologies.
-   - There are no hard and fast rules here, and no single criteria. When making deprecation decisions, the focus should be on ensuring the best possible experience for 1Password SCIM Bridge users.
+   - There are no hard and fast rules here, and no single criteria. When making deprecation decisions, the focus should be on ensuring the best possible experience for 1Password SCIM Bridge users. This does not immediately imply we maintain everything forever. To produce the best possible experience may require removing non-relevant deployment methods to enable us to focus on more relevant deployment methods. 
 2. Open a new branch with a name conforming to `deprecate/<deployment-method-name>`
 3. Move all assets related to the deployment method to `./deprecated/<deployment-method-name>`
 4. Update READMEs

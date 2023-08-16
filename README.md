@@ -36,7 +36,7 @@ These are beta versions of 1Password SCIM Bridge deployments and components. The
 
 ## Deprecated deployment methods
 
-A list of recently-deprecated deployments can be found in [`/deprecated`](./deprecated/). At the time of deprecation, these deployments were fully functional, but will no longer be updated.
+A list of recently-deprecated deployments can be found in [`/deprecated`](./deprecated/). At the time of deprecation, these deployments were fully functional, but will soon become unsupported.
 
 * [**List of deprecated deployment methods**](./deprecated/README.md#deprecated-deployments)
 
