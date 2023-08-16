@@ -23,7 +23,7 @@ The following is a list of deployment methods that are no longer supported and w
 
 ## Process for deprecating deployment methods
 
-Generally speaking we try to improve existing deployment methods or create additional deployment methods. However, where updating existing deployment methods is not feasible, we will resort to deprecation.
+Generally speaking we try to improve existing deployment methods or create additional deployment methods. However, sometimes deployment methods become no longer relevant and so may be deprecated. 
 
 Common reasons a deployment method may be deprecated include one or more of:
 
