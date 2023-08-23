@@ -1,184 +1,133 @@
-# Deploying the 1Password SCIM bridge on Kubernetes
+# Deploy 1Password SCIM Bridge on Kubernetes
 
-This example explains how to deploy the 1Password SCIM bridge on a Kubernetes cluster. It assumes your Kubernetes cluster supports "load balancer" services.
+*Learn how to deploy 1Password SCIM Bridge on a Kubernetes cluster.*
 
-You can modify this deployment to suit your environment and needs.
+> **Note**
+>
+> If you use Azure Kubernetes Service, learn how to [deploy the SCIM bridge there](https://support.1password.com/scim-deploy-azure/).
 
-If you are deploying to the Azure Kubernetes Service, you can refer to our [detailed deployment guide instead](https://support.1password.com/cs/scim-deploy-azure/).
+**Table of contents:**
 
-The deployment process consists of these steps:
+- [Before you begin](#before-you-begin)
+- [Step 1: Create the `scimsession` Kubenetes Secret](#step-1-create-the-scimsession-kubernetes-secret)
+- [Step 2: Deploy 1Password SCIM Bridge to the Kubernetes cluster](#step-2-deploy-1password-scim-bridge-to-the-kubernetes-cluster)
+- [Step 3: Create a DNS record](#step-3-create-a-dns-record)
+- [Step 4: Configure Let's Encrypt](#step-4-configure-lets-encrypt)
+- [Step 5: Test the SCIM bridge](#step-5-test-the-scim-bridge)
+- [Step 6: Connect your identity provider](#step-6-connect-your-identity-provider)
+- [Update your SCIM Bridge](#update-your-scim-bridge)
+- [Appendix: Resource recommendations](#appendix-resource-recommendations)
+- [Appendix: Customize your deployment](#appendix-customize-your-deployment)
 
-1. Create a Kubernetes Secret with your `scimsession` file
-2. (Optional) Create Kubernetes Secrets for Google Workspace
-3. Deploy 1Password SCIM bridge to your cluster
-4. Create a DNS record for SCIM bridge
-5. Configure Let's Encrypt
+## Before you begin
 
-## Structure
+Before you begin, familiarize yourself with [PREPARATION.md](/PREPARATION.md) and complete the necessary steps there.
 
-- [`op-scim-deployment.yaml`](./op-scim-deployment.yaml): The Deployment object for the SCIM bridge container.
-- [`op-scim-service.yaml`](./op-scim-service.yaml): Public load balancer for SCIM bridge to enable connectivity for your idenitty provider.
-- [`op-scim-config.yaml`](./op-scim-config.yaml): Configuration for the SCIM bridge Deployment.
-- [`redis-deployment.yaml`](./redis-deployment.yaml): A Redis cache deployed in the cluster.
-- [`redis-service.yaml`](./op-scim-service.yaml): Kubernetes Service for the Redis cache to enable connectivity inside the cluster.
+### In this folder
+
+- [`op-scim-config.yaml`](./op-scim-config.yaml): Configuration for the SCIM bridge deployment.
+- [`op-scim-deployment.yaml`](./op-scim-deployment.yaml): The deployment manifest for the SCIM bridge container.
+- [`op-scim-service.yaml`](./op-scim-service.yaml): Public load balancer for SCIM bridge to connect with your identity provider.
 - [`redis-config.yaml`](./redis-config.yaml): Configuration for the Redis cache.
+- [`redis-deployment.yaml`](./redis-deployment.yaml): The deployment manifest for a Redis cache in the cluster.
+- [`redis-service.yaml`](./op-scim-service.yaml): Kubernetes Service for the Redis cache to enable connectivity inside the cluster.
 
-## Preparing
+## Step 1: Create the `scimsession` Kubernetes Secret
 
-Ensure you've read through the [PREPARATION.md](/PREPARATION.md) document before beginning deployment.
-
-## Clone `scim-examples`
-
-As seen in [PREPARATION.md](/PREPARATION.md), you’ll need to clone this repository using `git` into a directory of your choice.
-
-```bash
-git clone https://github.com/1Password/scim-examples.git
-```
-
-You can then browse to the Kubernetes directory:
-
-```bash
-cd scim-examples/kubernetes/
-```
-
-## Create the `scimsession` Kubernetes Secret
-
-The following requires that you’ve completed the initial setup of Automated User Provisioning in your 1Password account. See [our support article](https://support.1password.com/scim/#step-1-prepare-your-1password-account) for more details.
-
-Once complete, create a Kubernetes Secret containing the contents of the `scimsession` credentials file. Using `--from-file=[key=]source` when [creating the Kubernetes Secret](https://kubernetes.io/docs/tasks/configmap-secret/managing-secret-using-kubectl/#create-a-secret), we can create the Kubernetes Secret named `scimsession`, specify the `scimsession` key, and set its value as the contents of the `scimsession` file in one command (replace `./scimsession` if the file is saved in another directory and/or with a different filename):
+After you [prepare your 1Password account](/PREPARATION.md#prepare-your-1password-account), [create a Kubernetes Secret](https://kubernetes.io/docs/tasks/configmap-secret/managing-secret-using-kubectl/#create-a-secret) containing the contents of the `scimsession` credentials file. Use `--from-file=[key=]source` when you create the Secret, name it `scimsession`, specify the `scimsession` key, and set its value as the contents of the `scimsession` file. For example (replace `./scimsession` if the file is saved in another directory and/or with a different filename):
 
 ```bash
 kubectl create secret generic scimsession --from-file=scimsession=./scimsession
 ```
 
-## For Google Workspace customers only
+### If Google Workspace is your identity provider
 
-This section is only relevant if Google Workspace is your identity provider. If you are not connecting 1Password to Google Workspace, please proceed to [Deploy to the Kubernetes cluster](https://github.com/1Password/scim-examples/tree/master/kubernetes#deploy-to-the-kubernetes-cluster).
+The following steps only apply if you use Google Workspace as your identity provider. If you use another identity provider, [continue to step 2](#step-2-deploy-1password-scim-bridge-to-the-kubernetes-cluster).
 
-### Create a Google service account
+1. Follow the steps to [create a Google service account, key, and API client](https://support.1password.com/scim-google-workspace/#step-1-create-a-google-service-account-key-and-api-client).
+2. Using the credential file you just downloaded, create a Kubernetes Secret and substitute `<keyfile>` with the filename generated by Google for your Google Service Account:
+	```bash
+	kubectl create secret generic workspace-credentials --from-file=workspace-credentials.json=/path/to/<keyfile>.json
+	```
+3. Edit the file located at `scim-examples/beta/workspace-settings.json` and fill in correct values for:
+	* **Actor**: the email address of the administrator in Google Workspace that the service account is acting on behalf of.
+	* **Bridge Address**: the URL you will use for your SCIM bridge (not your 1Password account sign-in address). This is most often a subdomain of your choosing on a domain you own. For example: https://scim.example.com.
+4. After you've edited the file, save it and run the following command to create a Kubernetes Secret from the settings file:
+	```bash
+	kubectl create secret generic workspace-settings --from-file=workspace-settings.json=../beta/workspace-settings.json
+	```
 
-Create a Google service account and key as outlined in the 1Password support article [Connect Google Workspace to 1Password SCIM Bridge](https://support.1password.com/scim-google-workspace/#step-1-create-a-google-service-account-key-and-api-client). 
+## Step 2: Deploy 1Password SCIM Bridge to the Kubernetes cluster
 
-Download the credentials file provided by Google and save a copy to your 1Password account. 
-
-### Create a Kubernetes secret for the Google service account credential
-
-Using the credential file you just downloaded, create a kubernetes secret, substituting `<keyfile>` with the filename generated by Google for your Google Service Account.
-
-```bash
-kubectl create secret generic workspace-credentials --from-file=workspace-credentials.json=/path/to/<keyfile>.json
-```
-
-### Create a Workspace settings Kubernetes secret
-
-In order to provide the SCIM bridge with necessary information about your Google Workspace account, you’ll need to edit the file located at `scim-examples/beta/workspace-settings.json`, filling in correct values for:
-
-* **Actor**: the email address of the administrator in Google Workspace that the service account is acting on behalf of.
-* **Bridge Address**: the URL you will use for your SCIM bridge (not your 1Password account sign-in address). This is most often a subdomain of your choosing on a domain you own. For example: https://scim.example.com.
-
-Once you have edited the file, save it and run the following command to create a kubernetes secret from the settings file. 
+Run the following command to deploy 1Password SCIM Bridge:
 
 ```bash
-kubectl create secret generic workspace-settings --from-file=workspace-settings.json=../beta/workspace-settings.json
+kubectl apply --filename=./
 ```
 
-## Deploy to the Kubernetes cluster
+### If Google Workspace is your identity provider
 
-Run the following command deploy SCIM bridge:
-
-```bash
-kubectl apply -f .
-```
-
-If you are a Google Workspace customer and have stored your `workspace-credentials.json` and `workspace-settings.json` files in the same directory as your deployment files, you may see the following error after running `kubectl apply -f .`:
+If you use Google Workspace as your identity provider and have stored your `workspace-credentials.json` and `workspace-settings.json` files in the same directory as your deployment files, you may see the following error after running `kubectl apply --filename=./`:
 
 ```bash
 error validating "workspace-credentials.json": error validating data: [apiVersion not set, kind not set]; if you choose to ignore these errors, turn validation off with --validate=false
 error validating "workspace-settings.json": error validating data: [apiVersion not set, kind not set]; if you choose to ignore these errors, turn validation off with --validate=false
 ```
-You can safely ignore these errors, or move the `workspace-credentials.json` and `workspace-settings.json` to a different directory before running `kubectl apply -f .`.
+You can safely ignore these errors, or move the `workspace-credentials.json` and `workspace-settings.json` to a different directory before running `kubectl apply --filename=./`.
 
-## Create the DNS record
+## Step 3: Create a DNS record
 
-The [`op-scim-bridge` Service](./op-scim-service.yaml) creates a public load balancer attached to your cluster that forwards TLS traffic to SCIM bridge.
+The [`op-scim-bridge` Service](./op-scim-service.yaml) creates a public load balancer attached to your cluster, which forwards TLS traffic to SCIM bridge.
 
-Run the following command, and copy the address listed under the `External IP` column for to the `op-scim-bridge` Service from the output:
+1. Run the following command:
+	```bash
+	kubectl get service
+	```
+2. Copy the address listed under the `External IP` column for the `op-scim-bridge` Service from the output.
+	> **Note**
+	>
+	> It can take a few minutes before the public address becomes available. Run the command again if doesn't appear in the output.
+3. After you copy the address, create a public DNS record pointing to this address, as outlined in [the preparation guide](/PREPARATION.md).
 
-```bash
-kubectl get svc
-```
+## Step 4: Configure Let's Encrypt
 
-Note: It can take a few minutes before the public address becomes available. Run the command again if doesn't appear in the output.
-
-Create a public DNS record pointing to this address as outlined in [the preparation guide](/PREPARATION.md).
-
-## Configure Let's Encrypt
-
-After the DNS record above has propagated, run the following command to set the `OP_TLS_DOMAIN` environment variable to the fully-qualified domain name (FQDN) for SCIM bridge based on this record (replace `scim.example.com` with the FQDN):
+After you've created a DNS record and it's propagated, run the following command to set the `OP_TLS_DOMAIN` environment variable to the fully-qualified domain name (FQDN) for the SCIM bridge based on this record. Replace `scim.example.com` with the FQDN.
 
 ```bash
 kubectl set env deploy/op-scim-bridge OP_TLS_DOMAIN=scim.example.com
 ```
 
-SCIM bridge will restart and acquire a TLS certificate using Let's Encrypt.
+The SCIM bridge will restart and acquire a TLS certificate using Let's Encrypt.
 
-## Testing the instance
+## Step 5: Test the SCIM bridge
 
-You can test your instance by requesting `https://[your-domain]/scim/Users`, with the header `Authorization: Bearer [bearer token]` which should return a list of the users in your 1Password account.
+You can test your instance by requesting `https://[your-domain]/scim/Users`, with the header `"Authorization: Bearer TOKEN_GOES_HERE"`, which should return a list of the users in your 1Password account.
 
-You can do this with `curl`, as an example:
-
-```bash
-curl --header "Authorization: Bearer TOKEN_GOES_HERE" https://<domain>/scim/Users
-```
-
-You can now continue with the administration guide to configure your Identity Provider to enable provisioning with your SCIM bridge.
-
-## Updating
-
-To update SCIM bridge, connect to your Kubernetes cluster and run the following command:
+For example, to do this with `curl`:
 
 ```bash
-kubectl set image deploy/op-scim-bridge op-scim-bridge=1password/scim:v2.8.2
+curl --header "Authorization: Bearer TOKEN_GOES_HERE" https://scim.example.com/Users
 ```
 
-This will upgrade your SCIM bridge to the latest version, which should take about 2-3 minutes for Kubernetes to process.
+## Step 6: Connect your identity provider
 
-### October 2020 Upgrade Changes
+To finish setting up automated user provisioning, [connect your identity provider to the SCIM bridge](https://support.1password.com/scim/#step-3-connect-your-identity-provider).
 
-As of October 2020, the `scim-examples` Kubernetes deployment now uses `op-scim-config.yaml` to set the configuration needed for your SCIM bridge, and has changed the deployment names from `op-scim` to `op-scim-bridge`, and `redis` to `op-scim-redis` for clarity and consistency.
+## Update your SCIM bridge
 
-You’ll need to re-configure your options in `op-scim-config.yaml`, particularly `OP_TLS_DOMAIN`. You may also want to delete your previous `op-scim` and `redis` deployments to prevent conflict between the two versions.
+👍 Check for 1Password SCIM Bridge updates on the [SCIM bridge release page](https://app-updates.agilebits.com/product_history/SCIM).
+
+To update SCIM bridge, connect to your Kubernetes cluster and run the following command, replacing v2.8.0 with the latest version:
 
 ```bash
-kubectl delete deployment/op-scim deployment/redis
-kubectl apply -f .
+kubectl set image deploy/op-scim-bridge op-scim-bridge=1password/scim:v2.8.3
 ```
 
-You’ll then need to update your SCIM bridge’s domain name DNS record. You can find the IP for that with:
+The update should take 2-3 minutes for Kubernetes to complete.
 
-```bash
-kubectl describe service/op-scim-bridge
-# look for ‘LoadBalancer Ingress’
-```
+## Appendix: Resource recommendations
 
-This is a one-time operation to change the deployment and service names of the SCIM bridge so they are more easily identifiable to administrators.
-
-### April 2021 Upgrade Changes (SCIM bridge 2.0)
-
-With the release of SCIM bridge 2.0, the environment variables `OP_REDIS_HOST` and `OP_REDIS_PORT` have been deprecated and in favour of `OP_REDIS_URL`. Ensure that your `op-scim-config.yaml` file has changed to reflect this new environment variable, and reapplied to your pods with:
-
-```bash
-cd scim-examples/kubernetes
-git pull
-kubectl delete configmaps op-scim-configmap
-kubectl apply -f .
-kubectl scale deploy op-scim-bridge --replicas=0 && sleep 3 && kubectl scale deploy op-scim-bridge --replicas=1
-```
-
-## Resource Recommendations
-
-The default resource recommendations for the SCIM bridge and Redis deployments are acceptable in most scenarios, but they fall short in high volume deployments where there is a large number of users and/or groups. We strongly recommend increasing both the SCIM bridge and Redis deployments.
+The default resource recommendations for the SCIM bridge and Redis deployments are acceptable in most scenarios, but they may fall short in high-volume deployments where a large number of users and/or groups are being managed. We strongly recommend increasing the resources for both the SCIM bridge and Redis deployments.
 
 | Expected Provisioned Users |  Resources |
 | ------- | ------- |
@@ -190,7 +139,7 @@ Our current default resource requirements (defined in [op-scim-deployment](https
 
 <details>
   <summary>Default</summary>
-  
+
   ```yaml
   requests:
     cpu: 125m
@@ -206,7 +155,7 @@ Note that these are the recommended `requests` and `limits` values for both the 
 
 <details>
   <summary>High Volume Deployment</summary>
- 
+
   ```yaml
   requests:
     cpu: 500m
@@ -216,11 +165,11 @@ Note that these are the recommended `requests` and `limits` values for both the 
     cpu: 1000m
     memory: 1024M
   ```
-</details>  
+</details>
 
 <details>
   <summary>Very High Volume Deployment</summary>
-  
+
   ```yaml
   requests:
     cpu: 1000m
@@ -230,7 +179,7 @@ Note that these are the recommended `requests` and `limits` values for both the 
     cpu: 2000m
     memory: 2048M
   ```
-</details> 
+</details>
 
 Configuring these values can be done with Kubernetes commands. You can get the names of the deployments with `kubectl get deployments`.
 
@@ -256,17 +205,17 @@ kubectl scale --replicas=1 deployment/op-scim-bridge
 
 Please reach out to our [support team](https://support.1password.com/contact/) if you need help with the configuration or to tweak the values for your deployment.
 
-## Advanced deployments
+## Appendix: Customize your deployment
 
-Here are some helpful tips for customizing your 1Password SCIM bridge deployment:
+You can customize your 1Password SCIM Bridge deployment using some of the methods below.
 
-### Self-Managed TLS
+### Self-managed TLS
 
 There are two ways to use a self-managed TLS certificate, which disables Let's Encrypt functionality.
 
-#### Load Balancer
+#### Load balancer
 
-The first is to terminate TLS traffic on a public-facing load balancer or reverse proxy and redirect HTTP traffic to SCIM bridge within your private network. Skip the step to [configure Let's Encrypt](#configure-lets-encrypt), or revert to the default state by setting `OP_TLS_DOMAIN` to `""`:
+You can terminate TLS traffic on a public-facing load balancer or reverse proxy, then redirect HTTP traffic to SCIM bridge within your private network. Skip the step to configure Let's Encrypt, or revert to the default state by setting `OP_TLS_DOMAIN` to `""`:
 
 ```bash
 kubectl set env deploy/op-scim-bridge OP_TLS_DOMAIN=""
@@ -275,12 +224,12 @@ kubectl set env deploy/op-scim-bridge OP_TLS_DOMAIN=""
 Modify [`op-scim-service.yaml`](./op-scim-service.yaml) to use the alternate `http` port for the Service as noted within the manifest. Traffic from your TLS endpoint should be directed to this port (80, by default). If SCIM bridge has already been deployed, apply the amended Service manifest:
 
 ```bash
-kubectl apply -f ./op-scim-service.yaml
+kubectl apply --filename=./op-scim-service.yaml
 ```
 
-In this configuration, 1Password SCIM bridge will listen for unencrypted traffic on the `http` port of the Pod.
+In this configuration, 1Password SCIM Bridge will listen for unencrypted traffic on the `http` port of the Pod.
 
-#### Manually-Provided Key/Certificate
+#### Use your own certificate
 
 Alternatively, you can create a TLS Secret containing your key and certificate files, which can then be used by your SCIM bridge. This will also disable Let's Encrypt functionality.
 
@@ -303,32 +252,32 @@ kubectl set env deploy op-scim-bridge \
 
 ### External Redis
 
-If you prefer to use an existing Redis cache, omit the the `redis-*.yaml` files when deploying to your Kubernetes cluster. If you have already deployed SCIM bridge, you can delete the objects associated with Redis:
+If you prefer to use an existing Redis cache, omit the the `redis-*.yaml` files when deploying to your Kubernetes cluster. If you've already deployed the SCIM bridge, you can delete the objects associated with Redis:
 
 ```bash
 kubectl delete \
-  -f redis-config.yaml \
-  -f redis-deployment.yaml \
-  -f redis-service.yaml
+  --filename=redis-config.yaml \
+  --filename=redis-deployment.yaml \
+  --filename=redis-service.yaml
 ```
 
-Edit the value of the `OP_REDIS_URL` environment variable in [`op-scim-config.yaml`](./op-scim-config.yaml), or set it directly if you have already deployed 1Password SCIM bridge:
+Edit the value of the `OP_REDIS_URL` environment variable in [`op-scim-config.yaml`](./op-scim-config.yaml). Or set it directly if you have already deployed the bridge:
 
 ```bash
 kubectl set env deploy/op-scim-bridge OP_REDIS_URL="redis[s]://server:port"
 ```
 
-### Human-Readable Logs
+### Human-readable logs
 
-Set `OP_PRETTY_LOGS` to `1` if you would like the SCIM bridge to output logs in a human-readable format:
+Set `OP_PRETTY_LOGS` to `1` if you'd like the SCIM bridge to output logs in a human-readable format:
 
 ```bash
 kubectl set env deploy/op-scim-bridge OP_PRETTY_LOGS=1
 ```
 
-This may be helpful if you aren’t planning on doing custom log ingestion in your environment.
+This may be helpful if you aren't planning on doing custom log ingestion in your environment.
 
-### Debug Mode
+### Debug mode
 
 Set `OP_DEBUG` to `1` to enable debug output in the logs:
 
@@ -338,9 +287,9 @@ kubectl set env deploy/op-scim-bridge OP_DEBUG=1
 
 This may be useful for troubleshooting, or when contacting 1Password Support.
 
-### Trace Mode
+### TRACE mode
 
-Set `OP_TRACE` to `1` to enable Trace-level debug output in the logs:
+Set `OP_TRACE` to `1` to enable TRACE-level debug output in the logs:
 
 ```bash
 kubectl set env deploy/op-scim-bridge OP_TRACE=1
@@ -348,9 +297,9 @@ kubectl set env deploy/op-scim-bridge OP_TRACE=1
 
 This may be useful for troubleshooting Let’s Encrypt integration issues.
 
-### Health Check Ping Server
+### Health check ping server
 
-When using Let’s Encrypt on some Kubernetes clusters, health checks can fail for the SCIM bridge before the bridge is able to obtain a Let’s Encrypt certificate. Set `OP_PING_SERVER` to `1` to enable a `/ping` endpoint on port `80` so that health checks will always be brought online:
+On some Kubernetes clusters, health checks can fail for the SCIM bridge before the bridge is able to obtain a Let’s Encrypt certificate. Set `OP_PING_SERVER` to `1` to enable a `/ping` endpoint available on port 80 to use for health checks:
 
 ```bash
 kubectl set env deploy/op-scim-bridge OP_PING_SERVER=1

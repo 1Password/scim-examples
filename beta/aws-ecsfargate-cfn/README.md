@@ -215,12 +215,12 @@ aws cloudformation deploy \
     --template-file ./op-scim-bridge.yaml \
     --stack-name op-scim-bridge \
     --capabilities CAPABILITY_IAM \
-    --parameter-overrides SCIMBridgeVersion=v2.8.2
+    --parameter-overrides SCIMBridgeVersion=v2.8.3
 ```
 
 > **Note**
 >
 > Our [1Password SCIM Bridge release notes page](https://app-updates.agilebits.com/product_history/SCIM) does not include `v` in each release version, but this character must be included in the value of the `SCIMBridgeVersion` parameter to match the corresponding [image tag in Docker Hub](https://hub.docker.com/r/1password/scim/tags):
 >
-> - ✅ `v2.8.2`
-> - ❌ `2.8.2`
+> - ✅ `v2.8.3`
+> - ❌ `2.8.3`
