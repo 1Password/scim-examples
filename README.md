@@ -29,7 +29,8 @@ After you've read the preparation guide, refer to the deployment example for you
 These are beta versions of 1Password SCIM Bridge deployments and components. These deployments _should_ work, but aren't guaranteed and will change in the future.
 
 - ✨ **NEW** [AWS with CloudFormation](/beta/aws-ecsfargate-cfn)
-- ✨ **NEW** [Azure Container App](/beta/azure-container-apps)
+- ✨ **NEW** [Azure Container Apps](/beta/azure-container-apps)
+- ✨ **NEW** [Docker](/beta/docker)
 - [DigitalOcean App Platform with 1Password CLI](/beta/do-app-platform-op-cli/)
 - [Google Workspace settings](/beta/workspace-settings.json)
 - [Google Workspace module for Terraform](/beta/aws-terraform-gw/)
