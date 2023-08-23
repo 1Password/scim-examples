@@ -23,14 +23,16 @@ services:
       timeout: 3s
       retries: 5
   scim:
-    image: 1password/scim:v2.8.2
+    image: 1password/scim:v2.8.3
     depends_on:
       - redis
     secrets:
       - scimsession
-    environment:
-      - OP_TLS_DOMAIN
     env_file: ./scim.env
+    environment:
+      - OP_SESSION=/run/secrets/scimsession
+      - OP_REDIS_URL=redis://redis:6379
+      - OP_TLS_DOMAIN
     networks:
       - op-scim
     ports:
