@@ -82,9 +82,8 @@ All following steps should be run on the same computer where you are already usi
 
    > **Note**
    >
-   > 🔑 Hint: You can store your SSH keys in 1Password and authenticate this and other SSH workflows using 1Password
-   > without writing a private key to disk using the
-   > [1Password SSH agent](https://developer.1password.com/docs/ssh/get-started).
+   > 🔑 You can store your SSH keys in 1Password and authenticate this and other SSH workflows without writing a
+   > private key to disk using the [1Password SSH agent](https://developer.1password.com/docs/ssh/get-started).
 
 6. Switch to the Docker context you just created to connect to the Docker host:
 
@@ -147,7 +146,7 @@ docker stack config \
 
 ### Connect your SCIM bridge to Google Workspace
 
-If you are integrating with Google Workspace, use the `compose.gw.yaml` file to merge the Workspace configuration and create the additional Docker secrets needed for Workspace into the canonical configuration and deploy the stack:
+If you are integrating with Google Workspace, use the `compose.gw.yaml` file to merge the Workspace configuration and create the additional Docker secrets needed for Workspace into the canonical configuration inline, and deploy the stack:
 > **Warning**
 >
 > If you are *not* integrating with Workspace, skip this section and [test your SCIM bridge](#test-your-scim-bridge).
