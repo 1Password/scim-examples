@@ -9,15 +9,16 @@ services:
     networks:
       - op-scim
     ports:
-      - "80:8080"
+      #- "80:8080"
       - "443:8443"
-      - "3002:3002"
+      #- "3002:3002"
     secrets:
       - source: scimsession
         target: scimsession
         uid: "999"
         gid: "999"
         mode: 0440
+      ## Uncomment this section for DNS01 secret
       # - source: dns01-config
       #   target: dns01-config
       #   uid: "999"

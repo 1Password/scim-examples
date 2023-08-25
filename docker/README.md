@@ -10,7 +10,8 @@
 - [Step 3: Deploy 1Password SCIM Bridge](#step-3-deploy-1password-scim-bridge)
 - [Step 4: Test the SCIM bridge](#step-4-test-the-scim-bridge)
 - [Step 5: Connect your identity provider](#step-5-connect-your-identity-provider)
-- [Update your SCIM Bridge](#update-your-scim-bridge)
+- [Update your SCIM bridge](#update-your-scim-bridge)
+- [Advanced: Manual SCIM bridge deployment](#Advanced-Manual-deployment)
 - [Appendix: Advanced `scim.env` options](#appendix-advanced-scimenv-options)
 - [Appendix: Generate `scim.env` on Windows](#appendix-generate-scimenv-on-windows)
 
@@ -61,7 +62,7 @@ To deploy with Docker Compose, you'll need Docker Desktop set up either locally 
 
 <hr>
 
-## Advanced: Manual deployment
+## Advanced Manual deployment
 
 <details>
 <summary>How to manually deploy 1Password SCIM Bridge</summary>
@@ -86,7 +87,7 @@ cd scim-examples/docker/
 
 To use Docker Swarm, run `docker swarm init` or `docker swarm join` on the target node and complete that portion of the setup. Refer to [Docker’s documentation for more details](https://docs.docker.com/engine/swarm/swarm-tutorial/create-swarm/).
 
-Unlike Docker Compose, you won't need to set the `OP_SESSION` variable in `scim.env`. Instead, you'll use Docker Secrets to store the `scimsession` file. You'll still need to set the environment variable `OP_TLS_DOMAIN` within `scim.env` to the URL you selected during [PREPARATION.md](/PREPARATION.md). Open that in your preferred text editor and change `OP_TLS_DOMAIN` to that domain name.
+Unlike Docker Compose, you won't need to set the `OP_SESSION` variable in `scim.env`. Instead, you'll use Docker Secrets to store the `scimsession` file. You'll still need to set the environment variable `OP_TLS_DOMAIN` within `scim.env` to the URL you selected during [PREPARATION.md](/PREPARATION.md). Open that in your preferred text editor and change `OP_TLS_DOMAIN` to that domain name. This is also needs to be set for self-managed TLS Docker Swarm deployment.
 
 #### If you use Google Workspace as your identity provider
 
@@ -122,8 +123,28 @@ Alternate Google Workspace stack deployment command:
 # deploy your Stack with Google Workspace settings
 docker stack deploy -c docker-compose.yml -c gw-docker-compose.yml op-scim
 ```
-
 Learn more about [connecting Google Workspace to 1Password SCIM Bridge](https://support.1password.com/scim-google-workspace/).
+  
+### Self managed TLS for Docker Swarm
+
+Provide your own key and cert files to the deployment as secrets, which disables Let's Encrypt functionality. In order to utilize self managed TLS key and certificate files, you need to define these as secrets using the following commands and And finally, use `docker stack` to deploy:
+
+```bash
+cat /path/to/private.key | docker secret create op-tls-key -
+cat /path/to/cert.crt | docker secret create op-tls-crt -
+```
+
+Use `docker stack` to deploy:
+
+``` bash
+# deploy your Stack with self-managed TLS using Docker Secrets
+docker stack deploy -c docker-compose.yml -c docker.tls.yml op-scim
+```
+
+``` bash
+# (optional) view the service logs
+docker service logs --raw -f op-scim_scim
+```
 
 ### Docker Compose manual deployment
 
@@ -151,7 +172,7 @@ First, edit the file located at `scim-examples/beta/workspace-settings.json` and
 # enter the compose directory (if you aren’t already in it)
 cd scim-examples/docker/compose/
 # this is the path of the JSON file you edited in the paragraph above
-wORKSPACE_SETTINGS=$(cat /path/to/workspace_settings.json | base64 | tr -d "\n")
+WORKSPACE_SETTINGS=$(cat /path/to/workspace_settings.json | base64 | tr -d "\n")
 sed -i '' -e "s/OP_WORKSPACE_SETTINGS=$/OP_WORKSPACE_SETTINGS=$WORKSPACE_SETTINGS/" ./scim.env
 # replace <google keyfile> with the name of the file Google generated for your Google Service Account
 GOOGLE_CREDENTIALS=$(cat /path/to/<google keyfile>.json | base64 | tr -d "\n")
@@ -222,7 +243,7 @@ After 2-3 minutes, the bridge should come back online with the latest version.
 
 The following options are available for advanced or custom deployments. Unless you have a specific need, these options do not need to be modified.
 
-* `OP_TLS_CERT_FILE` and `OP_TLS_KEY_FILE`: These two variables can be set to the paths of a key file and certificate file, which will disable Let's Encrypt functionality, causing the SCIM bridge to use your own manually-defined certificate when `OP_TLS_DOMAIN` is also defined. This is only supported with Docker Swarm, not Docker Compose.
+* `OP_TLS_CERT_FILE` and `OP_TLS_KEY_FILE`: These two variables can be set to the paths of a key file and certificate file secrets, which will disable Let's Encrypt functionality, causing the SCIM bridge to use your own manually-defined certificate when `OP_TLS_DOMAIN` is also defined. This is only supported with Docker Swarm, not Docker Compose. Note the additional steps above in the [manual self managed TLS section](#Self-managed-TLS-for-Docker-Swarm) for enabling this feature.
 * `OP_PORT`: When `OP_TLS_DOMAIN` is set to blank, you can use `OP_PORT` to change the default port from 3002 to one you choose.
 * `OP_REDIS_URL`: You can specify a `redis://` or `rediss://` (for TLS) URL here to point towards a different Redis host. You can then remove the sections in `docker-compose.yml` that refer to Redis to not deploy that container. Redis is still required for the SCIM bridge to function.
 * `OP_PRETTY_LOGS`: You can set this to `1` if you'd like the SCIM bridge to output logs in a human-readable format. This can be helpful if you aren't planning on doing custom log ingestion in your environment.
