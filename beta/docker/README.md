@@ -186,6 +186,7 @@ Copy the example command to a text editor. Replace `mF_9.B5f-4.1JqM` with your b
 
 <details>
 <summary>Example JSON response</summary>
+
 > ```json
 > {
 >   "Resources": [
