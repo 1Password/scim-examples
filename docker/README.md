@@ -126,17 +126,19 @@ Learn more about [connecting Google Workspace to 1Password SCIM Bridge](https://
   
 ### Self-managed TLS for Docker Swarm
 
-Providing your own key and cert files to the deployment as secrets, which disables Let's Encrypt functionality. In order to utilize self managed TLS key and certificate files, you need to define these as secrets using the following commands and uncomment sections of both the scim.env and docker-compose.yml
+Providing your own key and cert files to the deployment as secrets, which disables Let's Encrypt functionality. In order to utilize self managed TLS key and certificate files, you need to define these as secrets using the following commands and And finally, use `docker stack` to deploy:
 
 ```bash
 cat /path/to/private.key | docker secret create op-tls-key -
 cat /path/to/cert.crt | docker secret create op-tls-crt -
 ```
-Open the `scim.env` in your preferred text editor and uncomment the `OP_TLS_CERT_FILE` and `OP_TLS_KEY_FILE` lines. 
 
-Edit the `docker-compose.yml` to uncomment the scim service secret section for `op-tls-key` and `op-tls-crt`. There is also a section to uncomment in the stack deployment section regarding the `op-tls-key` and `op-tls-crt` secrets. 
+Use `docker stack` to deploy:
 
-Perform the normal deployment commands above to either update your existing stack or create the new stack. 
+``` bash
+# deploy your Stack with self-managed TLS using Docker Secrets
+docker stack deploy -c docker-compose.yml -c docker.tls.yml op-scim
+```
 
 ### Docker Compose manual deployment
 

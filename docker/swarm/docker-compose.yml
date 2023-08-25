@@ -18,18 +18,6 @@ services:
         uid: "999"
         gid: "999"
         mode: 0440
-      ## Uncomment the section below to utilize your own self-managed TLS cert and key secrets instead of utlizing Let's Encrypt
-      ## Be sure to also remove the comments from the secrets section below and uncomment the OP_TLS_KEY_FILE and OP_TLS_CERT_FILE in scim.env
-      # - source: op-tls-key
-      #   target: op-tls-key
-      #   uid: "999"
-      #   gid: "999"
-      #   mode: 0440
-      # - source: op-tls-crt
-      #   target: op-tls-crt
-      #   uid: "999"
-      #   gid: "999"
-      #   mode: 0440
       ## Uncomment this section for DNS01 secret
       # - source: dns01-config
       #   target: dns01-config
@@ -54,8 +42,3 @@ networks:
 secrets:
   scimsession:
     external: true
-  # Be sure to also remove the comments from the secrets section above for the scim service
-  # op-tls-key:
-  #   external: true
-  # op-tls-crt:
-  #   external: true
