@@ -20,7 +20,7 @@ The open source Docker Engine tooling can be used to deploy 1Password SCIM Bridg
 - Docker Engine (see [Docker Engine installation overview](https://docs.docker.com/engine/install/#server)) installed on the Linux server
 - a public DNS A record pointing to the Linux server
 - SSH access to the Linux server
-- [Docker Desktop](https://docs.docker.com/desktop/install/) or Docker Engine installed on a machine with access to the Linux server and credentials from your 1Password account
+- [Docker Desktop](https://docs.docker.com/engine/install/#desktop) or Docker Engine installed on a machine with access to the Linux server and credentials from your 1Password account
 
 ## Get started
 
@@ -37,7 +37,7 @@ On the Linux machine that you will be using as the Docker host for your SCIM bri
 
 All following steps should be run on the same computer where you are already using 1Password, or another machine that can access the Linux server using SSH and has access to the `scimsession` file from the integration setup:
 
-1. If you haven't already done so, install Docker. You can use [Docker Desktop](https://docs.docker.com/desktop/install/), [install Docker Engine from binaries](https://docs.docker.com/engine/install/binaries/), or install Docker using your favourite package manager.
+1. If you haven't already done so, install Docker. You can use [Docker Desktop](https://docs.docker.com/engine/install/#desktop), [install Docker Engine from binaries](https://docs.docker.com/engine/install/binaries/), or install Docker using your favourite package manager.
 
 2. Open your preferred terminal. Clone this repository and switch to this directory:
 
