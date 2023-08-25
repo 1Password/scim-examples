@@ -125,7 +125,7 @@ docker stack deploy -c docker-compose.yml -c gw-docker-compose.yml op-scim
 ```
 Learn more about [connecting Google Workspace to 1Password SCIM Bridge](https://support.1password.com/scim-google-workspace/).
   
-### Self-managed TLS for Docker Swarm
+### Self managed TLS for Docker Swarm
 
 Provide your own key and cert files to the deployment as secrets, which disables Let's Encrypt functionality. In order to utilize self managed TLS key and certificate files, you need to define these as secrets using the following commands and And finally, use `docker stack` to deploy:
 
@@ -243,7 +243,7 @@ After 2-3 minutes, the bridge should come back online with the latest version.
 
 The following options are available for advanced or custom deployments. Unless you have a specific need, these options do not need to be modified.
 
-* `OP_TLS_CERT_FILE` and `OP_TLS_KEY_FILE`: These two variables can be set to the paths of a key file and certificate file secrets, which will disable Let's Encrypt functionality, causing the SCIM bridge to use your own manually-defined certificate when `OP_TLS_DOMAIN` is also defined. This is only supported with Docker Swarm, not Docker Compose. Note the additional steps above for enabling this feature.
+* `OP_TLS_CERT_FILE` and `OP_TLS_KEY_FILE`: These two variables can be set to the paths of a key file and certificate file secrets, which will disable Let's Encrypt functionality, causing the SCIM bridge to use your own manually-defined certificate when `OP_TLS_DOMAIN` is also defined. This is only supported with Docker Swarm, not Docker Compose. Note the additional steps above in the [manual self managed TLS section](#Self-managed-TLS-for-Docker-Swarm) for enabling this feature.
 * `OP_PORT`: When `OP_TLS_DOMAIN` is set to blank, you can use `OP_PORT` to change the default port from 3002 to one you choose.
 * `OP_REDIS_URL`: You can specify a `redis://` or `rediss://` (for TLS) URL here to point towards a different Redis host. You can then remove the sections in `docker-compose.yml` that refer to Redis to not deploy that container. Redis is still required for the SCIM bridge to function.
 * `OP_PRETTY_LOGS`: You can set this to `1` if you'd like the SCIM bridge to output logs in a human-readable format. This can be helpful if you aren't planning on doing custom log ingestion in your environment.
