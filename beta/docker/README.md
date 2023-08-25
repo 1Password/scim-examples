@@ -163,7 +163,7 @@ docker stack config \
 Run this command to retrieve logs from the service for the SCIM bridge container:
 
 ```sh
-docker service logs op-scim-bridge_scim
+docker service logs op-scim-bridge_scim --raw
 ```
 
 Your SCIM bridge URL is based on the fully qualified domain name of the DNS record created in [Get started](#get-started), for example `https://scim.example.com/`. You can access your SCIM bridge in a web browser at this URL by signing in using your bearer token.
