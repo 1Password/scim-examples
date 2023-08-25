@@ -32,7 +32,6 @@ services:
     environment:
       - OP_SESSION=/run/secrets/scimsession
       - OP_REDIS_URL=redis://redis:6379
-      - OP_TLS_DOMAIN
     networks:
       - op-scim
     ports:
