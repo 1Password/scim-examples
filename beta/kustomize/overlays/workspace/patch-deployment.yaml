@@ -1,0 +1,13 @@
+- op: add
+  path: /spec/template/spec/volumes/0/projected/sources/-
+  name: "workspace-credentials"
+  value:
+    secret:
+      name: workspace-credentials
+
+- op: add
+  path: /spec/template/spec/volumes/0/projected/sources/-
+  name: "workspace-settings"
+  value:
+    secret:
+      name: workspace-settings

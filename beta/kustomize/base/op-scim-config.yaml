@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: op-scim-configmap
+data:
+  # Set this to the FQDN you've selected for your SCIM Bridge deployment
+  # this will enable the complimentary LetsEncrypt challenge server if OP_TLS_CERT_FILE and OP_TLS_KEY_FILE are not set (or valid)
+  # OP_TLS_DOMAIN: ""
+  # (advanced) only change the options below if you need to
+  OP_REDIS_URL: "redis://op-scim-redis:6379"
+  OP_PRETTY_LOGS: "0"
+  OP_DEBUG: "0"
+  OP_TRACE: "0"
+  OP_PING_SERVER: "0"
+  OP_SESSION: "/secrets/scimsession"
+  # OP_CONFIRMATION_INTERVAL sets the interval for the ConfirmationWatcher service, responsible for automatically confirming users who have accepted their invite (default: 300 seconds, minimum: 30 seconds)
+  #OP_CONFIRMATION_INTERVAL=300
+  # OP_DNS_CHALLENGE_CONFIG_FILE sets the path for a Let's Encrypt DNS-01 configuration file
+  #OP_DNS_CHALLENGE_CONFIG_FILE=/secrets/dns01-config
+  # (optional) uncomment this line to change the email that is used when Let's Encrypt issues your SCIM bridge a certificate
+  # default: "1pw@[OP_TLS_DOMAIN]"
+  #OP_LETSENCRYPT_EMAIL: "1pw@example.com"

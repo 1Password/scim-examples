@@ -1,0 +1,3 @@
+- op: add
+  path: /data/OP_TLS_DOMAIN
+  value: "scim.example.com"
