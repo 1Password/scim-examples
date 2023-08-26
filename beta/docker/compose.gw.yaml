@@ -16,6 +16,8 @@ services:
       - OP_WORKSPACE_SETTINGS=/run/secrets/workspace-settings.json
 secrets:
   workspace-credentials:
+    name: workspace-credentials
     file: ./workspace-credentials.json
   workspace-settings:
+    name: workspace-settings
     file: ./workspace-settings.json
