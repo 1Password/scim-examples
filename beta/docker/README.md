@@ -12,7 +12,7 @@ This example describes how to deploy 1Password SCIM Bridge as a [stack](https://
 
 ## Overview
 
-The open source Docker Engine tooling can be used to deploy 1Password SCIM Bridge on any supported Linux distribution. A single-node swarm is sufficient for most deployments. This example assumes that the Linux server is exposed directly to the public internet with Docker acting as a reverse proxy to the SCIM bridge container. Other configurations are possible, but not documented in this deployment example.
+The open source Docker Engine tooling can be used to deploy 1Password SCIM Bridge on any supported Linux distribution. A single-node swarm is sufficient for most deployments. This example assumes that the Linux server is exposed directly to the public internet with Docker acting as a reverse proxy to the SCIM bridge container.
 
 ## Prerequisites
 
@@ -24,7 +24,11 @@ The open source Docker Engine tooling can be used to deploy 1Password SCIM Bridg
 
 ## Get started
 
-Before proceeding, review the [Preparation Guide](/PREPARATION.md) at the root of this repository. Create a public DNS A record that points to the public IP address of the Linux server for your SCIM bridge. For example, `scim.example.com`.
+> **Note**
+>
+> 📚 Before proceeding, review the [Preparation Guide](/PREPARATION.md) at the root of this repository.
+
+Create a public DNS A record that points to the public IP address of the Linux server for your SCIM bridge. For example, `scim.example.com`.
 
 ### 🛠️ Prepare the Linux server
 
@@ -107,11 +111,15 @@ All following steps should be run on the same computer where you are already usi
 
 ### Configure 1Password SCIM bridge to connect to Google Workspace
 
-If integrating 1Password with Google Workspace, additional configuration is required. See [Connect Google Workspace to 1Password SCIM Bridge](https://support.1password.com/scim-google-workspace/#step-1-create-a-google-service-account-key-and-api-client) for instructions to create the service account, key, and API client.
+Additional configuration and credentials are required to integrate to integrate your 1Password account with Google Workspace.
 
 > **Warning**
 >
-> If you are *not* integrating with Workspace, skip the steps in this section and [deploy your SCIM bridge](#deploy-1password-scim-bridge).
+> ⏩ This section is **only** for customers who are integrating 1Password with Google Workspace for automated user
+> provisioning. If you are *not* integrating with Workspace, skip the steps in this section and
+> [deploy your SCIM bridge](#-deploy-1password-scim-bridge).
+
+See [Connect Google Workspace to 1Password SCIM Bridge](https://support.1password.com/scim-google-workspace/#step-1-create-a-google-service-account-key-and-api-client) for instructions to create the service account, key, and API client.
 
 1. Save the Google Workspace service account key to this working directory (or rename after saving) as `workspace-credentials.json`.
 2. Copy the [Google Workspace settings template file](/beta/workspace-settings.json) in this repository to the working directory:
@@ -134,7 +142,7 @@ If integrating 1Password with Google Workspace, additional configuration is requ
 
     Save the file.
 
-## Deploy 1Password SCIM Bridge
+## 🏗️ Deploy 1Password SCIM Bridge
 
 Use the Compose template to output a canonical configuration for use with Docker Swarm and create the stack from this configuration inline. Your SCIM bridge should automatically acquire and manage a TLS certificate from Let's Encrypt on your behalf:
 
@@ -146,10 +154,14 @@ docker stack config \
 
 ### Connect your SCIM bridge to Google Workspace
 
-If you are integrating with Google Workspace, use the `compose.gw.yaml` file to merge the Workspace configuration and create the additional Docker secrets needed for Workspace into the canonical configuration inline, and deploy the stack:
+If you are integrating with Google Workspace, use the `compose.gw.yaml` override Compose file.
+
 > **Warning**
 >
-> If you are *not* integrating with Workspace, skip this section and [test your SCIM bridge](#test-your-scim-bridge).
+> ⏩ This section is **only** for customers who are integrating 1Password with Google Workspace for automated user
+> provisioning. If you are *not* integrating with Workspace, skip this section and [test your SCIM bridge](#-test-your-scim-bridge).
+
+Merge the configuration to create and use the additional Docker secrets needed for Workspace into the canonical configuration:
 
 ```sh
 docker stack config \
@@ -158,7 +170,7 @@ docker stack config \
         docker stack deploy --compose-file - op-scim-bridge
 ```
 
-## Test your SCIM bridge
+## 🧪 Test your SCIM bridge
 
 Run this command to retrieve logs from the service for the SCIM bridge container:
 
@@ -235,16 +247,109 @@ Copy the example command to a text editor. Replace `mF_9.B5f-4.1JqM` with your b
 
 </details>
 
-## Connect your identity provider
+## 🪪 Connect your identity provider
 
 Use your SCIM bridge URL and bearer token to [connect your identity provider to 1Password SCIM Bridge](https://support.1password.com/scim/#step-3-connect-your-identity-provider).
 
 ## Appendix
 
-### Update 1Password SCIM Bridge
+Swarm mode in Docker Engine uses a declarative service model. Services will automatically restart tasks when updating their configuration.
 
-Update your SCIM bridge to the latest version by updating its service definition:
+Use the Docker context from [Prepare your desktop and initialize the Swarm](#-prepare-your-desktop-and-initialize-the-swarm) to connect to your Docker host and manage your stack.
+
+### ✨ Update 1Password SCIM Bridge
+
+Update the `op-scim-bridge_scim` service with the new image tag from the [`1password/scim` repository on Docker Hub](https://hub.docker.com/r/1password/scim/tags) to update your SCIM bridge to a new version:
 
 ```sh
-docker service update op-scim-bridge_scim --image 1password/scim:v2.8.3
+docker service update op-scim-bridge_scim \
+    --image 1password/scim:v2.8.3
 ```
+
+> **Note**
+>
+> You can find details about the changes in each release of 1Password SCIM Bridge on our
+> [Release Notes](https://app-updates.agilebits.com/product_history/SCIM) website. The most recent version should be
+> pinned in the [`compose.template.yaml`](./compose.template.yaml) file (and in the command above in this file) in the main branch
+> of this GitHub repository.
+
+Your SCIM bridge should automatically reboot using the specified version, typically in a few moments.
+
+### ⚙️ Customize your SCIM bridge
+
+Many SCIM bridge configuration changes can be made by adding or removing environment variables. These can be customized by making changes to [`scim.env`](./scim.env) (that can be commited to your source control) before deploying (or redeploying) your SCIM bridge using the `docker stack deploy` command. For some use cases, it may be desirable to update the configuration "on the fly" from your terminal.
+
+For example, to reboot your SCIM bridge with debug logging enabled:
+
+```sh
+docker service update op-scim-bridge_scim \
+    --env-add OP_DEBUG=1
+```
+
+To turn off debug logging and inject some colour into the logs in your console:
+
+```sh
+docker service update op-scim-bridge_scim \
+    --env-rm OP_DEBUG \
+    --env-add OP_PRETTY_LOGS=1
+```
+
+*Pretty logs pair nicely with the `--raw` parameter of the `docker service logs` command). 🤩*
+
+### 🔃 Rotate credentials
+
+Docker secrets are immutable and cannot be removed while in use by a Swarm service. To use new secret values in your stack, you must remove the existing secret from the service configuration, replace the Docker secret (or add a new one), and update the service configuration to mount the new secret value.
+
+For example, if you regenerate credentials for the automated user provisioning integration:
+
+1. Scale down the `op-scim-bridge_scim` service to shut down the running SCIM bridge task.
+
+   ```sh
+   docker service scale op-scim-bridge_scim=0
+   ```
+
+2. Update the service definition to unnmount the the `scimsession` Docker secret:
+
+   ```sh
+   docker service update op-scim-bridge_scim \
+       --secret-rm scimsession
+   ```
+
+3. Remove the secret from the swarm:
+
+   ```sh
+   docker secret rm scimsession
+   ```
+
+4. Copy the regenerated `scimsession` file from your 1Password account to your working directory. Create a new `scimsession` Docker secret using the new file:
+
+   ```sh
+   docker secret create scimsession ./scimsession
+   ```
+
+   > **Note**
+   >
+   > 💻 If you saved your `scimsession` file as an item in your 1Password account, you can
+   > [use 1Password CLI](https://developer.1password.com/docs/cli/reference/commands/read) to create the new Docker
+   > secret instead (without saving it to disk on your machine). For example:
+   >
+   > ```sh
+   > op read "op://Private/scimsession file/scimsession" | docker secret create scimsession -
+   > ```
+
+5. Update the service to mount the new `scimsession` secret:
+
+   ```sh
+   docker service update op-scim-bridge_scim \
+       --secret-add source=scimsession,target=scimsession,uid="999",gid="999",mode=0440
+   ```
+
+6. Scale the `op-scim-bridge_scim` service back up to reboot your SCIM bridge:
+
+   ```sh
+   docker service scale op-scim-bridge_scim=1
+   ```
+
+[Test your SCIM bridge](#-test-your-scim-bridge) using the new bearer token associated with the regenerated `scimsession` file. Update your identity provider configuration with the new bearer token.
+
+A similar process can be used to update the values for any other Docker secrets used in your configuration.
