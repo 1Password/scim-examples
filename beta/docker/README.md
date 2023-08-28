@@ -7,8 +7,10 @@ This example describes how to deploy 1Password SCIM Bridge as a [stack](https://
 - [`README.md`](./README.md): the document that you are reading. 👋😃
 - [`compose.template.yaml`](./compose.template.yaml): a [Compose Specification](https://docs.docker.com/compose/compose-file/) format [Compose file](https://docs.docker.com/compose/compose-file/03-compose-file/) for 1Password SCIM Bridge.
 - [`compose.gw.yaml`](./compose.gw.yaml): an [override configuration](https://docs.docker.com/compose/multiple-compose-files/merge/) to merge the configuration necessary for customers integrating with Google Workspace.
+- [`compose.http.yaml`](./compose.http.yaml): optional configuration for exposing an HTTP port on the Docker host for forwarding plain-text traffic within a private network from a public TLS termination endpoint
+- [`compose.tls.yaml`](./compose.http.yaml): optional configuration for enabling a self-managed TLS certificate
 - [`redis.conf`](./redis.conf): a [Redis configuration file](https://redis.io/docs/management/config/) to load the Redis cache with the base configuration required for SCIM bridge
-- [`scim.env`](./scim.env): an environment file that can be used to customize the SCIM bridge configuration.
+- [`scim.env`](./scim.env): an environment file used to customize the SCIM bridge configuration
 
 ## Overview
 
@@ -58,7 +60,7 @@ All following steps should be run on the same computer where you are already usi
    > directory. For example:
    >
    > ```sh
-   > op read --out-file ./scimsession "op://Private/scimsession file/scimsession"
+   > op read "op://Private/scimsession file/scimsession" --out-file ./scimsession
    > ```
 
 4. Open `scim.env` in your favourite text editor. Set the value of `OP_TLS_DOMAIN` to the fully qualififed domain name of the public DNS record for your SCIM bridge created in [Get started](#get-started). For example:
@@ -117,7 +119,7 @@ Additional configuration and credentials are required to integrate to integrate 
 >
 > ⏩ This section is **only** for customers who are integrating 1Password with Google Workspace for automated user
 > provisioning. If you are *not* integrating with Workspace, skip the steps in this section and
-> [deploy your SCIM bridge](#-deploy-1password-scim-bridge).
+> [deploy your SCIM bridge](#🏗️-deploy-1password-scim-bridge)
 
 See [Connect Google Workspace to 1Password SCIM Bridge](https://support.1password.com/scim-google-workspace/#step-1-create-a-google-service-account-key-and-api-client) for instructions to create the service account, key, and API client.
 
@@ -353,3 +355,33 @@ For example, if you regenerate credentials for the automated user provisioning i
 [Test your SCIM bridge](#-test-your-scim-bridge) using the new bearer token associated with the regenerated `scimsession` file. Update your identity provider configuration with the new bearer token.
 
 A similar process can be used to update the values for any other Docker secrets used in your configuration.
+
+### 🔒 Advanced TLS options
+
+Identity providers strictly require an HTTPS endpoint with a vlid TLS certificate to use for the SCIM bridge URL. SCIM Bridge includes an optional CertificateManager component that (by default) acquires and manages a TLS certificate using Let's Encrypt, and terminates TLS traffic at the SCIM bridge container using this certificate. This requires port 443 of the Docker host to be publicly accessible to ensure Let's Encrypt can initiate an inbound connection to your SCIM bridge.
+
+Other supported options include:
+
+#### External load balancer or reverse proxy
+
+To terminate TLS traffic at another public endpoint and redirect private traffic to a Docker host in your private network, SCIM bridge can be configured to disable the CertificateManager component and serve plain-text HTTP traffic on port 80 of the Docker host. CertificateManager will be enabled if a value is set for the `OP_TLS_DOMAIN` variable, so any value set in `scim.env` must be removed (or this line must be commented out). The included `compose.http.yaml` file can be used to set up the port mapping when deploying (or redeploying) SCIM bridge:
+
+```sh
+docker stack config \
+    --compose-file ./compose.template.yaml \
+    --compose-file ./compose.http.yaml |
+        docker stack deploy --compose-file - op-scim-bridge
+```
+
+#### Self-managed TLS certificate
+
+You may supply your own TLS certificate with CertificateManager instead of invoking Let's Encrypt. The value set for `OP_TLS_DOMAIN` must match the common name of the certificate.
+
+Save the public and private certificate key files as `cetificate.pem` and `'key.pem` (respectively) to the working directory and use the included `compose.tls.yaml` file when deploying SCIM bridge to create Docker secrets and configure SCIM bridge use this certificate when terminating TLS traffic:
+
+```sh
+docker stack config \
+    --compose-file ./compose.template.yaml \
+    --compose-file ./compose.tls.yaml |
+        docker stack deploy --compose-file - op-scim-bridge
+```
