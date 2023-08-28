@@ -8,6 +8,16 @@ The deployment consists of two [containers](https://learn.microsoft.com/en-us/az
 
 - [`README.md`](./README.md): the document that you are reading.
 
+**Table of contents:**
+
+- [Overview](#Overview)
+- [Prerequisites](#Prerequisites)
+- [Getting Started: Generate credentials for automated user provisioning with 1Password](#Generate-credentials-for-automated-user-provisioning-with-1Password)
+- [Automatic Azure Container App Deployment Steps using Azure CLI](#Automatic-Azure-Container-App-Deployment-Steps-using-Azure-CLI)
+- [Manual Azure Container App Deployment Steps using the Azure Portal](#Manual-Azure-Portal-Deployment-Steps)
+- [Troubleshooting](#Troubleshooting)
+- [Update your SCIM bridge](#Update-1Password-SCIM-Bridge)
+
 ## Overview
 
 Deploying 1Password SCIM Bridge on Azure Container Apps comes with a few benefits:
@@ -34,7 +44,7 @@ Deploying 1Password SCIM Bridge on Azure Container Apps comes with a few benefit
 
 ## Getting started
 
-### Step 1: Generate credentials for automated user provisioning with 1Password
+### Generate credentials for automated user provisioning with 1Password
 
 1. [Sign in](https://start.1password.com) to your account on 1Password.com.
 2. Click [Integrations](https://start.1password.com/integrations/directory) in the sidebar.
@@ -45,14 +55,23 @@ Deploying 1Password SCIM Bridge on Azure Container Apps comes with a few benefit
 
 ## Deploy 1Password SCIM Bridge to Azure Container App
 
-### Automatic Azure Deployment Steps using Azure CLI
+### Automatic Azure Container App Deployment Steps using Azure CLI
 
 Using the Azure Cloud Shell can be easier (the assumption for the commands below is that you are using the Cloud Shell), but this can also been done directly on your system with the Azure CLI tool with the ContainerApp Extension
 
-Both methods need the Container App Extension added to the AZ tool of choice, using `az extension add --name containerapp --upgrade`
+Both methods need the Container App Extension added to the AZ tool of choice, by running `az extension add --name containerapp --upgrade`
 
-1. Start the Azure Cloud Shell from the navigation bar of your [Azure Portal](https://portal.azure.com).
-2. Define variables for the deployment using the following example in the Cloud Shell, _(using the bash or PowerShell syntax for the commands)_. Update the values in a text editor before pasting it into the terminal:
+1. Start the Azure Cloud Shell from the navigation bar of your [Azure Portal](https://portal.azure.com) or directly open the [Azure Shell](https://shell.azure.com).
+2. Add the Azure Container App extension by running the following command: `az extension add --name containerapp --upgrade`
+3. Get a list of the available locations in your Azure account: `az account list-locations -o table`, verify that the region you want to deploy on [supports Azure Container Apps](https://azure.microsoft.com/en-ca/explore/global-infrastructure/products-by-region/?regions=all&products=container-apps), take note of the name field for the desired region. 
+4. Define variables for the deployment using the following example in the Cloud Shell, _(using the bash or PowerShell syntax for the commands)_. Update the values in a text editor before pasting it into the terminal:
+
+> **Note**
+>
+>The ContainerAppName can not have upper case letters, and must be between 2 and 32 characters long and start and end wuth alphanumeric, it can contain letters, numbers and hyphens.
+> The location utilizes the name field of the az account list-locations command. 
+> Not all Azure locations support Conatiner Apps. See [supported regions for Azure Container Apps](https://azure.microsoft.com/en-ca/explore/global-infrastructure/products-by-region/?regions=all&products=container-apps)
+
     - Using bash
     ```bash
     ResourceGroup="op-scim-bridge-rg"
@@ -113,7 +132,7 @@ Both methods need the Container App Extension added to the AZ tool of choice, us
 
     > **Note**
     >
-    > You may be prompted to install the ContainerApp extension with this message:
+    > You may be prompted to install the ContainerApp extension with this message if you did not previsously install this extension:
     >
     > ```bash
     > The command requires the extension containerapp. Do you want to install it now? The command will continue to run after the extension is installed. (Y/n):
@@ -143,7 +162,7 @@ Both methods need the Container App Extension added to the AZ tool of choice, us
 
 8. Open the domain name listed in a separate browser tab to test your connection. You can sign in to your SCIM bridge using your bearer token.
 
-### Step 3: Follow the steps to connect your Identity provider to the SCIM bridge.
+### Follow the steps to connect your Identity provider to the SCIM bridge.
  - [Connect your Identity Provider](https://support.1password.com/scim/#step-3-connect-your-identity-provider)
 
 
@@ -251,12 +270,13 @@ The `scimsession` credentials will be saved as a secret variable in Container Ap
 ### Troubleshooting
 
 Logs for a container app can be viewed from the **Log Stream**, there is a separate log stream for both containers of the revision that is active. Often reviewing the logs of the **op-scim-bridge** container can help understand any startup issues.
+
 ### Update 1Password SCIM Bridge
 
 #### Update using the `az` CLI
 The latest version of 1Password SCIM Bridge is posted on our [Release Notes](https://app-updates.agilebits.com/product_history/SCIM) website, where you can find details about the latest changes. 
 
-1. Start the Azure Cloud Shell from the navigation bar of your [Azure Portal](https://portal.azure.com).
+1. Start the Azure Cloud Shell from the navigation bar of your [Azure Portal](https://portal.azure.com) or directly open the [Azure Shell](https://shell.azure.com).
 2. Run the following command, replacing `$ContainerAppName` and `$ResourceGroup` with the names from your deployment. Also ensure to change the version number 2.8.3 to match the latest version from our [SCIM Bridge Release Notes page](https://app-updates.agilebits.com/product_history/SCIM).
 ```az containerapp update -n $ContainerAppName -g $ResourceGroup --container-name op-scim-bridge --image docker.io/1password/scim:v2.8.3```
 3. Log into your SCIM bridge URL with your bearer token to validate in the top left hand side that you are running the version of the SCIM Bridge. (logging in with the bearer token will also update your Automated User Provisioning page with the latest access time and with the current version).
