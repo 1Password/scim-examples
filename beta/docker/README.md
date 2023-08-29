@@ -119,7 +119,7 @@ Additional configuration and credentials are required to integrate to integrate 
 >
 > ⏩ This section is **only** for customers who are integrating 1Password with Google Workspace for automated user
 > provisioning. If you are *not* integrating with Workspace, skip the steps in this section and
-> [deploy your SCIM bridge](#🏗️-deploy-1password-scim-bridge)
+> [deploy your SCIM bridge](#%EF%B8%8F-deploy-1password-scim-bridge)
 
 See [Connect Google Workspace to 1Password SCIM Bridge](https://support.1password.com/scim-google-workspace/#step-1-create-a-google-service-account-key-and-api-client) for instructions to create the service account, key, and API client.
 
