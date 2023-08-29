@@ -105,10 +105,13 @@ All following steps should be run on the same computer where you are already usi
 
    > **Note**
    >
-   > If Docker returns an error about multiple network interfaces, uncomment the `--advertise-addr` parameter (delete
-   > `#`) and replace the example IP (`192.0.2.1`) with the IP address of a network interface on which the server can
-   > be reached by other swarm members (even if you are currently only using a single node swarm). See the
-   > [`docker swarm init`](https://docs.docker.com/engine/reference/commandline/swarm_init/#--advertise-addr) command
+   > A single network interface **must** be used on which this swarm node can be reached by other swarm members for
+   > inter-node communication and management (even for creating a single-node swarm). If multiple network intefaces are
+   > available, Docker returns an error; uncomment the `--advertise-addr` parameter (delete `#`) and replace the example
+   > IP (`192.0.2.1`) with the IP address of the appropriate network interface.
+   >
+   > 📖 See the
+   > [`docker swarm init` command](https://docs.docker.com/engine/reference/commandline/swarm_init/#--advertise-addr)
    > in the Docker CLI reference documentation for more details.
 
 ### Configure 1Password SCIM bridge to connect to Google Workspace
