@@ -303,7 +303,8 @@ Logs for a container app can be viewed from the **Log Stream**, there is a separ
     az containerapp revision restart -n $ContainerAppName -g $ResourceGroup --revision revisionName
     ```
 
-4. Test logging into your SCIM bridge URL with the new `bearer token`.
+4. Test logging into your SCIM bridge URL with the new `bearer token`. 
+5. Update your identity provider configuration with the new bearer token.
 </details>
 <details>
 <summary>Replace your `scimsession` secret using the Azure Portal</summary>
@@ -330,6 +331,7 @@ Logs for a container app can be viewed from the **Log Stream**, there is a separ
 5. Select the **Revisions** from the sidebar on the left hand side. 
 6. Click your current active revision, select Restart along the top. 
 7. Test logging into your SCIM bridge URL with the new `bearer token`.
+8. Update your identity provider configuration with the new bearer token.
 </details>
 
 ### Update 1Password SCIM Bridge
