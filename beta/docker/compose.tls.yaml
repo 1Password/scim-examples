@@ -1,12 +1,12 @@
 services:
   scim:
     secrets:
-      - source: tls-cert
+      - source: op-tls-cert
         target: tls.crt
         uid: "999"
         gid: "999"
         mode: 0440
-      - source: tls-key
+      - source: op-tls-key
         target: tls.key
         uid: "999"
         gid: "999"
