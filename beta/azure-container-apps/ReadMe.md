@@ -275,6 +275,63 @@ The `scimsession` credentials will be saved as a secret variable in Container Ap
 
 Logs for a container app can be viewed from the **Log Stream**, there is a separate log stream for both containers of the revision that is active. Often reviewing the logs of the **op-scim-bridge** container can help understand any startup issues.
 
+#### Replacing your `scimsession` secret in the deployment:
+
+<details>
+<summary>Replace your `scimsession` secret using the `az` CLI</summary>
+
+1. Start the Azure Cloud Shell from the navigation bar of your [Azure Portal](https://portal.azure.com) or directly open the [Azure Shell](https://shell.azure.com).
+2. Run the following command, replacing `$ContainerAppName` and `$ResourceGroup` with the names from your deployment. 
+
+    - Using bash (Cloud Shell, macOS, or Linux):
+        ```bash
+        az containerapp secret set -n $ContainerAppName -g $ResourceGroup --secrets scimsession="$(cat /home/$USER/scimsession | base64)"
+        ```
+
+    - Using PowerShell (Cloud Shell, Windows, macOS, or Linux):
+        ```pwsh
+        az containerapp secret set -n $ContainerAppName -g $ResourceGroup --secrets scimsession="$([Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path /home/$Env:USER/ 'scimsession'))) )"
+        ```
+
+3. Restart the current revision to have the op-scim-bridge container read the new secret using the following commands, replacing `$ContainerAppName` and `$ResourceGroup` with the names from your deployment:
+    ```bash
+    az containerapp update -n $ContainerAppName -g $ResourceGroup --container-name op-scim-bridge --query properties.latestRevisionName
+    ```
+
+    Update the revsion name to use the output of the above command
+    ```
+    az containerapp revision restart -n $ContainerAppName -g $ResourceGroup --revision revisionName
+    ```
+
+4. Test logging into your SCIM bridge URL with the new `bearer token`.
+</details>
+<details>
+<summary>Replace your `scimsession` secret using the Azure Portal</summary>
+
+1. Get the Base64 encoded contents of your newly downloaded `scimsession` file, _(using the bash or PowerShell syntax for the commands)_: 
+
+    - Using bash (Cloud Shell, macOS, or Linux):
+
+        ```bash
+        cat ./scimsession | base64
+        ```
+
+    - Using PowerShell (Cloud Shell, Windows, macOS, or Linux):
+
+        ```pwsh
+        [Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path $PWD.Path 'scimsession')))
+        ```
+
+    Copy the output value from the terminal to your clipboard. It will be needed to create the secret for the deployment.
+
+2. Within Container App from the [Azure Container Apps Portal](https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/Microsoft.App%2FcontainerApps), select **Secrets** from the sidebar on the left hand side. 
+3. Edit the `scimsession` secret and paste the new value of your secret.
+4. Select the checkbox and click **Save**.
+5. Select the **Revisions** from the sidebar on the left hand side. 
+6. Click your current active revision, select Restart along the top. 
+7. Test logging into your SCIM bridge URL with the new `bearer token`.
+</details>
+
 ### Update 1Password SCIM Bridge
 
 #### Update using the `az` CLI
