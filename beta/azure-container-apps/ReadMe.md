@@ -75,15 +75,15 @@ Both methods need the Container App Extension added to the AZ tool of choice, by
 
     Update the values in a text editor before pasting it into the terminal:
 
-        -Using bash
+    - Using bash
         ```bash
         ResourceGroup="op-scim-bridge-rg"
         Location="canadacentral"
         ContainerAppEnvironment="op-scim-bridge-con-app-env"
         ContainerAppName="op-scim-bridge-con-app"
         ```
-        
-        -Using PowerShell 
+
+    - Using PowerShell 
         ```pwsh
         $ResourceGroup="op-scim-bridge-rg"
         $Location="canadacentral"
@@ -109,7 +109,7 @@ Both methods need the Container App Extension added to the AZ tool of choice, by
    - Make a note of the upload destination, then click Complete.
 
 6. Create the base Container App and Secret for your Base64-encoded `scimsession` credentials, _(using the bash or PowerShell syntax for the commands)_:
-    -Using bash
+    - Using bash
     ```bash
     az containerapp create -n $ContainerAppName -g $ResourceGroup \
         --container-name op-scim-bridge \
@@ -121,7 +121,7 @@ Both methods need the Container App Extension added to the AZ tool of choice, by
         --secrets scimsession="$(cat /home/$USER/scimsession | base64)" \
         --env-vars OP_REDIS_URL="redis://localhost:6379" OP_SESSION=secretref:scimsession
     ```
-    -Using PowerShell 
+    - Using PowerShell 
     ```pwsh
     az containerapp create -n $ContainerAppName -g $ResourceGroup `
     --container-name op-scim-bridge `
@@ -145,7 +145,7 @@ Both methods need the Container App Extension added to the AZ tool of choice, by
     > The ContainerApp extension is required to deploy Container Apps from the command line. Type `Y` and press enter to install the extension.
 
 7. Update your Container App to add the Redis container and get the fully qualified domain name to use as the URL for your SCIM bridge, _(using the bash or PowerShell syntax for the commands)_:
-    -Using bash
+    - Using bash
     ```bash
     az containerapp update -n $ContainerAppName -g $ResourceGroup \
        --container-name op-scim-redis \
@@ -154,7 +154,7 @@ Both methods need the Container App Extension added to the AZ tool of choice, by
        --set-env-vars REDIS_ARGS="--maxmemory 256mb --maxmemory-policy volatile-lru" \
        --query properties.configuration.ingress.fqdn
     ```
-    -Using PowerShell
+    - Using PowerShell
     ```pwsh
     az containerapp update -n $ContainerAppName -g $ResourceGroup `
     --container-name op-scim-redis `
