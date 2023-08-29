@@ -32,8 +32,6 @@ These are beta versions of 1Password SCIM Bridge deployments and components. The
 - ✨ **NEW** [Azure Container Apps](/beta/azure-container-apps)
 - ✨ **NEW** [Docker](/beta/docker)
 - [DigitalOcean App Platform with 1Password CLI](/beta/do-app-platform-op-cli/)
-- [Google Workspace settings](/beta/workspace-settings.json)
-- [Google Workspace module for Terraform](/beta/aws-terraform-gw/)
 
 ## Deprecated deployment methods
 

@@ -41,7 +41,7 @@ cp terraform.tfvars.template terraform.tfvars
 Copy the `workspace-settings.json` template file to this Terraform code directory:
 
 ```bash
-cp ../beta/workspace-settings.json ./workspace-settings.json
+cp ../google-workspace/workspace-settings.json ./workspace-settings.json
 ```
 Edit this file and add the respective values for each variable (see our [Google Workspace documentation](https://support.1password.com/scim-google-workspace/)).
 
