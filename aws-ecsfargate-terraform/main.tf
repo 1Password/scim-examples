@@ -325,7 +325,7 @@ resource "aws_route53_record" "op_scim_bridge" {
 module "google_workspace" {
   count = var.using_google_workspace ? 1 : 0
 
-  source = "./aws-terraform-gw"
+  source = "./modules/google-workspace"
 
   name_prefix = local.name_prefix
   tags        = local.tags
