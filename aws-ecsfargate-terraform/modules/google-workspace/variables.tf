@@ -19,3 +19,13 @@ variable "enabled" {
   type        = bool
   description = "Whether or not the module is enabled."
 }
+
+variable "actor" {
+  type        = string
+  description = "The email address of the administrator in Google Workspace that the service account is acting on behalf of."
+}
+
+variable "bridgeAddress" {
+  type        = string
+  description = "The URL of 1Password SCIM bridge."
+}

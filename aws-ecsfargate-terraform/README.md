@@ -34,50 +34,23 @@ cp terraform.tfvars.template terraform.tfvars
 ```
 
 <details>
-  <summary>Optional: If you use Google Workspace</summary>
+  <summary>For customers integrating with Google Workspace:</summary>
+<br />
+Additional configuration is required to integrate 1Password with Google Workspace.
 
-### Copy Google Workspace credentials
-
-Copy the `workspace-settings.json` template file to this Terraform code directory:
-
-```bash
-cp ../google-workspace/workspace-settings.json ./workspace-settings.json
-```
-Edit this file and add the respective values for each variable (see our [Google Workspace documentation](https://support.1password.com/scim-google-workspace/)).
-
-Copy your `workspace-credentials.json` file to this Terraform code directory:
-
-```bash
-cp <path>/workspace-credentials.json ./workspace-credentials.json
-```
-
-### Enable Google Workspace configuration
-
-Uncommment this line in `terraform.tfvars`:
+1. Create the service account, key, and API client (see [Connect Google Workspace to 1Password SCIM Bridge](https://support.1password.com/scim-google-workspace/#step-1-create-a-google-service-account-key-and-api-client) on our support site for instructions.)
+2. Save the Google Workspace service account key to the working directory as `workspace-credentials.json` (or rename it to this after saving).
+3. Uncomment this line in `terraform.tfvars` and fill in the email address for the Google Workspace administrator associated with the above credentials:
 
 ```terraform
-using_google_workspace = true
+google_workspace_actor = "workspace.admin@example.com"
 ```
 
 </details>
 
 ### 1.1: Copy `scimsession` file
 
-Copy the `scimsession` file in the Terraform code directory:
-
-```bash
-cp <path>/scimsession ./
-```
-
-This will automatically create an AWS secret containing the contents of the `scimsession` file in your instance.
-
-**Note:** If you skip this step or the installation of the scimsession file is not successful, you can create the required AWS secret manually. Ensure you `base64` encode the `scimsession` file, and store it in a secret as **plain text** (not as JSON, and not wrapped in quotation marks):
-
-```bash
-# only required if the automatic installation of the 'scimession' file is not successful
-cat <path>/scimsession | base64
-# copy the output to Secrets Manager
-```
+Save the `scimsession` file from the automated user provisioning setup to the working directory. The Terraform plan will automatically create an AWS secret containing the contents of the `scimsession` file.
 
 ### 1.2: Set the region
 
@@ -157,13 +130,13 @@ Run the following commands to create the necessary configuration settings:
 
 ```bash
 terraform init
-terraform plan -out=./op-scim.plan
+terraform plan -out="./op-scim.plan"
 ```
 
 You'll be asked to validate your configuration. Check it to make sure it's correct, then run the following to deploy the SCIM bridge:
 
 ```bash
-terraform apply ./op-scim.plan
+terraform apply "./op-scim.plan"
 ```
 
 After a few minutes, and once the DNS has updated, go to the SCIM Bridge URL you set. You should be able to enter your bearer token to verify that your SCIM bridge is up and running.
@@ -184,7 +157,7 @@ To update your SCIM bridge:
 2. Create a plan for Terraform to apply.
 3. Apply the new plan to your infrastructure.
 
-The `terraform` CLI will output the details of the plan in addition to saving it to an output file (`./op-scim.plan`). The plan will contain the steps necessary to bring your deployment in line with the latest configuration depending on the changes that are detected. Feel free to inspect the output to get a better idea of the steps that will be taken.
+The `terraform` CLI will output the details of the plan in addition to saving it to an output file (`op-scim.plan`). The plan will contain the steps necessary to bring your deployment in line with the latest configuration depending on the changes that are detected. Feel free to inspect the output to get a better idea of the steps that will be taken.
 
 Below you can learn about some common update scenarios.
 
@@ -201,8 +174,8 @@ Change `v2.x.x` to the latest version [found on the SCIM bridge release notes pa
 Then reapply your Terraform settings:
 
 ```bash
-terraform plan -out=./op-scim.plan
-terraform apply ./op-scim.plan
+terraform plan -out="./op-scim.plan"
+terraform apply "./op-scim.plan"
 ```
 
 ### Update to the latest configuration
@@ -211,8 +184,8 @@ There may be situations where you want to update your deployment with the latest
 
 1. [Optional] Verify that your Terraform variables (`./terraform.tfvars`) are correct and up to date.
 2. [Optional] Reconcile the state between what Terraform knows about and your deployed infrastructure: `terraform refresh`.
-3. Create an update plan to apply: `terraform plan -out=./op-scim.plan`
-4. Apply the plan to your infrastructure: `terraform apply ./op-scim.plan`
+3. Create an update plan to apply: `terraform plan -out="./op-scim.plan"`
+4. Apply the plan to your infrastructure: `terraform apply "./op-scim.plan"`
 5. Verify that there are no errors in the output as Terraform updates your infrastructure.
 
 ### Resource recommendations
@@ -249,4 +222,4 @@ If you want to view the logs for your SCIM bridge within AWS, go to **Cloudwatch
 
 If you open your SCIM bridge domain in a browser and see a `Sign In With 1Password` button, the `scimsession` file was not properly installed. Due to the nature of the ECS deployment, **this “sign in” option cannot be used** to complete the setup of your SCIM bridge.
 
-To fix this, [copy the `scimsession` file](#copy-`scimsession`-file) again and stop the ECS task for your SCIM bridge. The ECS service will ensure that the task is restarted to reboot your SCIM bridge and apply the changes.
+To fix this, [copy the `scimsession` file](#11-copy-scimsession-file) again and stop the ECS task for your SCIM bridge. The ECS service will ensure that the task is restarted to reboot your SCIM bridge and apply the changes.

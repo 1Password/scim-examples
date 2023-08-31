@@ -41,7 +41,10 @@ resource "aws_secretsmanager_secret" "workspace_settings" {
 
 resource "aws_secretsmanager_secret_version" "workspace_settings" {
   secret_id     = aws_secretsmanager_secret.workspace_settings.id
-  secret_string = var.enabled ? filebase64("${path.root}/workspace-settings.json") : null
+  secret_string = !var.enabled ? null : base64encode(jsonencode({
+    actor         = var.actor
+    bridgeAddress = var.bridgeAddress
+  }))
 }
 
 resource "aws_secretsmanager_secret" "workspace_credentials" {
