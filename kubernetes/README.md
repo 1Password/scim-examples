@@ -49,12 +49,13 @@ The following steps only apply if you use Google Workspace as your identity prov
 	```bash
 	kubectl create secret generic workspace-credentials --from-file=workspace-credentials.json=/path/to/<keyfile>.json
 	```
-3. Edit the file located at `../google-workspace/workspace-settings.json` and fill in correct values for:
+3. Edit the file located at `./google-workspace/workspace-settings.json` and fill in correct values for:
 	* **Actor**: the email address of the administrator in Google Workspace that the service account is acting on behalf of.
 	* **Bridge Address**: the URL you will use for your SCIM bridge (not your 1Password account sign-in address). This is most often a subdomain of your choosing on a domain you own. For example: https://scim.example.com.
-4. After you've edited the file, save it in the working directory and run the following command to create a Kubernetes Secret:
+4. After you've edited the file, save it and run the following command to create a Kubernetes Secret:
 	```bash
-	kubectl create secret generic workspace-settings --from-file=workspace-settings.json=./workspace-settings.json
+	kubectl create secret generic workspace-settings \
+    --from-file=workspace-settings.json=./google-workspace/workspace-settings.json
 	```
 
 ## Step 2: Deploy 1Password SCIM Bridge to the Kubernetes cluster
