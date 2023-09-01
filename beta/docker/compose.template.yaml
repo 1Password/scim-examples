@@ -27,12 +27,15 @@ services:
     depends_on:
       - redis
     secrets:
-      - scimsession
+      - source: scimsession
+        target: scimsession
+        uid: "999"
+        gid: "999"
+        mode: 0440
     env_file: ./scim.env
     environment:
       - OP_SESSION=/run/secrets/scimsession
       - OP_REDIS_URL=redis://redis:6379
-      - OP_TLS_DOMAIN
     networks:
       - op-scim
     ports:
