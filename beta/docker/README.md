@@ -99,8 +99,6 @@ All following steps should be run on the same computer where you are already usi
 
 ### 🪄 Create a swarm
 
-Configure Docker to [create a swarm](https://docs.docker.com/engine/swarm/swarm-tutorial/create-swarm/) with this Linux server as the first [manager node](https://docs.docker.com/engine/swarm/how-swarm-mode-works/nodes/#manager-nodes) for the swarm. Additional worker and manager nodes may be optionally added to a swarm for fault tolerance; this deployment example provisions a single-node swarm. Docker strictly requires an IP address to advertise to other nodes that can be used to join the swarm and for overlay networking for swarm services (whether or not additional nodes are added to the swarm).
-
 Run this command to create the swarm:
 
 ```sh
@@ -109,13 +107,13 @@ docker swarm init # --advertise-addr 192.0.2.1
 
 > **Note**
 >
-> If multiple IP addresses are detected, Docker returns an error; uncomment the `--advertise-addr` parameter (delete
-> `#`), replace the example IP (`192.0.2.1`) with the appropriate IP address, and run the command again. A single
-> address **must** be supplied, but connectivity using this IP address is only required by other nodes in this swarm.
+> Additional nodes may be optionally added to a swarm for fault tolerance. This command adds the Linux server as the
+> first (and only) node in the swarm, but Docker *requires* a unique IP address to advertise to other nodes (even if
+> no other nodes will be added). See [How nodes work](https://docs.docker.com/engine/swarm/how-swarm-mode-works/nodes/)
+> in the Docker documentation for more details.
 >
-> 📖 See the
-> [`docker swarm init` command](https://docs.docker.com/engine/reference/commandline/swarm_init/#--advertise-addr)
-> in the Docker CLI reference documentation for more details.
+> If multiple IP addresses are detected, Docker returns an error; uncomment the `--advertise-addr` parameter (delete
+> `#`), replace the example IP (`192.0.2.1`) with the appropriate IP address, and run the command again.
 
 ### Configure 1Password SCIM bridge to connect to Google Workspace
 
