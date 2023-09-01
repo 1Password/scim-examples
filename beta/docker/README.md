@@ -261,7 +261,7 @@ Use your SCIM bridge URL and bearer token to [connect your identity provider to 
 
 Swarm mode in Docker Engine uses a declarative service model. Services will automatically restart tasks when updating their configuration.
 
-Use the Docker context from [Prepare your desktop and initialize the Swarm](#-prepare-your-desktop-and-initialize-the-swarm) to connect to your Docker host and manage your stack.
+Use the Docker context from [Prepare your desktop](#-prepare-your-desktop) to connect to your Docker host and manage your stack.
 
 ### ✨ Update 1Password SCIM Bridge
 
@@ -381,7 +381,7 @@ docker stack config \
 
 You may supply your own TLS certificate with CertificateManager instead of invoking Let's Encrypt. The value set for `OP_TLS_DOMAIN` must match the common name of the certificate.
 
-Save the public and private certificate key files as `cetificate.pem` and `'key.pem` (respectively) to the working directory and use the included `compose.tls.yaml` file when deploying SCIM bridge to create Docker secrets and configure SCIM bridge use this certificate when terminating TLS traffic:
+Save the public and private certificate key files as `certificate.pem` and `key.pem` (respectively) to the working directory and use the included `compose.tls.yaml` file when deploying SCIM bridge to create Docker secrets and configure SCIM bridge use this certificate when terminating TLS traffic:
 
 ```sh
 docker stack config \
