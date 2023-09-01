@@ -34,13 +34,14 @@ cp terraform.tfvars.template terraform.tfvars
 ```
 
 <details>
-  <summary>For customers integrating with Google Workspace:</summary>
+  <summary>Integrate with Google Workspace</summary>
 <br />
 Additional configuration is required to integrate 1Password with Google Workspace.
 
-1. Create the service account, key, and API client (see [Connect Google Workspace to 1Password SCIM Bridge](https://support.1password.com/scim-google-workspace/#step-1-create-a-google-service-account-key-and-api-client) on our support site for instructions.)
-2. Save the Google Workspace service account key to the working directory as `workspace-credentials.json` (or rename it to this after saving).
-3. Uncomment this line in `terraform.tfvars` and fill in the email address for the Google Workspace administrator associated with the above credentials:
+1. [Create a service account, key, and API client.](https://support.1password.com/scim-google-workspace/#step-1-create-a-google-service-account-key-and-api-client)
+2. Save the Google Workspace service account key to the working directory.
+3. Make sure the service account key is named `workspace-credentials.json`.
+4. Uncomment the following line in `terraform.tfvars` and and enter the email address for the Google Workspace administrator associated with the credentials you just created.
 
 ```terraform
 google_workspace_actor = "workspace.admin@example.com"
