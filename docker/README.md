@@ -40,7 +40,7 @@ To automatically deploy 1Password SCIM Bridge with [Docker Swarm](#docker-swarm)
 
 For this method, you'll need to have joined a Docker Swarm with the target deployment node. Learn how to [create a swarm](https://docs.docker.com/engine/swarm/swarm-tutorial/create-swarm/).
 
-After you've created a swarm, log in with `docker swarm join`. Then use the provided bash script [./docker/deploy.sh](deploy.sh) to deploy your SCIM bridge. The script will do the following:
+After you've created a swarm, log in with `docker swarm join`. Then use the provided [`deploy.sh`](/docker/deploy.sh) Bash script to deploy your SCIM bridge. The script will do the following:
 
 1. Ask whether you're using Google Workspace as your identity provider so you can add your configuration files as Docker Secrets within your Swarm cluster.
 2. Ask whether you're deploying using Docker Swarm or Docker Compose.
@@ -57,7 +57,7 @@ At this point, you should set a DNS record routing the domain name to the IP add
 To deploy with Docker Compose, you'll need Docker Desktop set up either locally or remotely. Learn how to [set up Docker Desktop](https://docs.docker.com/desktop/). Then follow these steps:
 
 1. Make sure your environment is set up by running the command `eval %{docker-machine env $machine_name}` using the machine name you've chosen.
-2. Run the [./docker/deploy.sh](deploy.sh) script.
+2. Run the [`deploy.sh`](/docker/deploy.sh) script.
 3. Choose Compose as the deployment method when prompted. Any references for Docker Secrets will be added to the Docker Compose deployment as environment variables.
 
 <hr>
@@ -93,13 +93,13 @@ Unlike Docker Compose, you won't need to set the `OP_SESSION` variable in `scim.
 
 If you use Google Workspace as your identity provider, you'll need to set up some additional secrets.
 
-First, edit the file located at `scim-examples/beta/workspace-settings.json` and enter in the appropriate details. Then create the necessary secrets for Google Workspace:
+First, edit the [`workspace-settings.json`](/docker/swarm/workspace-settings.json) file in this folder and enter the appropriate details. Then create the necessary secrets for Google Workspace:
 
 ```bash
 # this is the path of the JSON file you edited in the paragraph above
-cat /path/to/workspace-settings.json | docker secret create workspace-settings -
-# replace <google keyfile> with the name of the file Google generated for your Google Service Account
-cat /path/to/<google keyfile>.json | docker secret create workspace-credentials -
+docker secret create workspace-settings ./workspace-settings.json
+# replace ./workspace-credentials.json with the path to the file Google generated for your Google Service Account
+docker secret create workspace-credentials ./workspace-credentials.json
 
 ```
 <br>
@@ -164,33 +164,7 @@ Ensure that `OP_TLS_DOMAIN` is set to the domain name you’ve set up before you
 
 #### If you use Google Workspace as your identity provider
 
-If you use Google Workspace as your identity provider, you'll need to set up some additional secrets.
-
-First, edit the file located at `scim-examples/beta/workspace-settings.json` and enter in the appropriate details. Then create the necessary secrets for Google Workspace:
-
-```bash
-# enter the compose directory (if you aren’t already in it)
-cd scim-examples/docker/compose/
-# this is the path of the JSON file you edited in the paragraph above
-WORKSPACE_SETTINGS=$(cat /path/to/workspace_settings.json | base64 | tr -d "\n")
-sed -i '' -e "s/OP_WORKSPACE_SETTINGS=$/OP_WORKSPACE_SETTINGS=$WORKSPACE_SETTINGS/" ./scim.env
-# replace <google keyfile> with the name of the file Google generated for your Google Service Account
-GOOGLE_CREDENTIALS=$(cat /path/to/<google keyfile>.json | base64 | tr -d "\n")
-sed -i '' -e "s/OP_WORKSPACE_CREDENTIALS=$/OP_WORKSPACE_CREDENTIALS=$GOOGLE_CREDENTIALS/" ./scim.env
-```
-<br>
-
-And finally, use `docker-compose` to deploy:
-
-```bash
-# enter the compose directory (if you aren’t already in it)
-cd scim-examples/docker/compose/
-# create the container
-docker-compose -f docker-compose.yml up --build -d
-# (optional) view the container logs
-docker-compose -f docker-compose.yml logs -f
-```
-Learn more about [connecting Google Workspace to 1Password SCIM Bridge](https://support.1password.com/scim-google-workspace/).
+It is not recommended to use Docker Compose for your SCIM bridge deployment if you are integrating with Google Workspace. Consider [using Docker Swarm](#docker-swarm-manual-deployment) instead.
 
 </details>
 

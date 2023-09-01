@@ -127,14 +127,9 @@ Additional configuration and credentials are required to integrate to integrate 
 
 See [Connect Google Workspace to 1Password SCIM Bridge](https://support.1password.com/scim-google-workspace/#step-1-create-a-google-service-account-key-and-api-client) for instructions to create the service account, key, and API client.
 
-1. Save the Google Workspace service account key to this working directory (or rename after saving) as `workspace-credentials.json`.
-2. Copy the [Google Workspace settings template file](/beta/workspace-settings.json) in this repository to the working directory:
-
-    ```sh
-    cp ../workspace-settings.json ./workspace-settings.json
-    ```
-
-    Edit the file. Replace the values for each key:
+1. Save the Google Workspace service account key to the working directory.
+2. Make sure the service account key is named `workspace-credentials.json`.
+3. Open the  [`workspace-settings.json`](./workspace-settings.json) file in a text editor and replace the values for each key:
 
     - `actor`: the email address for the administrator that the service account is acting on behalf of
     - `bridgeAddress`: the URL for your SCIM bridge based on the fully qualified domain name of the DNS record created in [Get started](#get-started)
