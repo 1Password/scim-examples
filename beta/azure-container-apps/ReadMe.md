@@ -1,4 +1,4 @@
-# [Beta] Deploy 1Password SCIM Bridge on Azure Container Apps
+# Deploy 1Password SCIM Bridge on Azure Container Apps
 
 This deployment example describes how to deploy 1Password SCIM Bridge as an app on Azure's [Container Apps](https://azure.microsoft.com/en-us/products/container-apps/#overview) service.
 
@@ -245,7 +245,7 @@ The `scimsession` credentials will be saved as a secret variable in Container Ap
 2. Select **Containers** along the left hand side.
     1. Select **Edit and deploy** along the top.
     2. Put a check in the box next to your **op-scim-bridge** container and select **Edit**.
-    3. Scroll down the the Environment variables and edit the **OP_SESSION** variable to have a **Source** of **Reference a secret** and for the **Value**, select the **scimsession** secret.
+    3. Scroll down to the Environment variables and edit the **OP_SESSION** variable to have a **Source** of **Reference a secret** and for the **Value**, select the **scimsession** secret.
     4. Select **Save**.
     5. Select the **+ Add** button, selecting **App container**.
     6. Change the name of the container to **op-scim-redis**.
@@ -270,6 +270,100 @@ The `scimsession` credentials will be saved as a secret variable in Container Ap
 <hr>
 
 ## Appendix
+
+### If Google Workspace is your identity provider
+<details>
+<summary>Connect Google Workspace using the `az` CLI tool</summary>
+The following steps only apply if you use Google Workspace as your identity provider. If you use another identity provider, do not perform these steps.
+
+1. Follow the steps to [create a Google service account, key, and API client](https://support.1password.com/scim-google-workspace/#step-1-create-a-google-service-account-key-and-api-client).
+2. Start the Azure Cloud Shell from the navigation bar of your [Azure Portal](https://portal.azure.com) or directly open the [Azure Shell](https://shell.azure.com).
+3. Upload your `workspace-credentials.json`/`<keyfile>` file to the Cloud Shell:
+   - Click the “Upload/Download files” button and choose Upload.
+   - Find the `<keyfile>.json` file that you saved to your computer and choose it.
+   - Make a note of the upload destination, then click Complete.
+4. Edit the file located at `scim-examples/beta/workspace-settings.json` and fill in correct values for:
+	* **Actor**: the email address of the administrator in Google Workspace that the service account is acting on behalf of.
+	* **Bridge Address**: the URL you will use for your SCIM bridge (not your 1Password account sign-in address). This is the Application URL for your Container App found on the overview page. For example: https://scim.example.com.
+5. Upload your `workspace-settings.json` file to the Cloud Shell:
+   - Click the “Upload/Download files” button and choose Upload.
+   - Find the `workspace-settings.json` file that you saved to your computer and choose it.
+   - Make a note of the upload destination, then click Complete.
+6. Run the following command, replacing `$ContainerAppName` and `$ResourceGroup` with the names from your deployment to create the workspace-credentials secret. 
+
+    - Using bash:
+        ```bash
+        az containerapp secret set -n $ContainerAppName -g $ResourceGroup --secrets workspace-creds="$(cat /home/$USER/workspace-credentials.json | base64)"
+        ```
+
+    - Using PowerShell:
+        ```pwsh
+        az containerapp secret set -n $ContainerAppName -g $ResourceGroup --secrets workspace-creds="$([Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path /home/$Env:USER/ 'workspace-credentials.json'))) )"
+        ```
+
+7. Run the following command, replacing `$ContainerAppName` and `$ResourceGroup` with the names from your deployment to create the workspace-credentials secret. 
+
+    - Using bash:
+        ```bash
+        az containerapp secret set -n $ContainerAppName -g $ResourceGroup --secrets workspace-settings="$(cat /home/$USER/workspace-settings.json | base64)"
+        ```
+
+    - Using PowerShell:
+        ```pwsh
+        az containerapp secret set -n $ContainerAppName -g $ResourceGroup --secrets workspace-settings="$([Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path /home/$Env:USER/ 'workspace-settings.json'))) )"
+        ```
+
+8. Restart the current revision to have the op-scim-bridge container read the new secret using the following commands, replacing `$ContainerAppName` and `$ResourceGroup` with the names from your deployment:
+    ```bash
+    az containerapp update -n $ContainerAppName -g $ResourceGroup --container-name op-scim-bridge --set-env-vars OP_WORKSPACE_CREDENTIALS=secretref:workspace-creds OP_WORKSPACE_SETTINGS=secretref:workspace-settings
+    ```
+</details>
+<details>
+<summary>Connect Google Workspace using the Azure Portal</summary>
+The following steps only apply if you use Google Workspace as your identity provider. If you use another identity provider, do not perform these steps.
+
+1. Follow the steps to [create a Google service account, key, and API client](https://support.1password.com/scim-google-workspace/#step-1-create-a-google-service-account-key-and-api-client).
+2. Using the credential file you just downloaded, create a base64 value substitute `<keyfile>` with the filename generated by Google for your Google Service Account:
+   - Using bash:
+     ```bash
+     cat /path/to/<keyfile>.json | base64
+     ```
+   - Using PowerShell:
+     ```pwsh
+     [Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path $PWD.Path '/path/to/<keyfile>.json')))
+     ```
+3. Within [Azure Container Apps Portal](https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/Microsoft.App%2FcontainerApps), select **Secrets** along the left hand side.
+    1. Select **Add**.
+    2. Enter **workspace-credentials** as the **Key field**.
+    3. Enter the base64 value into the **Value** field.
+    4. Select **Add**.
+    5. Allow the secret to finish creating.  Add the OP_WORKSPACE_CREDENTIALS and OP_WORKSPACE_SETTINGS environment variables.
+4. Edit the file located at `scim-examples/beta/workspace-settings.json` and fill in correct values for:
+	* **Actor**: the email address of the administrator in Google Workspace that the service account is acting on behalf of.
+	* **Bridge Address**: the URL you will use for your SCIM bridge (not your 1Password account sign-in address). This is the Application URL for your Container App found on the overview page. For example: https://scim.example.com.
+4. After you've edited the file, save it and create a base64 value from the settings file:
+   - Using bash:
+     ```bash
+     cat /path/to/workspace-settings.json | base64
+     ```
+   - Using PowerShell:
+     ```pwsh
+     [Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path $PWD.Path '/path/to/workspace-settings.json')))
+     ```
+6. Within [Azure Container Apps Portal](https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/Microsoft.App%2FcontainerApps), select **Secrets** along the left hand side.
+    1. Select **Add**.
+    2. Enter **workspace-settings** as the **Key field**.
+    3. Enter the base64 value into the **Value** field.
+    4. Select **Add**.
+    5. Allow the secret to finish creating.  
+7. Select **Containers** along the left hand side.
+    1. Select **Edit and deploy** along the top.
+    2. Put a check in the box next to your **op-scim-bridge** container and select **Edit**.
+    3. In the Environment variables select and add a new variable, **OP_WORKSPACE_CREDENTIALS** to have a **Source** of **Reference a secret** and for the **Value**, select the **workspace-credentials** secret.
+    4. Add a new second new variable, **OP_WORKSPACE_SETTINGS** to have a **Source** of **Reference a secret** and for the **Value**, select the **workspace-settings** secret.
+    5. Select **Save**.
+8. Select **Create** to scale the deployment to have it read the new secrets. 
+</details>
 
 ### Troubleshooting
 
@@ -359,4 +453,3 @@ The latest version of 1Password SCIM Bridge is posted on our [Release Notes](htt
 Notes for future improvements to this deployment example:
 
 - [ ] Add instructions for vertically scaling SCIM bridge for large-scale deployments
-- [ ] Document Google Workspace credentials to be stored as secrets with deployment
