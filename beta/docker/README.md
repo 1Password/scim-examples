@@ -39,7 +39,7 @@ On the Linux machine that you will be using as the Docker host for your SCIM bri
 1. If you haven't already done so, [install Docker Engine](https://docs.docker.com/engine/install/#server) on the Linux server. Follow the Server instructions; Docker Desktop is not needed for the Linux server.
 2. Follow the [post-install steps](https://docs.docker.com/engine/install/linux-postinstall/) as noted in the documentation to enable running Docker as a non-root user and ensure that Docker Engine starts when the Linux server boots.
 
-### 👨‍💻 Prepare your desktop and initialize the Swarm
+### 👨‍💻 Prepare your desktop
 
 All following steps should be run on the same computer where you are already using 1Password, or another machine that can access the Linux server using SSH and has access to the `scimsession` file from the integration setup:
 
@@ -97,22 +97,25 @@ All following steps should be run on the same computer where you are already usi
    docker context use op-scim-bridge
    ```
 
-7. Initialize the Swarm. Run this command:
+### 🪄 Create a swarm
 
-   ```sh
-   docker swarm init # --advertise-addr 192.0.2.1
-   ```
+Configure Docker to [create a swarm](https://docs.docker.com/engine/swarm/swarm-tutorial/create-swarm/) with this Linux server as the first [manager node](https://docs.docker.com/engine/swarm/how-swarm-mode-works/nodes/#manager-nodes) for the swarm. Additional worker and manager nodes may be optionally added to a swarm for fault tolerance; this deployment example provisions a single-node swarm. Docker strictly requires an IP address to advertise to other nodes that can be used to join the swarm and for overlay networking for swarm services (whether or not additional nodes are added to the swarm).
 
-   > **Note**
-   >
-   > A single network interface **must** be used on which this swarm node can be reached by other swarm members for
-   > inter-node communication and management (even for creating a single-node swarm). If multiple network intefaces are
-   > available, Docker returns an error; uncomment the `--advertise-addr` parameter (delete `#`) and replace the example
-   > IP (`192.0.2.1`) with the IP address of the appropriate network interface.
-   >
-   > 📖 See the
-   > [`docker swarm init` command](https://docs.docker.com/engine/reference/commandline/swarm_init/#--advertise-addr)
-   > in the Docker CLI reference documentation for more details.
+Run this command to create the swarm:
+
+```sh
+docker swarm init # --advertise-addr 192.0.2.1
+```
+
+> **Note**
+>
+> If multiple IP addresses are detected, Docker returns an error; uncomment the `--advertise-addr` parameter (delete
+> `#`), replace the example IP (`192.0.2.1`) with the appropriate IP address, and run the command again. A single
+> address **must** be supplied, but connectivity using this IP address is only required by other nodes in this swarm.
+>
+> 📖 See the
+> [`docker swarm init` command](https://docs.docker.com/engine/reference/commandline/swarm_init/#--advertise-addr)
+> in the Docker CLI reference documentation for more details.
 
 ### Configure 1Password SCIM bridge to connect to Google Workspace
 
