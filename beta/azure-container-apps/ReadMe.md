@@ -15,6 +15,7 @@ The deployment consists of two [containers](https://learn.microsoft.com/en-us/az
 - [Getting Started: Generate credentials for automated user provisioning with 1Password](#Generate-credentials-for-automated-user-provisioning-with-1Password)
 - [Automatic Azure Container App Deployment Steps using Azure CLI](#Automatic-Azure-Container-App-Deployment-Steps-using-Azure-CLI)
 - [Manual Azure Container App Deployment Steps using the Azure Portal](#Manual-Azure-Portal-Deployment-Steps)
+- [Appendix](#Appendix) - Resource recommendations & Google Workspace as your IdP
 - [Troubleshooting](#Troubleshooting)
 - [Update your SCIM bridge](#Update-1Password-SCIM-Bridge)
 
@@ -271,6 +272,56 @@ The `scimsession` credentials will be saved as a secret variable in Container Ap
 
 ## Appendix
 
+### Resource recommendations
+
+The default resource recommendations for the SCIM bridge and Redis deployments are acceptable in most scenarios, but they may fall short in high-volume deployments where a large number of users and/or groups are being managed. We strongly recommend increasing the resources for both the SCIM bridge and Redis deployments.
+
+| Expected Provisioned Users |  Resources |
+| ------- | ------- |
+| 1-1000  |  Default  |
+| 1000-5000  |  High Volume Deployment  |
+| 5000+  |  Very High Volume Deployment  |
+
+Our current default resource requirements are:
+
+<details>
+  <summary>Default</summary>
+
+  ```
+    cpu: 0.25
+    memory: 0.5Gi
+  ```
+</details>
+
+These values can be scaled down again to the default values after the initial large provisioning event.
+
+<details>
+  <summary>High Volume Deployment</summary>
+
+While you can continue to utilize Azure Container Apps to run your SCIM bridge for an high volume deployment, we have not run this type of workload through a Azure Container Apps SCIM bridge to test the performance in an Azure Container app environment. 
+
+  ```
+    cpu: 0.5
+    memory: 1.0Gi
+  ```
+  Run the following commands, replacing `$ContainerAppName` and `$ResourceGroup` with the names from your deployment to increase the resources:
+
+  ```bash
+    az containerapp update -n $ContainerAppName -g $ResourceGroup --container-name op-scim-bridge --cpu 0.5 --memory 1.0Gi
+  ```
+
+  ```bash
+    az containerapp update -n $ContainerAppName -g $ResourceGroup --container-name op-scim-redis --cpu 0.5 --memory 1.0Gi
+  ```
+
+</details>
+
+<details>
+  <summary>Very High Volume Deployment</summary>
+
+  While you can continue to utilize Azure Container Apps to run your SCIM bridge for a very high volume deployment, we have not run this type of workload through a Azure Container Apps SCIM bridge, it is recommended to switch to an [AKS deployment](/kubernetes/README.md) using the Very High Volume deployment specs for that cluster. 
+</details>
+
 ### If Google Workspace is your identity provider
 <details>
 <summary>Connect Google Workspace using the `az` CLI tool</summary>
@@ -282,7 +333,7 @@ The following steps only apply if you use Google Workspace as your identity prov
    - Click the “Upload/Download files” button and choose Upload.
    - Find the `<keyfile>.json` file that you saved to your computer and choose it.
    - Make a note of the upload destination, then click Complete.
-4. Edit the file located at `scim-examples/beta/workspace-settings.json` and fill in correct values for:
+4. Edit the file located at `./google-workspace/workspace-settings.json` and fill in correct values for:
 	* **Actor**: the email address of the administrator in Google Workspace that the service account is acting on behalf of.
 	* **Bridge Address**: the URL you will use for your SCIM bridge (not your 1Password account sign-in address). This is the Application URL for your Container App found on the overview page. For example: https://scim.example.com.
 5. Upload your `workspace-settings.json` file to the Cloud Shell:
@@ -338,7 +389,7 @@ The following steps only apply if you use Google Workspace as your identity prov
     3. Enter the base64 value into the **Value** field.
     4. Select **Add**.
     5. Allow the secret to finish creating.  Add the OP_WORKSPACE_CREDENTIALS and OP_WORKSPACE_SETTINGS environment variables.
-4. Edit the file located at `scim-examples/beta/workspace-settings.json` and fill in correct values for:
+4. Edit the file located at `./google-workspace/workspace-settings.json` and fill in correct values for:
 	* **Actor**: the email address of the administrator in Google Workspace that the service account is acting on behalf of.
 	* **Bridge Address**: the URL you will use for your SCIM bridge (not your 1Password account sign-in address). This is the Application URL for your Container App found on the overview page. For example: https://scim.example.com.
 4. After you've edited the file, save it and create a base64 value from the settings file:
@@ -447,9 +498,3 @@ The latest version of 1Password SCIM Bridge is posted on our [Release Notes](htt
 5. Select **Save**.
 6. Select **Create** to deploy a new revision using the updating image.
 7. Log into your SCIM bridge URL with your bearer token to validate in the top left hand side that you are running the version of the SCIM Bridge. (logging in with the bearer token will also update your Automated User Provisioning page with the latest access time and with the current version).
-
-## TODO
-
-Notes for future improvements to this deployment example:
-
-- [ ] Add instructions for vertically scaling SCIM bridge for large-scale deployments
