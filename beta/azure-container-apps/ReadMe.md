@@ -69,7 +69,7 @@ Both methods need the Container App Extension added to the AZ tool of choice, by
 
     > **Note**
     >
-    >The ContainerAppName can not have upper case letters, and must be between 2 and 32 characters long and start and end wuth alphanumeric, it can contain letters, numbers and hyphens.
+    >The ContainerAppName can contain lowercase letters, numerals, and hyphens. It must be between 2 and 32 characters long, and cannot start or end with a hyphen.
     > The location utilizes the name field of the az account list-locations command. 
     > Not all Azure locations support Conatiner Apps. See [supported regions for Azure Container Apps](https://azure.microsoft.com/en-ca/explore/global-infrastructure/products-by-region/?regions=all&products=container-apps)
     >
