@@ -13,8 +13,8 @@ The deployment consists of two [containers](https://learn.microsoft.com/en-us/az
 - [Overview](#Overview)
 - [Prerequisites](#Prerequisites)
 - [Getting Started: Generate credentials for automated user provisioning with 1Password](#Generate-credentials-for-automated-user-provisioning-with-1Password)
-- [Automatic Azure Container App Deployment Steps using Azure CLI](#Automatic-Azure-Container-App-Deployment-Steps-using-Azure-CLI)
-- [Manual Azure Container App Deployment Steps using the Azure Portal](#Manual-Azure-Portal-Deployment-Steps)
+- [Azure Container App Deployment steps using Azure CLI](#Azure-Container-App-Deployment-Steps-using-Azure-CLI)
+- [Azure Container App Deployment steps using the Azure Portal](#Azure-Portal-Deployment-Steps)
 - [Appendix](#Appendix) - Resource recommendations & Google Workspace as your IdP
 - [Troubleshooting](#Troubleshooting)
 - [Update your SCIM bridge](#Update-1Password-SCIM-Bridge)
@@ -56,7 +56,7 @@ Deploying 1Password SCIM Bridge on Azure Container Apps comes with a few benefit
 
 ## Deploy 1Password SCIM Bridge to Azure Container App
 
-### Automatic Azure Container App Deployment Steps using Azure CLI
+### Azure Container App Deployment steps using Azure CLI
 
 Using the Azure Cloud Shell can be easier (the assumption for the commands below is that you are using the Cloud Shell), but this can also been done directly on your system with the Azure CLI tool with the ContainerApp Extension
 
@@ -173,10 +173,10 @@ Both methods need the Container App Extension added to the AZ tool of choice, by
 
 <hr>
 
-## Manual Azure Portal Deployment Steps
+## Azure Portal Deployment steps
 
 <details>
-<summary> Manual Azure Portal Deployment Steps</summary>
+<summary>Azure Portal Deployment steps</summary>
 
 ### Step 1: Configure the `scimsession` credentials for passing to Container App
 
