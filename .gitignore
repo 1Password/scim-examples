@@ -10,4 +10,4 @@ terraform.tfstate.backup
 terraform.tfvars
 .terraform*
 *.plan
-workspace-*.json
+
