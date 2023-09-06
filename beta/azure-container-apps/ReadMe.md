@@ -137,7 +137,7 @@ Both methods need the Container App Extension added to the AZ tool of choice, by
 
     > **Note**
     >
-    > You may be prompted to install the ContainerApp extension with this message if you did not previsously install this extension:
+    > You may be prompted to install the ContainerApp extension with this message if you did not previously install this extension:
     >
     > ```bash
     > The command requires the extension containerapp. Do you want to install it now? The command will continue to run after the extension is installed. (Y/n):
