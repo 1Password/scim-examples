@@ -322,6 +322,8 @@ While you can continue to utilize Azure Container Apps to run your SCIM bridge f
   While you can continue to utilize Azure Container Apps to run your SCIM bridge for a very high volume deployment, we have not run this type of workload through a Azure Container Apps SCIM bridge, it is recommended to switch to an [AKS deployment](/kubernetes/README.md) using the Very High Volume deployment specs for that cluster. 
 </details>
 
+<hr>
+
 ### If Google Workspace is your identity provider
 <details>
 <summary>Connect Google Workspace using the `az` CLI tool</summary>
@@ -416,7 +418,7 @@ The following steps only apply if you use Google Workspace as your identity prov
 8. Select **Create** to scale the deployment to have it read the new secrets. 
 </details>
 
-### Troubleshooting
+## Troubleshooting
 
 Logs for a container app can be viewed from the **Log Stream**, there is a separate log stream for both containers of the revision that is active. Often reviewing the logs of the **op-scim-bridge** container can help understand any startup issues.
 
@@ -479,7 +481,7 @@ Logs for a container app can be viewed from the **Log Stream**, there is a separ
 8. Update your identity provider configuration with the new bearer token.
 </details>
 
-### Update 1Password SCIM Bridge
+## Update 1Password SCIM Bridge
 
 #### Update using the `az` CLI
 The latest version of 1Password SCIM Bridge is posted on our [Release Notes](https://app-updates.agilebits.com/product_history/SCIM) website, where you can find details about the latest changes. 
