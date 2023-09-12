@@ -3,7 +3,14 @@ kind: ConfigMap
 metadata:
   name: op-redis-configmap
 data:
-  # Set the arguments passed to Redis
-  # - maxmemory configures Redis to use a specified amount of memory for the data set
-  # - maxmemory-policy is the eviction policy used when the maximum memory is reached
-  REDIS_ARGS: "--maxmemory 256mb --maxmemory-policy volatile-lru"
+  redis.conf: |
+    # Configure Redis as cache
+
+    # Cache memory limit
+    maxmemory 256mb
+
+    # Evict only expired keys when memory limit is reached using least recently used algorithm
+    maxmemory-policy volatile-lru
+
+    # Disable snapshotting
+    save ""
