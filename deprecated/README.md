@@ -17,10 +17,10 @@ The following deployment methods are deprecated and will be removed from the rep
 
 The following is a list of deployment methods that are no longer supported and were removed from the repository upon expiration of their deperecation period. These deployment methods are no longer supported. If you previously depended on one of these deployment methods, consider one of the suggested alternatives.
 
-| Deployment                | Deprecation Date | Deletion Date | Suggested Alternative                                                                                                                | Deprecation and Deletion PRs                                                        |
-| ------------------------- | ---------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------- |
-| aws-ec2-terraform         | 2020-12-21       | 2023-09-14    | [AWS ECS Fargate with Terraform](../aws-ecsfargate-terraform/) or [AWS ECS Fargate with CloudFormation](../beta/aws-ecsfargate-cfn/) | Dep: [PR#127](https://github.com/1Password/scim-examples/pull/127) \| Del: [tbd](#) |
-| DigitalOcean App Platform | 2022-12-21       | 2023-09-14    | [Digital Ocean App Platform with `op` CLI](../beta/do-app-platform-op-cli/) or [Azure Container Apps](../beta/azure-container-apps/) | Dep: [PR#222](https://github.com/1Password/scim-examples/pull/222) \| Del: [tbd](#) |
+| Deployment                | Deprecation Date | Deletion Date | Suggested Alternative                                                                                                                | Deprecation and Deletion PRs                                                                                                             |
+| ------------------------- | ---------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| aws-ec2-terraform         | 2020-12-21       | 2023-09-14    | [AWS ECS Fargate with Terraform](../aws-ecsfargate-terraform/) or [AWS ECS Fargate with CloudFormation](../beta/aws-ecsfargate-cfn/) | Dep: [PR#127](https://github.com/1Password/scim-examples/pull/127) \| Del: [PR#255](https://github.com/1Password/scim-examples/pull/255) |
+| DigitalOcean App Platform | 2022-12-21       | 2023-09-14    | [Digital Ocean App Platform with `op` CLI](../beta/do-app-platform-op-cli/) or [Azure Container Apps](../beta/azure-container-apps/) | Dep: [PR#222](https://github.com/1Password/scim-examples/pull/222) \| Del: [PR#255](https://github.com/1Password/scim-examples/pull/255) |
 
 ## Process for deprecating deployment methods
 
