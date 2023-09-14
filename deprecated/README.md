@@ -2,7 +2,8 @@
 
 This folder contains 1Password SCIM Bridge deployment methods that have been deprecated. At the time of deprecation, these deployments are still fully functional, but will no longer be updated.
 
-> 💡 **Note** that it is solely the _deployment method_ that is deprecated. Deprecating a deployment method is independent of the 1Password SCIM Bridge itself, or a specific version of the 1Password SCIM Bridge. For information about the latest version of 1Password SCIM Bridge, please see the [changelog](https://app-updates.agilebits.com/product_history/SCIM).
+> **Note**  
+> that it is solely the _deployment method_ that is deprecated. Deprecating a deployment method is independent of the 1Password SCIM Bridge itself, or a specific version of the 1Password SCIM Bridge. For information about the latest version of 1Password SCIM Bridge, please see the [changelog](https://app-updates.agilebits.com/product_history/SCIM).
 
 ## Deprecated deployment method list
 
