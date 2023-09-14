@@ -1,5 +1,0 @@
-#cloud-config
-
-preserve_hostname: false
-manage_etc_hosts: true
-fqdn: ${fqdn}
