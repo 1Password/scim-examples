@@ -23,8 +23,8 @@ The included template can be used to deploy 1Password SCIM Bridge as a [stack](h
 - 2 Route 53 DNS records:
   - for the domain name of your SCIM bridge (e.g. `scim.example.com`)
   - to validate the requested ACM certificate
-- an AWS Secrets Manager secret to store the `scimsession` credentials for your SCIM bridge
-- a CloudWatch log group to capture logs in streams from each of the SCIM bridge and Redis containers
+- AWS Secrets Manager secrets to store credentials and configuration for your SCIM bridge
+- a CloudWatch log group to capture logs
 - required IAM roles
 
 This template is a working example to be used as a base for your SCIM bridge deployment and may need to be customized to meet your specific requirements.
@@ -73,13 +73,20 @@ For a GUI deployment, you can create a stack in the CloudFormation console.
      > 📄 We use `op-scim-bridge` as a shorthand for 1Password SCIM Bridge throughout our examples and supporting documentation, but the choice is arbitrary.
    - Select the Route 53 hosted zone for DNS records.
    - Replace `scim.example.com` with a domain name for your SCIM bridge that is in the domain of this hosted zone.
-   - Open the `scimsession` file from your working directory in a text editor. Select all text in the file and copy it to your clipboard. Paste the contents into the `scimession` field (it will be masked on input), then click Next.
+   - Open the `scimsession` file from your working directory in a text editor. Select all text in the file and copy it to your clipboard. Paste the contents into the `scimession` field (it will be masked on input).
+   - **If you are connecting to Google Workspace**:
+      1. [Create a service account, key, and API client.](https://support.1password.com/scim-google-workspace/#step-1-create-a-google-service-account-key-and-api-client)
+      2. Save the Google Workspace service account key file to the working directory. Open the file in a text editor, select all text in the file, and copy it to your clipboard.
+      3. In the Workspace configuration section, fill these fields:
+         - `Service account key`: the contents of the key file (from your clipboard)
+         - `Actor`: the email address of an administrator in Google Workspace that the service account is acting on behalf of.
+   - Click Next.
 3. Configure stack options:
    - Click "Add new tag" to add any tags you require to all supported resources in the stack.
    - Review the options, using the provided defaults or your own options as required or preferred. Click Next.
 4. Review the stack configuration. When you're finished, click "I acknowledge that AWS CloudFormation might create IAM resources." below Capabilities, then click Submit.
 
-The console will display the stack status as `ℹ️ CREATE_IN_PROGRESS` during the deployment. The stack is expected to take several minutes to create (generally a bit more than 5 minutes when this document was written). After the stack is created, the status will change to `✅ CREATE_COMPLETE`.
+The console will display the stack status as `ℹ️ CREATE_IN_PROGRESS` during the deployment. The stack is expected to take several minutes to create (generally a bit more than 5 minutes when this document was last updated). After the stack is created, the status will change to `✅ CREATE_COMPLETE`.
 
 ### 💻 Use AWS CLI
 
@@ -88,35 +95,56 @@ You can alternatively deploy 1Password SCIM Bridge with a single AWS CLI command
 *Example command:*
 
 ```sh
-aws cloudformation deploy \
-    --template-file ./op-scim-bridge.yaml \
-    --stack-name op-scim-bridge \
-    --capabilities CAPABILITY_IAM \
-    --parameter-overrides \
-        Route53HostedZoneID=Z2ABCDEF123456 \
-        DomainName=scim.example.com \
-        scimsession=$(cat ./scimsession) \
-        # VPCCIDR=10.0.0.0/16 \
-    # --tags \
-    #     Key1=Value1 \
-    #     Key2=Value2
+aws cloudformation deploy --template-file ./op-scim-bridge.yaml
+   --capabilities CAPABILITY_IAM \
+   --parameter-overrides \
+      Route53HostedZoneID=Z2ABCDEF123456 \
+      DomainName=scim.example.com \
+      scimsession=$(cat ./scimsession) \
+      # WorkspaceCredentials=$(cat ./workspace-credentials.json) \
+      # WorkspaceActor=admin@example.com \
+      # VPCCIDR=10.0.0.0/16 \
+   # --tags \
+   #    Key1=Value1 \
+   #    Key2=Value2 \
+   --stack-name op-scim-bridge
 ```
 
-Edit the example above with the following:
+Edit the example above as follows before running the command from the working directory:
 
-1. If the template file was saved with a different file name or somewhere other than the working directory, replace `./op-scim-bridge.yaml` with the actual path (for example, `--template-file path/to/template.file`).
-2. If you prefer, set your own value for the `--stack-name` flag in the above command to choose your own name (for example, `--stack-name your-stack-name`). CloudFormation will use the stack name (or a truncated version where needed) as a prefix when naming the created AWS resources.
+- Replace `Z2ABCDEF123456` with the ID of the Route 53 hosted zone for DNS records.
+- Replace `scim.example.com` with a domain name for your SCIM bridge that is in the domain of this hosted zone.
+- If you saved your `scimsession` file as an item in your 1Password account, you can [use 1Password CLI to pass this value](https://developer.1password.com/docs/cli/secrets-scripts#option-2-use-op-read-to-read-secrets) instead of saving to and reading from the working directory.
+
+  For example:
+  
+  ```sh
+  # ...
+        scimsession=$(op read "op://Private/scimsession file/scimsession") \
+  # ...
+  ```
+
+- **If you are connecting to Google Workspace**:
+  1. [Create a service account, key, and API client.](https://support.1password.com/scim-google-workspace/#step-1-create-a-google-service-account-key-and-api-client)
+  2. Save the Google Workspace service account key file.
+  3. Uncomment the parameter overrides for Google Workspace and set each value:
+     - `WorkspaceCredentials`: the contents of the key file; replace `./workspace-credentials.json` with the path to the key file to read it from the working directory.
+     - `WorkspaceActor`: the email address of an administrator in Google Workspace that the service account is acting on behalf of.
+
+     For example:
+
+     ```sh
+     # ...
+           WorkspaceCredentials=$(cat ./workspace-344418-6ab4742aa21b.json) \
+           WorkspaceActor=google.admin@example.com \
+     # ...
+     ```
+
+- Uncomment the appropriate lines as needed to adjust the CIDR block for the VPC and add tags as key-value pairs to apply to all supported resources in the stack.
+- If you prefer, set the value for `--stack-name` to choose your own (for example, `--stack-name your-stack-name`). CloudFormation will use the stack name (or a truncated version where needed) as a prefix when naming the created AWS resources.
    > **Note**
    >
    > 📄 We use `op-scim-bridge` as a shorthand for 1Password SCIM Bridge throughout our examples and supporting documentation, but the choice is arbitrary.
-3. Leave the default value for the VPC CIDR range (`VPCCIDR`). If you require something different for your environment, you can uncomment this line and replace the CIDR range with your own value.
-4. Replace `Z2ABCDEF123456` with the ID of the Route 53 hosted zone for DNS records.
-5. Replace `scim.example.com` with a domain name for your SCIM bridge that is in the domain of this hosted zone.
-6. Ensure your `scimsession` file is located in the working directory, or replace the path specified in the subshell command (for example, `scimsession=$(cat path/to/scimsession.filename)`).
-   > **Note**
-   >
-   > 💻 If you saved your `scimsession` file as an item in your 1Password account, you can [use 1Password CLI to pass this value](https://developer.1password.com/docs/cli/secrets-scripts#option-2-use-op-read-to-read-secrets). For example: `scimsession=$(op read "op://Private/scimsession file/scimsession")`
-7. Optionally, uncomment the appropriate lines and add tags as key-value pairs to apply to all supported resources in the stack.
 
 After you run the command, you should see:
 
@@ -133,7 +161,7 @@ More detailed information is available in [the CloudFormation console](https://c
 
 ## Test your SCIM bridge
 
-A clickable link of the URL for your SCIM bridge is available in the Outputs tab of the CloudFormation console (for example, <https://scim.example.com/>). You can sign in to this URL with the bearer token for your SCIM bridge to test the connection, view status information, or retrieve logs. You can also send an authenticated SCIM API request to your SCIM bridge from the command line.
+A clickable link of the URL for your SCIM bridge is available in the Outputs tab of the CloudFormation console (for example, <https://scim.example.com>). You can sign in to this URL with the bearer token for your SCIM bridge to test the connection, view status information, or retrieve logs.
 
 *Example command:*
 
@@ -201,6 +229,8 @@ Replace `mF_9.B5f-4.1JqM` with your bearer token and `scim.example.com` with the
 ## Connect your identity provider
 
 Use your SCIM bridge URL and bearer token to [connect your identity provider to 1Password SCIM Bridge](https://support.1password.com/scim/#step-3-connect-your-identity-provider).
+
+If you are integrating with Google Workspace, sign in to your SCIM bridge URL using your bearer token and [set up provisioning to 1Password](https://support.1password.com/scim-google-workspace/#22-set-up-provisioning-to-1password).
 
 ## Appendix
 
