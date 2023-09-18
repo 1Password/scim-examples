@@ -15,7 +15,7 @@ Metadata:
           - scimsession
       - Label:
           default: >-
-            Google Workspace configuration (only for customers integrating with Google Workspace)
+            Workspace configuration (only for customers integrating with Google Workspace)
         Parameters:
           - WorkspaceCredentials
           - WorkspaceActor
@@ -127,11 +127,15 @@ Resources:
       NetworkMode: awsvpc
       Cpu: 512
       Memory: 1024
+      Volumes:
+        - Name: redis-config
+        - Name: opuser-data
       ExecutionRoleArn: !GetAtt ExecutionRole.Arn
       TaskRoleArn: !Ref TaskRole
       ContainerDefinitions:
         - Name: op-scim-bridge
           Image: !Sub "1password/scim:${SCIMBridgeVersion}"
+          User: "opuser:opuser"
           PortMappings:
             - ContainerPort: 3002
               HostPort: 3002
@@ -153,18 +157,28 @@ Resources:
               - Name: OP_WORKSPACE_SETTINGS
                 ValueFrom: !Ref WorkspaceSettingsSecret
               - !Ref "AWS::NoValue"
+          MountPoints:
+            - ContainerPath: /home/opuser
+              SourceVolume: opuser-data
           LogConfiguration:
             LogDriver: awslogs
             Options:
               awslogs-region: !Ref "AWS::Region"
               awslogs-group: !Ref LogGroup
-              awslogs-stream-prefix: ecs-scim
+              awslogs-stream-prefix: !Ref LogStream
         - Name: redis
           Image: "redis:latest"
-          Environment:
-            - Name: REDIS_ARGS
-              Value: '--maxmemory 256mb --maxmemory-policy volatile-lru --save ""'
+          User: "redis:redis"
+          Command:
+            - "redis-server"
+            - "/home/redis/config/redis.conf"
+          MountPoints:
+            - ContainerPath: /home/redis
+              SourceVolume: redis-config
           Essential: true
+          DependsOn:
+            - Condition: COMPLETE
+              ContainerName: init-redis
           PortMappings:
             - ContainerPort: 6379
               HostPort: 6379
@@ -178,10 +192,69 @@ Resources:
             Options:
               awslogs-region: !Ref "AWS::Region"
               awslogs-group: !Ref LogGroup
-              awslogs-stream-prefix: ecs-redis
+              awslogs-stream-prefix: !Ref LogStream
+        - Name: init-host
+          Image: bash
+          Essential: false
+          MountPoints:
+            - ContainerPath: /home/redis
+              SourceVolume: redis-config
+            - ContainerPath: /home/opuser
+              SourceVolume: opuser-data
+          Command:
+            - -c
+            - echo "Setting directory ownership..." &&
+              chown -R 999:999 /home/redis /home/opuser && echo "Directory ownership assigned!"
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-region: !Ref "AWS::Region"
+              awslogs-group: !Ref LogGroup
+              awslogs-stream-prefix: !Ref LogStream
+        - Name: init-redis
+          Image: bash
+          Essential: false
+          DependsOn:
+            - Condition: COMPLETE
+              ContainerName: init-host
+          User: "999:999"
+          Command:
+            - -c
+            - echo "Creating Redis config directory..." &&
+              mkdir /home/redis/config && echo "Directory created!" &&
+              echo "Writing configuration file..." &&
+              echo $REDIS_CONFIG | base64 -d - | tee /home/redis/config/redis.conf && echo "Configuration file saved!" &&
+              echo "Setting configuration file permissions..." &&
+              chmod 0440 /home/redis/config/redis.conf && echo "File permissions set!"
+          Environment:
+            - Name: REDIS_CONFIG
+              Value:
+                Fn::Base64: |
+                  # Configure Redis as cache
+
+                  # Cache memory limit
+                  maxmemory 256mb
+
+                  # Evict only expired keys when memory limit is reached using least recently used algorithm
+                  maxmemory-policy volatile-lru
+
+                  # Disable snapshotting
+                  save ""
+          MountPoints:
+            - ContainerPath: /home/redis
+              SourceVolume: redis-config
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-region: !Ref "AWS::Region"
+              awslogs-group: !Ref LogGroup
+              awslogs-stream-prefix: !Ref LogStream
   LogGroup:
     Type: "AWS::Logs::LogGroup"
-    Properties: {}
+  LogStream:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Ref LogGroup
   ECSService:
     Type: "AWS::ECS::Service"
     DependsOn: HTTPSListener
@@ -210,7 +283,7 @@ Resources:
     Type: "AWS::ElasticLoadBalancingV2::TargetGroup"
     Properties:
       HealthCheckIntervalSeconds: 10
-      HealthCheckPath: /app
+      HealthCheckPath: /ping
       Matcher:
         HttpCode: "200,301,302"
       HealthCheckTimeoutSeconds: 5
@@ -463,4 +536,4 @@ Outputs:
     Description: >-
       The URL for your SCIM bridge. Use this and your bearer token to connect
       your identity provider to 1Password.
-    Value: !Sub "https://${DNSRecord}/"
+    Value: !Sub "https://${DNSRecord}"
