@@ -114,7 +114,7 @@ Both methods need the Container App Extension added to the AZ tool of choice, by
     ```bash
     az containerapp create -n $ContainerAppName -g $ResourceGroup \
         --container-name op-scim-bridge \
-        --image docker.io/1password/scim:v2.8.3 \
+        --image docker.io/1password/scim:v2.8.4 \
         --environment $ContainerAppEnvironment \
         --ingress external --target-port 3002 \
         --cpu 0.25 --memory 0.5Gi \
@@ -126,7 +126,7 @@ Both methods need the Container App Extension added to the AZ tool of choice, by
     ```pwsh
     az containerapp create -n $ContainerAppName -g $ResourceGroup `
     --container-name op-scim-bridge `
-    --image docker.io/1password/scim:v2.8.3 `
+    --image docker.io/1password/scim:v2.8.4 `
     --environment $ContainerAppEnvironment `
     --ingress external --target-port 3002 `
     --cpu 0.25 --memory 0.5Gi `
@@ -220,7 +220,7 @@ The `scimsession` credentials will be saved as a secret variable in Container Ap
     1. Uncheck **Use quickstart image**.
     2. Change the name of the container to *op-scim-bridge*.
     3. Select **Docker Hub** for the image source.
-    4. Enter `1password/scim:v2.8.3` for the **Image and Tag**.
+    4. Enter `1password/scim:v2.8.4` for the **Image and Tag**.
     5. Leave the CPU and Memory as 0.25 CPU cores, 0.5 Gi memory.
     6. Add the following **Environment variables**:
         1. `OP_SESSION` currently with of `""` for now.
@@ -487,8 +487,8 @@ Logs for a container app can be viewed from the **Log Stream**, there is a separ
 The latest version of 1Password SCIM Bridge is posted on our [Release Notes](https://app-updates.agilebits.com/product_history/SCIM) website, where you can find details about the latest changes. 
 
 1. Start the Azure Cloud Shell from the navigation bar of your [Azure Portal](https://portal.azure.com) or directly open the [Azure Shell](https://shell.azure.com).
-2. Run the following command, replacing `$ContainerAppName` and `$ResourceGroup` with the names from your deployment. Also ensure to change the version number 2.8.3 to match the latest version from our [SCIM Bridge Release Notes page](https://app-updates.agilebits.com/product_history/SCIM).
-```az containerapp update -n $ContainerAppName -g $ResourceGroup --container-name op-scim-bridge --image docker.io/1password/scim:v2.8.3```
+2. Run the following command, replacing `$ContainerAppName` and `$ResourceGroup` with the names from your deployment. Also ensure to change the version number 2.8.4 to match the latest version from our [SCIM Bridge Release Notes page](https://app-updates.agilebits.com/product_history/SCIM).
+```az containerapp update -n $ContainerAppName -g $ResourceGroup --container-name op-scim-bridge --image docker.io/1password/scim:v2.8.4```
 3. Log into your SCIM bridge URL with your bearer token to validate in the top left hand side that you are running the version of the SCIM Bridge. (logging in with the bearer token will also update your Automated User Provisioning page with the latest access time and with the current version).
 
 #### Update using the Azure Portal
@@ -496,7 +496,7 @@ The latest version of 1Password SCIM Bridge is posted on our [Release Notes](htt
 1. Within Container App from the [Azure Container Apps Portal](https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/Microsoft.App%2FcontainerApps), Select **Containers** from the left hand side.
 2. Select **Edit and deploy** along the top.
 3. Put a check in the box next to your **op-scim-bridge** container and select **Edit**.
-4. Change the version number **2.8.3** in the **Image and Tag** field, **1password/scim:v2.8.3** to match the latest version from our [SCIM Bridge Release Notes page](https://app-updates.agilebits.com/product_history/SCIM).
+4. Change the version number **2.8.4** in the **Image and Tag** field, **1password/scim:v2.8.4** to match the latest version from our [SCIM Bridge Release Notes page](https://app-updates.agilebits.com/product_history/SCIM).
 5. Select **Save**.
 6. Select **Create** to deploy a new revision using the updating image.
 7. Log into your SCIM bridge URL with your bearer token to validate in the top left hand side that you are running the version of the SCIM Bridge. (logging in with the bearer token will also update your Automated User Provisioning page with the latest access time and with the current version).

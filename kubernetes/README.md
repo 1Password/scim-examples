@@ -122,7 +122,7 @@ To finish setting up automated user provisioning, [connect your identity provide
 To update SCIM bridge, connect to your Kubernetes cluster and run the following command, replacing v2.8.0 with the latest version:
 
 ```bash
-kubectl set image deploy/op-scim-bridge op-scim-bridge=1password/scim:v2.8.3
+kubectl set image deploy/op-scim-bridge op-scim-bridge=1password/scim:v2.8.4
 ```
 
 The update should take 2-3 minutes for Kubernetes to complete.
