@@ -1,0 +1,23 @@
+services:
+  # A Docker web service
+  - type: web
+    name: op-scim-bridge
+    runtime: image
+    image:
+      url: docker.io/1password/scim:v2.8.4
+    healthCheckPath: /ping
+    envVars:
+      - key: PORT
+        value: 3002
+      - key: OP_REDIS_URL
+        fromService:
+          type: redis
+          name: op-scim-redis
+          property: connectionString
+      - key: OP_SESSION
+        sync: false
+  - type: redis
+    name: op-scim-redis
+    ipAllowList: []
+    plan: free 
+    maxmemoryPolicy: volatile-lru
