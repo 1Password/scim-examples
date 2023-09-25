@@ -10,6 +10,7 @@ Metadata:
       - Parameters:
           - VPCCIDR
           - Route53HostedZoneID
+          - ProvisioningVolume
           - DomainName
           - SCIMBridgeVersion
           - scimsession
@@ -24,6 +25,8 @@ Metadata:
         default: "VPC CIDR"
       Route53HostedZoneID:
         default: "Route 53 hosted zone"
+      ProvisioningVolume:
+        default: "Provisioning volume"
       DomainName:
         default: "1Password SCIM Bridge domain name"
       SCIMBridgeVersion:
@@ -41,6 +44,17 @@ Parameters:
     Type: "AWS::Route53::HostedZone::Id"
     Description: >-
       The Route 53 hosted zone in which to create DNS records for ACM validation and the ALB endpoint.
+  ProvisioningVolume:
+    Type: String
+    Description: >-
+      The expected volume of provisioning activity. Use base for provisioning less than 1,000 users, high for up to
+      5,000 users, or very-high for more than 5,000 users.
+    Default: base
+    AllowedValues:
+      - base
+      - high
+      - very-high
+    ConstraintDescription: must be base, high, or very-high
   DomainName:
     Type: String
     Default: scim.example.com
@@ -83,6 +97,33 @@ Rules:
       - Assert: !Not [!Equals [!Ref WorkspaceActor, ""]]
         AssertDescription: >-
           The actor email is required to connect to Google Workspace.
+Mappings:
+  CpuScale:
+    base:
+      SCIMBridge: 128
+      Redis: 128
+      Task: 256
+    high:
+      SCIMBridge: 256
+      Redis: 256
+      Task: 512
+    very-high:
+      SCIMBridge: 1024
+      Redis: 1024
+      Task: 2048
+  MemoryScale:
+    base:
+      SCIMBridge: 512
+      Redis: 512
+      Task: 1024
+    high:
+      SCIMBridge: 1024
+      Redis: 1024
+      Task: 2048
+    very-high:
+      SCIMBridge: 2048
+      Redis: 2048
+      Task: 4096
 Conditions:
   UsingGoogleWorkspace: !Not
     - !Or
@@ -125,8 +166,14 @@ Resources:
       RequiresCompatibilities:
         - FARGATE
       NetworkMode: awsvpc
-      Cpu: 512
-      Memory: 1024
+      Cpu: !FindInMap
+        - CpuScale
+        - !Ref ProvisioningVolume
+        - Task
+      Memory: !FindInMap
+        - MemoryScale
+        - !Ref ProvisioningVolume
+        - Task
       Volumes:
         - Name: redis-config
         - Name: opuser-data
@@ -134,6 +181,14 @@ Resources:
       TaskRoleArn: !Ref TaskRole
       ContainerDefinitions:
         - Name: op-scim-bridge
+          Cpu: !FindInMap
+            - CpuScale
+            - !Ref ProvisioningVolume
+            - SCIMBridge
+          Memory: !FindInMap
+            - MemoryScale
+            - !Ref ProvisioningVolume
+            - SCIMBridge
           Image: !Sub "1password/scim:${SCIMBridgeVersion}"
           User: "opuser:opuser"
           PortMappings:
@@ -167,6 +222,14 @@ Resources:
               awslogs-group: !Ref LogGroup
               awslogs-stream-prefix: !Ref LogStream
         - Name: redis
+          Cpu: !FindInMap
+            - CpuScale
+            - !Ref ProvisioningVolume
+            - Redis
+          Memory: !FindInMap
+            - MemoryScale
+            - !Ref ProvisioningVolume
+            - Redis
           Image: "redis:latest"
           User: "redis:redis"
           Command:

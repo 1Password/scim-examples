@@ -104,6 +104,7 @@ aws cloudformation deploy --template-file ./op-scim-bridge.yaml
       # WorkspaceCredentials=$(cat ./workspace-credentials.json) \
       # WorkspaceActor=admin@example.com \
       # VPCCIDR=10.0.0.0/16 \
+      # ProvisioningVolume=high \
    # --tags \
    #    Key1=Value1 \
    #    Key2=Value2 \
@@ -140,7 +141,7 @@ Edit the example above as follows before running the command from the working di
      # ...
      ```
 
-- Uncomment the appropriate lines as needed to adjust the CIDR block for the VPC and add tags as key-value pairs to apply to all supported resources in the stack.
+- Uncomment the appropriate lines as needed to adjust the CIDR block for the VPC, the scale of the deployment based on its provisoning volume, and add tags as key-value pairs to apply to all supported resources in the stack.
 - If you prefer, set the value for `--stack-name` to choose your own (for example, `--stack-name your-stack-name`). CloudFormation will use the stack name (or a truncated version where needed) as a prefix when naming the created AWS resources.
    > **Note**
    >
