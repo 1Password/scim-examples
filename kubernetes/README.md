@@ -108,7 +108,7 @@ You can test your instance by requesting `https://[your-domain]/scim/Users`, wit
 For example, to do this with `curl`:
 
 ```bash
-curl --header "Authorization: Bearer TOKEN_GOES_HERE" https://scim.example.com/Users
+curl --header "Authorization: Bearer TOKEN_GOES_HERE" https://scim.example.com/scim/Users
 ```
 
 ## Step 6: Connect your identity provider
