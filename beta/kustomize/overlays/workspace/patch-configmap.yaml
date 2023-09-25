@@ -1,0 +1,7 @@
+- op: add
+  path: /data/OP_WORKSPACE_CREDENTIALS
+  value: "/secrets/workspace-credentials.json"
+
+- op: add
+  path: /data/OP_WORKSPACE_SETTINGS
+  value: "/secrets/workspace-settings.json"
