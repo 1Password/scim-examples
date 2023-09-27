@@ -30,16 +30,52 @@ This section describes:
 - The criteria to determine when deployment example is ready to be published with the "beta" label.
 - The process for publishing a beta deployment example.
 
-<!-- Criteria and process go here -->
+### Criteria for publishing a beta deployment example
 
-## Graduating a deployment example out of beta
+It is assumed that any deployment example being devised is broadly useful (within the context of the cloud provider or deployment environment being addressed) and brings value to 1Password SCIM Bridge users that is not already provided by current deployment examples. Value could be in the form of lower cost, ease of deployment, or reduced dependencies compared to other options.
+
+Before being published as a beta deployment example, the following criteria should be met.
+
+- Testing
+  - All currently-documented configurations (e.g., Let's Encrypt, custom TLS, Google Workspace, etc) _must_ be tested by at least one person other than the person developing the example. Tests are considered successful if:
+    - The SCIM bridge is deployed and acessible over TLS for each configuration being tested.
+    - Upgrades or downgrades of the container image are successful.
+    - At least one configuration has been tested by connecting it to an IdP provisioning some number of users. The number of users should be representative of the anticipated use case, and provisioning should take place in a timely manner. If the host platform provides resource monitoring, those should be consulted to ensure that the resources available are adequate.
+  - Successful deployments _must_ be reliably reproducable when following the accompanying documentation.
+  - Deployments or updates _must_ not fail for inexplicable reasons.
+- Documentation
+  - Documentation for the primary anticipated use case _must_ be complete, though it need not be in it's final form. It is anticipated that documentation will change while in beta.
+  - Complete documentation in this context means the following are included:
+    - Complete instructions for the most common deployment configuration.
+    - Complete instructions for updating the SCIM bridge.
+    - If documentation includes command-line instructions, it _must_ include options, where supported, for both Unix and Powershell.
+  - Documentation for less common use-cases _may_ be partial or incomplete. If incomplete documentation is procided, it _must_ be noted as incomplete in an obvious way to a reader.
+  - Documentation _should_ conform to the [1Password Style Guide](https://support.1password.com/style-guide/).
+
+### Process for publishing a beta deployment example
+
+## Promoting a deployment example out of beta
 
 This section describes:
 
 - The criteria for removing the "beta" label from a deployment example.
 - The process for graduating a deployment example from beta to stable.
 
+### Criteria for promoting a deployment example out of beta
+
+- Testing
+  - Some criteria for testing TBD
+- Documentation
+
+  - Documentation _must_ conform to the [1Password Style Guide](https://support.1password.com/style-guide/).
+  - Documentation _must_ include the following:
+    - Complete instructions for deployment.
+    - Complete instructions for updating.
+    - Complete instructions for scaling the SCIM bridge, if applicable.
+
 <!-- Criteria and process go here -->
+
+### Process for promoting a deployment example out of beta
 
 ## Deprecating a beta deployment example
 
