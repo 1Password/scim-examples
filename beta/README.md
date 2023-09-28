@@ -40,19 +40,21 @@ Before being published as a beta deployment example, the following criteria shou
   - All currently-documented configurations (e.g., Let's Encrypt, custom TLS, Google Workspace, etc) _must_ be tested by at least one person other than the person developing the example. Tests are considered successful if:
     - The SCIM bridge is deployed and acessible over TLS for each configuration being tested.
     - Upgrades or downgrades of the container image are successful.
-    - At least one configuration has been tested by connecting it to an IdP provisioning some number of users. The number of users should be representative of the anticipated use case, and provisioning should take place in a timely manner. If the host platform provides resource monitoring, those should be consulted to ensure that the resources available are adequate.
+    - At least one configuration has been tested by connecting it to an IdP and provisioning some number of users. The number of users should be representative of the anticipated use case, and provisioning should take place in a timely manner that indicates adequate compute resources are available. If the host platform provides resource monitoring, those tools should be consulted to ensure that the resources available are adequate.
   - Successful deployments _must_ be reliably reproducable when following the accompanying documentation.
   - Deployments or updates _must_ not fail for inexplicable reasons.
 - Documentation
-  - Documentation for the primary anticipated use case _must_ be complete, though it need not be in it's final form. It is anticipated that documentation will change while in beta.
-  - Complete documentation in this context means the following are included:
-    - Complete instructions for the most common deployment configuration.
+  - Documentation for the primary anticipated use case _must_ be complete, though it need not be in it's final form since it is anticipated that documentation will change while in beta. Complete documentation, in this context, means the following are included:
+    - Complete instructions for the most common deployment configuration this example targets.
     - Complete instructions for updating the SCIM bridge.
-    - If documentation includes command-line instructions, it _must_ include options, where supported, for both Unix and Powershell.
-  - Documentation for less common use-cases _may_ be partial or incomplete. If incomplete documentation is procided, it _must_ be noted as incomplete in an obvious way to a reader.
+    - Terminal commands, if applicable, _must_ be provided for both Unix shells and Powershell, where both are supported.
+  - Documentation for less common use-cases _may_ be incomplete. If incomplete documentation is provided, it _must_ be noted as incomplete in an obvious way to the reader.
+  - Documentation _must_ indicate approximate provisioning capacity of a SCIM bridge when deployed in the documented manner. Documentation for scaling the SCIM bridge is _not_ required.
   - Documentation _should_ conform to the [1Password Style Guide](https://support.1password.com/style-guide/).
 
 ### Process for publishing a beta deployment example
+
+- Some process TBD.
 
 ## Promoting a deployment example out of beta
 
@@ -76,6 +78,8 @@ This section describes:
 <!-- Criteria and process go here -->
 
 ### Process for promoting a deployment example out of beta
+
+- Some process TBD
 
 ## Deprecating a beta deployment example
 
