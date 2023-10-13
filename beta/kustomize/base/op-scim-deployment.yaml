@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: op-scim-bridge
+spec:
+  selector:
+    matchLabels:
+      app: op-scim-bridge
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: op-scim-bridge
+    spec:
+      containers:
+        - name: op-scim-bridge
+          image: 1password/scim:v2.8.4
+          ports:
+            # HTTPS port (external TCP traffic should be forwarded to this port by default)
+            - name: https
+              containerPort: 8443
+            # HTTP port (forward unencrypted traffic to this port if not using Let's Encrypt)
+            - name: http
+              containerPort: 3002
+          volumeMounts:
+            - name: secrets
+              mountPath: "/secrets"
+              readOnly: false
+          resources:
+            requests:
+              cpu: 125m
+              memory: 256M
+            limits:
+              cpu: 250m
+              memory: 512M
+          envFrom:
+            - configMapRef:
+                name: op-scim-configmap
+      volumes:
+      - name: secrets
+        projected:
+          sources:
+          - secret:
+              name: scimsession
+          - secret:
+              name: op-scim-tls
+              optional: true
+              items:
+                - key: tls.crt
+                  path: tls.crt
+                - key: tls.key
+                  path: tls.key

@@ -1,0 +1,9 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+   # choose 1 of the following two. Both should not be uncommented at the same time.
+   - ../letsencrypt #
+  #  - ../self-managed-tls # for use with your own TLS certificate
+
+  # if using workspace, uncomment the next resource
+  #  - ../workspace
