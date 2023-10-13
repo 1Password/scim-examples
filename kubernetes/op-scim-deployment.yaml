@@ -12,20 +12,28 @@ spec:
       labels:
         app: op-scim-bridge
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        runAsGroup: 999
+        fsGroup: 999
       containers:
         - name: op-scim-bridge
           image: 1password/scim:v2.8.4
+          securityContext:
+            allowPrivilegeEscalation: false
           ports:
-            # HTTPS port (external TCP traffic should be forwarded to this port by default)
+            # HTTPS port (external TCP traffic should be forwarded to this when using CertificateManager)
             - name: https
               containerPort: 8443
-            # HTTP port (forward unencrypted traffic to this port if not using Let's Encrypt)
+            # HTTP port (unencrypted traffic can be received using this port)
             - name: http
               containerPort: 3002
           volumeMounts:
+            - name: opuser-data
+              mountPath: /home/opuser/.op
             - name: secrets
-              mountPath: "/secrets"
-              readOnly: false
+              mountPath: /secrets
           resources:
             requests:
               cpu: 125m
@@ -37,22 +45,23 @@ spec:
             - configMapRef:
                 name: op-scim-configmap
       volumes:
-      - name: secrets
-        projected:
-          sources:
-          - secret:
-              name: scimsession
-          - secret:
-              name: workspace-credentials
-              optional: true
-          - secret:
-              name: workspace-settings  
-              optional: true
-          - secret:
-              name: op-scim-tls
-              optional: true
-              items:
-                - key: tls.crt
-                  path: tls.crt
-                - key: tls.key
-                  path: tls.key
+        - name: opuser-data
+          projected:
+            sources:
+              - secret:
+                  name: scimsession
+              - secret:
+                  name: workspace-credentials
+                  optional: true
+              - secret:
+                  name: workspace-settings
+                  optional: true
+        - name: secrets
+          projected:
+            sources:
+              - secret:
+                  name: op-scim-tls
+                  optional: true
+              - secret:
+                  name: dns01-config
+                  optional: true
