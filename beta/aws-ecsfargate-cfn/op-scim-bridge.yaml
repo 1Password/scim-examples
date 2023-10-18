@@ -76,11 +76,13 @@ Parameters:
       The tag of the 1Password SCIM Bridge image to pull from Docker Hub.
   WorkspaceCredentials:
     Type: String
+    Default: ""
     Description: >-
       The plain text contents of the key file associated with the service account for Google Workspace.
     NoEcho: true
   WorkspaceActor:
     Type: String
+    Default: ""
     Description: >-
       The email address of the Google Workspace administrator that the service account is acting on behalf of.
 Rules:
