@@ -95,7 +95,7 @@ You can alternatively deploy 1Password SCIM Bridge with a single AWS CLI command
 *Example command:*
 
 ```sh
-aws cloudformation deploy --template-file ./op-scim-bridge.yaml
+aws cloudformation deploy --template-file ./op-scim-bridge.yaml \
    --capabilities CAPABILITY_IAM \
    --parameter-overrides \
       Route53HostedZoneID=Z2ABCDEF123456 \
