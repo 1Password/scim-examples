@@ -216,7 +216,9 @@ If you regenenerate credentials for your SCIM bridge:
 
 ## Appendix: Resource recommendations
 
-The default resource recommendations for the SCIM bridge and Redis deployments are acceptable in most scenarios, but they may fall short in high-volume deployments where a large number of users and/or groups are being managed. We strongly recommend increasing the resources for both the SCIM bridge and Redis deployments.
+The default resource recommendations for the SCIM bridge and Redis deployments are acceptable in most scenarios, but they may fall short in high-volume deployments where a large number of users and/or groups are being managed. We strongly recommend increasing the resources for both the SCIM bridge deployment.
+
+Once all users and groups have been provisioned, it is safe to lower these resources back to their defaults for everyday use of the SCIM bridge.
 
 | Expected Provisioned Users | Resources                   |
 | -------------------------- | --------------------------- |
@@ -252,7 +254,6 @@ requests:
   memory: 512M
 
 limits:
-  cpu: 1000m
   memory: 1024M
 ```
 
@@ -269,6 +270,10 @@ The best practices for Kubernetes resource limits are:
 This works well in the deployment scenario where the 1Password SCIM bridge is the only pod in the cluster, so that it has a priority of service and can consume all the resources in the cluster without affecting the performance of other pods.
 
 If you are deploying the SCIM bridge to a cluster with other production services, we recommend using the following resources depending on the size of your deployment.
+
+> **Note**
+>
+> We are recommending not to set CPU limits when you expect performance. However you can set CPU limits if you have a good usecase to manage resources. It can be modified in your deployment based on our generic example and its expected to work in most circumstances.
 
 ```yaml
 requests:
