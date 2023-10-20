@@ -269,11 +269,11 @@ The best practices for Kubernetes resource limits are:
 
 This works well in the deployment scenario where the 1Password SCIM bridge is the only pod in the cluster, so that it has a priority of service and can consume all the resources in the cluster without affecting the performance of other pods.
 
-If you are deploying the SCIM bridge to a cluster with other production services, we recommend using the following resources depending on the size of your deployment.
+If you are deploying the SCIM bridge to a cluster **without** other production services, we recommend setting the following CPU and memory resources:
 
 > **Note**
 >
-> We are recommending not to set CPU limits when you expect performance. However you can set CPU limits if you have a good usecase to manage resources. It can be modified in your deployment based on our generic example and its expected to work in most circumstances.
+> We recommend to not set CPU limits when you expect higher performance. However, you can set CPU limits to manage resources if needed. This can be modified in your deployment based on our generic example, and its expected to work in most circumstances.
 
 ```yaml
 requests:
