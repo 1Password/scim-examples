@@ -1,6 +1,6 @@
 # Deploy 1Password SCIM Bridge on Kubernetes
 
-*Learn how to deploy 1Password SCIM Bridge on a Kubernetes cluster.*
+_Learn how to deploy 1Password SCIM Bridge on a Kubernetes cluster._
 
 > **Note**
 >
@@ -103,7 +103,7 @@ The [`op-scim-bridge` Service](./op-scim-service.yaml) creates a public load bal
 
 After the DNS record has propagated, set the `OP_TLS_DOMAIN` environment variable to enable the CertificateManager component.
 
-*Example command:*
+_Example command:_
 
 ```sh
 kubectl set env deploy/op-scim-bridge OP_TLS_DOMAIN=scim.example.com
@@ -117,7 +117,7 @@ You can test the connection to your SCIM bridge and view status and logs in a we
 
 You can also test your SCIM bridge by sending an authenticated SCIM API request.
 
-*Example command:*
+_Example command:_
 
 ```sh
 curl --header "Authorization: Bearer mF_9.B5f-4.1JqM" https://scim.example.com/Users
@@ -210,33 +210,36 @@ If you regenenerate credentials for your SCIM bridge:
    ```
 
    Kubernetes automatically updates the credentials file mounted in the Pod with the new Secret value.
+
 3. Test your SCIM bridge using the new bearer token associated with the regenerated `scimsession` file.
 4. Update your identity provider configuration with the new bearer token.
 
 ## Appendix: Resource recommendations
 
-The default resource recommendations for the SCIM bridge and Redis deployments are acceptable in most scenarios, but they may fall short in high-volume deployments where a large number of users and/or groups are being managed. We strongly recommend increasing the resources for both the SCIM bridge and Redis deployments.
+The default resource recommendations for the SCIM bridge and Redis deployments are acceptable in most scenarios, but they may fall short in high-volume deployments where a large number of users and/or groups are being managed. We strongly recommend increasing the resources for both the SCIM bridge deployment.
 
-| Expected Provisioned Users |  Resources |
-| ------- | ------- |
-| 1-1000  |  Default  |
-| 1000-5000  |  High Volume Deployment  |
-| 5000+  |  Very High Volume Deployment  |
+Once all users and groups have been provisioned, it is safe to lower these resources back to their defaults for everyday use of the SCIM bridge.
+
+| Expected Provisioned Users | Resources                   |
+| -------------------------- | --------------------------- |
+| 1-1000                     | Default                     |
+| 1000-5000                  | High Volume Deployment      |
+| 5000+                      | Very High Volume Deployment |
 
 Our current default resource requirements (defined in [op-scim-deployment](https://github.com/1Password/scim-examples/blob/master/kubernetes/op-scim-deployment.yaml#L29) and [redis-deployment.yaml](https://github.com/1Password/scim-examples/blob/master/kubernetes/redis-deployment.yaml#L21)) are:
 
 <details>
   <summary>Default</summary>
 
-  ```yaml
-  requests:
-    cpu: 125m
-    memory: 256M
+```yaml
+requests:
+  cpu: 125m
+  memory: 256M
 
-  limits:
-    cpu: 250m
-    memory: 512M
-  ```
+limits:
+  cpu: 250m
+  memory: 512M
+```
 
 </details>
 
@@ -245,30 +248,41 @@ Note that these are the recommended `requests` and `limits` values for both the 
 <details>
   <summary>High Volume Deployment</summary>
 
-  ```yaml
-  requests:
-    cpu: 500m
-    memory: 512M
+```yaml
+requests:
+  cpu: 500m
+  memory: 512M
 
-  limits:
-    cpu: 1000m
-    memory: 1024M
-  ```
+limits:
+  memory: 1024M
+```
 
 </details>
 
 <details>
   <summary>Very High Volume Deployment</summary>
 
-  ```yaml
-  requests:
-    cpu: 1000m
-    memory: 1024M
+The best practices for Kubernetes resource limits are:
 
-  limits:
-    cpu: 2000m
-    memory: 2048M
-  ```
+1.  Never set [CPU](https://kubernetes.io/docs/tasks/configure-pod-container/assign-cpu-resource) limits to avoid Kubernetes CPU throttling and allow for efficient use of available CPU.
+2.  Set [Memory](https://kubernetes.io/docs/tasks/configure-pod-container/assign-memory-resource) limits same as requests to help avoiding OOM kills.
+
+This works well in the deployment scenario where the 1Password SCIM bridge is the only pod in the cluster, so that it has a priority of service and can consume all the resources in the cluster without affecting the performance of other pods.
+
+If you are deploying the SCIM bridge to a cluster **without** other production services, we recommend setting the following CPU and memory resources:
+
+> **Note**
+>
+> We recommend to not set CPU limits when you expect higher performance. However, you can set CPU limits to manage resources if needed. This can be modified in your deployment based on our generic example, and its expected to work in most circumstances.
+
+```yaml
+requests:
+  cpu: 1000m
+  memory: 1024M
+
+limits:
+  memory: 1024M
+```
 
 </details>
 
@@ -349,7 +363,7 @@ If you prefer to use an external Redis cache, omit the the `redis-*.yaml` files 
 
 You can set `OP_REDIS_URL` directly to reboot SCIM bridge and connect to the specified Redis server:
 
-*Example command:*
+_Example command:_
 
 ```sh
 kubectl set env deploy/op-scim-bridge OP_REDIS_URL="redis://LJenkins:p%40ssw0rd@redis-16379.example.com:16379/0"
