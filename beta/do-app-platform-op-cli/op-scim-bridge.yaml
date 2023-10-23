@@ -1,4 +1,4 @@
-name: op-scim-bridge
+name: bryan-scim-1
 services:
 - envs:
   - key: ALLOW_EMPTY_PASSWORD
