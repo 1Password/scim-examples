@@ -144,36 +144,39 @@ You can also access your SCIM bridge by visting the URL in your web browser. Sig
   The following steps only apply if you use Google Workspace as your identity provider. If you use another identity provider, do not perform these steps and follow the steps in [Connectting your Identity Provider](https://support.1password.com/scim/#step-3-connect-your-identity-provider).
 
   1. Follow the steps to [create a Google service account, key, and API client](https://support.1password.com/scim-google-workspace/#step-1-create-a-google-service-account-key-and-api-client).
+  
   2. Configure the `workspace-credentials` for passing to App Platform.
-    The `workspace-credentials` will be saved as an environment variable in App Platform that DigitalOcean automatically encrypts on your behalf. These credentials have to be Base64-encoded to pass them into the environment, but they're saved as a file from configuring your API key.
+  
+  The `workspace-credentials` will be saved as an environment variable in App Platform that DigitalOcean automatically encrypts on your behalf. These credentials have to be Base64-encoded to pass them into the environment, but they're saved as a file from configuring your API key.
 
-    Use 1Password CLI to [read the file using its secret reference](https://developer.1password.com/docs/cli/reference/commands/read), encode the credentials, and store them as a new field in the "workspace-credentials" item saved in your 1Password account. Edit the commands to reference the location/path of the file you saved in the last step.
+  Use 1Password CLI to [read the file using its secret reference](https://developer.1password.com/docs/cli/reference/commands/read), encode the credentials, and store them as a new field in the "workspace-credentials" item saved in your 1Password account. Edit the commands to reference the location/path of the file you saved in the last step.
 
-    Using Bash:
-    ```sh
-    op document create "pathToFile/workspace-credentials.json" --title "workspace-credentials" --vault "op-scim"
-    op item edit "workspace-credentials" --vault "op-scim" base64_encoded_credentials=$(op read "op://op-scim/workspace-credentials/workspace-credentials.json" | base64 | tr -d "\n")
-    ```
+  Using Bash:
+  ```sh
+  op document create "pathToFile/workspace-credentials.json" --title "workspace-credentials" --vault "op-scim"
+  op item edit "workspace-credentials" --vault "op-scim" base64_encoded_credentials=$(op read "op://op-scim/workspace-credentials/workspace-credentials.json" | base64 | tr -d "\n")
+  ```
 
-    Using Powershell:
-    ```pwsh
-    op document create "Downloads/Testing files/Workspace/workspace-credentials.json" --title "workspace-credentials" --vault "op-scim"
-    op item edit "workspace-credentials" --vault "op-scim" base64_encoded_credentials=$([Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($(op read "op://op-scim/workspace-credentials/workspace-credentials.json"))))
-    ```
+  Using Powershell:
+  ```pwsh
+  op document create "Downloads/Testing files/Workspace/workspace-credentials.json" --title "workspace-credentials" --vault "op-scim"
+  op item edit "workspace-credentials" --vault "op-scim" base64_encoded_credentials=$([Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($(op read "op://op-scim/workspace-credentials/workspace-credentials.json"))))
+  ```
 
   3. Download and open the  [`workspace-settings.json`](/beta/do-app-platform-op-cli/google-workspace/workspace-settings.json)) file in a text editor and replace the values for each key:
 
-    - `actor`: the email address for the administrator that the service account is acting on behalf of
-    - `bridgeAddress`: the URL you will use for your SCIM bridge (not your 1Password account sign-in address). This is the Application URL for your Container App found on the overview page. For example: https://op-scim-bridge-example.ondigitalocean.app
+  - `actor`: the email address for the administrator that the service account is acting on behalf of
+  - `bridgeAddress`: the URL you will use for your SCIM bridge (not your 1Password account sign-in address). This is the Application URL for your Container App found on the overview page. For example: https://op-scim-bridge-example.ondigitalocean.app
 
-    ```json
-    {
-        "actor":"admin@example.com",
-        "bridgeAddress":"https://op-scim-bridge-example.ondigitalocean.app"
-    }
-    ```
+  ```json
+  {
+      "actor":"admin@example.com",
+      "bridgeAddress":"https://op-scim-bridge-example.ondigitalocean.app"
+  }
+  ```
 
-    Save the file.
+  Save the file.
+
   4. Configure the `workspace-settings` for passing to App Platform, just like the `workspace-credentials`, this value needs to the passed to the App Platform as a base64 value. Edit the commands to reference the location/path of the file you saved in the last step.
 
   Using Bash:
@@ -185,6 +188,7 @@ You can also access your SCIM bridge by visting the URL in your web browser. Sig
     ```pwsh
     op item edit "workspace-credentials" --vault "op-scim" base64_encoded_settings=$([Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($(cat "pathToFile/workspace-settings.json"))))
     ```
+
   5. Update and apply the Workspace specific configuration yaml [op-scim-bridge-gw.yaml](/beta/do-app-platform-op-cli/google-workspace/op-scim-bridge-gw.yaml) injecting the base64 values for the Workspace configuration.
 
   Using Bash:
