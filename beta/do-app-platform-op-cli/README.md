@@ -16,6 +16,7 @@ The app consists of two [resources](https://docs.digitalocean.com/glossary/resou
 - [Prerequisites](#Prerequisites)
 - [Getting Started](#Getting-Started)
 - [Deploy 1Password SCIM bridge to App Platform](#Deploy-1Password-SCIM-bridge-to-App-Platform)
+- [Connect your Identity Provider to your deployed SCIM bridge](#follow-the-steps-to-connect-your-identity-provider-to-the-scim-bridge)
 - [Appendix](#Appendix) - Including updating your SCIM bridge, proposing the spec for cost estimates
 
 ## Overview
