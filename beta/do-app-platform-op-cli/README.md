@@ -1,6 +1,6 @@
 # [Beta] Deploy 1Password SCIM bridge on DigitalOcean App Platform with 1Password CLI
 
-This deployment example describes how to deploy 1Password SCIM bridge as an app on DigitalOcean's [App Platform](https://docs.digitalocean.com/products/app-platform/) service using [1Password CLI](https://developer.1password.com/docs/cli), the DigitalOcean command line interface ([`doctl`](https://docs.digitalocean.com/reference/doctl/)), and optional the DigitalOcean [1Password Shell Plugin](https://developer.1password.com/docs/cli/shell-plugins/) (for Mac and Linux users).
+This deployment example describes how to deploy 1Password SCIM bridge as an app on DigitalOcean's [App Platform](https://docs.digitalocean.com/products/app-platform/) service using [1Password CLI](https://developer.1password.com/docs/cli), the DigitalOcean command line interface ([`doctl`](https://docs.digitalocean.com/reference/doctl/)), and optionally the DigitalOcean [1Password Shell Plugin](https://developer.1password.com/docs/cli/shell-plugins/) (for Mac and Linux users).
 
 The app consists of two [resources](https://docs.digitalocean.com/glossary/resource/): a [service](https://docs.digitalocean.com/glossary/service/) for the SCIM bridge container and an [internal service](https://docs.digitalocean.com/glossary/service/#internal-services) for Redis.
 
@@ -16,7 +16,7 @@ The app consists of two [resources](https://docs.digitalocean.com/glossary/resou
 - [Prerequisites](#Prerequisites)
 - [Getting Started](#Getting-Started)
 - [Deploy 1Password SCIM bridge to App Platform](#Deploy-1Password-SCIM-bridge-to-App-Platform)
-- [Appendix](#Appendix) - Including updating your SCIM bridge
+- [Appendix](#Appendix) - Including updating your SCIM bridge, proposing the spec for cost estimates
 
 ## Overview
 
@@ -109,7 +109,7 @@ op item edit "scimsession file" --vault "op-scim" base64_encoded=$([Convert]::To
 
 Stream the app spec template from this repository, use [`op inject`](https://developer.1password.com/docs/cli/reference/commands/inject) to load in the Base64-encoded `scimesssion` credentials from your 1Password account, then pipe the output into `doctl` to deploy 1Password SCIM bridge.
 
-For example, with `curl`:
+For example:
 
 Using Bash:
 ```sh
@@ -141,10 +141,10 @@ You can also access your SCIM bridge by visting the URL in your web browser. Sig
 
   <details>
   <summary> If Google Workspace is your IdP, connect Google Workspace using the CLI tools</summary>
-  The following steps only apply if you use Google Workspace as your identity provider. If you use another identity provider, do not perform these steps and follow the steps in [Connectting your Identity Provider](https://support.1password.com/scim/#step-3-connect-your-identity-provider).
+  The following steps only apply if you use Google Workspace as your identity provider. If you use another identity provider, do not perform these steps and follow the steps in Connectting your Identity Provider (linked above).
 
   1. Follow the steps to [create a Google service account, key, and API client](https://support.1password.com/scim-google-workspace/#step-1-create-a-google-service-account-key-and-api-client).
-  
+
   2. Configure the `workspace-credentials` for passing to App Platform.
   
   The `workspace-credentials` will be saved as an environment variable in App Platform that DigitalOcean automatically encrypts on your behalf. These credentials have to be Base64-encoded to pass them into the environment, but they're saved as a file from configuring your API key.
@@ -180,16 +180,16 @@ You can also access your SCIM bridge by visting the URL in your web browser. Sig
   4. Configure the `workspace-settings` for passing to App Platform, just like the `workspace-credentials`, this value needs to the passed to the App Platform as a base64 value. Edit the commands to reference the location/path of the file you saved in the last step.
 
   Using Bash:
-    ```sh
-    op item edit "workspace-credentials" --vault "op-scim" base64_encoded_settings=$(cat "pathToFile/workspace-settings.json" | base64 | tr -d "\n")
-    ```
+  ```sh
+  op item edit "workspace-credentials" --vault "op-scim" base64_encoded_settings=$(cat "pathToFile/workspace-settings.json" | base64 | tr -d "\n")
+  ```
 
-    Using Powershell:
-    ```pwsh
-    op item edit "workspace-credentials" --vault "op-scim" base64_encoded_settings=$([Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($(cat "pathToFile/workspace-settings.json"))))
-    ```
+  Using Powershell:
+  ```pwsh
+  op item edit "workspace-credentials" --vault "op-scim" base64_encoded_settings=$([Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($(cat "pathToFile/workspace-settings.json"))))
+  ```
 
-  5. Update and apply the Workspace specific configuration yaml [op-scim-bridge-gw.yaml](/beta/do-app-platform-op-cli/google-workspace/op-scim-bridge-gw.yaml) injecting the base64 values for the Workspace configuration.
+  5. Update your deployed by applying the Workspace specific configuration yaml [op-scim-bridge-gw.yaml](/beta/do-app-platform-op-cli/google-workspace/op-scim-bridge-gw.yaml) injecting the base64 values for the Workspace configuration.
 
   Using Bash:
   ```sh
