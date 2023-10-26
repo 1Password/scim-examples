@@ -160,7 +160,7 @@ You can also access your SCIM bridge by visting the URL in your web browser. Sig
 
   Using Powershell:
   ```pwsh
-  op document create "Downloads/Testing files/Workspace/workspace-credentials.json" --title "workspace-credentials" --vault "op-scim"
+  op document create "pathToFile/workspace-credentials.json" --title "workspace-credentials" --vault "op-scim"
   op item edit "workspace-credentials" --vault "op-scim" base64_encoded_credentials=$([Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($(op read "op://op-scim/workspace-credentials/workspace-credentials.json"))))
   ```
 
