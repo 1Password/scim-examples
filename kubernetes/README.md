@@ -216,96 +216,60 @@ If you regenenerate credentials for your SCIM bridge:
 
 ## Appendix: Resource recommendations
 
-The default resource recommendations for the SCIM bridge and Redis deployments are acceptable in most scenarios, but they may fall short in high-volume deployments where a large number of users and/or groups are being managed. We strongly recommend increasing the resources for both the SCIM bridge deployment.
+The 1Password SCIM Bridge Pod should be vertically scaled when provisioning a large number of users or groups. Our default resource specifications and recommended configurations for provisioning at scale are listed in the below table:
 
-Once all users and groups have been provisioned, it is safe to lower these resources back to their defaults for everyday use of the SCIM bridge.
+| Volume    | Number of users | CPU   | memory |
+| --------- | --------------- | ----- | ------ |
+| Default   | <1,000          | 125m  | 512M   |
+| High      | 1,000–5,000     | 500m  | 1024M  |
+| Very high | >5,000          | 1000m | 1024M  |
 
-| Expected Provisioned Users | Resources                   |
-| -------------------------- | --------------------------- |
-| 1-1000                     | Default                     |
-| 1000-5000                  | High Volume Deployment      |
-| 5000+                      | Very High Volume Deployment |
+If provisioning more than 1,000 users, the resources assigned to the SCIM bridge container should be updated as recommended in the above table. The resources specified for the Redis container do not need to be adjusted.
 
-Our current default resource requirements (defined in [op-scim-deployment](https://github.com/1Password/scim-examples/blob/master/kubernetes/op-scim-deployment.yaml#L29) and [redis-deployment.yaml](https://github.com/1Password/scim-examples/blob/master/kubernetes/redis-deployment.yaml#L21)) are:
+Resource configuration can be updated in place:
 
-<details>
-  <summary>Default</summary>
+### Default resources
 
-```yaml
-requests:
-  cpu: 125m
-  memory: 256M
-
-limits:
-  cpu: 250m
-  memory: 512M
-```
-
-</details>
-
-Note that these are the recommended `requests` and `limits` values for both the SCIM bridge and Redis containers. These values can be scaled down again to the default values after the initial large provisioning event.
-
-<details>
-  <summary>High Volume Deployment</summary>
+Resources for the SCIM bridge container are defined in [`op-scim-deployment.yaml`](https://github.com/1Password/scim-examples/blob/master/kubernetes/op-scim-deployment.yaml):
 
 ```yaml
-requests:
-  cpu: 500m
-  memory: 512M
-
-limits:
-  memory: 1024M
+spec:
+  ...
+  template:
+    spec:
+      ...
+      containers:
+        - name: op-scim-bridge
+          ...
+          resources:
+            requests:
+              cpu: 125m
+              memory: 512M
+            limits:
+              memory: 512M
+          ...
 ```
 
-</details>
-
-<details>
-  <summary>Very High Volume Deployment</summary>
-
-The best practices for Kubernetes resource limits are:
-
-1.  Never set [CPU](https://kubernetes.io/docs/tasks/configure-pod-container/assign-cpu-resource) limits to avoid Kubernetes CPU throttling and allow for efficient use of available CPU.
-2.  Set [Memory](https://kubernetes.io/docs/tasks/configure-pod-container/assign-memory-resource) limits same as requests to help avoiding OOM kills.
-
-This works well in the deployment scenario where the 1Password SCIM bridge is the only pod in the cluster, so that it has a priority of service and can consume all the resources in the cluster without affecting the performance of other pods.
-
-If you are deploying the SCIM bridge to a cluster **without** other production services, we recommend setting the following CPU and memory resources:
-
-> **Note**
->
-> We recommend to not set CPU limits when you expect higher performance. However, you can set CPU limits to manage resources if needed. This can be modified in your deployment based on our generic example, and its expected to work in most circumstances.
-
-```yaml
-requests:
-  cpu: 1000m
-  memory: 1024M
-
-limits:
-  memory: 1024M
-```
-
-</details>
-
-Configuring these values can be done with Kubernetes commands. You can get the names of the deployments with `kubectl get deployments`.
+After making any changes to the Deployment resource in your cluster, you can apply the unmodified manifest to revert to the default specifications defined above:
 
 ```sh
-# scale down deployment
-kubectl scale --replicas=0 deployment/op-scim-bridge
+kubectl apply --filename=./op-scim-deployment.yaml
+```
 
-# scale down redis deployment
-kubectl scale --replicas=0 deployment/op-scim-bridge-redis-master
+### High volume
 
-# update op-scim-redis resources
-kubectl set resources deployment op-scim-bridge-redis-master -c=redis --requests=cpu=250m,memory=512M --limits=cpu=500m,memory=1024M
+For provisioning up to 5,000 users:
 
-# update op-scim-bridge resources
-kubectl set resources deployment op-scim-bridge -c=op-scim-bridge --requests=cpu=500m,memory=512M --limits=cpu=1000m,memory=1024M
+```sh
+kubectl set resources deployment/op-scim-bridge --requests=cpu=512m,memory=1024M --limits=memory=1024M
+```
 
-# scale up deployment
-kubectl scale --replicas=1 deployment/op-scim-bridge-redis-master
+### Very high volume
 
-# scale up deployment
-kubectl scale --replicas=1 deployment/op-scim-bridge
+For provisioning more than 5,000 users:
+
+```sh
+kubectl set resources deployment/op-scim-bridge --requests=cpu=1000m,memory=1024M --limits=memory=1024M
 ```
 
 Please reach out to our [support team](https://support.1password.com/contact/) if you need help with the configuration or to tweak the values for your deployment.
@@ -427,3 +391,13 @@ kubectl set env deploy/op-scim-bridge OP_PING_SERVER=1
 ```
 
 No other endpoints (such as `/scim`) are exposed through this port.
+
+## Troubleshooting
+
+When updating cluster resources in place, Kubernetes will create a new revision alongside an existing workload before replacing the existing revision. If there are not enough available resources in the cluster on which to schedule both revisions, the update can hang until they become available. This can happening when vertically scaling a Deployment or updating to a new SCIM bridge image version.
+
+If there are enough resources in the cluster available to schedule the new Pod revision, you can restart the Deployment to evict the existing Pod, free up the resources, and allow the new Pod to start:
+
+```sh
+kubectl rollout restart deployment/op-scim-bridge 
+```
