@@ -11,9 +11,8 @@ services:
       resources:
         reservations:
           cpus: "0.125"
-          memory: 256M
+          memory: 512M
         limits:
-          cpus: "0.25"
           memory: 512M
       restart_policy:
         condition: any
@@ -44,9 +43,8 @@ services:
       resources:
         reservations:
           cpus: "0.125"
-          memory: 256M
+          memory: 512M
         limits:
-          cpus: "0.25"
           memory: 512M
       restart_policy:
         condition: any
