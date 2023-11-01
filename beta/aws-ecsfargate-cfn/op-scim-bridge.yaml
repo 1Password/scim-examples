@@ -106,12 +106,12 @@ Mappings:
       Redis: 128
       Task: 256
     high:
-      SCIMBridge: 256
-      Redis: 256
-      Task: 512
+      SCIMBridge: 512
+      Redis: 128
+      Task: 1024
     very-high:
       SCIMBridge: 1024
-      Redis: 1024
+      Redis: 128
       Task: 2048
   MemoryScale:
     base:
@@ -120,11 +120,11 @@ Mappings:
       Task: 1024
     high:
       SCIMBridge: 1024
-      Redis: 1024
+      Redis: 512
       Task: 2048
     very-high:
-      SCIMBridge: 2048
-      Redis: 2048
+      SCIMBridge: 1024
+      Redis: 512
       Task: 4096
 Conditions:
   UsingGoogleWorkspace: !Not

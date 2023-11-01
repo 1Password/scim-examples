@@ -274,55 +274,42 @@ The `scimsession` credentials will be saved as a secret variable in Container Ap
 
 ### Resource recommendations
 
-The default resource recommendations for the SCIM bridge and Redis deployments are acceptable in most scenarios, but they may fall short in high-volume deployments where a large number of users and/or groups are being managed. We strongly recommend increasing the resources for both the SCIM bridge and Redis deployments.
+The 1Password SCIM Bridge Pod should be vertically scaled when provisioning a large number of users or groups. Our default resource specifications and recommended configurations for provisioning at scale are listed in the below table:
 
-| Expected Provisioned Users |  Resources |
-| ------- | ------- |
-| 1-1000  |  Default  |
-| 1000-5000  |  High Volume Deployment  |
-| 5000+  |  Very High Volume Deployment  |
+| Volume    | Number of users | CPU   | memory |
+| --------- | --------------- | ----- | ------ |
+| Default   | <1,000          | 0.25  | 0.5Gi  |
+| High      | 1,000–5,000     | 0.5   | 1.0Gi  |
+| Very high | >5,000          | 1.0   | 1.0Gi  |
 
-Our current default resource requirements are:
+If provisioning more than 1,000 users, the resources assigned to the SCIM bridge container should be updated as recommended in the above table. The resources specified for the Redis container do not need to be adjusted.
 
-<details>
-  <summary>Default</summary>
+#### Default
 
-  ```
-    cpu: 0.25
-    memory: 0.5Gi
-  ```
-</details>
+To revert to the default specification that is suitable for provisioning up to 1,000 users:
 
-These values can be scaled down again to the default values after the initial large provisioning event.
+```sh
+az containerapp update -n $ContainerAppName -g $ResourceGroup --container-name op-scim-bridge \
+  --cpu 0.25 --memory 0.5Gi
+```
 
-<details>
-  <summary>High Volume Deployment</summary>
+#### High volume deployment
 
-While you can continue to utilize Azure Container Apps to run your SCIM bridge for an high volume deployment, we have not run this type of workload through a Azure Container Apps SCIM bridge to test the performance in an Azure Container app environment. 
+For provisioning up to 5,000 users:
 
-  ```
-    cpu: 0.5
-    memory: 1.0Gi
-  ```
-  Run the following commands, replacing `$ContainerAppName` and `$ResourceGroup` with the names from your deployment to increase the resources:
+```sh
+az containerapp update -n $ContainerAppName -g $ResourceGroup --container-name op-scim-bridge \
+  --cpu 0.5 --memory 1.0Gi
+```
 
-  ```bash
-    az containerapp update -n $ContainerAppName -g $ResourceGroup --container-name op-scim-bridge --cpu 0.5 --memory 1.0Gi
-  ```
+#### Very high volume
 
-  ```bash
-    az containerapp update -n $ContainerAppName -g $ResourceGroup --container-name op-scim-redis --cpu 0.5 --memory 1.0Gi
-  ```
+For provisioning more than 5,000 users:
 
-</details>
-
-<details>
-  <summary>Very High Volume Deployment</summary>
-
-  While you can continue to utilize Azure Container Apps to run your SCIM bridge for a very high volume deployment, we have not run this type of workload through a Azure Container Apps SCIM bridge, it is recommended to switch to an [AKS deployment](/kubernetes/README.md) using the Very High Volume deployment specs for that cluster. 
-</details>
-
-<hr>
+```sh
+az containerapp update -n $ContainerAppName -g $ResourceGroup --container-name op-scim-bridge \
+  --cpu 1.0 --memory 1.0Gi
+```
 
 ### If Google Workspace is your identity provider
 <details>

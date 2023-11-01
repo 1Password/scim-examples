@@ -167,12 +167,12 @@ Below you can learn about some common update scenarios.
 To update your deployment to the latest version, edit the `task-definitions/scim.json` file and edit the following line:
 
 ```json
-    "image": "1password/scim:v2.x.x",
+    "image": "1password/scim:v2.8.4",
 ```
 
-Change `v2.x.x` to the latest version [found on the SCIM bridge release notes page](https://app-updates.agilebits.com/product_history/SCIM).
+Learn about the changes included in each version on the [1Password SCIM Bridge release notes page](https://app-updates.agilebits.com/product_history/SCIM).
 
-Then reapply your Terraform settings:
+Then, reapply your Terraform settings:
 
 ```bash
 terraform plan -out="./op-scim.plan"
@@ -191,23 +191,41 @@ There may be situations where you want to update your deployment with the latest
 
 ### Resource recommendations
 
-The default resource recommendations for 1Password SCIM Bridge and Redis deployments are acceptable in most scenarios, but they fall short in high-volume deployments where there's a large number of users and/or groups.
+The resource allocations for 1Password SCIM Bridge should be increased when provisioning a large number of users or groups. Our default resource specifications and recommended configurations for provisioning at scale are listed in the below table:
 
-Our current default resource requirements (defined in [scim.json](https://github.com/1Password/scim-examples/blob/master/aws-ecsfargate-terraform/task-definitions/scim.json#L5)) are:
+| Volume    | Number of users | SCIM bridge CPU | SCIM bridge memory | Task CPU | Task memory |
+| --------- | --------------- | --------------- | ------------------ | -------- | ----------- |
+| Default   | <1,000          | 128             | 512                | 256      | 1024        |
+| High      | 1,000–5,000     | 512             | 1024               | 1024     | 2048        |
+| Very high | >5,000          | 1024            | 1024               | 2048     | 4096        |
 
-```yaml
-  cpu: 128
-  memory: 512
+If provisioning more than 1,000 users, the resources assigned to the container definition for 1Password SCIM bridge should be updated as recommended in the above table. The resource allocation specified for the Redis container does not need to be adjusted. The task definition must also be updated to allocate enough resources for both containers. Fargate task resources are constrained by AWS; the recommended configurations are the minimum resources required for both containers (see [Fargate task definition considerations: Task CPU and memory](https://docs.aws.amazon.com/AmazonECS/latest/userguide/fargate-task-defs.html#fargate-tasks-size)).
+
+Resources for the SCIM bridge container are declared in [`scim.json`](https://github.com/1Password/scim-examples/blob/master/aws-ecsfargate-terraform/task-definitions/scim.json):
+
+```json
+[
+  {
+    "name": "op_scim_bridge",
+    ...
+    "cpu": 128,
+    "memory": 512,
+    ...
+  },
+  ...
+]
 ```
 
-The following are recommendations for high-volume deployments:
+Task CPU and memory allocations are configured in the ECS task definition resource in [`main.tf`](https://github.com/1Password/scim-examples/blob/master/aws-ecsfargate-terraform/main.tf):
 
-```yaml
-  cpu: 512
-  memory: 1024
+```terraform
+resource "aws_ecs_task_definition" "op_scim_bridge" {
+  ...
+  memory                   = 1024
+  cpu                      = 256
+  ...
+}
 ```
-
-This recommendation is 4x the CPU and 2x the memory of the default values.
 
 If you need help with the configuration, [contact 1Password Support](https://support.1password.com/contact/).
 
