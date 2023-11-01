@@ -394,7 +394,7 @@ No other endpoints (such as `/scim`) are exposed through this port.
 
 ## Troubleshooting
 
-When updating cluster resources in place, Kubernetes will create a new revision alongside an existing workload before replacing the existing revision. If there are not enough available resources in the cluster on which to schedule both revisions, the update can hang until they become available. This can happening when vertically scaling a Deployment or updating to a new SCIM bridge image version.
+When cluster resources are updated in place, Kubernetes will create a new revision alongside an existing workload before replacing the existing revision. If there are not enough available resources in the cluster to schedule both revisions, the update can hang until they become available. This can happen when vertically scaling a Deployment or updating to a new SCIM bridge image version.
 
 If there are enough resources in the cluster available to schedule the new Pod revision, you can restart the Deployment to evict the existing Pod, free up the resources, and allow the new Pod to start:
 
