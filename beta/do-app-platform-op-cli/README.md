@@ -17,7 +17,7 @@ The app consists of two [resources](https://docs.digitalocean.com/glossary/resou
 - [Getting Started](#Getting-Started)
 - [Deploy 1Password SCIM bridge to App Platform](#Deploy-1Password-SCIM-bridge-to-App-Platform)
 - [Connect your Identity Provider to your deployed SCIM bridge](#follow-the-steps-to-connect-your-identity-provider-to-the-scim-bridge)
-- [Appendix](#Appendix) - Including updating your SCIM bridge, proposing the spec for cost estimates
+- [Appendix](#Appendix) - Including updating your SCIM bridge, proposing the spec for cost estimates, resource recommendations
 
 ## Overview
 
@@ -248,8 +248,81 @@ Using Powershell:
 Invoke-RestMethod -Uri`https://raw.githubusercontent.com/1Password/scim-examples/master/beta/do-app-platform-op-cli/op-scim-bridge.yaml` | doctl apps propose --spec -
 ```
 
-## TODO
+### Resource recommendations
 
-Notes for future improvements to this deployment example:
+The 1Password SCIM Bridge Pod should be vertically scaled when provisioning a large number of users or groups. Our default resource specifications and recommended configurations for provisioning at scale are listed in the below table:
 
-- [ ] Add instructions for vertically scaling SCIM bridge for large-scale deployments
+| Volume    | Number of users | CPU   | memory |
+| --------- | --------------- | ----- | ------ |
+| Default   | <1,000          | 0.25  | 0.5Gi  |
+| High      | 1,000–5,000     | 0.5   | 1.0Gi  |
+| Very high | >5,000          | 1.0   | 1.0Gi  |
+
+If provisioning more than 1,000 users, the resources assigned to the SCIM bridge container should be updated as recommended in the above table. The resources specified for the Redis container do not need to be adjusted.
+
+Our current default resource requirements are:
+
+<details>
+  <summary>Default</summary>
+#### Default
+
+To revert to the default specification that is suitable for provisioning up to 1,000 users:
+
+Using Bash:
+```sh
+curl -s https://raw.githubusercontent.com/1Password/scim-examples/master/beta/do-app-platform-op-cli/op-scim-bridge.yaml | op inject | doctl apps create --spec - --wait --upsert
+```
+
+Using Powershell:
+```pwsh
+Invoke-RestMethod -Uri`https://raw.githubusercontent.com/1Password/scim-examples/master/beta/do-app-platform-op-cli/op-scim-bridge.yaml` | op inject | doctl apps create --spec - --wait --upsert
+```
+</details>
+
+These values can be scaled down again to the default values after the initial large provisioning event.
+
+<details>
+  <summary>High volume deployment</summary>
+#### High volume deployment
+
+For provisioning up to 5,000 users:
+
+Download and open [`op-scim-bridge.yaml`](/beta/do-app-platform-op-cli/op-scim-bridge.yaml) file in a text editor and replace the value in line 37:
+
+`instance_size_slug: basic-xs` 
+Changing from basic-x**x**s to basic-xs.
+
+Using Bash:
+```sh
+cat pathToFile/op-scim-bridge.yaml | op inject | doctl apps create --spec - --wait --upsert
+```
+
+Using Powershell:
+```pwsh
+cat pathToFile/op-scim-bridge.yaml | op inject | doctl apps create --spec - --wait --upsert
+```
+</details>
+
+<details>
+  <summary>Very high volume deployment</summary>
+#### Very high volume
+
+For provisioning more than 5,000 users:
+
+For provisioning up to 5,000 users:
+
+Download and open [`op-scim-bridge.yaml`](/beta/do-app-platform-op-cli/op-scim-bridge.yaml) file in a text editor and replace the value in line 37:
+
+`instance_size_slug: basic-xs`
+Changing from basic-x**x**s to basic-xs.
+
+Using Bash:
+```sh
+cat pathToFile/op-scim-bridge.yaml | op inject | doctl apps create --spec - --wait --upsert
+```
+
+Using Powershell:
+```pwsh
+cat pathToFile/op-scim-bridge.yaml | op inject | doctl apps create --spec - --wait --upsert
+```
+</details>
