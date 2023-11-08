@@ -8,7 +8,6 @@ The app consists of two [resources](https://docs.digitalocean.com/glossary/resou
 
 - [`README.md`](./README.md): the document that you are reading. 👋😃
 - [`op-scim-bridge.yaml`](./op-scim-bridge.yaml): an App Platform [app spec](https://docs.digitalocean.com/glossary/app-spec/) for 1Password SCIM bridge [templated with secret references](https://developer.1password.com/docs/cli/secrets-template-syntax) to load secrets from your 1Password account.
-- [DigitalOcean Web Portal Deployment Guide](./non-cli/README.md)
 
 **Table of contents:**
 
