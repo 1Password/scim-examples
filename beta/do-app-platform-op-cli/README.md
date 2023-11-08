@@ -264,7 +264,6 @@ Our current default resource requirements are:
 
 <details>
   <summary>Default</summary>
-#### Default
 
 To revert to the default specification that is suitable for provisioning up to 1,000 users:
 
@@ -283,7 +282,6 @@ These values can be scaled down again to the default values after the initial la
 
 <details>
   <summary>High volume deployment</summary>
-#### High volume deployment
 
 For provisioning up to 5,000 users:
 
@@ -292,37 +290,24 @@ Download and open [`op-scim-bridge.yaml`](/beta/do-app-platform-op-cli/op-scim-b
 `instance_size_slug: basic-xs` 
 Changing from basic-x**x**s to basic-xs.
 
-Using Bash:
 ```sh
 cat pathToFile/op-scim-bridge.yaml | op inject | doctl apps create --spec - --wait --upsert
 ```
 
-Using Powershell:
-```pwsh
-cat pathToFile/op-scim-bridge.yaml | op inject | doctl apps create --spec - --wait --upsert
-```
 </details>
 
 <details>
   <summary>Very high volume deployment</summary>
-#### Very high volume
 
 For provisioning more than 5,000 users:
-
-For provisioning up to 5,000 users:
 
 Download and open [`op-scim-bridge.yaml`](/beta/do-app-platform-op-cli/op-scim-bridge.yaml) file in a text editor and replace the value in line 37:
 
 `instance_size_slug: basic-xs`
 Changing from basic-x**x**s to basic-xs.
 
-Using Bash:
 ```sh
 cat pathToFile/op-scim-bridge.yaml | op inject | doctl apps create --spec - --wait --upsert
 ```
 
-Using Powershell:
-```pwsh
-cat pathToFile/op-scim-bridge.yaml | op inject | doctl apps create --spec - --wait --upsert
-```
 </details>
