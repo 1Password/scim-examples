@@ -222,7 +222,7 @@ Resources:
             Options:
               awslogs-region: !Ref "AWS::Region"
               awslogs-group: !Ref LogGroup
-              awslogs-stream-prefix: !Ref LogStream
+              awslogs-stream-prefix: !Ref "AWS::StackName"
         - Name: redis
           Cpu: !FindInMap
             - CpuScale
@@ -257,7 +257,7 @@ Resources:
             Options:
               awslogs-region: !Ref "AWS::Region"
               awslogs-group: !Ref LogGroup
-              awslogs-stream-prefix: !Ref LogStream
+              awslogs-stream-prefix: !Ref "AWS::StackName"
         - Name: init-host
           Image: bash
           Essential: false
@@ -275,7 +275,7 @@ Resources:
             Options:
               awslogs-region: !Ref "AWS::Region"
               awslogs-group: !Ref LogGroup
-              awslogs-stream-prefix: !Ref LogStream
+              awslogs-stream-prefix: !Ref "AWS::StackName"
         - Name: init-redis
           Image: bash
           Essential: false
@@ -313,13 +313,9 @@ Resources:
             Options:
               awslogs-region: !Ref "AWS::Region"
               awslogs-group: !Ref LogGroup
-              awslogs-stream-prefix: !Ref LogStream
+              awslogs-stream-prefix: !Ref "AWS::StackName"
   LogGroup:
     Type: "AWS::Logs::LogGroup"
-  LogStream:
-    Type: "AWS::Logs::LogStream"
-    Properties:
-      LogGroupName: !Ref LogGroup
   ECSService:
     Type: "AWS::ECS::Service"
     DependsOn: HTTPSListener
