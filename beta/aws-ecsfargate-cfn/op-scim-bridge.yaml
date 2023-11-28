@@ -9,7 +9,7 @@ Metadata:
     ParameterGroups:
       - Parameters:
           - VPCCIDR
-          - Route53HostedZoneID
+          # - Route53HostedZoneID
           - ProvisioningVolume
           - DomainName
           - SCIMBridgeVersion
@@ -23,8 +23,8 @@ Metadata:
     ParameterLabels:
       VPCCIDR:
         default: "VPC CIDR"
-      Route53HostedZoneID:
-        default: "Route 53 hosted zone"
+      # Route53HostedZoneID:
+      #   default: "Route 53 hosted zone"
       ProvisioningVolume:
         default: "Provisioning volume"
       DomainName:
@@ -40,10 +40,10 @@ Parameters:
     Type: String
     Default: 10.0.0.0/16
     Description: A CIDR block for the VPC to be created.
-  Route53HostedZoneID:
-    Type: "AWS::Route53::HostedZone::Id"
-    Description: >-
-      The Route 53 hosted zone in which to create DNS records for ACM validation and the ALB endpoint.
+  # Route53HostedZoneID:
+  #   Type: "AWS::Route53::HostedZone::Id"
+  #   Description: >-
+  #     The Route 53 hosted zone in which to create DNS records for ACM validation and the ALB endpoint.
   ProvisioningVolume:
     Type: String
     Description: >-
@@ -151,7 +151,7 @@ Resources:
         Fn::Base64: !Sub |
           {
             "actor":"${WorkspaceActor}",
-            "bridgeAddress":"https://${DNSRecord}"
+            "bridgeAddress":"https://${DomainName}"
           }
 
   ECSCluster:
@@ -467,24 +467,25 @@ Resources:
                   - "logs:CreateLogStream"
                   - "logs:PutLogEvents"
                 Resource: "*"
-  DNSRecord:
-    Type: "AWS::Route53::RecordSet"
-    Properties:
-      HostedZoneId: !Ref Route53HostedZoneID
-      Comment: DNS record pointing to load balancer for 1Password SCIM Bridge
-      Name: !Ref DomainName
-      Type: A
-      AliasTarget:
-        DNSName: !GetAtt LoadBalancer.DNSName
-        HostedZoneId: !GetAtt LoadBalancer.CanonicalHostedZoneID
+  # DNSRecord:
+  #   Type: "AWS::Route53::RecordSet"
+  #   Properties:
+  #     HostedZoneId: !Ref Route53HostedZoneID
+  #     Comment: DNS record pointing to load balancer for 1Password SCIM Bridge
+  #     Name: !Ref DomainName
+  #     Type: A
+  #     AliasTarget:
+  #       DNSName: !GetAtt LoadBalancer.DNSName
+  #       HostedZoneId: !GetAtt LoadBalancer.CanonicalHostedZoneID
   TLSCertificate:
     Type: "AWS::CertificateManager::Certificate"
     Properties:
-      DomainName: !Ref DNSRecord
+      DomainName: !Ref DomainName
       ValidationMethod: DNS
       DomainValidationOptions:
-        - DomainName: !Ref DNSRecord
-          HostedZoneId: !Ref Route53HostedZoneID
+        - DomainName: !Ref DomainName
+          ValidationDomain: !Ref DomainName
+          # HostedZoneId: !Ref Route53HostedZoneID
   TaskRole:
     Type: "AWS::IAM::Role"
     Properties:
@@ -601,4 +602,4 @@ Outputs:
     Description: >-
       The URL for your SCIM bridge. Use this and your bearer token to connect
       your identity provider to 1Password.
-    Value: !Sub "https://${DNSRecord}"
+    Value: !Sub "https://${DomainName}"
