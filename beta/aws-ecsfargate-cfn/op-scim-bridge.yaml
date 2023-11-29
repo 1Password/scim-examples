@@ -1,15 +1,15 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: >-
-  Deploys 1Password SCIM Bridge using Amazon ECS and AWS Fargate. Provisions and
-  configures a VPC, 2 public subnets, an internet gateway, a route table, an
-  ALB, an ACM certificate, Route 53 DNS records, an AWS secret to store
-  credentials for your SCIM bridge, security groups, and required IAM roles.
+  Deploys 1Password SCIM Bridge using Amazon ECS and AWS Fargate. Provisions and configures a VPC, 2 public subnets, an
+  internet gateway, a route table, an ALB, an ACM certificate, AWS secrets to store credentials for your SCIM bridge,
+  security groups, and required IAM roles. Optionally creates DNS records in Route 53 for the load balancer and ACM
+  domain validation, or provides values to create them separately in your DNS provider of choice.
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
       - Parameters:
           - VPCCIDR
-          # - Route53HostedZoneID
+          - Route53HostedZoneID
           - ProvisioningVolume
           - DomainName
           - SCIMBridgeVersion
@@ -23,8 +23,8 @@ Metadata:
     ParameterLabels:
       VPCCIDR:
         default: "VPC CIDR"
-      # Route53HostedZoneID:
-      #   default: "Route 53 hosted zone"
+      Route53HostedZoneID:
+        default: "Route 53 hosted zone"
       ProvisioningVolume:
         default: "Provisioning volume"
       DomainName:
@@ -40,10 +40,11 @@ Parameters:
     Type: String
     Default: 10.0.0.0/16
     Description: A CIDR block for the VPC to be created.
-  # Route53HostedZoneID:
-  #   Type: "AWS::Route53::HostedZone::Id"
-  #   Description: >-
-  #     The Route 53 hosted zone in which to create DNS records for ACM validation and the ALB endpoint.
+  Route53HostedZoneID:
+    Type: "AWS::Route53::HostedZone::Id"
+    Description: >-
+      The Route 53 hosted zone to use for creating DNS records for ACM validation and the ALB endpoint. Leave this
+      blank to create the required DNS records separately or with another DNS provider.
   ProvisioningVolume:
     Type: String
     Description: >-
@@ -59,8 +60,8 @@ Parameters:
     Type: String
     Default: scim.example.com
     Description: >-
-      A fully qualified domain name for your SCIM bridge that is in the domain of the selected Route 53 hosted zone
-      where the record will be created.
+      A fully qualified domain name for your SCIM bridge. This must be in the domain of the Route 53 hosted
+      zone if it is specified.
   scimsession:
     Type: String
     Description: >-
@@ -127,6 +128,10 @@ Mappings:
       Redis: 512
       Task: 4096
 Conditions:
+  CreateRoute53Records: !Not
+    - !Equals [!Ref Route53HostedZoneID, ""]
+  OutputDNSRecordContent: !Not
+    - Condition: CreateRoute53Records
   UsingGoogleWorkspace: !Not
     - !Or
       - !Equals [!Ref WorkspaceCredentials, ""]
@@ -463,16 +468,17 @@ Resources:
                   - "logs:CreateLogStream"
                   - "logs:PutLogEvents"
                 Resource: "*"
-  # DNSRecord:
-  #   Type: "AWS::Route53::RecordSet"
-  #   Properties:
-  #     HostedZoneId: !Ref Route53HostedZoneID
-  #     Comment: DNS record pointing to load balancer for 1Password SCIM Bridge
-  #     Name: !Ref DomainName
-  #     Type: A
-  #     AliasTarget:
-  #       DNSName: !GetAtt LoadBalancer.DNSName
-  #       HostedZoneId: !GetAtt LoadBalancer.CanonicalHostedZoneID
+  DNSRecord:
+    Type: "AWS::Route53::RecordSet"
+    Condition: CreateRoute53Records
+    Properties:
+      HostedZoneId: !Ref Route53HostedZoneID
+      Comment: DNS record pointing to load balancer for 1Password SCIM Bridge
+      Name: !Ref DomainName
+      Type: A
+      AliasTarget:
+        DNSName: !GetAtt LoadBalancer.DNSName
+        HostedZoneId: !GetAtt LoadBalancer.CanonicalHostedZoneID
   TLSCertificate:
     Type: "AWS::CertificateManager::Certificate"
     Properties:
@@ -480,8 +486,14 @@ Resources:
       ValidationMethod: DNS
       DomainValidationOptions:
         - DomainName: !Ref DomainName
-          ValidationDomain: !Ref DomainName
-          # HostedZoneId: !Ref Route53HostedZoneID
+          ValidationDomain: !If
+              - OutputDNSRecordContent
+              - !Ref DomainName
+              - !Ref "AWS::NoValue"
+          HostedZoneId: !If
+              - CreateRoute53Records
+              - !Ref Route53HostedZoneID
+              - !Ref "AWS::NoValue"
   TaskRole:
     Type: "AWS::IAM::Role"
     Properties:
@@ -599,3 +611,15 @@ Outputs:
       The URL for your SCIM bridge. Use this and your bearer token to connect
       your identity provider to 1Password.
     Value: !Sub "https://${DomainName}"
+  CNAMEName:
+    Condition: OutputDNSRecordContent
+    Description: >-
+      Name of the public record that must be created to point to the DNS
+      name of the LoadBalancer resource.
+    Value: !Sub "${DomainName}."
+  CNAMEValue:
+    Condition: OutputDNSRecordContent
+    Description: >-
+      Value of the public record that must be created to point to the DNS
+      name of the LoadBalancer resource.
+    Value: !Sub "${LoadBalancer.DNSName}."
