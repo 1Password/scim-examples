@@ -85,7 +85,7 @@ Both methods need the Container App Extension added to the Azure tool of choice,
         ```bash
         ResourceGroup="op-scim-bridge-rg"
         Location="canadacentral"
-        ContAppEnv="op-scim-bridge-con-app-env"
+        ConAppEnv="op-scim-bridge-con-app-env"
         ConAppName="op-scim-bridge-con-app"
         ```
 
@@ -93,7 +93,7 @@ Both methods need the Container App Extension added to the Azure tool of choice,
         ```pwsh
         $ResourceGroup="op-scim-bridge-rg"
         $Location="canadacentral"
-        $ContAppEnv="op-scim-bridge-con-app-env"
+        $ConAppEnv="op-scim-bridge-con-app-env"
         $ConAppName="op-scim-bridge-con-app"
         ```
 
@@ -108,7 +108,7 @@ Both methods need the Container App Extension added to the Azure tool of choice,
 6. Create the Container App Environment:
 
    ```
-   az containerapp env create --name $ContAppEnv --resource-group $ResourceGroup --location $Location --enable-workload-profles false
+   az containerapp env create --name $ConAppEnv --resource-group $ResourceGroup --location $Location --enable-workload-profles false
    ```
 
 7. Upload your `scimsession` file to the Cloud Shell:
@@ -126,11 +126,11 @@ Both methods need the Container App Extension added to the Azure tool of choice,
     Create your Container App Secret:
     - Using bash
         ```bash
-        az containerapp create --resource-group $ResourceGroup --environment $ContAppEnv --name $ConAppName  --secrets scimsession="$(cat /home/$USER/scimsession | base64)"
+        az containerapp create --resource-group $ResourceGroup --environment $ConAppEnv --name $ConAppName  --secrets scimsession="$(cat /home/$USER/scimsession | base64)"
         ```
     - Using PowerShell 
         ```pwsh
-        az containerapp create --resource-group $ResourceGroup --environment $ContAppEnv --name $ConAppName  --secrets scimsession="$([Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path /home/$Env:USER/ 'scimsession'))) )"
+        az containerapp create --resource-group $ResourceGroup --environment $ConAppEnv --name $ConAppName  --secrets scimsession="$([Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path /home/$Env:USER/ 'scimsession'))) )"
         ```
 
 9. Deploy your SCIM bridge containers based off the template file:
@@ -159,7 +159,7 @@ If you would prefer to create the two containers using the AZ CLI container apps
     az containerapp create -n $ConAppName -g $ResourceGroup \
     --container-name op-scim-bridge \
     --image docker.io/1password/scim:v2.8.4 \
-    --environment $ContAppEnv \
+    --environment $ConAppEnv \
     --ingress external --target-port 3002 \
     --cpu 0.25 --memory 0.5Gi \
     --min-replicas 1 --max-replicas 1 \
@@ -171,7 +171,7 @@ If you would prefer to create the two containers using the AZ CLI container apps
     az containerapp create -n $ConAppName -g $ResourceGroup `
     --container-name op-scim-bridge `
     --image docker.io/1password/scim:v2.8.4 `
-    --environment $ContAppEnv `
+    --environment $ConAppEnv `
     --ingress external --target-port 3002 `
     --cpu 0.25 --memory 0.5Gi `
     --min-replicas 1 --max-replicas 1 `
