@@ -144,7 +144,7 @@ Both methods need the Container App Extension added to the Azure tool of choice,
 ### Follow the steps to connect your Identity provider to the SCIM bridge.
  - [Connect your Identity Provider](https://support.1password.com/scim/#step-3-connect-your-identity-provider)
 
-## Azure Container Apps Commands Deployment steps
+### Azure Container Apps Commands Deployment steps
 
 <details>
 <summary>Azure CLI Container Apps Commands Deployment steps</summary>
