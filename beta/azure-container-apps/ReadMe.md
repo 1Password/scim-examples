@@ -7,6 +7,7 @@ The deployment consists of two [containers](https://learn.microsoft.com/en-us/az
 ## In this folder
 
 - [`README.md`](./README.md): the document that you are reading.
+- [`aca-op-scim-bridge.yaml`](./aca-op-scim-bridge.yaml): an Container App configuration file of a container app for the 1Password SCIM bridge.
 
 **Table of contents:**
 
@@ -70,11 +71,12 @@ Both methods need the Container App Extension added to the AZ tool of choice, by
     > **Note**
     >
     >The ContainerAppName can contain lowercase letters, numerals, and hyphens. It must be between 2 and 32 characters long, and cannot start or end with a hyphen.
+    > 
     > The location utilizes the name field of the az account list-locations command. 
     > Not all Azure locations support Conatiner Apps. See [supported regions for Azure Container Apps](https://azure.microsoft.com/en-ca/explore/global-infrastructure/products-by-region/?regions=all&products=container-apps)
     >
 
-    Update the values in a text editor before pasting it into the terminal:
+    Update the values in a text editor before pasting it into the terminal, (If you have an existing Resource Group you want to use, specify the name in the ResourceGroup variable below):
 
     - Using bash
         ```bash
@@ -92,7 +94,8 @@ Both methods need the Container App Extension added to the AZ tool of choice, by
         $ContainerAppName="op-scim-bridge-con-app"
         ```
 
-3. Create the resource group:
+3. Create the resource group: 
+Note: this step can be skipped if you are using an existing Resource Group to deploy your SCIM bridge to
 
    ```
    az group create --name $ResourceGroup --location $Location
@@ -101,7 +104,7 @@ Both methods need the Container App Extension added to the AZ tool of choice, by
 4. Create the Container App Environment:
 
    ```
-   az containerapp env create --name $ContainerAppEnvironment --resource-group $ResourceGroup --location $Location
+   az containerapp env create --name $ContainerAppEnvironment --resource-group $ResourceGroup --location $Location --enable-workload-profles false
    ```
 
 5. Upload your `scimsession` file to the Cloud Shell:
@@ -109,7 +112,13 @@ Both methods need the Container App Extension added to the AZ tool of choice, by
    - Find the `scimsession` file that you saved to your computer and choose it.
    - Make a note of the upload destination, then click Complete.
 
-6. Create the base Container App and Secret for your Base64-encoded `scimsession` credentials, _(using the bash or PowerShell syntax for the commands)_:
+6. Deploy the SCIM bridge. 
+
+  > **Note**
+  >
+  > If you prefer to deploy the containers using a `.yaml` template file, go to this section: [Azure CLI Template File Deployment steps](#azure-template-file-deployment-steps), othersise follow the AZ ContainerApps commands below.
+
+Create the base Container App and Secret for your Base64-encoded `scimsession` credentials, _(using the bash or PowerShell syntax for the commands)_:
     - Using bash
     ```bash
     az containerapp create -n $ContainerAppName -g $ResourceGroup \
@@ -170,6 +179,30 @@ Both methods need the Container App Extension added to the AZ tool of choice, by
 ### Follow the steps to connect your Identity provider to the SCIM bridge.
  - [Connect your Identity Provider](https://support.1password.com/scim/#step-3-connect-your-identity-provider)
 
+## Azure Template File Deployment steps
+
+<details>
+<summary>Azure CLI Template File Deployment steps</summary>
+
+If you would prefer to create the two containers using a yaml deployment file, you can perform these steps instead of steps 6 and 7 instead of the steps above in the main example.
+
+Create your Container App Secret:
+- Using bash
+    ```bash
+    az containerapp create --resource-group $ResourceGroup --environment $ContainerAppEnvironment --name $ContainerAppName  --secrets scimsession="$(cat /home/$USER/scimsession | base64)"
+    ```
+- Using PowerShell 
+    ```pwsh
+    az containerapp create --resource-group $ResourceGroup --environment $ContainerAppEnvironment --name $ContainerAppName  --secrets scimsession="$([Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path /home/$Env:USER/ 'scimsession'))) )"
+    ```
+
+Deploy your SCIM bridge containers based off the template file:
+
+```bash
+az containerapp update --resource-group $ResourceGroup --name $ContainerAppName --yaml aca-op-scim-bridge.yaml --query properties.configuration.ingress.fqdn
+```
+
+</details>
 
 <hr>
 
