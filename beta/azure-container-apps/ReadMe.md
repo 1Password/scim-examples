@@ -136,10 +136,11 @@ Both methods need the Container App Extension added to the Azure tool of choice,
 9. Deploy your SCIM bridge containers based off the template file:
 
     Upload the [aca-op-scim-bridge.yaml](aca-op-scim-bridge.yaml) file to the Cloud Shell:
-       - In a separate browser window, download the [aca-op-scim-bridge.yaml](aca-op-scim-bridge.yaml) (selecting the download icon from the top right) from our GitHub repository. 
-       - Click the “Upload/Download files” button and choose Upload.
-       - Find the `aca.op-scim-bridge.yaml` file that you saved to your computer and choose it.
+    - In a separate browser window, download the [aca-op-scim-bridge.yaml](aca-op-scim-bridge.yaml) (selecting the download icon from the top right) from our GitHub repository. 
+    - Click the “Upload/Download files” button and choose Upload.
+    - Find the `aca.op-scim-bridge.yaml` file that you saved to your computer and choose it.
 
+    Run the following command to deploy the Container App from the template file:
     ```bash
     az containerapp update --resource-group $ResourceGroup --name $ConAppName --yaml aca-op-scim-bridge.yaml --query properties.configuration.ingress.fqdn
     ```
