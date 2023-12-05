@@ -25,9 +25,7 @@ The deployment consists of two [containers](https://learn.microsoft.com/en-us/az
 Deploying 1Password SCIM Bridge on Azure Container Apps comes with a few benefits:
 
 - For standard deployments, Azure Container Apps will host your SCIM bridge for ~$16 USD/month (when this document was written)
-  > **Note**
-  >
-  > Container Apps pricing is variable based on activity. Details can be found on [Microsoft's pricing page](https://azure.microsoft.com/en-us/pricing/details/container-apps/).
+  > **Note:** Container Apps pricing is variable based on activity. Details can be found on [Microsoft's pricing page](https://azure.microsoft.com/en-us/pricing/details/container-apps/).
 - No manual DNS record creation required. Azure Container Apps automatically provides a unique DNS record for your SCIM bridge URL.
 - Azure Container Apps automatically handles TLS certificate management on your behalf.
 - You will deploy 1Password SCIM Bridge directly to Azure from your Azure Portal or some commands can be performed from your local terminal. There is no requirement to clone this repository for this deployment.
@@ -35,13 +33,9 @@ Deploying 1Password SCIM Bridge on Azure Container Apps comes with a few benefit
 ## Prerequisites
 
 - A 1Password account with an active 1Password Business subscription or trial
-  > **Note**
-  >
-  > Try 1Password Business free for 14 days: <https://start.1password.com/sign-up/business>
+  > **Note:** Try 1Password Business free for 14 days: <https://start.1password.com/sign-up/business>
 - An Azure account with permissions to create a Container App.
-  > **Note**
-  >
-  > If you don't have a Azure account, you can sign up for a free trial with starting credit: <https://azure.microsoft.com/en-us/free/>
+  > **Note:** If you don't have a Azure account, you can sign up for a free trial with starting credit: <https://azure.microsoft.com/en-us/free/>
 - [Azure CLI tool](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli) with the ContainerApp Extension or access to the [Azure Cloud Shell](https://learn.microsoft.com/en-us/azure/cloud-shell/quickstart) if performing the command driven deployment.
 
 ## Getting started
@@ -71,13 +65,10 @@ Both methods need the Container App Extension added to the Azure tool of choice,
 
 4. Define variables for the deployment using the following example in the Cloud Shell, _(using the bash or PowerShell syntax for the commands)_.
 
-    > **Note**
-    >
-    >The ConAppName can contain lowercase letters, numerals, and hyphens. It must be between 2 and 32 characters long, and cannot start or end with a hyphen.
+    > **Note:** The ConAppName can contain lowercase letters, numerals, and hyphens. It must be between 2 and 32 characters long, and cannot start or end with a hyphen.
     > 
     > The location utilizes the name field of the `az account list-locations` command. 
     > Not all Azure locations support Conatiner Apps. See [supported regions for Azure Container Apps](https://azure.microsoft.com/en-ca/explore/global-infrastructure/products-by-region/?regions=all&products=container-apps)
-    >
 
     Update the values in a text editor before pasting it into the terminal, (If you have an existing Resource Group you want to use, specify the name in the ResourceGroup variable below):
 
@@ -118,9 +109,7 @@ Both methods need the Container App Extension added to the Azure tool of choice,
 
 8. Deploy the Container App Secret for the SCIM bridge. 
 
-    > **Note**
-    >
-    > If you prefer to deploy the containers using the Azure Container App Commands, go to this section: [Azure ContainerApps Commands Deployment steps](#azure-container-apps-commands-deployment-steps), othersise follow the template file steps below. 
+    > **Note:** If you prefer to deploy the containers using the Azure Container App Commands, go to this section: [Azure ContainerApps Commands Deployment steps](#azure-container-apps-commands-deployment-steps), othersise follow the template file steps below. 
     >
 
     Create your Container App Secret:
@@ -220,9 +209,7 @@ If you would prefer to create the two containers using the AZ CLI container apps
 
 The `scimsession` credentials will be saved as a secret variable in Container App. These credentials have to be Base64-encoded to pass them into the environment, but they're saved as a plain-text file when you download them or save in 1Password during the setup.
 
-> **Note**
-    >
-    >You will need to update the path to the scimsession file you download in the getting started section.
+> **Note:** You will need to update the path to the scimsession file you download in the getting started section.
 
 1. Get the Base64 encoded contents of your `scimsession` file, _(using the bash or PowerShell syntax for the commands)_: 
    
