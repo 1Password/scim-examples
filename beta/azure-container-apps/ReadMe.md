@@ -61,7 +61,7 @@ Both methods need the Container App Extension added to the Azure tool of choice,
 2. Add the Azure Container App extension by running the following command: `az extension add --name containerapp --upgrade`
 3. Get a list of the available locations in your Azure account: `az account list-locations -o table`, verify that the region you want to deploy on [supports Azure Container Apps](https://azure.microsoft.com/en-ca/explore/global-infrastructure/products-by-region/?regions=all&products=container-apps), take note of the name field for the desired region. 
 
-    > Note: This command can be skipped if you already know the region you want to deploy to and if that region supports Container Apps. 
+    > **Note:** This command can be skipped if you already know the region you want to deploy to and if that region supports Container Apps. 
 
 4. Define variables for the deployment using the following example in the Cloud Shell, _(using the bash or PowerShell syntax for the commands)_.
 
@@ -90,7 +90,7 @@ Both methods need the Container App Extension added to the Azure tool of choice,
 
 5. Create the resource group: 
 
-    > Note: this step can be skipped if you are using an existing Resource Group to deploy your SCIM bridge to.
+    > **Note:** this step can be skipped if you are using an existing Resource Group to deploy your SCIM bridge to.
 
    ```
    az group create --name $ResourceGroup --location $Location
