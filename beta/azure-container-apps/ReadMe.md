@@ -353,13 +353,19 @@ The following steps only apply if you use Google Workspace as your identity prov
    - Click the “Upload/Download files” button and choose Upload.
    - Find the `<keyfile>.json` file that you saved to your computer and choose it.
    - Make a note of the upload destination, then click Complete.
-4. Edit the file located at `./google-workspace/workspace-settings.json` and fill in correct values for:
+4. Obtain the `./google-workspace/workspace-settings.json`  file for editing: 
+    Obtain the `workspace-settings.json` file: 
+    - Using bash
+    ```bash
+    curl https://raw.githubusercontent.com/1Password/scim-examples/solutions/bb/aca-yaml/beta/azure-container-apps/google-workspace/workspace-settings.json --output workspace-settings.json --silent
+    ```
+     - Using PowerShell 
+    ```pwsh
+    Invoke-RestMethod -Uri `https://raw.githubusercontent.com/1Password/scim-examples/solutions/bb/aca-yaml/beta/azure-container-apps/google-workspace/workspace-settings.json -OutFile workspace-settings.json
+    ```
+5. Edit the file in your editor of choice and fill in correct values for:
 	* **Actor**: the email address of the administrator in Google Workspace that the service account is acting on behalf of.
 	* **Bridge Address**: the URL you will use for your SCIM bridge (not your 1Password account sign-in address). This is the Application URL for your Container App found on the overview page. For example: https://scim.example.com.
-5. Upload your `workspace-settings.json` file to the Cloud Shell:
-   - Click the “Upload/Download files” button and choose Upload.
-   - Find the `workspace-settings.json` file that you saved to your computer and choose it.
-   - Make a note of the upload destination, then click Complete.
 6. Run the following command, replacing `$ConAppName` and `$ResourceGroup` with the names from your deployment to create the workspace-credentials secret. 
 
     - Using bash:
