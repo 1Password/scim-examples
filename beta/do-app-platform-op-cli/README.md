@@ -37,13 +37,13 @@ Deploying 1Password SCIM bridge on App Platform comes with a few benefits:
   > **Note**
   >
   > If you don't have a DigitalOcean account, you can sign up for a free trial with starting credit: <https://try.digitalocean.com/freetrialoffer/>
-- Access to a terminal on Mac or Linux Bash, Zsh, or on Windows using Powershell
+- Access to Zsh or Bash on Mac or Linux, or PowerShell on Windows
 
 ## Getting started
 
 ### Step 1: Install 1Password and DigitalOcean tools
 
-Install the following on your Mac, Linux or Windows machine:
+Install the following on your Mac, Windows or Linux machine:
 
 - 1Password 8 for [Mac](https://1password.com/downloads/mac/) or [Linux](https://1password.com/downloads/linux/) or [Windows](https://1password.com/downloads/windows/)
 - [1Password CLI 2.9.0](https://developer.1password.com/docs/cli/get-started/#install) or later
@@ -52,11 +52,11 @@ Install the following on your Mac, Linux or Windows machine:
   >
   > **Only** [Step 1: Install doctl](https://docs.digitalocean.com/reference/doctl/how-to/install/#step-1-install-doctl) in the `doctl` installation guide is required for this step for Mac and Linux. 
 
-### Step 2: Add your 1Password account and configure the DigitalOcean access.
+### Step 2: Add your 1Password account and configure your DigitalOcean credentials.
 
 If you haven't already done so, add your 1Password account and connect 1Password CLI to your desktop app, then configure the DigitalOcean shell plugin:
 
-1. [Add your 1Password account](https://support.1password.com/add-account/) to 1Password 8 for Mac or Linux or Windows.
+1. [Add your 1Password account](https://support.1password.com/add-account/) to 1Password 8 for Mac, Windows or Linux.
 2. [Connect 1Password CLI to the 1Password app](https://developer.1password.com/docs/cli/about-biometric-unlock#step-1-connect-1password-cli-with-the-1password-app).
 3. [Create a DigitalOcean personal access token](https://docs.digitalocean.com/reference/api/create-personal-access-token/) with both read and write scopes.
 4. [Configure the DigitalOcean shell plugin](https://developer.1password.com/docs/cli/shell-plugins/digitalocean#step-1-configure-your-default-credentials) for Mac and Linux. Choose `Import into 1Password…` to save your DigitalOcean personal access token in your 1Password account and authenticate `doctl`.
@@ -177,7 +177,7 @@ You can also access your SCIM bridge by visting the URL in your web browser. Sig
 
   Save the file.
 
-  4. Configure the `workspace-settings` for passing to App Platform, just like the `workspace-credentials`, this value needs to the passed to the App Platform as a base64 value. Edit the commands to reference the location/path of the file you saved in the last step.
+  4. Configure the `workspace-settings` for passing to App Platform, just like the `workspace-credentials`, this value is passed to the App Platform as a base64 value. Edit the commands to reference the location/path of the file you saved in the last step.
 
   Using Bash:
   ```sh
