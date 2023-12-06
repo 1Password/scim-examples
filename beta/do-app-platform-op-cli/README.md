@@ -45,7 +45,7 @@ Deploying 1Password SCIM bridge on App Platform comes with a few benefits:
 
 Install the following on your Mac, Windows or Linux machine:
 
-- 1Password 8 for [Mac](https://1password.com/downloads/mac/) or [Linux](https://1password.com/downloads/linux/) or [Windows](https://1password.com/downloads/windows/)
+- 1Password 8 for [Mac](https://1password.com/downloads/mac/) or [Windows](https://1password.com/downloads/windows/) or [Linux](https://1password.com/downloads/linux/)
 - [1Password CLI 2.9.0](https://developer.1password.com/docs/cli/get-started/#install) or later
 - [`doctl`](https://docs.digitalocean.com/reference/doctl/how-to/install/#step-1-install-doctl)
   > **Note**
