@@ -124,17 +124,22 @@ Both methods need the Container App Extension added to the Azure tool of choice,
 
 9. Deploy your SCIM bridge containers based off the template file:
 
-    Upload the [aca-op-scim-bridge.yaml](aca-op-scim-bridge.yaml) file to the Cloud Shell:
-    - In a separate browser window, download the [aca-op-scim-bridge.yaml](aca-op-scim-bridge.yaml) (selecting the download icon from the top right) from our GitHub repository. 
-    - Click the “Upload/Download files” button and choose Upload.
-    - Find the `aca.op-scim-bridge.yaml` file that you saved to your computer and choose it.
+    Obtain the `.yaml` file for deploying your SCIM bridge: 
+    - Using bash
+    ```bash
+    curl https://raw.githubusercontent.com/1Password/scim-examples/solutions/bb/aca-yaml/beta/azure-container-apps/aca-op-scim-bridge.yaml --output aca-op-scim-bridge.yaml --silent
+    ```
+     - Using PowerShell 
+    ```pwsh
+    Invoke-RestMethod -Uri `https://raw.githubusercontent.com/1Password/scim-examples/solutions/bb/aca-yaml/beta/azure-container-apps/aca-op-scim-bridge.yaml -OutFile aca-op-scim-bridge.yaml
+    ```
 
     Run the following command to deploy the Container App from the template file:
     ```bash
     az containerapp update --resource-group $ResourceGroup --name $ConAppName --yaml aca-op-scim-bridge.yaml --query properties.configuration.ingress.fqdn
     ```
 
-10. Open the domain name listed in a separate browser tab to test your connection. You can sign in to your SCIM bridge using your bearer token.
+10. Copy the URL presented to log into your SCIM bridge in a separate browser tab to test your connection. You will need to access the page with `https://` for example `https://SCIMBridgeContainerAppURL.azurecontainerapps.io`. You can sign in to your SCIM bridge using your bearer token.
 
 ### Follow the steps to connect your Identity provider to the SCIM bridge.
  - [Connect your Identity Provider](https://support.1password.com/scim/#step-3-connect-your-identity-provider)
@@ -194,7 +199,8 @@ If you would prefer to create the two containers using the AZ CLI container apps
     --query properties.configuration.ingress.fqdn
     ```
 
-3. Open the domain name listed in a separate browser tab to test your connection. You can sign in to your SCIM bridge using your bearer token.
+3. Copy the URL presented to log into your SCIM bridge in a separate browser tab to test your connection. You will need to access the page with `https://` for example `https://SCIMBridgeContainerAppURL.azurecontainerapps.io`. You can sign in to your SCIM bridge using your bearer token.
+
 4. [Connect your Identity Provider](https://support.1password.com/scim/#step-3-connect-your-identity-provider).
 </details>
 
