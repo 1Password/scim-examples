@@ -127,11 +127,11 @@ Both methods need the Container App Extension added to the Azure tool of choice,
     Obtain the `.yaml` file for deploying your SCIM bridge: 
     - Using bash
     ```bash
-    curl https://raw.githubusercontent.com/1Password/scim-examples/solutions/bb/aca-yaml/beta/azure-container-apps/aca-op-scim-bridge.yaml --output aca-op-scim-bridge.yaml --silent
+    curl https://raw.githubusercontent.com/1Password/scim-examples/solutions/main/beta/azure-container-apps/aca-op-scim-bridge.yaml --output aca-op-scim-bridge.yaml --silent
     ```
      - Using PowerShell 
     ```pwsh
-    Invoke-RestMethod -Uri `https://raw.githubusercontent.com/1Password/scim-examples/solutions/bb/aca-yaml/beta/azure-container-apps/aca-op-scim-bridge.yaml -OutFile aca-op-scim-bridge.yaml
+    Invoke-RestMethod -Uri `https://raw.githubusercontent.com/1Password/scim-examples/solutions/main/beta/azure-container-apps/aca-op-scim-bridge.yaml -OutFile aca-op-scim-bridge.yaml
     ```
 
     Run the following command to deploy the Container App from the template file:
@@ -357,11 +357,11 @@ The following steps only apply if you use Google Workspace as your identity prov
     Obtain the `workspace-settings.json` file: 
     - Using bash
     ```bash
-    curl https://raw.githubusercontent.com/1Password/scim-examples/solutions/bb/aca-yaml/beta/azure-container-apps/google-workspace/workspace-settings.json --output workspace-settings.json --silent
+    curl https://raw.githubusercontent.com/1Password/scim-examples/solutions/main/beta/azure-container-apps/google-workspace/workspace-settings.json --output workspace-settings.json --silent
     ```
      - Using PowerShell 
     ```pwsh
-    Invoke-RestMethod -Uri `https://raw.githubusercontent.com/1Password/scim-examples/solutions/bb/aca-yaml/beta/azure-container-apps/google-workspace/workspace-settings.json -OutFile workspace-settings.json
+    Invoke-RestMethod -Uri `https://raw.githubusercontent.com/1Password/scim-examples/solutions/main/beta/azure-container-apps/google-workspace/workspace-settings.json -OutFile workspace-settings.json
     ```
 5. Edit the file in your editor of choice and fill in correct values for:
 	* **Actor**: the email address of the administrator in Google Workspace that the service account is acting on behalf of.
