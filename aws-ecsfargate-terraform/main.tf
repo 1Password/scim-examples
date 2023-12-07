@@ -62,14 +62,17 @@ locals {
 
 data "aws_vpc" "this" {
   # Use the default VPC or find the VPC by name if specified
-  default = var.vpc_name == "" ? true : false
-  tags    = var.vpc_name != "" ? { Name = var.vpc_name } : {}
+  default = var.vpc_id == "" ? true : false
+  id      = var.vpc_id != "" ? { var.vpc_id } : {}
 }
 
 data "aws_subnets" "public" {
-  vpc_id = data.aws_vpc.this.id
+  filter {
+    name = "vpc-id"
+    values = [data.aws_vpc.this.id]
+  }
   # Find the public subnets in the VPC
-  tags = var.vpc_name != "" ? { SubnetTier = "public" } : {}
+  tags = var.vpc_id != "" ? { SubnetTier = "public" } : {}
 }
 
 data "aws_iam_policy_document" "assume_role_policy" {
