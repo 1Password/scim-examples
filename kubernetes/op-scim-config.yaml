@@ -3,28 +3,59 @@ kind: ConfigMap
 metadata:
   name: op-scim-configmap
 data:
-  # Set this to the FQDN you've selected for your SCIM Bridge deployment
-  # this will enable the complimentary LetsEncrypt challenge server if OP_TLS_CERT_FILE and OP_TLS_KEY_FILE are not set (or valid)
+  # These environment variables can be can used to customize your 1Password SCIM Bridge deployment. Learn about how to
+  # use these environment variables to configure your SCIM bridge deployment in the README.md document included with
+  # this deployment example.
+
+  # To enable the CertificateManager component to terminate TLS-encrypted traffic at the https port of the
+  # op-scim-bridge container, set OP_TLS_DOMAIN to the fully qualified domain name of a public DNS record that points
+  # to the external IP address of the op-scim-bridge Service. If not set, CertificateManager is disabled; the SCIM
+  # bridge container can receive cluster-internal, plain-text HTTP traffic on the http port.
   OP_TLS_DOMAIN: ""
-  # (advanced) only change the options below if you need to
+
+  # To connect SCIM bridge to an external Redis server, set OP_REDIS_URL to its Redis connection URI. Leave this set to
+  # redis://op-scim-redis:6379 to connect to the op-scim-redis Service included with this deployment example. If this
+  # value is no set, SCIM bridge will use the default value of redis://localhost:6379. If SCIM bridge is unable to
+  # connect to Redis, it will fail to load.
   OP_REDIS_URL: "redis://op-scim-redis:6379"
-  OP_PRETTY_LOGS: "0"
-  OP_DEBUG: "0"
-  OP_TRACE: "0"
-  OP_PING_SERVER: "0"
-  OP_SESSION: "/secrets/scimsession"
-  # OP_CONFIRMATION_INTERVAL sets the interval for the ConfirmationWatcher service, responsible for automatically confirming users who have accepted their invite (default: 300 seconds, minimum: 30 seconds)
-  #OP_CONFIRMATION_INTERVAL=300
-  # OP_DNS_CHALLENGE_CONFIG_FILE sets the path for a Let's Encrypt DNS-01 configuration file
-  #OP_DNS_CHALLENGE_CONFIG_FILE=/secrets/dns01-config
-  # OP_TLS_KEY_FILE and OP_TLS_CERT_FILE define the path of a valid SSL key/cert files
-  # if not present, Let's Encrypt will be used to acquire a TLS certificate
-  # NOTE: both of these variables must be defined together to work as expected
-  #OP_TLS_KEY_FILE: "/secrets/tls.key"
-  #OP_TLS_CERT_FILE: "/secrets/tls.crt"
-  # (optional) uncomment this line to change the email that is used when Let's Encrypt issues your SCIM bridge a certificate
-  # default: "1pw@[OP_TLS_DOMAIN]"
-  #OP_LETSENCRYPT_EMAIL: "1pw@example.com"
-  # (Workspace Beta) these settings are specific to those participating in the Google Workspace provisioning beta
-  OP_WORKSPACE_CREDENTIALS: "/secrets/workspace-credentials.json"
-  OP_WORKSPACE_SETTINGS: "/secrets/workspace-settings.json"
+  
+  # Set OP_PRETTY_LOGS to 1 colorize container logs. If not set, or set to 0, container logs are output in
+  # monochrome.
+  # OP_PRETTY_LOGS: "1"
+
+  # Set OP_JSON_LOGS to 1 to output log entries as newline-delimited JSON objects. If not set, or set to 0, container
+  # logs are output in a human-readable format. If set to 1, OP_PRETTY_LOGS is ignored.
+  # OP_JSON_LOGS: "1"
+  
+  # Set OP_DEBUG to 1 to enable debug level logging, which can be useful during troubleshooting. If not set, or set to
+  # 0, info level logging is enabled.
+  # OP_DEBUG: "1"
+
+  # Set OP_TRACE to 1 to enable trace level logging, primarily used to debug Let's Encrypt integration errors. If not
+  # set, or set to 0, trace level logging is suppressed. If set to 1, OP_DEBUG is ignored.
+  # OP_TRACE: "1"
+
+  # To enable the optional PingServer component serving a /ping endpoint on port 8080, set OP_PING_SERVER to 1. If
+  # unset or set to 0, the /ping endpoint is not available on port 8080.
+  # OP_PING_SERVER: "1"
+
+  # Use OP_CONFIRMATION_INTERVAL to set how often the ConfirmationWatcher component runs in seconds. The minimum
+  # interval is 30 seconds. If not set, the default value of 300 seconds (5 minutes) is used.
+  # OP_CONFIRMATION_INTERVAL: "30"
+
+  # Set OP_DNS_CHALLENGE_CONFIG_FILE to the path of a valid configuration file mounted in the container filesystem to
+  # enable CertificateManager to automatically the DNS-01 challenge with Let's Encrypt and automatically create the
+  # required DNS record using a supported DNS provider.
+  # OP_DNS_CHALLENGE_CONFIG_FILE: "/secrets/dns01-config"
+  
+  # To use your own TLS certificate with CertificateManager, set OP_TLS_KEY_FILE to the path of a valid private TLS
+  # certificate key file that is paired to the public key specified in OP_TLS_CERT_FILE, and set OP_TLS_CERT_FILE
+  # respectively. If only one of the two is set, CertificateManager will fail to load. If CertificateManager is enabled
+  # and neither value is set, it will use Let's Encrypt to issue TLS certificates.
+  # OP_TLS_KEY_FILE: "/secrets/tls.key"
+  # OP_TLS_CERT_FILE: "/secrets/tls.crt"
+
+  # Use OP_LETSENCRYPT_EMAIL to supply the email address required by Let's Encrypt. If this value is not set, SCIM
+  # bridge interpolates an email address using 1pw as the local-part and the value of OP_TLS_DOMAIN as the domain (for
+  # example, 1pw@scim.example.com). If not using Let's Encrypt with CertificateManager, this value is not used.
+  # OP_LETSENCRYPT_EMAIL=eggs.ample@example.com

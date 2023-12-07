@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: op-scim-redis
+spec:
+  selector:
+    matchLabels:
+      app: op-scim-redis
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: op-scim-redis
+    spec:
+      containers:
+        - name: op-scim-redis
+          image: redis:latest
+          ports:
+            - containerPort: 6379
+              name: redis
+          resources:
+            requests:
+              cpu: 125m
+              memory: 512M
+            limits:
+              memory: 512M
+          envFrom:
+            - configMapRef:
+                name: op-redis-configmap

@@ -40,9 +40,9 @@ variable "log_retention_days" {
   description = "Specifies the number of days to retain log events in CloudWatch. The log is retained indefinitely whne set to 0."
 }
 
-# (For customers using Google Workspace participants)
-variable "using_google_workspace" {
-  type        = bool
-  default     = false
-  description = "Set to true to add Google Workspace configuration to 1Password SCIM bridge"
+# For customers integrating with Google Workspace
+variable "google_workspace_actor" {
+  type        = string
+  default     = null
+  description = "The email address of the administrator in Google Workspace that the service account is acting on behalf of."
 }

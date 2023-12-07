@@ -1,0 +1,6 @@
+- op: add
+  path: /data/OP_TLS_KEY_FILE
+  value: "/secrets/tls.key"
+- op: add
+  path: /data/OP_CERT_FILE
+  value: "/secrets/tls.cert"

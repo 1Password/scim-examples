@@ -21,6 +21,9 @@ locals {
     version     = trimprefix(jsondecode(file("${path.module}/task-definitions/scim.json"))[0].image, "1password/scim:v")
   })
 
+  # Enable Google Workspace module if Workspace admin email is supplied
+  using_google_workspace = var.google_workspace_actor != null
+
   # Define base configuration from ./task-definitions/scim.json
   base_container_definitions_json = templatefile(
     "${path.module}/task-definitions/scim.json",
@@ -36,7 +39,7 @@ locals {
   base_redis_container_definition       = jsondecode(local.base_container_definitions_json)[1]
 
   # Conditionally merge Google Workspace config
-  scim_bridge_container_definition = !var.using_google_workspace ? local.base_scim_bridge_container_definition : merge(
+  scim_bridge_container_definition = !local.using_google_workspace ? local.base_scim_bridge_container_definition : merge(
     local.base_scim_bridge_container_definition,
     {
       #Add Google Workspace secrets to current list
@@ -323,14 +326,16 @@ resource "aws_route53_record" "op_scim_bridge" {
 }
 
 module "google_workspace" {
-  count = var.using_google_workspace ? 1 : 0
+  count = local.using_google_workspace ? 1 : 0
 
-  source = "../beta/aws-terraform-gw"
+  source = "./modules/google-workspace"
 
   name_prefix = local.name_prefix
   tags        = local.tags
   iam_role    = aws_iam_role.op_scim_bridge
-  enabled     = var.using_google_workspace
+  enabled     = local.using_google_workspace
+  actor         = var.google_workspace_actor
+  bridgeAddress = "https://${var.domain_name}"
 }
 
 moved {
