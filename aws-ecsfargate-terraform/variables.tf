@@ -18,9 +18,9 @@ variable "name_prefix" {
   description = "A common prefix to apply to the names of all AWS resources."
 }
 
-variable "vpc_name" {
+variable "vpc_id" {
   type        = string
-  description = "The name of an existing VPC to use."
+  description = "The Id of an existing VPC to use."
 }
 
 variable "wildcard_cert" {
