@@ -63,7 +63,7 @@ locals {
 data "aws_vpc" "this" {
   # Use the default VPC or find the VPC by name if specified
   default = var.vpc_id == "" ? true : false
-  id      = var.vpc_id != "" ? { var.vpc_id } : {}
+  id      = var.vpc_id != "" ? var.vpc_id : ""
 }
 
 data "aws_subnets" "public" {
