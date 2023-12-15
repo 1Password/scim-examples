@@ -1,0 +1,32 @@
+name: "Linting"
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  linting:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.1
+
+      - name: Terraform Fmt Check
+        id: fmt
+        run: |
+          terraform fmt -recursive -check -diff $GITHUB_WORKSPACE          
+      
+      - name: Terraform Init
+        id: init
+        run: |
+          terraform init -backend=false          
+
+      - name: Terraform Validate Check
+        id: validate
+        run: |
+          terraform validate          
