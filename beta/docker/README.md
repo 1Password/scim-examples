@@ -18,7 +18,7 @@ The open source Docker Engine tooling can be used to deploy 1Password SCIM Bridg
 
 ## Prerequisites
 
-- AMD64 VM or bare metal server with a Docker-supported Linux distribution (e.g. Ubuntu, Debian, Fedora, etc.)
+- AMD64/ARM64 VM or bare metal server with a Docker-supported Linux distribution (e.g. Ubuntu, Debian, Fedora, etc.)
 - Docker Engine (see [Docker Engine installation overview](https://docs.docker.com/engine/install/#server)) installed on the Linux server
 - a public DNS A record pointing to the Linux server
 - SSH access to the Linux server
