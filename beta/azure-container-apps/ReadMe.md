@@ -122,22 +122,52 @@ Both methods need the Container App Extension added to the Azure tool of choice,
         az containerapp create --resource-group $ResourceGroup --environment $ConAppEnv --name $ConAppName  --secrets scimsession="$([Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path /home/$Env:USER/ 'scimsession'))) )"
         ```
 
-9. Deploy your SCIM bridge containers based off the template file:
+9. Deploy your SCIM bridge containers using the [example template file (`aca-op-scim-bridge.yaml`)](./aca-op-scim-bridge.yaml) in this repository.
 
-    Obtain the `.yaml` file for deploying your SCIM bridge: 
-    - Using bash
-    ```bash
-    curl https://raw.githubusercontent.com/1Password/scim-examples/solutions/main/beta/azure-container-apps/aca-op-scim-bridge.yaml --output aca-op-scim-bridge.yaml --silent
-    ```
-     - Using PowerShell 
-    ```pwsh
-    Invoke-RestMethod -Uri `https://raw.githubusercontent.com/1Password/scim-examples/solutions/main/beta/azure-container-apps/aca-op-scim-bridge.yaml -OutFile aca-op-scim-bridge.yaml
-    ```
+    - Download the file to your working directory:
+        - using Bash:
 
-    Run the following command to deploy the Container App from the template file:
-    ```bash
-    az containerapp update --resource-group $ResourceGroup --name $ConAppName --yaml aca-op-scim-bridge.yaml --query properties.configuration.ingress.fqdn
-    ```
+            ```bash
+            # GitHub repository details
+            SCIMBridgeRepoRoot="https://raw.githubusercontent.com"
+            SCIMBridgeRepoName="1Password/scim-examples"
+            SCIMBridgeRepoBranch="main"
+            SCIMBridgeRepoPath="beta/azure-container-apps/aca-op-scim-bridge.yaml"
+
+            # Download template file from GitHub
+            curl \
+                --silent \
+                --show-error \
+                --output aca-op-scim-bridge.yaml \
+                "${SCIMBridgeRepoRoot}/${SCIMBridgeRepoName}/${SCIMBridgeRepoBranch}/${SCIMBridgeRepoPath}"
+            ```
+
+        - Using PowerShell:
+
+            ```pwsh
+            # GitHub repository details
+            $SCIMBridgeRepo = @{
+                Root   = "https://raw.githubusercontent.com"
+                Name   = "1Password/scim-examples"
+                Branch = "main"
+                Path   = "beta/azure-container-apps/aca-op-scim-bridge.yaml"
+            }
+
+            # Parameters to download template file
+            $TemplateFile = @{
+                Uri     = "$($SCIMBridgeRepo.Root)/$($SCIMBridgeRepo.Name)/$($SCIMBridgeRepo.Branch)/$($SCIMBridgeRepo.Path)"
+                OutFile = "aca-op-scim-bridge.yaml"
+            }
+
+            # Download template file from GitHub
+            Invoke-RestMethod @TemplateFile
+            ```
+
+    - Deploy the Container App from the template file:
+
+        ```bash
+        az containerapp update --resource-group $ResourceGroup --name $ConAppName --yaml aca-op-scim-bridge.yaml --query properties.configuration.ingress.fqdn
+        ```
 
 10. Copy the URL presented to log into your SCIM bridge in a separate browser tab to test your connection. You will need to access the page with `https://` for example `https://SCIMBridgeContainerAppURL.azurecontainerapps.io`. You can sign in to your SCIM bridge using your bearer token.
 
