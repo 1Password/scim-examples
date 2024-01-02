@@ -122,7 +122,8 @@ kubectl set image deploy/op-scim-bridge op-scim-bridge=1password/scim:v2.8.3 -n=
 
 The update should take 2-3 minutes for Kubernetes to complete.
 
-## Appendix: Resource recommendations
+## Appendix: 
+### Resource recommendations
 
 The default resource recommendations for the SCIM bridge and Redis deployments are acceptable in most scenarios, but they may fall short in high-volume deployments where a large number of users and/or groups are being managed. We strongly recommend increasing the resources for both the SCIM bridge and Redis deployments.
 
@@ -202,5 +203,9 @@ kubectl scale --replicas=1 deployment/op-scim-bridge-redis-master
 # scale up deployment
 kubectl scale --replicas=1 deployment/op-scim-bridge
 ```
+
+### Custom Redis
+
+* Add details here.
 
 Please reach out to our [support team](https://support.1password.com/contact/) if you need help with the configuration or to tweak the values for your deployment.

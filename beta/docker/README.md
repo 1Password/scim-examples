@@ -384,3 +384,6 @@ docker stack config \
     --compose-file ./compose.tls.yaml |
         docker stack deploy --compose-file - op-scim-bridge
 ```
+
+### Custom Redis Options
+* Add stuff here

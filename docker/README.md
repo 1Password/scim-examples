@@ -225,6 +225,8 @@ The following options are available for advanced or custom deployments. Unless y
 * `OP_TRACE`: You can set this to `1` to enable trace-level log output, which is useful for debugging Let’s Encrypt integration errors.
 * `OP_PING_SERVER`: You can set this to `1` to enable an optional `/ping` endpoint on port `80`, which is useful for health checks. It's disabled if `OP_TLS_DOMAIN` is unset and TLS is not in use.
 
+<!-- TODO: CUSTOM REDIS -->
+
 ## Appendix: Generate `scim.env` on Windows
 
 On Windows, refer to [./docker/compose/generate-env.bat](generate-env.bat) to learn how to generate the `base64` string for `OP_SESSION`.
