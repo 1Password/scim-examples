@@ -356,11 +356,11 @@ These values can be set in [`op-scim-config.yaml`](./op-scim-config.yaml)
 > If `OP_REDIS_URL` has any value, the environment variables below are ignored.
 
 * `OP_REDIS_HOST`: set the hostname of your redis cache (e.g., `"localhost"`)
-* `OP_REDIS_PORT`: Set the Redis port (e.g., "6379")  
+* `OP_REDIS_PORT`: Set the Redis port (e.g., `"6379"`)  
 * `OP_REDIS_USERNAME`: Set the username required to connect to Redis (e.g., `"admin"`)
 * `OP_REDIS_PASSWORD`: Set the password required to connect to Redis (e.g., `"apv.zbu8wva8gwd1EFC-fake.password"`). Can accommodate URL-unfriendly characters that `OP_REDIS_URL` may not accommodate. 
-* `OP_REDIS_SSL_ENABLED`: Set whether the connection to Redis should be TLS-enabled (Boolean 0 or 1)  
-* `OP_REDIS_INSECURE_SSL`: Set whether insecure TLS connections to Redis should be permitted when `OP_REDIS_SSL_ENABLED` is set to "1". (Boolean 0 or 1)
+* `OP_REDIS_SSL_ENABLED`: Set whether the connection to Redis should be TLS-enabled (Boolean `0` or `1`)  
+* `OP_REDIS_INSECURE_SSL`: Set whether insecure TLS connections to Redis should be permitted when `OP_REDIS_SSL_ENABLED` is set to `1`. (Boolean `0` or `1`)
 
 #### If you already deployd your SCIM bridge
 
