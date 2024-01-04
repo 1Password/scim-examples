@@ -204,8 +204,4 @@ kubectl scale --replicas=1 deployment/op-scim-bridge-redis-master
 kubectl scale --replicas=1 deployment/op-scim-bridge
 ```
 
-### Custom Redis
-
-* Add details here.
-
 Please reach out to our [support team](https://support.1password.com/contact/) if you need help with the configuration or to tweak the values for your deployment.
