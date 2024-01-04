@@ -472,9 +472,6 @@ The following steps only apply if you use Google Workspace as your identity prov
 8. Select **Create** to scale the deployment to have it read the new secrets. 
 </details>
 
-### Custom Redis Configuration
-<!-- TODO: CUSTOM REDIS -->
-
 ## Troubleshooting
 
 Logs for a container app can be viewed from the **Log Stream**, there is a separate log stream for both containers of the revision that is active. Often reviewing the logs of the **op-scim-bridge** container can help understand any startup issues.
