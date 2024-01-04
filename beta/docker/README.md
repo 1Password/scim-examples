@@ -386,4 +386,17 @@ docker stack config \
 ```
 
 ### Custom Redis Options
-* Add stuff here
+
+* `OP_REDIS_URL`: You can specify a `redis://` or `rediss://` (for TLS) URL here to point towards a different Redis host. You can then remove the sections in `docker-compose.yml` that refer to Redis to not deploy that container. Redis is still required for the SCIM bridge to function.  
+
+As of SCIM Bridge `v2.8.5`, additional Redis configuration options are available. `OP_REDIS_URL` must be unset for any of these environment variables to be read. These environment variables may be especially helpful if you need support for URL-unfriendly characters in your Redis credentials. 
+
+> **Note**  
+> `OP_REDIS_URL` must be unset, otherwise the following environment variables will be ignored.
+
+* `OP_REDIS_HOST`: set the hostname of your redis cache (e.g., `"localhost"`)
+* `OP_REDIS_PORT`: Set the Redis port (e.g., "6379")  
+* `OP_REDIS_USERNAME`: Set the username required to connect to Redis (e.g., `"admin"`)
+* `OP_REDIS_PASSWORD`: Set the password required to connect to Redis (e.g., `"apv.zbu8wva8gwd1EFC-fake.password"`). Can accommodate URL-unfriendly characters that `OP_REDIS_URL` may not accommodate. 
+* `OP_REDIS_SSL_ENABLED`: Set whether the connection to Redis should be TLS-enabled (Boolean 0 or 1)  
+* `OP_REDIS_INSECURE_SSL`: Set whether insecure TLS connections to Redis should be permitted when `OP_REDIS_SSL_ENABLED` is set to "1". (Boolean 0 or 1)

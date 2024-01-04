@@ -16,9 +16,32 @@ data:
   # To connect SCIM bridge to an external Redis server, set OP_REDIS_URL to its Redis connection URI. Leave this set to
   # redis://op-scim-redis:6379 to connect to the op-scim-redis Service included with this deployment example. If this
   # value is no set, SCIM bridge will use the default value of redis://localhost:6379. If SCIM bridge is unable to
-  # connect to Redis, it will fail to load.
+  # connect to Redis, it will fail to load. See below for additioanl Redis configuration options.
   OP_REDIS_URL: "redis://op-scim-redis:6379"
-  
+
+  # ADVANCED REDIS OPTIONS
+  # If you are connecting SCIM bridge to an external Redis server, you can use the following environment variables in
+  # place of OP_REDIS_URL. OP_REDIS_URL must be unset. If OP_REDIS_URL has any value, the environment variables below
+  # are ignored.
+
+  # Set the Redis hostname (e.g., localhost)
+  # OP_REDIS_HOST: "localhost"
+
+  # Set the redis port (e.g., "6379")
+  # OP_REDIS_PORT: "6379"
+
+  # Set the username required to connect to redis (e.g., "admin")
+  # OP_REDIS_USERNAME: "admin"
+
+  # Set the password required to connect to redis
+  # OP_REDIS_PASSWORD: "apv.zbu8wva8gwd1EFC-fake.password"
+
+  # Set whether the connection to Redis should be TLS-enabled (Boolean 0 or 1)
+  # OP_REDIS_SSL_ENABLED: "0"
+
+  # Set whether insecure TLS connections should be permitted when OP_REDIS_SSL_ENABLED is true (Boolean 0 or 1)
+  # OP_REDIS_INSECURE_SSL: "0"
+
   # Set OP_PRETTY_LOGS to 1 colorize container logs. If not set, or set to 0, container logs are output in
   # monochrome.
   # OP_PRETTY_LOGS: "1"
@@ -26,7 +49,7 @@ data:
   # Set OP_JSON_LOGS to 1 to output log entries as newline-delimited JSON objects. If not set, or set to 0, container
   # logs are output in a human-readable format. If set to 1, OP_PRETTY_LOGS is ignored.
   # OP_JSON_LOGS: "1"
-  
+
   # Set OP_DEBUG to 1 to enable debug level logging, which can be useful during troubleshooting. If not set, or set to
   # 0, info level logging is enabled.
   # OP_DEBUG: "1"
@@ -47,7 +70,7 @@ data:
   # enable CertificateManager to automatically the DNS-01 challenge with Let's Encrypt and automatically create the
   # required DNS record using a supported DNS provider.
   # OP_DNS_CHALLENGE_CONFIG_FILE: "/secrets/dns01-config"
-  
+
   # To use your own TLS certificate with CertificateManager, set OP_TLS_KEY_FILE to the path of a valid private TLS
   # certificate key file that is paired to the public key specified in OP_TLS_CERT_FILE, and set OP_TLS_CERT_FILE
   # respectively. If only one of the two is set, CertificateManager will fail to load. If CertificateManager is enabled
