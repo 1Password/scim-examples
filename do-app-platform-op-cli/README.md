@@ -165,7 +165,7 @@ You can also access your SCIM bridge by visting the URL in your web browser. Sig
   op item edit "workspace-credentials" --vault "op-scim" base64_encoded_credentials=$([Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($(op read "op://op-scim/workspace-credentials/workspace-credentials.json"))))
   ```
 
-  3. Download and open the  [`workspace-settings.json`](/do-app-platform-op-cli/google-workspace/workspace-settings.json)) file in a text editor and replace the values for each key:
+  3. Download and open the  [`workspace-settings.json`](/do-app-platform-op-cli/google-workspace/workspace-settings.json) file in a text editor and replace the values for each key:
 
   - `actor`: the email address for the administrator that the service account is acting on behalf of
   - `bridgeAddress`: the URL you will use for your SCIM bridge (not your 1Password account sign-in address). This is the Application URL for your Container App found on the overview page. For example: https://op-scim-bridge-example.ondigitalocean.app
