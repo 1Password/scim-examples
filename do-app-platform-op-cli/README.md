@@ -1,6 +1,8 @@
-# [Beta] Deploy 1Password SCIM bridge on DigitalOcean App Platform with 1Password CLI
+# Deploy 1Password SCIM bridge on DigitalOcean App Platform with 1Password CLI
 
 This deployment example describes how to deploy 1Password SCIM bridge as an app on DigitalOcean's [App Platform](https://docs.digitalocean.com/products/app-platform/) service using [1Password CLI](https://developer.1password.com/docs/cli), the DigitalOcean command line interface ([`doctl`](https://docs.digitalocean.com/reference/doctl/)), and optionally the DigitalOcean [1Password Shell Plugin](https://developer.1password.com/docs/cli/shell-plugins/) (for Mac and Linux users).
+
+Alternatively you can also follow the guide here on how to deploy the [1Password SCIM Bridge to DigitalOcean's App Platform Container-as-a-Service environment using the DigitalOcean portal](https://support.1password.com/cs/scim-deploy-digitalocean-ap/) instead of using the command line tools. 
 
 The app consists of two [resources](https://docs.digitalocean.com/glossary/resource/): a [service](https://docs.digitalocean.com/glossary/service/) for the SCIM bridge container and an [internal service](https://docs.digitalocean.com/glossary/service/#internal-services) for Redis.
 
@@ -163,7 +165,7 @@ You can also access your SCIM bridge by visting the URL in your web browser. Sig
   op item edit "workspace-credentials" --vault "op-scim" base64_encoded_credentials=$([Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($(op read "op://op-scim/workspace-credentials/workspace-credentials.json"))))
   ```
 
-  3. Download and open the  [`workspace-settings.json`](/beta/do-app-platform-op-cli/google-workspace/workspace-settings.json)) file in a text editor and replace the values for each key:
+  3. Download and open the  [`workspace-settings.json`](/do-app-platform-op-cli/google-workspace/workspace-settings.json)) file in a text editor and replace the values for each key:
 
   - `actor`: the email address for the administrator that the service account is acting on behalf of
   - `bridgeAddress`: the URL you will use for your SCIM bridge (not your 1Password account sign-in address). This is the Application URL for your Container App found on the overview page. For example: https://op-scim-bridge-example.ondigitalocean.app
