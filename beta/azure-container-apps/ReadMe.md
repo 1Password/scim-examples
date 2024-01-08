@@ -109,7 +109,7 @@ Both methods need the Container App Extension added to the Azure tool of choice,
 
 8. Deploy the Container App Secret for the SCIM bridge. 
 
-    > **Note:** If you prefer to deploy the containers using the Azure Container App Commands, go to this section: [Azure ContainerApps Commands Deployment steps](#azure-container-apps-commands-deployment-steps), othersise follow the template file steps below. 
+    > **Note:** If you prefer to deploy the containers using the Azure Container App Commands, go to this section: [Azure ContainerApps Commands Deployment steps](#azure-container-apps-commands-deployment-steps), otherwise follow the template file steps below. 
     >
 
     Create your Container App Secret:
