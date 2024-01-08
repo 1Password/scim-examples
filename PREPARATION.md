@@ -22,9 +22,19 @@ For general deployment, the SCIM bridge requires these components:
 
 You'll need to create a DNS record with your SCIM bridge domain name after the bridge is deployed. Follow the steps in each respective deployment guide to finish setting up your DNS record at the appropriate time.
 
+> **Note**
+>
+>Container-as-a-Service deployments, (Azure Container Apps, DigitalOcean App Platform, etc), handle the DNS record creation for you, so there is no requirement to create your own DNS "A" record.
+>
+
 ### TLS certificate
 
 Identity providers typically require a TLS certificate when communicating with the SCIM bridge. By default, TLS certificates are handled by a complimentary [Let's Encrypt](https://letsencrypt.org/) service integration, which automatically generates and renews a certificate based on the domain you're using.
+
+> **Note**
+>
+>Container-as-a-Service deployments, (Azure Container Apps, DigitalOcean App Platform, etc), handle TLS management for you.
+>
 
 If you require TLS certificate management, there are two ways you can use the Let's Encrypt service to issue a certificate for your SCIM bridge:
 
@@ -62,7 +72,7 @@ For more information on our security model, you can read the [1Password Security
 
 ## Clone this repository
 
-Before you start the deployment, clone this repository to make sure you have all the files you need and familiarize yourself with the contents of the deployment method you've selected.
+For most advanced deployments, it is recommended that before you start the deployment, clone this repository to make sure you have all the files you need and familiarize yourself with the contents of the deployment method you've selected.
 
 From the command line:
 

@@ -4,20 +4,29 @@ You can deploy 1Password SCIM Bridge on any supported infrastructure that allows
 
 ## Automatic (one-click) deployment
 
-The easiest way to deploy 1Password SCIM Bridge is with our one-click apps, which are currently available for Google Cloud Platform and DigitalOcean:
+One of the easiest ways to deploy the 1Password SCIM Bridge is with our one-click (Marketplace) apps, which are currently available for Google Cloud Platform and DigitalOcean:
 
 - [Deploy 1Password SCIM Bridge on Google Cloud Platform](https://support.1password.com/scim-deploy-gcp/)
 - [Deploy 1Password SCIM Bridge on DigitalOcean](https://support.1password.com/scim-deploy-digitalocean/)
 
-## Advanced deployment
+## Custom deployment
 
-If you have particular requirements for your environment, an advanced deployment is recommended. These example configurations can be used as a base for a customized deployment.
+For a more customizabile deployment, whether you choose a container-as-a-service option to allow the infrastructure to be managed by your service provider, or an advanced deployment, you can use these example configurations as a base for a customized deployment.
 
 ### Before you begin
 
 Before you begin deploying 1Password SCIM Bridge, review the [Preparation Guide](/PREPARATION.md). The guide will help you plan for some of the technical components of the deployment and consider some issues you may encounter along the way.
 
-After you've read the preparation guide, refer to the deployment example for your infrastructure:
+### Container-as-a-Service deployment options
+
+Container-as-a-Service (CaaS) deployments of the 1Password SCIM Bridge will simpify your deployment by utilizing the built-in tools of the CaaS service for DNS and certificate management. This gives you an easy, low cost SCIM bridge with few instrastructure management requirements.
+
+- DigitalOcean App Platform 
+  - [Using DigitalOcean Portal](https://support.1password.com/cs/scim-deploy-digitalocean-ap/)
+  - [Using DigitalOcean command line tool & the 1Password CLI](/beta/do-app-platform-op-cli/) 
+
+### Advanced deployment options
+If you have particular requirements for your environment, an advanced deployment is recommended. These example configurations are just that, examples and can be used for your customized deployment.
 
 - [AWS ECS Fargate with Terraform](/aws-ecsfargate-terraform)
 - [Azure Kubernetes Service](https://support.1password.com/scim-deploy-azure/)
@@ -31,7 +40,6 @@ These are beta versions of 1Password SCIM Bridge deployment examples. These depl
 - ✨ **NEW** [AWS with CloudFormation](/beta/aws-ecsfargate-cfn)
 - ✨ **NEW** [Azure Container Apps](/beta/azure-container-apps)
 - ✨ **NEW** [Docker](/beta/docker)
-- [DigitalOcean App Platform with 1Password CLI](/beta/do-app-platform-op-cli/)
 
 ## Deprecated deployment methods
 
