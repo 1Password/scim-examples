@@ -243,17 +243,17 @@ If you open your SCIM bridge domain in a browser and see a `Sign In With 1Passwo
 
 To fix this, [copy the `scimsession` file](#11-copy-scimsession-file) again and stop the ECS task for your SCIM bridge. The ECS service will ensure that the task is restarted to reboot your SCIM bridge and apply the changes.
 
-#### If unable to access AWS Secrets Manager
+#### If you can't access AWS Secrets Manager
 
-The `aws_security_group.service` resource creates a security group that restricts outbound traffic from the Fargate task such that 1Password SCIM Bridge may only connect to the 1Password service over HTTPS on this port. If the VPC in which the Fargate task is deployed has not been configured to support DNS resolution through the Amazon DNS server, this security group will also restrict DNS resolution.
+Because the `aws_security_group.service` resource creates a security group that restricts outbound traffic from the Fargate task, 1Password SCIM Bridge may only connect to the 1Password service over HTTPS on this port. If the VPC where the Fargate task is deployed hasn't been configured to support DNS resolution through the Amazon DNS server, this security group will also restrict DNS resolution.
 
-*_*Example error:*
+**_Example error:_**
 
 > ```sh
 > ResourceInitializationError: unable to pull secrets or registry auth: execution resource retrieval failed: unable to retrieve secret from asm: service call has been retried 5 time(s): failed to fetch secret arn:aws:secretsmanager:us-east-1:…:secret:op-scim-bridge-sercretARN from secrets manager: RequestCanceled: request context canceled caused by: context deadline exceeded. Please check your task network configuration.
 > ```
 
-It is recommended to enable the Amazon DNS server for the VPC where your SCIM bridge is deployed. See [View and update DNS attributes for your VPC](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-dns.html#vpc-dns-updating); select Enable for at least "DNS resolution" to resolve this.
+To resolve this issue, enable the Amazon DNS server for the VPC where your SCIM bridge is deployed. See Learn more in the [view and update DNS attributes for your VPC documentation](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-dns.html#vpc-dns-updating). Select Enable for at least "DNS resolution" to resolve this.
 
 Alternatively, add an additional block to to the `aws_security_group.service` resource in `main.tf` to create a security group rule that enables DNS resolution. For example:
 
