@@ -72,7 +72,7 @@ For more information on our security model, you can read the [1Password Security
 
 ## Clone this repository
 
-For most advanced deployments, it is recommended that before you start the deployment, clone this repository to make sure you have all the files you need and familiarize yourself with the contents of the deployment method you've selected.
+For most custom deployments, it is recommended that you clone this repository before you start the deployment. This ensures you have all the files you need and provides an opportunity for you to familiarize yourself with the contents of the deployment method you've selected.
 
 From the command line:
 
