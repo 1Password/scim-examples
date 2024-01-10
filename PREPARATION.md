@@ -24,7 +24,7 @@ You'll need to create a DNS record with your SCIM bridge domain name after the b
 
 > **Note**
 >
->Container-as-a-Service deployments, (Azure Container Apps, DigitalOcean App Platform, etc), handle the DNS record creation for you, so there is no requirement to create your own DNS "A" record.
+>Container-as-a-Service platforms (for example, Azure Container Apps, DigitalOcean App Platform) include TLS endpoint management, so you do not need to create a DNS record for these deployments.
 >
 
 ### TLS certificate
