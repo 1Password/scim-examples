@@ -98,13 +98,13 @@ A deployment example may be in beta for whatever length of time is required to m
 - Functionality
   - The deployment example _must_ work for all identity providers 1Password supports (unless otherwise exempt from that criteria). 
   - The deployment example _must_ be capable of scaling to accommodate different provisioning needs (unless otherwise exempt from that criteria).
-  - The deployment example _must_ reliably perform as described by the author and the accompanying documentation. 
+  - The deployment example _must_ provide the complete automated user provisioning experience described by 1Password and in the documetnation accompanying the deployment example example. 
   - Feedback from customers using the deployment example is nearly universally positive. Any critical feedback has been addressed to the greatest possibile extent during the preceeding beta period. 
 - Testing
-  - All documented configurations _must_ be tested by the author and at least one reviewerand work reliably.
-  - At least _five_ customers have used the deployment example to deploy 1Password SCIM Bridge in whatever is deemed a "standard" or common configuration for that deployment example. 
+  - All documented configurations _must_ be tested by the author and at least one reviewer. Tests must reliably succeed.
+  - Some number of customers, greater than one (but no specific minimum is prescribed), are known to have used the deployment example in whatever is deemed a "standard" or common configuration for that example.
     - There must be documentation of these deployments, such as if it was assisted by 1Password Solutions Architect or developer. 
-  - At least _one_ customer has used the deployment example to deploy 1Password SCIM bridge in other, less typical, configurations. 
+  - Ideally at least _one_ customer has used the deployment example to deploy 1Password SCIM bridge in other, less typical, configurations, if applicable. 
     - There must be documentation of these deployments, such as if it was assisted by 1Password Solutions Architect or developer.
   - SCIM bridges deployed using the deployment example _must_ be in use by customers through at least one SCIM bridge update release with no evidence of failure or issues. 
 - Documentation
@@ -120,8 +120,7 @@ A deployment example may be in beta for whatever length of time is required to m
 Once the above criteria have been met, the deployment example can be promoted out of beta in the following way:
 - Create a branch called `promote/<deployment example name>`
 - On that branch, move the directory containing the documentation and configuration manifest from `./beta` to the root of the repository. 
-- Update `README.md` and `./beta/README.md` to remove the beta label
-
+- Update [`README.md`](../README.md) and [`./beta/README.md`](README.md) to remove the beta label
 - Add the deployment method to the main list of deployments in [`README.md`](../README.md#advanced-deployment) in the following format:   
 `- [Deployment Name](./deployment-name)`
 
