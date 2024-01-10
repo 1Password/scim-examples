@@ -33,7 +33,7 @@ Identity providers typically require a TLS certificate when communicating with t
 
 > **Note**
 >
->Container-as-a-Service deployments, (Azure Container Apps, DigitalOcean App Platform, etc), handle TLS management for you.
+>Container-as-a-Service platforms (for example, Azure Container Apps, DigitalOcean App Platform) include TLS endpoint management, so you do not need to use our optional certificate manager component.
 >
 
 If you require TLS certificate management, there are two ways you can use the Let's Encrypt service to issue a certificate for your SCIM bridge:
