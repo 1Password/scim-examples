@@ -1,10 +1,3 @@
-<!-- 
-Changes to "Beta"
-- Perhaps keep it in a subdirectory
-- Rename it. Avoid the Beta name. Maybe "Early Access"
-- Make clear that there's standard suppport like all of the other examples
- -->
-
 # Beta deployments
 
 This folder contains beta versions of 1Password SCIM bridge deployments.
