@@ -115,13 +115,13 @@ For example:
 
 Using Bash:
 ```sh
-curl -s https://raw.githubusercontent.com/1Password/scim-examples/main/beta/do-app-platform-op-cli/op-scim-bridge.yaml | op inject | doctl apps create --spec - --wait
+curl -s https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-platform-op-cli/op-scim-bridge.yaml | op inject | doctl apps create --spec - --wait
 ```
 
 Using Powershell:
 
 ```pwsh
-Invoke-RestMethod -Uri `https://raw.githubusercontent.com/1Password/scim-examples/main/beta/do-app-platform-op-cli/op-scim-bridge.yaml` | op inject | doctl apps create --spec - --wait
+Invoke-RestMethod -Uri `https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-platform-op-cli/op-scim-bridge.yaml` | op inject | doctl apps create --spec - --wait
 ```
 
 1Password SCIM bridge deploys with a live URL output to the terminal (found under the `Default Ingress` column). This is your SCIM bridge URL. Use your bearer token with the URL to test the connection to 1Password. For example:
@@ -191,16 +191,16 @@ You can also access your SCIM bridge by visting the URL in your web browser. Sig
   op item edit "workspace-credentials" --vault "op-scim" base64_encoded_settings=$([Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($(cat "pathToFile/workspace-settings.json"))))
   ```
 
-  5. Update your deployed by applying the Workspace specific configuration yaml [op-scim-bridge-gw.yaml](/beta/do-app-platform-op-cli/google-workspace/op-scim-bridge-gw.yaml) injecting the base64 values for the Workspace configuration.
+  5. Update your deployed by applying the Workspace specific configuration yaml [op-scim-bridge-gw.yaml](/do-app-platform-op-cli/google-workspace/op-scim-bridge-gw.yaml) injecting the base64 values for the Workspace configuration.
 
   Using Bash:
   ```sh
-  curl -s https://raw.githubusercontent.com/1Password/scim-examples/main/beta/do-app-platform-op-cli/google-workspace/op-scim-bridge-gw.yaml | op inject | doctl apps create --spec - --wait --upsert
+  curl -s https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-platform-op-cli/google-workspace/op-scim-bridge-gw.yaml | op inject | doctl apps create --spec - --wait --upsert
   ```
 
   Using Powershell:
   ```pwsh
-  Invoke-RestMethod -Uri`https://raw.githubusercontent.com/1Password/scim-examples/main/beta/do-app-platform-op-cli/google-workspace/op-scim-bridge-gw.yaml` | op inject | doctl apps create --spec - --wait --upsert
+  Invoke-RestMethod -Uri`https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-platform-op-cli/google-workspace/op-scim-bridge-gw.yaml` | op inject | doctl apps create --spec - --wait --upsert
   ```
 
   </details>
@@ -213,12 +213,12 @@ If you chose your own name for the vault and items where you saved your SCIM bri
 
 Using Bash:
 ```sh
-curl -s https://raw.githubusercontent.com/1Password/scim-examples/main/beta/do-app-platform-op-cli/op-scim-bridge.yaml | VAULT="vault name" ITEM="item name" op inject | doctl apps create --spec - --wait
+curl -s https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-platform-op-cli/op-scim-bridge.yaml | VAULT="vault name" ITEM="item name" op inject | doctl apps create --spec - --wait
 ```
 
 Using Powershell:
 ```pwsh
-Invoke-RestMethod -Uri `https://raw.githubusercontent.com/1Password/scim-examples/main/beta/do-app-platform-op-cli/op-scim-bridge.yaml` | VAULT="vault name" ITEM="item name" op inject | doctl apps create --spec - --wait
+Invoke-RestMethod -Uri `https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-platform-op-cli/op-scim-bridge.yaml` | VAULT="vault name" ITEM="item name" op inject | doctl apps create --spec - --wait
 ```
 
 ### Update 1Password SCIM bridge
@@ -227,12 +227,12 @@ The latest version of 1Password SCIM bridge is posted on our [Release Notes](htt
 
 Using Bash:
 ```sh
-curl -s https://raw.githubusercontent.com/1Password/scim-examples/main/beta/do-app-platform-op-cli/op-scim-bridge.yaml | op inject | doctl apps create --spec - --wait --upsert
+curl -s https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-platform-op-cli/op-scim-bridge.yaml | op inject | doctl apps create --spec - --wait --upsert
 ```
 
 Using Powershell:
 ```pwsh
-Invoke-RestMethod -Uri`https://raw.githubusercontent.com/1Password/scim-examples/main/beta/do-app-platform-op-cli/op-scim-bridge.yaml` | op inject | doctl apps create --spec - --wait --upsert
+Invoke-RestMethod -Uri`https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-platform-op-cli/op-scim-bridge.yaml` | op inject | doctl apps create --spec - --wait --upsert
 ```
 
 ### Propose the app spec
@@ -241,12 +241,12 @@ You can optionally propose the raw app spec template to verify the cost before d
 
 Using Bash:
 ```sh
-curl -s https://raw.githubusercontent.com/1Password/scim-examples/main/beta/do-app-platform-op-cli/op-scim-bridge.yaml | doctl apps propose --spec -
+curl -s https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-platform-op-cli/op-scim-bridge.yaml | doctl apps propose --spec -
 ```
 
 Using Powershell: 
 ```pwsh
-Invoke-RestMethod -Uri`https://raw.githubusercontent.com/1Password/scim-examples/main/beta/do-app-platform-op-cli/op-scim-bridge.yaml` | doctl apps propose --spec -
+Invoke-RestMethod -Uri`https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-platform-op-cli/op-scim-bridge.yaml` | doctl apps propose --spec -
 ```
 
 ### Resource recommendations
@@ -270,12 +270,12 @@ To revert to the default specification that is suitable for provisioning up to 1
 
 Using Bash:
 ```sh
-curl -s https://raw.githubusercontent.com/1Password/scim-examples/main/beta/do-app-platform-op-cli/op-scim-bridge.yaml | op inject | doctl apps create --spec - --wait --upsert
+curl -s https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-platform-op-cli/op-scim-bridge.yaml | op inject | doctl apps create --spec - --wait --upsert
 ```
 
 Using Powershell:
 ```pwsh
-Invoke-RestMethod -Uri`https://raw.githubusercontent.com/1Password/scim-examples/main/beta/do-app-platform-op-cli/op-scim-bridge.yaml` | op inject | doctl apps create --spec - --wait --upsert
+Invoke-RestMethod -Uri`https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-platform-op-cli/op-scim-bridge.yaml` | op inject | doctl apps create --spec - --wait --upsert
 ```
 </details>
 
@@ -286,7 +286,7 @@ These values can be scaled down again to the default values after the initial la
 
 For provisioning up to 5,000 users:
 
-Download and open [`op-scim-bridge.yaml`](/beta/do-app-platform-op-cli/op-scim-bridge.yaml) file in a text editor and replace the value in line 37:
+Download and open [`op-scim-bridge.yaml`](/do-app-platform-op-cli/op-scim-bridge.yaml) file in a text editor and replace the value in line 37:
 
 `instance_size_slug: basic-xs` 
 Changing from basic-x**x**s to basic-xs.
@@ -302,7 +302,7 @@ cat pathToFile/op-scim-bridge.yaml | op inject | doctl apps create --spec - --wa
 
 For provisioning more than 5,000 users:
 
-Download and open [`op-scim-bridge.yaml`](/beta/do-app-platform-op-cli/op-scim-bridge.yaml) file in a text editor and replace the value in line 37:
+Download and open [`op-scim-bridge.yaml`](/do-app-platform-op-cli/op-scim-bridge.yaml) file in a text editor and replace the value in line 37:
 
 `instance_size_slug: basic-xs`
 Changing from basic-x**x**s to basic-xs.

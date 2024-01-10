@@ -23,7 +23,7 @@ Container-as-a-Service (CaaS) deployments of the 1Password SCIM Bridge will simp
 
 - DigitalOcean App Platform 
   - [Using DigitalOcean Portal](https://support.1password.com/cs/scim-deploy-digitalocean-ap/)
-  - [Using DigitalOcean command line tool & the 1Password CLI](/beta/do-app-platform-op-cli/) 
+  - [Using DigitalOcean command line tool & the 1Password CLI](/do-app-platform-op-cli) 
 
 ### Advanced deployment options
 If you have particular requirements for your environment, an advanced deployment is recommended. These example configurations are just that, examples and can be used for your customized deployment.
