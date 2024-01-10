@@ -12,19 +12,34 @@ spec:
       labels:
         app: op-scim-redis
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        runAsGroup: 999
+        fsGroup: 999
       containers:
         - name: op-scim-redis
           image: redis:latest
           ports:
             - containerPort: 6379
               name: redis
+          volumeMounts:
+            - name: redis-config
+              mountPath: /home/redis/config
+            - name: redis-data
+              mountPath: /data  
+          command:
+            - redis-server
+            - /home/redis/config/redis.conf
           resources:
             requests:
               cpu: 125m
-              memory: 256M
-            limits:
-              cpu: 250m
               memory: 512M
-          envFrom:
-            - configMapRef:
-                name: op-redis-configmap
+            limits:
+              memory: 512M
+      volumes:
+        - name: redis-config
+          configMap:
+            name: op-redis-configmap
+        - name: redis-data
+          emptyDir: {}

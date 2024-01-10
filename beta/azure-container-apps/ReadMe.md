@@ -7,6 +7,7 @@ The deployment consists of two [containers](https://learn.microsoft.com/en-us/az
 ## In this folder
 
 - [`README.md`](./README.md): the document that you are reading.
+- [`aca-op-scim-bridge.yaml`](./aca-op-scim-bridge.yaml): an Container App configuration file of a container app for the 1Password SCIM bridge.
 
 **Table of contents:**
 
@@ -24,9 +25,7 @@ The deployment consists of two [containers](https://learn.microsoft.com/en-us/az
 Deploying 1Password SCIM Bridge on Azure Container Apps comes with a few benefits:
 
 - For standard deployments, Azure Container Apps will host your SCIM bridge for ~$16 USD/month (when this document was written)
-  > **Note**
-  >
-  > Container Apps pricing is variable based on activity. Details can be found on [Microsoft's pricing page](https://azure.microsoft.com/en-us/pricing/details/container-apps/).
+  > **Note:** Container Apps pricing is variable based on activity. Details can be found on [Microsoft's pricing page](https://azure.microsoft.com/en-us/pricing/details/container-apps/).
 - No manual DNS record creation required. Azure Container Apps automatically provides a unique DNS record for your SCIM bridge URL.
 - Azure Container Apps automatically handles TLS certificate management on your behalf.
 - You will deploy 1Password SCIM Bridge directly to Azure from your Azure Portal or some commands can be performed from your local terminal. There is no requirement to clone this repository for this deployment.
@@ -34,13 +33,9 @@ Deploying 1Password SCIM Bridge on Azure Container Apps comes with a few benefit
 ## Prerequisites
 
 - A 1Password account with an active 1Password Business subscription or trial
-  > **Note**
-  >
-  > Try 1Password Business free for 14 days: <https://start.1password.com/sign-up/business>
+  > **Note:** Try 1Password Business free for 14 days: <https://start.1password.com/sign-up/business>
 - An Azure account with permissions to create a Container App.
-  > **Note**
-  >
-  > If you don't have a Azure account, you can sign up for a free trial with starting credit: <https://azure.microsoft.com/en-us/free/>
+  > **Note:** If you don't have a Azure account, you can sign up for a free trial with starting credit: <https://azure.microsoft.com/en-us/free/>
 - [Azure CLI tool](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli) with the ContainerApp Extension or access to the [Azure Cloud Shell](https://learn.microsoft.com/en-us/azure/cloud-shell/quickstart) if performing the command driven deployment.
 
 ## Getting started
@@ -60,74 +55,153 @@ Deploying 1Password SCIM Bridge on Azure Container Apps comes with a few benefit
 
 Using the Azure Cloud Shell can be easier (the assumption for the commands below is that you are using the Cloud Shell), but this can also been done directly on your system with the Azure CLI tool with the ContainerApp Extension
 
-Both methods need the Container App Extension added to the AZ tool of choice, by running `az extension add --name containerapp --upgrade`
+Both methods need the Container App Extension added to the Azure tool of choice, as detailed in step two.
 
 1. Start the Azure Cloud Shell from the navigation bar of your [Azure Portal](https://portal.azure.com) or directly open the [Azure Shell](https://shell.azure.com).
 2. Add the Azure Container App extension by running the following command: `az extension add --name containerapp --upgrade`
 3. Get a list of the available locations in your Azure account: `az account list-locations -o table`, verify that the region you want to deploy on [supports Azure Container Apps](https://azure.microsoft.com/en-ca/explore/global-infrastructure/products-by-region/?regions=all&products=container-apps), take note of the name field for the desired region. 
+
+    > **Note:** This command can be skipped if you already know the region you want to deploy to and if that region supports Container Apps. 
+
 4. Define variables for the deployment using the following example in the Cloud Shell, _(using the bash or PowerShell syntax for the commands)_.
 
-    > **Note**
-    >
-    >The ContainerAppName can contain lowercase letters, numerals, and hyphens. It must be between 2 and 32 characters long, and cannot start or end with a hyphen.
-    > The location utilizes the name field of the az account list-locations command. 
+    > **Note:** The ConAppName variable (Container App Name) can contain lowercase letters, numerals, and hyphens. It must be between 2 and 32 characters long, and cannot start or end with a hyphen or cannot start with a number.
+    > 
+    > The location utilizes the name field of the `az account list-locations` command. 
     > Not all Azure locations support Conatiner Apps. See [supported regions for Azure Container Apps](https://azure.microsoft.com/en-ca/explore/global-infrastructure/products-by-region/?regions=all&products=container-apps)
-    >
 
-    Update the values in a text editor before pasting it into the terminal:
+    Update the values in a text editor before pasting it into the terminal, (If you have an existing Resource Group you want to use, specify the name in the ResourceGroup variable below):
 
     - Using bash
         ```bash
         ResourceGroup="op-scim-bridge-rg"
         Location="canadacentral"
-        ContainerAppEnvironment="op-scim-bridge-con-app-env"
-        ContainerAppName="op-scim-bridge-con-app"
+        ConAppEnv="op-scim-bridge-con-app-env"
+        ConAppName="op-scim-bridge-con-app"
         ```
 
     - Using PowerShell 
         ```pwsh
         $ResourceGroup="op-scim-bridge-rg"
         $Location="canadacentral"
-        $ContainerAppEnvironment="op-scim-bridge-con-app-env"
-        $ContainerAppName="op-scim-bridge-con-app"
+        $ConAppEnv="op-scim-bridge-con-app-env"
+        $ConAppName="op-scim-bridge-con-app"
         ```
 
-3. Create the resource group:
+5. Create the resource group: 
+
+    > **Note:** this step can be skipped if you are using an existing Resource Group to deploy your SCIM bridge to.
 
    ```
    az group create --name $ResourceGroup --location $Location
    ```
 
-4. Create the Container App Environment:
+6. Create the Container App Environment:
 
    ```
-   az containerapp env create --name $ContainerAppEnvironment --resource-group $ResourceGroup --location $Location
+   az containerapp env create --name $ConAppEnv --resource-group $ResourceGroup --location $Location --enable-workload-profiles false
    ```
 
-5. Upload your `scimsession` file to the Cloud Shell:
+7. Upload your `scimsession` file to the Cloud Shell:
    - Click the “Upload/Download files” button and choose Upload.
    - Find the `scimsession` file that you saved to your computer and choose it.
    - Make a note of the upload destination, then click Complete.
 
-6. Create the base Container App and Secret for your Base64-encoded `scimsession` credentials, _(using the bash or PowerShell syntax for the commands)_:
+8. Deploy the Container App Secret for the SCIM bridge. 
+
+    > **Note:** If you prefer to deploy the containers using the Azure Container App Commands, go to this section: [Azure ContainerApps Commands Deployment steps](#azure-container-apps-commands-deployment-steps), otherwise follow the template file steps below. 
+    >
+
+    Create your Container App Secret:
+    - Using bash
+        ```bash
+        az containerapp create --resource-group $ResourceGroup --environment $ConAppEnv --name $ConAppName  --secrets scimsession="$(cat /home/$USER/scimsession | base64)"
+        ```
+    - Using PowerShell 
+        ```pwsh
+        az containerapp create --resource-group $ResourceGroup --environment $ConAppEnv --name $ConAppName  --secrets scimsession="$([Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path /home/$Env:USER/ 'scimsession'))) )"
+        ```
+
+9. Deploy your SCIM bridge containers using the [example template file (`aca-op-scim-bridge.yaml`)](./aca-op-scim-bridge.yaml) in this repository.
+
+    - Download the file to your working directory:
+        - using Bash:
+
+            ```bash
+            # GitHub repository details
+            SCIMBridgeRepoRoot="https://raw.githubusercontent.com"
+            SCIMBridgeRepoName="1Password/scim-examples"
+            SCIMBridgeRepoBranch="main"
+            SCIMBridgeRepoPath="beta/azure-container-apps/aca-op-scim-bridge.yaml"
+
+            # Download template file from GitHub
+            curl \
+                --silent \
+                --show-error \
+                --output aca-op-scim-bridge.yaml \
+                "${SCIMBridgeRepoRoot}/${SCIMBridgeRepoName}/${SCIMBridgeRepoBranch}/${SCIMBridgeRepoPath}"
+            ```
+
+        - Using PowerShell:
+
+            ```pwsh
+            # GitHub repository details
+            $SCIMBridgeRepo = @{
+                Root   = "https://raw.githubusercontent.com"
+                Name   = "1Password/scim-examples"
+                Branch = "main"
+                Path   = "beta/azure-container-apps/aca-op-scim-bridge.yaml"
+            }
+
+            # Parameters to download template file
+            $TemplateFile = @{
+                Uri     = "$($SCIMBridgeRepo.Root)/$($SCIMBridgeRepo.Name)/$($SCIMBridgeRepo.Branch)/$($SCIMBridgeRepo.Path)"
+                OutFile = "aca-op-scim-bridge.yaml"
+            }
+
+            # Download template file from GitHub
+            Invoke-RestMethod @TemplateFile
+            ```
+
+    - Deploy the Container App from the template file:
+
+        ```bash
+        az containerapp update --resource-group $ResourceGroup --name $ConAppName --yaml aca-op-scim-bridge.yaml --query properties.configuration.ingress.fqdn
+        ```
+
+10. Copy the URL presented to log into your SCIM bridge in a separate browser tab to test your connection. You will need to access the page with `https://` for example `https://SCIMBridgeContainerAppURL.azurecontainerapps.io`. You can sign in to your SCIM bridge using your bearer token.
+
+### Follow the steps to connect your Identity provider to the SCIM bridge.
+ - [Connect your Identity Provider](https://support.1password.com/scim/#step-3-connect-your-identity-provider)
+
+### Azure Container Apps Commands Deployment steps
+
+<details>
+<summary>Azure CLI Container Apps Commands Deployment steps</summary>
+
+If you would prefer to create the two containers using the AZ CLI container apps commands, you can perform these steps below instead of steps 8 and 9 in the steps above in the main example.
+
+1. Deploy the SCIM bridge:
+    Create the base Container App and Secret for your Base64-encoded `scimsession` credentials, _(using the bash or PowerShell syntax for the commands)_:
+    
     - Using bash
     ```bash
-    az containerapp create -n $ContainerAppName -g $ResourceGroup \
-        --container-name op-scim-bridge \
-        --image docker.io/1password/scim:v2.8.4 \
-        --environment $ContainerAppEnvironment \
-        --ingress external --target-port 3002 \
-        --cpu 0.25 --memory 0.5Gi \
-        --min-replicas 1 --max-replicas 1 \
-        --secrets scimsession="$(cat /home/$USER/scimsession | base64)" \
-        --env-vars OP_REDIS_URL="redis://localhost:6379" OP_SESSION=secretref:scimsession
+    az containerapp create -n $ConAppName -g $ResourceGroup \
+    --container-name op-scim-bridge \
+    --image docker.io/1password/scim:v2.8.5 \
+    --environment $ConAppEnv \
+    --ingress external --target-port 3002 \
+    --cpu 0.25 --memory 0.5Gi \
+    --min-replicas 1 --max-replicas 1 \
+    --secrets scimsession="$(cat /home/$USER/scimsession | base64)" \
+    --env-vars OP_REDIS_URL="redis://localhost:6379" OP_SESSION=secretref:scimsession
     ```
     - Using PowerShell 
     ```pwsh
-    az containerapp create -n $ContainerAppName -g $ResourceGroup `
+    az containerapp create -n $ConAppName -g $ResourceGroup `
     --container-name op-scim-bridge `
-    --image docker.io/1password/scim:v2.8.4 `
-    --environment $ContainerAppEnvironment `
+    --image docker.io/1password/scim:v2.8.5 `
+    --environment $ConAppEnv `
     --ingress external --target-port 3002 `
     --cpu 0.25 --memory 0.5Gi `
     --min-replicas 1 --max-replicas 1 `
@@ -135,20 +209,10 @@ Both methods need the Container App Extension added to the AZ tool of choice, by
     --env-vars OP_REDIS_URL="redis://localhost:6379" OP_SESSION=secretref:scimsession
     ```
 
-    > **Note**
-    >
-    > You may be prompted to install the ContainerApp extension with this message if you did not previously install this extension:
-    >
-    > ```bash
-    > The command requires the extension containerapp. Do you want to install it now? The command will continue to run after the extension is installed. (Y/n):
-    > ```
-    >
-    > The ContainerApp extension is required to deploy Container Apps from the command line. Type `Y` and press enter to install the extension.
-
-7. Update your Container App to add the Redis container and get the fully qualified domain name to use as the URL for your SCIM bridge, _(using the bash or PowerShell syntax for the commands)_:
+2. Update your Container App to add the Redis container and get the fully qualified domain name to use as the URL for your SCIM bridge, _(using the bash or PowerShell syntax for the commands)_:
     - Using bash
     ```bash
-    az containerapp update -n $ContainerAppName -g $ResourceGroup \
+    az containerapp update -n $ConAppName -g $ResourceGroup \
        --container-name op-scim-redis \
        --image docker.io/redis \
        --cpu 0.25 --memory 0.5Gi \
@@ -157,7 +221,7 @@ Both methods need the Container App Extension added to the AZ tool of choice, by
     ```
     - Using PowerShell
     ```pwsh
-    az containerapp update -n $ContainerAppName -g $ResourceGroup `
+    az containerapp update -n $ConAppName -g $ResourceGroup `
     --container-name op-scim-redis `
     --image docker.io/redis `
     --cpu 0.25 --memory 0.5Gi `
@@ -165,11 +229,10 @@ Both methods need the Container App Extension added to the AZ tool of choice, by
     --query properties.configuration.ingress.fqdn
     ```
 
-8. Open the domain name listed in a separate browser tab to test your connection. You can sign in to your SCIM bridge using your bearer token.
+3. Copy the URL presented to log into your SCIM bridge in a separate browser tab to test your connection. You will need to access the page with `https://` for example `https://SCIMBridgeContainerAppURL.azurecontainerapps.io`. You can sign in to your SCIM bridge using your bearer token.
 
-### Follow the steps to connect your Identity provider to the SCIM bridge.
- - [Connect your Identity Provider](https://support.1password.com/scim/#step-3-connect-your-identity-provider)
-
+4. [Connect your Identity Provider](https://support.1password.com/scim/#step-3-connect-your-identity-provider).
+</details>
 
 <hr>
 
@@ -182,9 +245,7 @@ Both methods need the Container App Extension added to the AZ tool of choice, by
 
 The `scimsession` credentials will be saved as a secret variable in Container App. These credentials have to be Base64-encoded to pass them into the environment, but they're saved as a plain-text file when you download them or save in 1Password during the setup.
 
-> **Note**
-    >
-    >You will need to update the path to the scimsession file you download in the getting started section.
+> **Note:** You will need to update the path to the scimsession file you download in the getting started section.
 
 1. Get the Base64 encoded contents of your `scimsession` file, _(using the bash or PowerShell syntax for the commands)_: 
    
@@ -220,7 +281,7 @@ The `scimsession` credentials will be saved as a secret variable in Container Ap
     1. Uncheck **Use quickstart image**.
     2. Change the name of the container to *op-scim-bridge*.
     3. Select **Docker Hub** for the image source.
-    4. Enter `1password/scim:v2.8.4` for the **Image and Tag**.
+    4. Enter `1password/scim:v2.8.5` for the **Image and Tag**.
     5. Leave the CPU and Memory as 0.25 CPU cores, 0.5 Gi memory.
     6. Add the following **Environment variables**:
         1. `OP_SESSION` currently with of `""` for now.
@@ -274,55 +335,42 @@ The `scimsession` credentials will be saved as a secret variable in Container Ap
 
 ### Resource recommendations
 
-The default resource recommendations for the SCIM bridge and Redis deployments are acceptable in most scenarios, but they may fall short in high-volume deployments where a large number of users and/or groups are being managed. We strongly recommend increasing the resources for both the SCIM bridge and Redis deployments.
+The 1Password SCIM Bridge Pod should be vertically scaled when provisioning a large number of users or groups. Our default resource specifications and recommended configurations for provisioning at scale are listed in the below table:
 
-| Expected Provisioned Users |  Resources |
-| ------- | ------- |
-| 1-1000  |  Default  |
-| 1000-5000  |  High Volume Deployment  |
-| 5000+  |  Very High Volume Deployment  |
+| Volume    | Number of users | CPU   | memory |
+| --------- | --------------- | ----- | ------ |
+| Default   | <1,000          | 0.25  | 0.5Gi  |
+| High      | 1,000–5,000     | 0.5   | 1.0Gi  |
+| Very high | >5,000          | 1.0   | 1.0Gi  |
 
-Our current default resource requirements are:
+If provisioning more than 1,000 users, the resources assigned to the SCIM bridge container should be updated as recommended in the above table. The resources specified for the Redis container do not need to be adjusted.
 
-<details>
-  <summary>Default</summary>
+#### Default
 
-  ```
-    cpu: 0.25
-    memory: 0.5Gi
-  ```
-</details>
+To revert to the default specification that is suitable for provisioning up to 1,000 users:
 
-These values can be scaled down again to the default values after the initial large provisioning event.
+```sh
+az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge \
+  --cpu 0.25 --memory 0.5Gi
+```
 
-<details>
-  <summary>High Volume Deployment</summary>
+#### High volume deployment
 
-While you can continue to utilize Azure Container Apps to run your SCIM bridge for an high volume deployment, we have not run this type of workload through a Azure Container Apps SCIM bridge to test the performance in an Azure Container app environment. 
+For provisioning up to 5,000 users:
 
-  ```
-    cpu: 0.5
-    memory: 1.0Gi
-  ```
-  Run the following commands, replacing `$ContainerAppName` and `$ResourceGroup` with the names from your deployment to increase the resources:
+```sh
+az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge \
+  --cpu 0.5 --memory 1.0Gi
+```
 
-  ```bash
-    az containerapp update -n $ContainerAppName -g $ResourceGroup --container-name op-scim-bridge --cpu 0.5 --memory 1.0Gi
-  ```
+#### Very high volume
 
-  ```bash
-    az containerapp update -n $ContainerAppName -g $ResourceGroup --container-name op-scim-redis --cpu 0.5 --memory 1.0Gi
-  ```
+For provisioning more than 5,000 users:
 
-</details>
-
-<details>
-  <summary>Very High Volume Deployment</summary>
-
-  While you can continue to utilize Azure Container Apps to run your SCIM bridge for a very high volume deployment, we have not run this type of workload through a Azure Container Apps SCIM bridge, it is recommended to switch to an [AKS deployment](/kubernetes/README.md) using the Very High Volume deployment specs for that cluster. 
-</details>
-
-<hr>
+```sh
+az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge \
+  --cpu 1.0 --memory 1.0Gi
+```
 
 ### If Google Workspace is your identity provider
 <details>
@@ -335,40 +383,46 @@ The following steps only apply if you use Google Workspace as your identity prov
    - Click the “Upload/Download files” button and choose Upload.
    - Find the `<keyfile>.json` file that you saved to your computer and choose it.
    - Make a note of the upload destination, then click Complete.
-4. Edit the file located at `./google-workspace/workspace-settings.json` and fill in correct values for:
+4. Obtain the `./google-workspace/workspace-settings.json`  file for editing: 
+    Obtain the `workspace-settings.json` file: 
+    - Using bash
+    ```bash
+    curl https://raw.githubusercontent.com/1Password/scim-examples/solutions/main/beta/azure-container-apps/google-workspace/workspace-settings.json --output workspace-settings.json --silent
+    ```
+     - Using PowerShell 
+    ```pwsh
+    Invoke-RestMethod -Uri `https://raw.githubusercontent.com/1Password/scim-examples/solutions/main/beta/azure-container-apps/google-workspace/workspace-settings.json -OutFile workspace-settings.json
+    ```
+5. Edit the file in your editor of choice and fill in correct values for:
 	* **Actor**: the email address of the administrator in Google Workspace that the service account is acting on behalf of.
 	* **Bridge Address**: the URL you will use for your SCIM bridge (not your 1Password account sign-in address). This is the Application URL for your Container App found on the overview page. For example: https://scim.example.com.
-5. Upload your `workspace-settings.json` file to the Cloud Shell:
-   - Click the “Upload/Download files” button and choose Upload.
-   - Find the `workspace-settings.json` file that you saved to your computer and choose it.
-   - Make a note of the upload destination, then click Complete.
-6. Run the following command, replacing `$ContainerAppName` and `$ResourceGroup` with the names from your deployment to create the workspace-credentials secret. 
+6. Run the following command, replacing `$ConAppName` and `$ResourceGroup` with the names from your deployment to create the workspace-credentials secret. 
 
     - Using bash:
         ```bash
-        az containerapp secret set -n $ContainerAppName -g $ResourceGroup --secrets workspace-creds="$(cat /home/$USER/workspace-credentials.json | base64)"
+        az containerapp secret set -n $ConAppName -g $ResourceGroup --secrets workspace-creds="$(cat /home/$USER/workspace-credentials.json | base64)"
         ```
 
     - Using PowerShell:
         ```pwsh
-        az containerapp secret set -n $ContainerAppName -g $ResourceGroup --secrets workspace-creds="$([Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path /home/$Env:USER/ 'workspace-credentials.json'))) )"
+        az containerapp secret set -n $ConAppName -g $ResourceGroup --secrets workspace-creds="$([Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path /home/$Env:USER/ 'workspace-credentials.json'))) )"
         ```
 
-7. Run the following command, replacing `$ContainerAppName` and `$ResourceGroup` with the names from your deployment to create the workspace-credentials secret. 
+7. Run the following command, replacing `$ConAppName` and `$ResourceGroup` with the names from your deployment to create the workspace-credentials secret. 
 
     - Using bash:
         ```bash
-        az containerapp secret set -n $ContainerAppName -g $ResourceGroup --secrets workspace-settings="$(cat /home/$USER/workspace-settings.json | base64)"
+        az containerapp secret set -n $ConAppName -g $ResourceGroup --secrets workspace-settings="$(cat /home/$USER/workspace-settings.json | base64)"
         ```
 
     - Using PowerShell:
         ```pwsh
-        az containerapp secret set -n $ContainerAppName -g $ResourceGroup --secrets workspace-settings="$([Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path /home/$Env:USER/ 'workspace-settings.json'))) )"
+        az containerapp secret set -n $ConAppName -g $ResourceGroup --secrets workspace-settings="$([Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path /home/$Env:USER/ 'workspace-settings.json'))) )"
         ```
 
-8. Restart the current revision to have the op-scim-bridge container read the new secret using the following commands, replacing `$ContainerAppName` and `$ResourceGroup` with the names from your deployment:
+8. Restart the current revision to have the op-scim-bridge container read the new secret using the following commands, replacing `$ConAppName` and `$ResourceGroup` with the names from your deployment:
     ```bash
-    az containerapp update -n $ContainerAppName -g $ResourceGroup --container-name op-scim-bridge --set-env-vars OP_WORKSPACE_CREDENTIALS=secretref:workspace-creds OP_WORKSPACE_SETTINGS=secretref:workspace-settings
+    az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge --set-env-vars OP_WORKSPACE_CREDENTIALS=secretref:workspace-creds OP_WORKSPACE_SETTINGS=secretref:workspace-settings
     ```
 </details>
 <details>
@@ -428,26 +482,26 @@ Logs for a container app can be viewed from the **Log Stream**, there is a separ
 <summary>Replace your `scimsession` secret using the `az` CLI</summary>
 
 1. Start the Azure Cloud Shell from the navigation bar of your [Azure Portal](https://portal.azure.com) or directly open the [Azure Shell](https://shell.azure.com).
-2. Run the following command, replacing `$ContainerAppName` and `$ResourceGroup` with the names from your deployment. 
+2. Run the following command, replacing `$ConAppName` and `$ResourceGroup` with the names from your deployment. 
 
     - Using bash (Cloud Shell, macOS, or Linux):
         ```bash
-        az containerapp secret set -n $ContainerAppName -g $ResourceGroup --secrets scimsession="$(cat /home/$USER/scimsession | base64)"
+        az containerapp secret set -n $ConAppName -g $ResourceGroup --secrets scimsession="$(cat /home/$USER/scimsession | base64)"
         ```
 
     - Using PowerShell (Cloud Shell, Windows, macOS, or Linux):
         ```pwsh
-        az containerapp secret set -n $ContainerAppName -g $ResourceGroup --secrets scimsession="$([Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path /home/$Env:USER/ 'scimsession'))) )"
+        az containerapp secret set -n $ConAppName -g $ResourceGroup --secrets scimsession="$([Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path /home/$Env:USER/ 'scimsession'))) )"
         ```
 
-3. Restart the current revision to have the op-scim-bridge container read the new secret using the following commands, replacing `$ContainerAppName` and `$ResourceGroup` with the names from your deployment:
+3. Restart the current revision to have the op-scim-bridge container read the new secret using the following commands, replacing `$ConAppName` and `$ResourceGroup` with the names from your deployment:
     ```bash
-    az containerapp update -n $ContainerAppName -g $ResourceGroup --container-name op-scim-bridge --query properties.latestRevisionName
+    az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge --query properties.latestRevisionName
     ```
 
     Update the revsion name to use the output of the above command
     ```
-    az containerapp revision restart -n $ContainerAppName -g $ResourceGroup --revision revisionName
+    az containerapp revision restart -n $ConAppName -g $ResourceGroup --revision revisionName
     ```
 
 4. Test logging into your SCIM bridge URL with the new `bearer token`. 
@@ -487,8 +541,8 @@ Logs for a container app can be viewed from the **Log Stream**, there is a separ
 The latest version of 1Password SCIM Bridge is posted on our [Release Notes](https://app-updates.agilebits.com/product_history/SCIM) website, where you can find details about the latest changes. 
 
 1. Start the Azure Cloud Shell from the navigation bar of your [Azure Portal](https://portal.azure.com) or directly open the [Azure Shell](https://shell.azure.com).
-2. Run the following command, replacing `$ContainerAppName` and `$ResourceGroup` with the names from your deployment. Also ensure to change the version number 2.8.4 to match the latest version from our [SCIM Bridge Release Notes page](https://app-updates.agilebits.com/product_history/SCIM).
-```az containerapp update -n $ContainerAppName -g $ResourceGroup --container-name op-scim-bridge --image docker.io/1password/scim:v2.8.4```
+2. Run the following command, replacing `$ConAppName` and `$ResourceGroup` with the names from your deployment. Also ensure to change the version number 2.8.5 to match the latest version from our [SCIM Bridge Release Notes page](https://app-updates.agilebits.com/product_history/SCIM).
+```az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge --image docker.io/1password/scim:v2.8.5```
 3. Log into your SCIM bridge URL with your bearer token to validate in the top left hand side that you are running the version of the SCIM Bridge. (logging in with the bearer token will also update your Automated User Provisioning page with the latest access time and with the current version).
 
 #### Update using the Azure Portal
@@ -496,7 +550,7 @@ The latest version of 1Password SCIM Bridge is posted on our [Release Notes](htt
 1. Within Container App from the [Azure Container Apps Portal](https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/Microsoft.App%2FcontainerApps), Select **Containers** from the left hand side.
 2. Select **Edit and deploy** along the top.
 3. Put a check in the box next to your **op-scim-bridge** container and select **Edit**.
-4. Change the version number **2.8.4** in the **Image and Tag** field, **1password/scim:v2.8.4** to match the latest version from our [SCIM Bridge Release Notes page](https://app-updates.agilebits.com/product_history/SCIM).
+4. Change the version number **2.8.5** in the **Image and Tag** field, **1password/scim:v2.8.5** to match the latest version from our [SCIM Bridge Release Notes page](https://app-updates.agilebits.com/product_history/SCIM).
 5. Select **Save**.
 6. Select **Create** to deploy a new revision using the updating image.
 7. Log into your SCIM bridge URL with your bearer token to validate in the top left hand side that you are running the version of the SCIM Bridge. (logging in with the bearer token will also update your Automated User Provisioning page with the latest access time and with the current version).

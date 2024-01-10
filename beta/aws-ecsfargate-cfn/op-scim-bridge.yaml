@@ -4,62 +4,158 @@ Description: >-
   configures a VPC, 2 public subnets, an internet gateway, a route table, an
   ALB, an ACM certificate, Route 53 DNS records, an AWS secret to store
   credentials for your SCIM bridge, security groups, and required IAM roles.
-Metadata: 
-  AWS::CloudFormation::Interface: 
+Metadata:
+  AWS::CloudFormation::Interface:
     ParameterGroups:
-      - 
-        Label: 
-          default: ""
-        Parameters: 
+      - Parameters:
           - VPCCIDR
           - Route53HostedZoneID
+          - ProvisioningVolume
           - DomainName
           - SCIMBridgeVersion
           - scimsession
-    ParameterLabels: 
-      VPCCIDR: 
+      - Label:
+          default: >-
+            Workspace configuration (only for customers integrating with Google Workspace)
+        Parameters:
+          - WorkspaceCredentials
+          - WorkspaceActor
+    ParameterLabels:
+      VPCCIDR:
         default: "VPC CIDR"
       Route53HostedZoneID:
         default: "Route 53 hosted zone"
+      ProvisioningVolume:
+        default: "Provisioning volume"
       DomainName:
         default: "1Password SCIM Bridge domain name"
       SCIMBridgeVersion:
         default: "1Password SCIM Bridge version"
+      WorkspaceCredentials:
+        default: "Service account key"
+      WorkspaceActor:
+        default: "Actor"
 Parameters:
   VPCCIDR:
     Type: String
     Default: 10.0.0.0/16
-    Description: A CIDR block for the VPC to be created
+    Description: A CIDR block for the VPC to be created.
   Route53HostedZoneID:
-    Type: 'AWS::Route53::HostedZone::Id'
+    Type: "AWS::Route53::HostedZone::Id"
     Description: >-
-      The Route 53 hosted zone in which to create DNS records for ACM validation and the ALB
+      The Route 53 hosted zone in which to create DNS records for ACM validation and the ALB endpoint.
+  ProvisioningVolume:
+    Type: String
+    Description: >-
+      The expected volume of provisioning activity. Use base for provisioning less than 1,000 users, high for up to
+      5,000 users, or very-high for more than 5,000 users.
+    Default: base
+    AllowedValues:
+      - base
+      - high
+      - very-high
+    ConstraintDescription: must be base, high, or very-high
   DomainName:
     Type: String
     Default: scim.example.com
     Description: >-
-      A fully qualified domain name for your SCIM bridge; this must be in the
-      domain of the selected Route 53 hosted zone (where the record will be
-      created)
+      A fully qualified domain name for your SCIM bridge that is in the domain of the selected Route 53 hosted zone
+      where the record will be created.
   scimsession:
     Type: String
     Description: >-
-      The plain text contents of the scimsession file created during the
-      automated user provisioning setup in your 1Password account
+      The plain text contents of the scimsession file created during the automated user provisioning setup in your
+      1Password account.
+    MinLength: "1"
+    ConstraintDescription: "must not be empty"
     NoEcho: true
   SCIMBridgeVersion:
     Type: String
-    Default: 'v2.8.4'
+    Default: "v2.8.5"
     Description: >-
-      The tag of the 1Password SCIM Bridge image to pull from Docker Hub
+      The tag of the 1Password SCIM Bridge image to pull from Docker Hub.
+  WorkspaceCredentials:
+    Type: String
+    Default: ""
+    Description: >-
+      The plain text contents of the key file associated with the service account for Google Workspace.
+    NoEcho: true
+  WorkspaceActor:
+    Type: String
+    Default: ""
+    Description: >-
+      The email address of the Google Workspace administrator that the service account is acting on behalf of.
+Rules:
+  ValidateWorkspaceConfig:
+    RuleCondition: !Not
+      - "Fn::EachMemberEquals":
+          - - !Ref WorkspaceCredentials
+            - !Ref WorkspaceActor
+          - ""
+    Assertions:
+      - Assert: !Not [!Equals [!Ref WorkspaceCredentials, ""]]
+        AssertDescription: >-
+          The service account key is required to connect to Google Workspace.
+      - Assert: !Not [!Equals [!Ref WorkspaceActor, ""]]
+        AssertDescription: >-
+          The actor email is required to connect to Google Workspace.
+Mappings:
+  CpuScale:
+    base:
+      SCIMBridge: 128
+      Redis: 128
+      Task: 256
+    high:
+      SCIMBridge: 512
+      Redis: 128
+      Task: 1024
+    very-high:
+      SCIMBridge: 1024
+      Redis: 128
+      Task: 2048
+  MemoryScale:
+    base:
+      SCIMBridge: 512
+      Redis: 512
+      Task: 1024
+    high:
+      SCIMBridge: 1024
+      Redis: 512
+      Task: 2048
+    very-high:
+      SCIMBridge: 1024
+      Redis: 512
+      Task: 4096
+Conditions:
+  UsingGoogleWorkspace: !Not
+    - !Or
+      - !Equals [!Ref WorkspaceCredentials, ""]
+      - !Equals [!Ref WorkspaceActor, ""]
 Resources:
   scimsessionSecret:
-    Type: 'AWS::SecretsManager::Secret'
+    Type: "AWS::SecretsManager::Secret"
     Properties:
       SecretString: !Base64
         Ref: scimsession
+  WorkspaceCredentialsSecret:
+    Type: "AWS::SecretsManager::Secret"
+    Condition: UsingGoogleWorkspace
+    Properties:
+      SecretString: !Base64
+        Ref: WorkspaceCredentials
+  WorkspaceSettingsSecret:
+    Type: "AWS::SecretsManager::Secret"
+    Condition: UsingGoogleWorkspace
+    Properties:
+      SecretString:
+        Fn::Base64: !Sub |
+          {
+            "actor":"${WorkspaceActor}",
+            "bridgeAddress":"https://${DNSRecord}"
+          }
+
   ECSCluster:
-    Type: 'AWS::ECS::Cluster'
+    Type: "AWS::ECS::Cluster"
     Properties:
       CapacityProviders:
         - FARGATE
@@ -67,18 +163,36 @@ Resources:
         - CapacityProvider: FARGATE
           Weight: 1
   ECSTaskDefinition:
-    Type: 'AWS::ECS::TaskDefinition'
+    Type: "AWS::ECS::TaskDefinition"
     Properties:
       RequiresCompatibilities:
         - FARGATE
       NetworkMode: awsvpc
-      Cpu: 512
-      Memory: 1024
+      Cpu: !FindInMap
+        - CpuScale
+        - !Ref ProvisioningVolume
+        - Task
+      Memory: !FindInMap
+        - MemoryScale
+        - !Ref ProvisioningVolume
+        - Task
+      Volumes:
+        - Name: redis-config
+        - Name: opuser-data
       ExecutionRoleArn: !GetAtt ExecutionRole.Arn
       TaskRoleArn: !Ref TaskRole
       ContainerDefinitions:
         - Name: op-scim-bridge
-          Image: !Sub '1password/scim:${SCIMBridgeVersion}'
+          Cpu: !FindInMap
+            - CpuScale
+            - !Ref ProvisioningVolume
+            - SCIMBridge
+          Memory: !FindInMap
+            - MemoryScale
+            - !Ref ProvisioningVolume
+            - SCIMBridge
+          Image: !Sub "1password/scim:${SCIMBridgeVersion}"
+          User: "opuser:opuser"
           PortMappings:
             - ContainerPort: 3002
               HostPort: 3002
@@ -87,43 +201,127 @@ Resources:
           DependsOn:
             - ContainerName: redis
               Condition: HEALTHY
-          Environment:
-            - Name: OP_REDIS_URL
-              Value: 'redis://localhost:6379'
           Secrets:
             - Name: OP_SESSION
               ValueFrom: !Ref scimsessionSecret
+            - !If
+              - UsingGoogleWorkspace
+              - Name: OP_WORKSPACE_CREDENTIALS
+                ValueFrom: !Ref WorkspaceCredentialsSecret
+              - !Ref "AWS::NoValue"
+            - !If
+              - UsingGoogleWorkspace
+              - Name: OP_WORKSPACE_SETTINGS
+                ValueFrom: !Ref WorkspaceSettingsSecret
+              - !Ref "AWS::NoValue"
+          MountPoints:
+            - ContainerPath: /home/opuser
+              SourceVolume: opuser-data
           LogConfiguration:
             LogDriver: awslogs
             Options:
-              awslogs-region: !Ref 'AWS::Region'
+              awslogs-region: !Ref "AWS::Region"
               awslogs-group: !Ref LogGroup
-              awslogs-stream-prefix: ecs-scim
+              awslogs-stream-prefix: !Ref LogStream
         - Name: redis
-          Image: 'redis:latest'
-          Environment:
-            - Name: REDIS_ARGS
-              Value: '--maxmemory 256mb --maxmemory-policy volatile-lru'
+          Cpu: !FindInMap
+            - CpuScale
+            - !Ref ProvisioningVolume
+            - Redis
+          Memory: !FindInMap
+            - MemoryScale
+            - !Ref ProvisioningVolume
+            - Redis
+          Image: "redis:latest"
+          User: "redis:redis"
+          Command:
+            - "redis-server"
+            - "/home/redis/config/redis.conf"
+          MountPoints:
+            - ContainerPath: /home/redis
+              SourceVolume: redis-config
           Essential: true
+          DependsOn:
+            - Condition: COMPLETE
+              ContainerName: init-redis
           PortMappings:
             - ContainerPort: 6379
               HostPort: 6379
               Protocol: tcp
           HealthCheck:
             Command:
-                - "CMD-SHELL"
-                - "redis-cli ping | grep PONG"
+              - "CMD-SHELL"
+              - "redis-cli ping | grep PONG"
           LogConfiguration:
             LogDriver: awslogs
             Options:
-              awslogs-region: !Ref 'AWS::Region'
+              awslogs-region: !Ref "AWS::Region"
               awslogs-group: !Ref LogGroup
-              awslogs-stream-prefix: ecs-redis
+              awslogs-stream-prefix: !Ref LogStream
+        - Name: init-host
+          Image: bash
+          Essential: false
+          MountPoints:
+            - ContainerPath: /home/redis
+              SourceVolume: redis-config
+            - ContainerPath: /home/opuser
+              SourceVolume: opuser-data
+          Command:
+            - -c
+            - echo "Setting directory ownership..." &&
+              chown -R 999:999 /home/redis /home/opuser && echo "Directory ownership assigned!"
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-region: !Ref "AWS::Region"
+              awslogs-group: !Ref LogGroup
+              awslogs-stream-prefix: !Ref LogStream
+        - Name: init-redis
+          Image: bash
+          Essential: false
+          DependsOn:
+            - Condition: COMPLETE
+              ContainerName: init-host
+          User: "999:999"
+          Command:
+            - -c
+            - echo "Creating Redis config directory..." &&
+              mkdir /home/redis/config && echo "Directory created!" &&
+              echo "Writing configuration file..." &&
+              echo $REDIS_CONFIG | base64 -d - | tee /home/redis/config/redis.conf && echo "Configuration file saved!" &&
+              echo "Setting configuration file permissions..." &&
+              chmod 0440 /home/redis/config/redis.conf && echo "File permissions set!"
+          Environment:
+            - Name: REDIS_CONFIG
+              Value:
+                Fn::Base64: |
+                  # Configure Redis as cache
+
+                  # Cache memory limit
+                  maxmemory 256mb
+
+                  # Evict only expired keys when memory limit is reached using least recently used algorithm
+                  maxmemory-policy volatile-lru
+
+                  # Disable snapshotting
+                  save ""
+          MountPoints:
+            - ContainerPath: /home/redis
+              SourceVolume: redis-config
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-region: !Ref "AWS::Region"
+              awslogs-group: !Ref LogGroup
+              awslogs-stream-prefix: !Ref LogStream
   LogGroup:
-    Type: 'AWS::Logs::LogGroup'
-    Properties: {}
+    Type: "AWS::Logs::LogGroup"
+  LogStream:
+    Type: "AWS::Logs::LogStream"
+    Properties:
+      LogGroupName: !Ref LogGroup
   ECSService:
-    Type: 'AWS::ECS::Service'
+    Type: "AWS::ECS::Service"
     DependsOn: HTTPSListener
     Properties:
       Cluster: !Ref ECSCluster
@@ -147,12 +345,12 @@ Resources:
           ContainerPort: 3002
           TargetGroupArn: !Ref TargetGroup
   TargetGroup:
-    Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
+    Type: "AWS::ElasticLoadBalancingV2::TargetGroup"
     Properties:
       HealthCheckIntervalSeconds: 10
-      HealthCheckPath: /app
+      HealthCheckPath: /ping
       Matcher:
-        HttpCode: '200,301,302'
+        HttpCode: "200,301,302"
       HealthCheckTimeoutSeconds: 5
       UnhealthyThresholdCount: 2
       HealthyThresholdCount: 2
@@ -165,7 +363,7 @@ Resources:
       VpcId: !Ref VPC
   LoadBalancer:
     DependsOn: GatewayAttachment
-    Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer'
+    Type: "AWS::ElasticLoadBalancingV2::LoadBalancer"
     Properties:
       Scheme: internet-facing
       Subnets:
@@ -174,7 +372,7 @@ Resources:
       SecurityGroups:
         - !Ref LoadBalancerSecurityGroup
   LoadBalancerSecurityGroup:
-    Type: 'AWS::EC2::SecurityGroup'
+    Type: "AWS::EC2::SecurityGroup"
     Properties:
       GroupDescription: >-
         Allow public HTTPS ingress to the load balancer from the identity
@@ -191,7 +389,7 @@ Resources:
           ToPort: 3002
           CidrIp: !GetAtt VPC.CidrBlock
   ServiceSecurityGroup:
-    Type: 'AWS::EC2::SecurityGroup'
+    Type: "AWS::EC2::SecurityGroup"
     Properties:
       GroupDescription: >-
         Restrict ingress to ECS Service from load balancer, allow egress to
@@ -208,7 +406,7 @@ Resources:
           ToPort: 443
           CidrIp: 0.0.0.0/0
   HTTPSListener:
-    Type: 'AWS::ElasticLoadBalancingV2::Listener'
+    Type: "AWS::ElasticLoadBalancingV2::Listener"
     Properties:
       DefaultActions:
         - Type: forward
@@ -219,17 +417,17 @@ Resources:
       Certificates:
         - CertificateArn: !Ref TLSCertificate
   ExecutionRole:
-    Type: 'AWS::IAM::Role'
+    Type: "AWS::IAM::Role"
     Properties:
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
-          - Sid: ''
+          - Sid: ""
             Effect: Allow
             Principal:
               Service:
                 - ecs-tasks.amazonaws.com
-            Action: 'sts:AssumeRole'
+            Action: "sts:AssumeRole"
       Policies:
         - PolicyName: secrets_manager_policy
           PolicyDocument:
@@ -237,32 +435,40 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                  - 'secretsmanager:GetSecretValue'
+                  - "secretsmanager:GetSecretValue"
                 Resource:
                   - !Ref scimsessionSecret
+                  - !If
+                    - UsingGoogleWorkspace
+                    - !Ref WorkspaceCredentialsSecret
+                    - !Ref "AWS::NoValue"
+                  - !If
+                    - UsingGoogleWorkspace
+                    - !Ref WorkspaceSettingsSecret
+                    - !Ref "AWS::NoValue"
         - PolicyName: inlined_managed_policy
           PolicyDocument:
             Version: 2012-10-17
             Statement:
               - Effect: Allow
                 Action:
-                  - 'ec2:AuthorizeSecurityGroupIngress'
-                  - 'ec2:Describe*'
-                  - 'ecr:BatchCheckLayerAvailability'
-                  - 'ecr:BatchGetImage'
-                  - 'ecr:GetAuthorizationToken'
-                  - 'ecr:GetDownloadUrlForLayer'
-                  - 'elasticloadbalancing:DeregisterInstancesFromLoadBalancer'
-                  - 'elasticloadbalancing:DeregisterTargets'
-                  - 'elasticloadbalancing:Describe*'
-                  - 'elasticloadbalancing:RegisterInstancesWithLoadBalancer'
-                  - 'elasticloadbalancing:RegisterTargets'
-                  - 'logs:CreateLogGroup'
-                  - 'logs:CreateLogStream'
-                  - 'logs:PutLogEvents'
-                Resource: '*'
+                  - "ec2:AuthorizeSecurityGroupIngress"
+                  - "ec2:Describe*"
+                  - "ecr:BatchCheckLayerAvailability"
+                  - "ecr:BatchGetImage"
+                  - "ecr:GetAuthorizationToken"
+                  - "ecr:GetDownloadUrlForLayer"
+                  - "elasticloadbalancing:DeregisterInstancesFromLoadBalancer"
+                  - "elasticloadbalancing:DeregisterTargets"
+                  - "elasticloadbalancing:Describe*"
+                  - "elasticloadbalancing:RegisterInstancesWithLoadBalancer"
+                  - "elasticloadbalancing:RegisterTargets"
+                  - "logs:CreateLogGroup"
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                Resource: "*"
   DNSRecord:
-    Type: 'AWS::Route53::RecordSet'
+    Type: "AWS::Route53::RecordSet"
     Properties:
       HostedZoneId: !Ref Route53HostedZoneID
       Comment: DNS record pointing to load balancer for 1Password SCIM Bridge
@@ -272,7 +478,7 @@ Resources:
         DNSName: !GetAtt LoadBalancer.DNSName
         HostedZoneId: !GetAtt LoadBalancer.CanonicalHostedZoneID
   TLSCertificate:
-    Type: 'AWS::CertificateManager::Certificate'
+    Type: "AWS::CertificateManager::Certificate"
     Properties:
       DomainName: !Ref DNSRecord
       ValidationMethod: DNS
@@ -280,7 +486,7 @@ Resources:
         - DomainName: !Ref DNSRecord
           HostedZoneId: !Ref Route53HostedZoneID
   TaskRole:
-    Type: 'AWS::IAM::Role'
+    Type: "AWS::IAM::Role"
     Properties:
       AssumeRolePolicyDocument:
         Version: 2012-10-17
@@ -290,7 +496,7 @@ Resources:
               Service:
                 - ecs-tasks.amazonaws.com
             Action:
-              - 'sts:AssumeRole'
+              - "sts:AssumeRole"
       Path: /
       Policies:
         - PolicyName: cloudwatch_logging
@@ -299,94 +505,94 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                  - 'logs:CreateLogGroup'
-                  - 'logs:CreateLogStream'
-                  - 'logs:PutLogEvents'
-                Resource: '*'
+                  - "logs:CreateLogGroup"
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                Resource: "*"
         - PolicyName: vpc_access
           PolicyDocument:
             Version: 2012-10-17
             Statement:
               - Effect: Allow
                 Action:
-                  - 'ec2:CreateNetworkInterface'
-                  - 'ec2:DescribeNetworkInterfaces'
-                  - 'ec2:DeleteNetworkInterface'
-                Resource: '*'
+                  - "ec2:CreateNetworkInterface"
+                  - "ec2:DescribeNetworkInterfaces"
+                  - "ec2:DeleteNetworkInterface"
+                Resource: "*"
         - PolicyName: task_execution_role_policy
           PolicyDocument:
             Version: 2012-10-17
             Statement:
               - Effect: Allow
                 Action:
-                  - 'ecr:GetAuthorizationToken'
-                  - 'ecr:BatchCheckLayerAvailability'
-                  - 'ecr:GetDownloadUrlForLayer'
-                  - 'ecr:BatchGetImage'
-                Resource: '*'
+                  - "ecr:GetAuthorizationToken"
+                  - "ecr:BatchCheckLayerAvailability"
+                  - "ecr:GetDownloadUrlForLayer"
+                  - "ecr:BatchGetImage"
+                Resource: "*"
   VPC:
-    Type: 'AWS::EC2::VPC'
+    Type: "AWS::EC2::VPC"
     Properties:
       CidrBlock: !Ref VPCCIDR
       EnableDnsHostnames: true
       EnableDnsSupport: true
   PublicSubnet1:
-    Type: 'AWS::EC2::Subnet'
+    Type: "AWS::EC2::Subnet"
     Properties:
       AvailabilityZone:
-        'Fn::Select':
+        "Fn::Select":
           - 0
-          - 'Fn::GetAZs':
-              Ref: 'AWS::Region'
+          - "Fn::GetAZs":
+              Ref: "AWS::Region"
       VpcId: !Ref VPC
       CidrBlock:
-        'Fn::Select':
+        "Fn::Select":
           - 0
-          - 'Fn::Cidr':
+          - "Fn::Cidr":
               - !GetAtt VPC.CidrBlock
               - 16
               - 12
   PublicSubnet2:
-    Type: 'AWS::EC2::Subnet'
+    Type: "AWS::EC2::Subnet"
     Properties:
       AvailabilityZone:
-        'Fn::Select':
+        "Fn::Select":
           - 1
-          - 'Fn::GetAZs':
-              Ref: 'AWS::Region'
+          - "Fn::GetAZs":
+              Ref: "AWS::Region"
       VpcId: !Ref VPC
       CidrBlock:
-        'Fn::Select':
+        "Fn::Select":
           - 1
-          - 'Fn::Cidr':
+          - "Fn::Cidr":
               - !GetAtt VPC.CidrBlock
               - 16
               - 12
   InternetGateway:
-    Type: 'AWS::EC2::InternetGateway'
+    Type: "AWS::EC2::InternetGateway"
   GatewayAttachment:
-    Type: 'AWS::EC2::VPCGatewayAttachment'
+    Type: "AWS::EC2::VPCGatewayAttachment"
     Properties:
       VpcId: !Ref VPC
       InternetGatewayId: !Ref InternetGateway
   RouteTable:
-    Type: 'AWS::EC2::RouteTable'
+    Type: "AWS::EC2::RouteTable"
     Properties:
       VpcId: !Ref VPC
   Route:
-    Type: 'AWS::EC2::Route'
+    Type: "AWS::EC2::Route"
     DependsOn: GatewayAttachment
     Properties:
       RouteTableId: !Ref RouteTable
       DestinationCidrBlock: 0.0.0.0/0
       GatewayId: !Ref InternetGateway
   PublicSubnet1RouteTableAssociation:
-    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
     Properties:
       SubnetId: !Ref PublicSubnet1
       RouteTableId: !Ref RouteTable
   PublicSubnet2RouteTableAssociation:
-    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
     Properties:
       SubnetId: !Ref PublicSubnet2
       RouteTableId: !Ref RouteTable
@@ -395,4 +601,4 @@ Outputs:
     Description: >-
       The URL for your SCIM bridge. Use this and your bearer token to connect
       your identity provider to 1Password.
-    Value: !Sub 'https://${DNSRecord}/'
+    Value: !Sub "https://${DNSRecord}"
