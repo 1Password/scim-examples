@@ -2,7 +2,7 @@
 
 This deployment example describes how to deploy 1Password SCIM bridge as an app on DigitalOcean's [App Platform](https://docs.digitalocean.com/products/app-platform/) service using [1Password CLI](https://developer.1password.com/docs/cli), the DigitalOcean command line interface ([`doctl`](https://docs.digitalocean.com/reference/doctl/)), and optionally the DigitalOcean [1Password Shell Plugin](https://developer.1password.com/docs/cli/shell-plugins/) (for Mac and Linux users).
 
-Alternatively you can also follow the guide here on how to deploy the [1Password SCIM Bridge to DigitalOcean's App Platform Container-as-a-Service environment using the DigitalOcean portal](https://support.1password.com/cs/scim-deploy-digitalocean-ap/) instead of using the command line tools. 
+Alternatively, you can deploy the [1Password SCIM Bridge to DigitalOcean's App Platform Container-as-a-Service environment using the DigitalOcean portal](https://support.1password.com/cs/scim-deploy-digitalocean-ap/) instead of the command line. 
 
 The app consists of two [resources](https://docs.digitalocean.com/glossary/resource/): a [service](https://docs.digitalocean.com/glossary/service/) for the SCIM bridge container and an [internal service](https://docs.digitalocean.com/glossary/service/#internal-services) for Redis.
 
