@@ -1,11 +1,11 @@
 # Beta deployments
 
-This folder contains beta versions of 1Password SCIM bridge deployments.
+This folder contains beta versions of 1Password SCIM Bridge deployment examples.
 
-These deployments _should_ work, but come with no guarantees, and will change in the future.
+These deployment examples _should_ work, but come with no guarantees, and will change in the future.
 
 > **Note**  
-> "Beta" refers solely to the deployment _method_. It does not refer to the SCIM bridge software being deployed.
+> "Beta" refers solely to the deployment _method_. It does not refer to the 1Password SCIM Bridge software being deployed.
 
 ## What are "beta" deployment examples?
 
