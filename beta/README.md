@@ -15,7 +15,7 @@ We want to provide people deploying 1Password SCIM Bridge with deployment exampl
 
 "Beta" refers to the deployment example. It does not refer to the software being deployed, which in this case is 1Password SCIM Bridge. You will always be deploying a stable version of 1Password SCIM Bridge, regardless of how you've deployed it.
 
-Generally speaking, any new deployment example will start in beta. This allows us better-assesss where documentation could be enhanced, where the deployment could be improved, identify edge-cases we need to accommodate, and so on.
+Generally speaking, any new deployment example will start in beta. This allows us to better assess where documentation could be enhanced, where the deployment could be improved, identify edge-cases we need to accommodate, and so on.
 
 ### Is there greater risk associated with beta deployment examples?
 
@@ -65,7 +65,7 @@ Before being published as a beta deployment example, the following criteria shou
   `- ✨ **NEW** [Deployment Name](/beta/deployment-name)`
 - If you are a 1Password employee, assign reviewers from the Solutions Architect or AOP developer teams. 
   - If you are a community member, a 1Password employee will review your PR when time and resources permit.
-- The beta deployment example will be merged into Master when:
+- The beta deployment example will be merged into Main when:
   - The reviewer(s) have tested the example successfully according to the use case it's designed to address.
   - The documentation conforms to the criteria above. 
   - All outstanding changes requested by reviewers have been addressed in a way that satisfies the reviewer. 
@@ -74,8 +74,6 @@ Before being published as a beta deployment example, the following criteria shou
 > **Note**  
 > 1Password, in it's sole discretion, may choose to not publish examples for _any reason_, even if the example meets or exceeds all of the above criteria. 
 
-
-While in beta, the deployment example should be used by customers and internally by 1Password. During this time, feedback and improvements may 
 
 ## Promoting a deployment example out of beta
 
@@ -91,9 +89,9 @@ A deployment example may be in beta for whatever length of time is required to m
 - Functionality
   - The deployment example _must_ work for all identity providers 1Password supports (unless otherwise exempt from that criteria). 
   - The deployment example _must_ be capable of scaling to accommodate different provisioning needs (unless otherwise exempt from that criteria).
-  - The deployment example _must_ provide the complete automated user provisioning experience described by 1Password and in the documetnation accompanying the deployment example example. 
-  - Feedback from customers using the deployment example is nearly universally positive. Any critical feedback has been addressed to the greatest possibile extent during the preceeding beta period. 
-- Testing
+  - The deployment example _must_ provide the complete automated user provisioning experience described by 1Password and in the documentation accompanying the deployment example. 
+  - Feedback from customers using the deployment example is nearly universally positive. Any critical feedback has been addressed to the greatest possible extent during the preceeding beta period. 
+  - The deployment example _must_ provide the complete automated user provisioning experience described by 1Password and in the documentation accompanying the deployment example. 
   - All documented configurations _must_ be tested by the author and at least one reviewer. Tests must reliably succeed.
   - Some number of customers, greater than one (but no specific minimum is prescribed), are known to have used the deployment example in whatever is deemed a "standard" or common configuration for that example.
     - There must be documentation of these deployments, such as if it was assisted by 1Password Solutions Architect or developer. 
@@ -113,10 +111,11 @@ A deployment example may be in beta for whatever length of time is required to m
 Once the above criteria have been met, the deployment example can be promoted out of beta in the following way:
 - Create a branch called `promote/<deployment example name>`
 - On that branch, move the directory containing the documentation and configuration manifest from `./beta` to the root of the repository. 
+- Review all documentation and URL/URI paths in any related files to ensure that the 'beta' is removed from the paths
+- File MR to have /scim-update/ to include SCIM bridge update steps for non-beta scim-example. 
 - Update [`README.md`](../README.md) and [`./beta/README.md`](README.md) to remove the beta label
 - Add the deployment method to the main list of deployments in [`README.md`](../README.md#advanced-deployment) in the following format:   
 `- [Deployment Name](./deployment-name)`
 
 ## Deprecating a beta deployment example
-
 If a deployment method is to be removed while in beta, the [standard procedures for deprecating deployment methods](../deprecated/README.md) should be followed.
