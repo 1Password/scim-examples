@@ -26,7 +26,7 @@ After you've read the preparation guide, refer to the deployment example for you
 
 ### Beta deployment
 
-These are beta versions of 1Password SCIM Bridge deployments and components. These deployments _should_ work, but aren't guaranteed and will change in the future. See the [README](./beta/README.md) for more information about the "beta" designation.
+These are beta versions of 1Password SCIM Bridge deployment examples. These deployments _should_ work, but aren't guaranteed and will change in the future. See the [README](./beta/README.md) for more information about the "beta" designation.
 
 - ✨ **NEW** [AWS with CloudFormation](/beta/aws-ecsfargate-cfn)
 - ✨ **NEW** [Azure Container Apps](/beta/azure-container-apps)
