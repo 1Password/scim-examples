@@ -102,8 +102,8 @@ A deployment example may be in beta for whatever length of time is required to m
   - Documentation _must_ include the following:
     - Complete instructions for deploying 1Password SCIM Bridge
       - If there are multiple potential configurations, all configurations must be documented and configuration examples provided. 
-    - Complete instructions for updating the SCIM Bridge.
-    - Complete instructions for scaling the SCIM bridge, if applicable.
+    - Complete instructions for updating 1Password SCIM Bridge.
+    - Complete instructions for scaling 1Password SCIM Bridge to support different provisioning volumes, if applicable.
 
 ### Process for promoting a deployment example out of beta
 
@@ -111,7 +111,7 @@ Once the above criteria have been met, the deployment example can be promoted ou
 - Create a branch called `promote/<deployment example name>`
 - On that branch, move the directory containing the documentation and configuration manifest from `./beta` to the root of the repository. 
 - Review all documentation and URL/URI paths in any related files to ensure that the 'beta' is removed from the paths
-- If the deployment example merits having update procedures documented on support.1password.com/scim-update (this would only be true in rare cases), file an MR on the internal support.1password.com repository with the relevant information and according to the 1Password Technical Writing team's procedures.
+- If the deployment example merits having update procedures documented on http://support.1password.com/scim-update (this would only be true in rare cases), file an MR on the internal support.1password.com repository with the relevant information and according to the 1Password Technical Writing team's procedures.
 - Remove the references to the deployment method in [`./beta/README.md`](README.md) 
 - Add the deployment method to the main list of deployments in [`README.md`](../README.md#advanced-deployment) in the following format:   
 `- [Deployment Name](./deployment-name)`
