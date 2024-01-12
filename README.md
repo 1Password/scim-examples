@@ -4,7 +4,7 @@ You can deploy 1Password SCIM Bridge on any supported infrastructure that allows
 
 ## Marketplace apps
 
-If you'd prefer to deploy 1Password SCIM Bridge using a marketplace, you can use Google Cloud Platform or DigitalOcean:
+For an automated deployment of 1Password SCIM Bridge where some settings are pre-configured for you, use a marketplace app from Google Cloud Platform or DigitalOcean:
 
 - [Deploy 1Password SCIM Bridge on Google Cloud Platform](https://support.1password.com/scim-deploy-gcp/)
 - [Deploy 1Password SCIM Bridge on DigitalOcean](https://support.1password.com/scim-deploy-digitalocean/)
