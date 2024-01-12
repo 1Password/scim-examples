@@ -38,7 +38,7 @@ Before being published as a beta deployment example, the following criteria shou
 
 - Testing
   - All currently-documented configurations (e.g., Let's Encrypt, custom TLS, Google Workspace, etc) _must_ be tested by at least one person other than the person developing the example. Tests are considered successful if:
-    - The SCIM bridge is deployed and acessible over TLS for each configuration being tested.
+    - The SCIM bridge is deployed and accessible over TLS for each configuration being tested.
     - Upgrades or downgrades of the container image are successful.
     - At least one configuration has been tested by connecting it to an IdP and provisioning some number of users. The number of users should be representative of the anticipated use case, and provisioning should take place in a timely manner that indicates adequate compute resources are available. If the host platform provides resource monitoring, those tools should be consulted to ensure that the resources available are adequate.
   - Successful deployments _must_ be reliably reproducible when following the accompanying documentation.
@@ -47,7 +47,7 @@ Before being published as a beta deployment example, the following criteria shou
   - Documentation for the primary anticipated use case _must_ be complete, though it need not be in it's final form since it is anticipated that documentation will change while in beta. Complete documentation, in this context, means the following are included:
     - Complete instructions for the most common deployment configuration this example targets.
     - Complete instructions for updating the SCIM bridge.
-    - Terminal commands, if applicable, _must_ be provided for both Unix shells and Powershell, where both are supported.
+    - Terminal commands, if applicable, _must_ be provided for both Unix shells and Powershell, where the deployment environment supports both.
   - Documentation for less common use-cases _may_ be incomplete. If incomplete documentation is provided, it _must_ be noted as incomplete in an obvious way to the reader.
   - Documentation _must_ indicate approximate provisioning capacity of a SCIM bridge deployed in the documented manner. Documentation for scaling the SCIM bridge is _not_ required.
   - Documentation _should_ conform to the [1Password Style Guide](https://support.1password.com/style-guide/).
@@ -61,7 +61,7 @@ Before being published as a beta deployment example, the following criteria shou
   - Describe anything that may still need to be implemented (e.g., Google Workspace support, certain vertical scaling, etc).
   - Call out any specific tests or scenarios that you would like the reviewer to focus on. 
 - Update README.md at the root of the repository
-  - Add the deployment method to the list of beta deployments in [`README.md`](../README.md#beta-deployment) in the following format:   
+  - Add the deployment method to the list of beta deployments in [`README.md`](../README.md#beta-deployment) of the repository root in the following format:   
   `- ✨ **NEW** [Deployment Name](/beta/deployment-name)`
 - If you are a 1Password employee, assign reviewers from the Solutions Architect or AOP developer teams. 
   - If you are a community member, a 1Password employee will review your PR when time and resources permit.
@@ -72,7 +72,7 @@ Before being published as a beta deployment example, the following criteria shou
   - The reviewer has, in their sole discretion, determined that the example is worth including in the repository, regardless of how well the example meets the criteria above. 
 
 > **Note**  
-> 1Password, in it's sole discretion, may choose to not publish examples for _any reason_, even if the example meets or exceeds all of the above criteria. 
+> 1Password, in its sole discretion, may choose to not publish examples for _any reason_, even if the example meets or exceeds all of the above criteria. 
 
 
 ## Promoting a deployment example out of beta
@@ -91,7 +91,6 @@ A deployment example may be in beta for whatever length of time is required to m
   - The deployment example _must_ be capable of scaling to accommodate different provisioning needs (unless otherwise exempt from that criteria).
   - The deployment example _must_ provide the complete automated user provisioning experience described by 1Password and in the documentation accompanying the deployment example. 
   - Feedback from customers using the deployment example is nearly universally positive. Any critical feedback has been addressed to the greatest possible extent during the preceeding beta period. 
-  - The deployment example _must_ provide the complete automated user provisioning experience described by 1Password and in the documentation accompanying the deployment example. 
   - All documented configurations _must_ be tested by the author and at least one reviewer. Tests must reliably succeed.
   - Some number of customers, greater than one (but no specific minimum is prescribed), are known to have used the deployment example in whatever is deemed a "standard" or common configuration for that example.
     - There must be documentation of these deployments, such as if it was assisted by 1Password Solutions Architect or developer. 
@@ -112,8 +111,8 @@ Once the above criteria have been met, the deployment example can be promoted ou
 - Create a branch called `promote/<deployment example name>`
 - On that branch, move the directory containing the documentation and configuration manifest from `./beta` to the root of the repository. 
 - Review all documentation and URL/URI paths in any related files to ensure that the 'beta' is removed from the paths
-- File MR to have /scim-update/ to include SCIM bridge update steps for non-beta scim-example. 
-- Update [`README.md`](../README.md) and [`./beta/README.md`](README.md) to remove the beta label
+- If the deployment example merits having update procedures documented on support.1password.com/scim-update (this would only be true in rare cases), file an MR on the internal support.1password.com repository with the relevant information and according to the 1Password Technical Writing team's procedures.
+- Remove the references to the deployment method in [`./beta/README.md`](README.md) 
 - Add the deployment method to the main list of deployments in [`README.md`](../README.md#advanced-deployment) in the following format:   
 `- [Deployment Name](./deployment-name)`
 
