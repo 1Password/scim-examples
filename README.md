@@ -26,7 +26,7 @@ After you've read the preparation guide, refer to the deployment example for you
 
 ### Beta deployment
 
-These are beta versions of 1Password SCIM Bridge deployments and components. These deployments _should_ work, but aren't guaranteed and will change in the future.
+These are beta versions of 1Password SCIM Bridge deployment examples. These deployments _should_ work, but aren't guaranteed and will change in the future. See the [README](./beta/README.md) for more information about the "beta" designation.
 
 - ✨ **NEW** [AWS with CloudFormation](/beta/aws-ecsfargate-cfn)
 - ✨ **NEW** [Azure Container Apps](/beta/azure-container-apps)
@@ -37,11 +37,11 @@ These are beta versions of 1Password SCIM Bridge deployments and components. The
 
 A list of recently-deprecated deployments can be found in [`/deprecated`](./deprecated/). At the time of deprecation, these deployments were fully functional, but will soon become unsupported.
 
-* [**List of deprecated deployment methods**](./deprecated/README.md#deprecated-deployments)
+- [**List of deprecated deployment methods**](./deprecated/README.md#deprecated-deployments)
 
 ### Deprecation schedule
 
-When a deployment method is deprecated, we will simultaneously append a deprecation notice to the deployment name listed in this README and move all files associated with the deployment method to [`/deprecated`](./deprecated/). 
+When a deployment method is deprecated, we will simultaneously append a deprecation notice to the deployment name listed in this README and move all files associated with the deployment method to [`/deprecated`](./deprecated/).
 
 Deprecated deployments will remain in [`/deprecated`](./deprecated/) for approximately **three months**, after which time they will be deleted. The deletion date of deprecated deployments will be posted in [`/deprecated/README.md`](./deprecated/README.md).
 
