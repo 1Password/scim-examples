@@ -312,4 +312,3 @@ cat pathToFile/op-scim-bridge.yaml | op inject | doctl apps create --spec - --wa
 ```
 
 </details>
-
