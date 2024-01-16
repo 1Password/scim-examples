@@ -59,16 +59,11 @@ Both methods need the Container App Extension added to the Azure tool of choice,
 
 1. Start the Azure Cloud Shell from the navigation bar of your [Azure Portal](https://portal.azure.com) or directly open the [Azure Shell](https://shell.azure.com).
 2. Add the Azure Container App extension by running the following command: `az extension add --name containerapp --upgrade`
-3. Get a list of the available locations in your Azure account: `az account list-locations -o table`, verify that the region you want to deploy on [supports Azure Container Apps](https://azure.microsoft.com/en-ca/explore/global-infrastructure/products-by-region/?regions=all&products=container-apps), take note of the name field for the desired region. 
+3. Get a list of the available locations in your Azure account: `az account list-locations -o table`, take note of the name field for the desired region. 
 
     > **Note:** This command can be skipped if you already know the region you want to deploy to and if that region supports Container Apps. 
 
 4. Define variables for the deployment using the following example in the Cloud Shell, _(using the bash or PowerShell syntax for the commands)_.
-
-    > **Note:** The ConAppName variable (Container App Name) can contain lowercase letters, numerals, and hyphens. It must be between 2 and 32 characters long, and cannot start or end with a hyphen or cannot start with a number.
-    > 
-    > The location utilizes the name field of the `az account list-locations` command. 
-    > Not all Azure locations support Conatiner Apps. See [supported regions for Azure Container Apps](https://azure.microsoft.com/en-ca/explore/global-infrastructure/products-by-region/?regions=all&products=container-apps)
 
     Update the values in a text editor before pasting it into the terminal, (If you have an existing Resource Group you want to use, specify the name in the ResourceGroup variable below):
 
@@ -110,9 +105,6 @@ Both methods need the Container App Extension added to the Azure tool of choice,
    - Make a note of the upload destination, then click Complete.
 
 8. Deploy the Container App Secret for the SCIM bridge. 
-
-    > **Note:** If you prefer to deploy the containers using the Azure Container App Commands, go to this section: [Azure ContainerApps Commands Deployment steps](#azure-container-apps-commands-deployment-steps), otherwise follow the template file steps below. 
-    >
 
     Create your Container App Secret:
     - Using bash
@@ -432,6 +424,13 @@ The following steps only apply if you use Google Workspace as your identity prov
 
 ## Troubleshooting
 
+#### Region Support
+When attempting to deploy or create the Container App Environment, Azure may present an error stating the region is not supported. Follow Azure documention to ensure the region name you defined, [supports Azure Container Apps](https://azure.microsoft.com/en-ca/explore/global-infrastructure/products-by-region/?regions=all&products=container-apps).
+
+#### Container App Name requirements
+Your Container App Name, (the ConAppName variable) can contain lowercase letters, numerals, and hyphens. It must be between 2 and 32 characters long, and cannot start or end with a hyphen or cannot start with a number, it is recommended to check [Microsoft resources](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/resource-name-rules#microsoftapp) for any changes to the naming restrictions.
+
+#### Viewing Logs in Azure Container Apps
 Logs for a container app can be viewed from the **Log Stream**, there is a separate log stream for both containers of the revision that is active. Often reviewing the logs of the **op-scim-bridge** container can help understand any startup issues.
 
 #### Replacing your `scimsession` secret in the deployment:
