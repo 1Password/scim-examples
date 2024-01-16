@@ -121,7 +121,7 @@ curl -s https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-pl
 Using Powershell:
 
 ```pwsh
-Invoke-RestMethod -Uri `https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-platform-op-cli/op-scim-bridge.yaml` | op inject | doctl apps create --spec - --wait
+Invoke-RestMethod -Uri https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-platform-op-cli/op-scim-bridge.yaml | op inject | doctl apps create --spec - --wait
 ```
 
 1Password SCIM bridge deploys with a live URL output to the terminal (found under the `Default Ingress` column). This is your SCIM bridge URL. Use your bearer token with the URL to test the connection to 1Password. For example:
@@ -200,7 +200,7 @@ You can also access your SCIM bridge by visting the URL in your web browser. Sig
 
   Using Powershell:
   ```pwsh
-  Invoke-RestMethod -Uri`https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-platform-op-cli/google-workspace/op-scim-bridge-gw.yaml` | op inject | doctl apps create --spec - --wait --upsert
+  Invoke-RestMethod -Uri https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-platform-op-cli/google-workspace/op-scim-bridge-gw.yaml | op inject | doctl apps create --spec - --wait --upsert
   ```
 
   </details>
@@ -218,7 +218,7 @@ curl -s https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-pl
 
 Using Powershell:
 ```pwsh
-Invoke-RestMethod -Uri `https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-platform-op-cli/op-scim-bridge.yaml` | VAULT="vault name" ITEM="item name" op inject | doctl apps create --spec - --wait
+Invoke-RestMethod -Uri https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-platform-op-cli/op-scim-bridge.yaml | VAULT="vault name" ITEM="item name" op inject | doctl apps create --spec - --wait
 ```
 
 ### Update 1Password SCIM bridge
@@ -232,7 +232,7 @@ curl -s https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-pl
 
 Using Powershell:
 ```pwsh
-Invoke-RestMethod -Uri`https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-platform-op-cli/op-scim-bridge.yaml` | op inject | doctl apps create --spec - --wait --upsert
+Invoke-RestMethod -Uri https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-platform-op-cli/op-scim-bridge.yaml | op inject | doctl apps create --spec - --wait --upsert
 ```
 
 ### Propose the app spec
@@ -246,7 +246,7 @@ curl -s https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-pl
 
 Using Powershell: 
 ```pwsh
-Invoke-RestMethod -Uri`https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-platform-op-cli/op-scim-bridge.yaml` | doctl apps propose --spec -
+Invoke-RestMethod -Uri https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-platform-op-cli/op-scim-bridge.yaml | doctl apps propose --spec -
 ```
 
 ### Resource recommendations
@@ -275,7 +275,7 @@ curl -s https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-pl
 
 Using Powershell:
 ```pwsh
-Invoke-RestMethod -Uri`https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-platform-op-cli/op-scim-bridge.yaml` | op inject | doctl apps create --spec - --wait --upsert
+Invoke-RestMethod -Uri https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-platform-op-cli/op-scim-bridge.yaml | op inject | doctl apps create --spec - --wait --upsert
 ```
 </details>
 
