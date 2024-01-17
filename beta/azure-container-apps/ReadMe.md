@@ -124,7 +124,7 @@ Both methods need the Container App Extension added to the Azure tool of choice,
 	        --secrets scimsession="$([Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path $HOME 'scimsession'))))"
         ```
 
-9. Run the following command for your shell to download the [`aca-op-scim-bridge.yaml` file](https://github.com/1Password/scim-examples/blob/main/beta/azure-container-apps/aca-op-scim-bridge.yaml) from GitHub to your working directory and deploy your SCIM bridge.
+9. Run the following command to use the template file, [`aca-op-scim-bridge.yaml`](https://github.com/1Password/scim-examples/blob/main/beta/azure-container-apps/aca-op-scim-bridge.yaml) from GitHub to deploy your SCIM bridge.
 
     - Using Bash:
 
