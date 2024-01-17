@@ -73,7 +73,7 @@ Both methods need the Container App Extension added to the Azure tool of choice,
         Location="canadacentral"
         ConAppEnv="op-scim-bridge-con-app-env"
         ConAppName="op-scim-bridge-con-app"
-        YamlURL="https://raw.githubusercontent.com/1Password/scim-examples/main/beta/azure-container-apps/aca-op-scim-bridge.yaml"
+        YamlURL="https://raw.githubusercontent.com/1Password/scim-examples/main/azure-container-apps/aca-op-scim-bridge.yaml"
         ```
 
     - Using PowerShell 
@@ -82,7 +82,7 @@ Both methods need the Container App Extension added to the Azure tool of choice,
         $Location="canadacentral"
         $ConAppEnv="op-scim-bridge-con-app-env"
         $ConAppName="op-scim-bridge-con-app"
-        $YamlURL="https://raw.githubusercontent.com/1Password/scim-examples/main/beta/azure-container-apps/aca-op-scim-bridge.yaml"
+        $YamlURL="https://raw.githubusercontent.com/1Password/scim-examples/main/azure-container-apps/aca-op-scim-bridge.yaml"
         ```
 
 5. Create the resource group: 
@@ -124,7 +124,7 @@ Both methods need the Container App Extension added to the Azure tool of choice,
 	        --secrets scimsession="$([Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path $HOME 'scimsession'))))"
         ```
 
-9. Run the following command to use the template file, [`aca-op-scim-bridge.yaml`](https://github.com/1Password/scim-examples/blob/main/beta/azure-container-apps/aca-op-scim-bridge.yaml) from GitHub to deploy your SCIM bridge.
+9. Run the following command to use the template file, [`aca-op-scim-bridge.yaml`](./aca-op-scim-bridge.yaml) from GitHub to deploy your SCIM bridge.
 
     - Using Bash:
 
@@ -325,11 +325,11 @@ The following steps only apply if you use Google Workspace as your identity prov
     Obtain the `workspace-settings.json` file: 
     - Using Bash
     ```bash
-    curl https://raw.githubusercontent.com/1Password/scim-examples/solutions/main/beta/azure-container-apps/google-workspace/workspace-settings.json --output workspace-settings.json --silent
+    curl https://raw.githubusercontent.com/1Password/scim-examples/solutions/main/azure-container-apps/google-workspace/workspace-settings.json --output workspace-settings.json --silent
     ```
      - Using PowerShell 
     ```pwsh
-    Invoke-RestMethod -Uri `https://raw.githubusercontent.com/1Password/scim-examples/solutions/main/beta/azure-container-apps/google-workspace/workspace-settings.json -OutFile workspace-settings.json
+    Invoke-RestMethod -Uri `https://raw.githubusercontent.com/1Password/scim-examples/solutions/main/azure-container-apps/google-workspace/workspace-settings.json -OutFile workspace-settings.json
     ```
 5. Edit the file in your editor of choice and fill in correct values for:
 	* **Actor**: the email address of the administrator in Google Workspace that the service account is acting on behalf of.
