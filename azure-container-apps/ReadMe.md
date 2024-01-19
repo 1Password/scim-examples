@@ -316,7 +316,7 @@ az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim
 The following steps only apply if you use Google Workspace as your identity provider. If you use another identity provider, do not perform these steps.
 
 1. Follow the steps to [create a Google service account, key, and API client](https://support.1password.com/scim-google-workspace/#step-1-create-a-google-service-account-key-and-api-client).
-2. Start the Azure Cloud Shell from the navigation bar of your [Azure Portal](https://portal.azure.com) or directly open the [Azure Shell](https://shell.azure.com or use the `az` CLI tool..
+2. Start the Azure Cloud Shell from the navigation bar of your [Azure Portal](https://portal.azure.com) or directly open the [Azure Shell](https://shell.azure.com) or use the `az` CLI tool..
 3. Upload your `workspace-credentials.json`/`<keyfile>` file to the Cloud Shell:
    - Click the “Upload/Download files” button and choose Upload.
    - Find the `<keyfile>.json` file that you saved to your computer and choose it.
