@@ -11,146 +11,22 @@ The deployment consists of two [containers](https://learn.microsoft.com/en-us/az
 
 **Table of contents:**
 
-- [Overview](#Overview)
-- [Prerequisites](#Prerequisites)
-- [Getting Started: Generate credentials for automated user provisioning with 1Password](#Generate-credentials-for-automated-user-provisioning-with-1Password)
-- [Azure Container App Deployment steps using the Azure Shell](#azure-container-app-deployment-steps-using-the-azure-shell)
+- [Standard Deployment](#standard-deployment)
 - [Update your SCIM bridge](#update-1password-scim-bridge)
 - [Resource recommendations](#resource-recommendations)
 - [Connecting Google Workspace if it is your IdP](#if-google-workspace-is-your-identity-provider)
 - [Troubleshooting](#Troubleshooting)
 
-## Overview
+## Standard Deployment
 
-Deploying 1Password SCIM Bridge on Azure Container Apps comes with a few benefits:
+Deploying 1Password SCIM Bridge on Azure Container Apps can be completed using our standard deployment guide. Any additional customizations can be applied from the resource recommendations as required for your instance
 
-- For standard deployments, Azure Container Apps will host your SCIM bridge for ~$16 USD/month (when this document was written)
-  > **Note:** Container Apps pricing is variable based on activity. Details can be found on [Microsoft's pricing page](https://azure.microsoft.com/en-us/pricing/details/container-apps/).
-- No manual DNS record creation required. Azure Container Apps automatically provides a unique DNS record for your SCIM bridge URL.
-- Azure Container Apps automatically handles TLS certificate management on your behalf.
-- You will deploy 1Password SCIM Bridge directly to Azure from your Azure Portal or some commands can be performed from your local terminal. There is no requirement to clone this repository for this deployment.
+[Deploy 1Password SCIM Bridge on Azure Container Apps](https://support.1password.com/scim-deploy-azure/) using the standard deployment approach.
 
-## Prerequisites
-
-- A 1Password account with an active 1Password Business subscription or trial
-  > **Note:** Try 1Password Business free for 14 days: <https://start.1password.com/sign-up/business>
-- An Azure account with permissions to create a Container App.
-  > **Note:** If you don't have a Azure account, you can sign up for a free trial with starting credit: <https://azure.microsoft.com/en-us/free/>
-- [Azure CLI tool](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli) with the ContainerApp Extension or access to the [Azure Cloud Shell](https://learn.microsoft.com/en-us/azure/cloud-shell/quickstart) if performing the command driven deployment.
-
-## Getting started
-
-### Generate credentials for automated user provisioning with 1Password
-
-1. [Sign in](https://start.1password.com) to your account on 1Password.com.
-2. Click [Integrations](https://start.1password.com/integrations/directory) in the sidebar.
-3. Choose your identity provider from the User Provisioning section.
-4. Choose "Custom deployment".
-5. Use the "Save in 1Password" buttons for both the `scimsession` file and `bearer token` to save them as items in your 1Password account. 
-6. Use the download icon next to the `scimsession` file to save this file on your system.
-
-## Deploy 1Password SCIM Bridge to Azure Container App
-
-### Azure Container App Deployment steps using the Azure Shell
-
-Using the Azure Cloud Shell can be easier (the assumption for the commands below is that you are using the Cloud Shell), but this can also been done directly on your system with the Azure CLI tool with the ContainerApp Extension
-
-Both methods need the Container App Extension added to the Azure tool of choice, as detailed in step two.
-
-1. Start the Azure Cloud Shell from the navigation bar of your [Azure Portal](https://portal.azure.com) or directly open the [Azure Shell](https://shell.azure.com).
-2. Add the Azure Container App extension by running the following command: `az extension add --name containerapp --upgrade`
-3. Get a list of the available locations in your Azure account: `az account list-locations -o table`, take note of the name field for the desired region. 
-
-    > **Note:** This command can be skipped if you already know the region you want to deploy to and if that region supports Container Apps. 
-
-4. Define variables for the deployment using the following example in the Cloud Shell, _(using the bash or PowerShell syntax for the commands)_.
-
-    Update the values in a text editor before pasting it into the terminal, (If you have an existing Resource Group you want to use, specify the name in the ResourceGroup variable below):
-
-    - Using Bash
-        ```bash
-        ResourceGroup="op-scim-bridge-rg"
-        Location="canadacentral"
-        ConAppEnv="op-scim-bridge-con-app-env"
-        ConAppName="op-scim-bridge-con-app"
-        YamlURL="https://raw.githubusercontent.com/1Password/scim-examples/main/azure-container-apps/aca-op-scim-bridge.yaml"
-        ```
-
-    - Using PowerShell 
-        ```pwsh
-        $ResourceGroup="op-scim-bridge-rg"
-        $Location="canadacentral"
-        $ConAppEnv="op-scim-bridge-con-app-env"
-        $ConAppName="op-scim-bridge-con-app"
-        $YamlURL="https://raw.githubusercontent.com/1Password/scim-examples/main/azure-container-apps/aca-op-scim-bridge.yaml"
-        ```
-
-5. Create the resource group: 
-
-    > **Note:** this step can be skipped if you are using an existing Resource Group to deploy your SCIM bridge to.
-
-   ```
-   az group create --name $ResourceGroup --location $Location
-   ```
-
-6. Create the Container App Environment:
-
-   ```
-   az containerapp env create --name $ConAppEnv --resource-group $ResourceGroup --location $Location --enable-workload-profiles false
-   ```
-
-7. Upload your `scimsession` file to the Cloud Shell:
-   - Click the “Upload/Download files” button and choose Upload.
-   - Find the `scimsession` file that you saved to your computer and choose it.
-   - Make a note of the upload destination, then click Complete.
-
-8. Deploy the Container App Secret for the SCIM bridge. 
-
-    Create your Container App Secret:
-    - Using Bash
-        ```bash
-        az containerapp create \
-	        --resource-group $ResourceGroup \
-	        --environment $ConAppEnv \
-	        --name $ConAppName \
-	        --secrets scimsession="$(cat $HOME/scimsession | base64)"
-        ```
-    - Using PowerShell 
-        ```pwsh
-        az containerapp create `
-	        --resource-group $ResourceGroup `
-	        --environment $ConAppEnv `
-	        --name $ConAppName `
-	        --secrets scimsession="$([Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path $HOME 'scimsession'))))"
-        ```
-
-9. Run the following command to use the template file, [`aca-op-scim-bridge.yaml`](./aca-op-scim-bridge.yaml) from GitHub to deploy your SCIM bridge.
-
-    - Using Bash:
-
-        ```bash
-        curl --silent --show-error $YamlURL |
-            az containerapp update --resource-group $ResourceGroup --name $ConAppName \
-                --yaml /dev/stdin --query properties.configuration.ingress.fqdn
-        ```
-
-    - Using PowerShell:
-
-        ```pwsh
-        Invoke-RestMethod -Uri $YamlURL |
-            az containerapp update --resource-group $ResourceGroup --name $ConAppName `
-                --yaml /dev/stdin --query properties.configuration.ingress.fqdn
-        ```
-
-10. Copy the URL presented to log into your SCIM bridge in a separate browser tab to test your connection. You will need to access the page with `https://` for example `https://SCIMBridgeContainerAppURL.azurecontainerapps.io`. You can sign in to your SCIM bridge using your bearer token.
-
-### Follow the steps to connect your Identity provider to the SCIM bridge.
- - [Connect your Identity Provider](https://support.1password.com/scim/#step-3-connect-your-identity-provider)
-
-#### Alternative Azure Portal Deployment steps
+##### (Alternative) Azure Portal Deployment steps
 
 <details>
-<summary>Alternative Azure Portal Deployment steps</summary>
+<summary>(Alternative) Azure Portal Deployment steps</summary>
 
 If you can not use the Azure Cloud Shell (for example you do not have Storage tied to your Azure subscription) (or `az` CLI tools) or prefer to run through the configuration using the Azure Portal graphical interface you can follow the guide below. 
 
