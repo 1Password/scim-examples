@@ -19,7 +19,7 @@ The deployment consists of two [containers](https://learn.microsoft.com/en-us/az
 
 ## Standard Deployment
 
-Deploying 1Password SCIM Bridge on Azure Container Apps can be completed using our standard deployment guide. Any additional customizations can be applied from the resource recommendations as required for your instance
+Deploying 1Password SCIM Bridge on Azure Container Apps can be completed using our standard deployment guide. Any additional customizations can be applied from the resource recommendations as required for your deployment.
 
 [Deploy 1Password SCIM Bridge on Azure Container Apps](https://support.1password.com/scim-deploy-azure/) using the standard deployment approach.
 
