@@ -23,8 +23,6 @@ Deploying 1Password SCIM Bridge on Azure Container Apps can be completed using o
 
 [Deploy 1Password SCIM Bridge on Azure Container Apps](https://support.1password.com/scim-deploy-azure/) using the standard deployment approach.
 
-##### (Alternative) Azure Portal Deployment steps
-
 <details>
 <summary>(Alternative) Azure Portal Deployment steps</summary>
 
