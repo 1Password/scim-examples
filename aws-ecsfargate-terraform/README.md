@@ -167,7 +167,7 @@ Below you can learn about some common update scenarios.
 To update your deployment to the latest version, edit the `task-definitions/scim.json` file and edit the following line:
 
 ```json
-    "image": "1password/scim:v2.8.5",
+    "image": "1password/scim:v2.9.0",
 ```
 
 Learn about the changes included in each version on the [1Password SCIM Bridge release notes page](https://app-updates.agilebits.com/product_history/SCIM).
@@ -242,3 +242,27 @@ If you want to view the logs for your SCIM bridge within AWS, go to **Cloudwatch
 If you open your SCIM bridge domain in a browser and see a `Sign In With 1Password` button, the `scimsession` file was not properly installed. Due to the nature of the ECS deployment, **this “sign in” option cannot be used** to complete the setup of your SCIM bridge.
 
 To fix this, [copy the `scimsession` file](#11-copy-scimsession-file) again and stop the ECS task for your SCIM bridge. The ECS service will ensure that the task is restarted to reboot your SCIM bridge and apply the changes.
+
+#### If you can't access AWS Secrets Manager
+
+Because the `aws_security_group.service` resource creates a security group that restricts outbound traffic from the Fargate task, 1Password SCIM Bridge may only connect to the 1Password service over HTTPS on this port. If the VPC where the Fargate task is deployed hasn't been configured to support DNS resolution through the Amazon DNS server, this security group will also restrict DNS resolution.
+
+**_Example error:_**
+
+> ```sh
+> ResourceInitializationError: unable to pull secrets or registry auth: execution resource retrieval failed: unable to retrieve secret from asm: service call has been retried 5 time(s): failed to fetch secret arn:aws:secretsmanager:us-east-1:…:secret:op-scim-bridge-sercretARN from secrets manager: RequestCanceled: request context canceled caused by: context deadline exceeded. Please check your task network configuration.
+> ```
+
+To resolve this issue, enable the Amazon DNS server for the VPC where your SCIM bridge is deployed. See Learn more in the [view and update DNS attributes for your VPC documentation](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-dns.html#vpc-dns-updating). Select Enable for at least "DNS resolution" to resolve this.
+
+Alternatively, add an additional block to to the `aws_security_group.service` resource in `main.tf` to create a security group rule that enables DNS resolution. For example:
+
+```terraform
+  # Allow DNS resolution
+  egress {
+    from_port   = 53
+    to_port     = 53
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+```

@@ -25,6 +25,14 @@ services:
     scope: RUN_AND_BUILD_TIME
     type: SECRET
     value: op://${VAULT:-op-scim}/${ITEM:-"scimsession file"}/base64_encoded
+  - key: OP_WORKSPACE_CREDENTIALS
+    scope: RUN_AND_BUILD_TIME
+    type: SECRET
+    value: op://${VAULT:-op-scim}/${ITEM:-"workspace-credentials"}/base64_encoded_credentials
+  - key: OP_WORKSPACE_SETTINGS
+    scope: RUN_AND_BUILD_TIME
+    type: SECRET
+    value: op://${VAULT:-op-scim}/${ITEM:-"workspace-credentials"}/base64_encoded_settings
   health_check:
     http_path: /ping
   http_port: 3002
@@ -32,7 +40,7 @@ services:
     registry: 1password
     registry_type: DOCKER_HUB
     repository: scim
-    tag: v2.8.5
+    tag: v2.9.0
   instance_count: 1
   instance_size_slug: basic-xxs
   name: op-scim-bridge
