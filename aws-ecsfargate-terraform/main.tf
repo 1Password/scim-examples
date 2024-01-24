@@ -66,20 +66,13 @@ data "aws_vpc" "this" {
   tags    = var.vpc_name != "" ? { Name = var.vpc_name } : {}
 }
 
-# data "aws_subnet_ids" "public" {
-#   vpc_id = data.aws_vpc.this.id
-#   # Find the public subnets in the VPC
-#   tags = var.vpc_name != "" ? { SubnetTier = "public" } : {}
-# }
-
 data "aws_subnets" "public" {
   filter {
     name = "vpc-id"
     values = [data.aws_vpc.this.id]
   }
-  tags = {
-    SubnetTier = "public"
-  }
+  # Find the public subnets in the VPC, or if the default VPC, use both
+  tags = var.vpc_name != "" ? { SubnetTier = "public" } : {}
 
 }
 data "aws_iam_policy_document" "assume_role_policy" {
