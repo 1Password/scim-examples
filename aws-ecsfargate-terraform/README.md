@@ -229,6 +229,53 @@ resource "aws_ecs_task_definition" "op_scim_bridge" {
 
 If you need help with the configuration, [contact 1Password Support](https://support.1password.com/contact/).
 
+## Customize Redis
+
+As of SCIM Bridge `v2.8.5`, additional Redis configuration options are available. `OP_REDIS_URL` must be unset for any of these environment variables to be read. These environment variables may be especially helpful if you need support for URL-unfriendly characters in your Redis credentials. 
+
+> **Note**  
+> `OP_REDIS_URL` must be unset, otherwise the following environment variables will be ignored.
+
+* `OP_REDIS_HOST`:  overrides the default hostname of the redis server (default: `redis`). It can be either another hostname, or an IP address.
+* `OP_REDIS_PORT`: overrides the default port of the redis server connection (default: `6379`).
+* `OP_REDIS_USERNAME`: sets a username, if any, for the redis connection (default: `(null)`)
+* `OP_REDIS_PASSWORD`: Sets a password, if any, for the redis connection (default: `(null)`). Can accommodate URL-unfriendly characters that `OP_REDIS_URL` may not accommodate. 
+* `OP_REDIS_ENABLE_SSL`: Optionally enforce SSL on redis server connections (default: `false`).   (Boolean `0` or `1`)
+* `OP_REDIS_INSECURE_SSL`: Set whether to allow insecure SSL on redis server connections when `OP_REDIS_ENABLE_SSL` is set to `true`. This may be useful for testing or self-signed environments (default: `false`) (Boolean `0` or `1`).
+
+To apply these customizations, replace the following lines in [`scim.json`](./task-definitions/scim.json):
+```
+{
+  "name": "OP_REDIS_URL",
+  "value": "redis://localhost:6379"
+},
+```
+
+with the desired environment variables and their values, e.g.,: 
+
+```
+{
+  "name": "OP_REDIS_HOST",
+  "value": "hostname"
+},
+{
+  "name": "OP_REDIS_PORT",
+  "value": "6379"
+},
+{
+  "name": "OP_REDIS_USERNAME",
+  "value": "op-redis-admin"
+},
+{
+  "name": "OP_REDIS_PASSWORD",
+  "value": "apv.zbu8wva8gwd1EFC-fake.password"
+},
+{
+  "name": "OP_REDIS_ENABLE_SSL",
+  "value": "1"
+},
+```
+
 ## Troubleshooting
 
 ### Logs

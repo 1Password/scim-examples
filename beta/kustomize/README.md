@@ -122,7 +122,8 @@ kubectl set image deploy/op-scim-bridge op-scim-bridge=1password/scim:v2.9.0 -n=
 
 The update should take 2-3 minutes for Kubernetes to complete.
 
-## Appendix: Resource recommendations
+## Appendix: 
+### Resource recommendations
 
 The default resource recommendations for the SCIM bridge and Redis deployments are acceptable in most scenarios, but they may fall short in high-volume deployments where a large number of users and/or groups are being managed. We strongly recommend increasing the resources for both the SCIM bridge and Redis deployments.
 

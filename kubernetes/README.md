@@ -344,6 +344,46 @@ kubectl delete \
   --filename=redis-service.yaml
 ```
 
+### Advanced Redis configuration
+
+If you are using an external Redis cache with your SCIM bridge and need additional configuration options, you can use the following environment variables in place of `OP_REDIS_URL`. These environment variables may be especially helpful if you need support for URL-unfriendly characters in your Redis credentials. `OP_REDIS_URL` must be unset, otherwise the following environment variables will be ignored. 
+
+These values can be set in [`op-scim-config.yaml`](./op-scim-config.yaml)
+
+> **Note**
+>
+> If `OP_REDIS_URL` has any value, the environment variables below are ignored.
+
+* `OP_REDIS_HOST`:  overrides the default hostname of the redis server (default: `redis`). It can be either another hostname, or an IP address.
+* `OP_REDIS_PORT`: overrides the default port of the redis server connection (default: `6379`).
+* `OP_REDIS_USERNAME`: sets a username, if any, for the redis connection (default: `(null)`).
+* `OP_REDIS_PASSWORD`: Sets a password, if any, for the redis connection (default: `(null)`). Can accommodate URL-unfriendly characters that `OP_REDIS_URL` may not accommodate. 
+* `OP_REDIS_ENABLE_SSL`: Optionally enforce SSL on redis server connections (default: `false`) (Boolean `0` or `1`).
+* `OP_REDIS_INSECURE_SSL`: Set whether to allow insecure SSL on redis server connections when `OP_REDIS_ENABLE_SSL` is set to `true`. This may be useful for testing or self-signed environments (default: `false`) (Boolean `0` or `1`).
+
+#### If you already deployd your SCIM bridge
+
+You can unset `OP_REDIS_URL` and set any of the above environment variables directly to reboot SCIM bridge and connect to the specified Redis server:
+
+ _Example command:_
+ 
+```sh
+kubectl set env deploy/op-scim-bridge OP_REDIS_URL="" \
+OP_REDIS_HOST="hostname" \
+OP_REDIS_USERNAME="sherlock_admin" \
+OP_REDIS_PASSWORD="apv.zbu8wva8gwd1EFC-fake.p@ssw0rd" \
+OP_SSL_ENABLED="0"
+```
+
+Delete the cluster resources for Redis, if required:
+
+```sh
+kubectl delete \
+  --filename=redis-config.yaml \
+  --filename=redis-deployment.yaml \
+  --filename=redis-service.yaml
+```
+
 ### Colorful logs
 
 Set `OP_PRETTY_LOGS` to `1` to colorize container logs.
