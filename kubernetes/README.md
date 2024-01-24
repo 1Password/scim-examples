@@ -320,7 +320,6 @@ kubectl set env deploy op-scim-bridge \
 > ```
 
 ### External Redis
-<!-- TODO: CUSTOM REDIS -->
 
 If you prefer to use an external Redis cache, omit the the `redis-*.yaml` files when deploying to your Kubernetes cluster. Replace the value of the `OP_REDIS_URL` environment variable in [`op-scim-config.yaml`](./op-scim-config.yaml) with a Redis connection URI for your Redis server.
 
@@ -355,12 +354,12 @@ These values can be set in [`op-scim-config.yaml`](./op-scim-config.yaml)
 >
 > If `OP_REDIS_URL` has any value, the environment variables below are ignored.
 
-* `OP_REDIS_HOST`: set the hostname of your redis cache (e.g., `"localhost"`)
-* `OP_REDIS_PORT`: Set the Redis port (e.g., `"6379"`)  
-* `OP_REDIS_USERNAME`: Set the username required to connect to Redis (e.g., `"admin"`)
-* `OP_REDIS_PASSWORD`: Set the password required to connect to Redis (e.g., `"apv.zbu8wva8gwd1EFC-fake.password"`). Can accommodate URL-unfriendly characters that `OP_REDIS_URL` may not accommodate. 
-* `OP_REDIS_SSL_ENABLED`: Set whether the connection to Redis should be TLS-enabled (Boolean `0` or `1`)  
-* `OP_REDIS_INSECURE_SSL`: Set whether insecure TLS connections to Redis should be permitted when `OP_REDIS_SSL_ENABLED` is set to `1`. (Boolean `0` or `1`)
+* `OP_REDIS_HOST`:  overrides the default hostname of the redis server (default: `redis`). It can be either another hostname, or an IP address.
+* `OP_REDIS_PORT`: overrides the default port of the redis server connection (default: `6379`).
+* `OP_REDIS_USERNAME`: sets a username, if any, for the redis connection (default: `(null)`).
+* `OP_REDIS_PASSWORD`: Sets a password, if any, for the redis connection (default: `(null)`). Can accommodate URL-unfriendly characters that `OP_REDIS_URL` may not accommodate. 
+* `OP_REDIS_ENABLE_SSL`: Optionally enforce SSL on redis server connections (default: `false`) (Boolean `0` or `1`).
+* `OP_REDIS_INSECURE_SSL`: Set whether to allow insecure SSL on redis server connections when `OP_REDIS_ENABLE_SSL` is set to `true`. This may be useful for testing or self-signed environments (default: `false`) (Boolean `0` or `1`).
 
 #### If you already deployd your SCIM bridge
 
@@ -370,7 +369,7 @@ You can unset `OP_REDIS_URL` and set any of the above environment variables dire
  
 ```sh
 kubectl set env deploy/op-scim-bridge OP_REDIS_URL="" \
-OP_REDIS_HOST="localhost" \
+OP_REDIS_HOST="hostname" \
 OP_REDIS_USERNAME="sherlock_admin" \
 OP_REDIS_PASSWORD="apv.zbu8wva8gwd1EFC-fake.p@ssw0rd" \
 OP_SSL_ENABLED="0"

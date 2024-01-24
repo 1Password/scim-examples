@@ -16,7 +16,7 @@ data:
   # To connect SCIM bridge to an external Redis server, set OP_REDIS_URL to its Redis connection URI. Leave this set to
   # redis://op-scim-redis:6379 to connect to the op-scim-redis Service included with this deployment example. If this
   # value is no set, SCIM bridge will use the default value of redis://localhost:6379. If SCIM bridge is unable to
-  # connect to Redis, it will fail to load. See below for additioanl Redis configuration options.
+  # connect to Redis, it will fail to load. See below for additional Redis configuration options.
   OP_REDIS_URL: "redis://op-scim-redis:6379"
 
   # ADVANCED REDIS OPTIONS
@@ -24,22 +24,24 @@ data:
   # place of OP_REDIS_URL. OP_REDIS_URL must be unset. If OP_REDIS_URL has any value, the environment variables below
   # are ignored.
 
-  # Set the Redis hostname (e.g., localhost)
-  # OP_REDIS_HOST: "localhost"
+  # Set the Redis hostname. Can be either hostname of IP address (default: `redis`)
+  # OP_REDIS_HOST: "hostname"
 
-  # Set the redis port (e.g., "6379")
+  # Set the redis port (default: "6379")
   # OP_REDIS_PORT: "6379"
 
-  # Set the username required to connect to redis (e.g., "admin")
+  # Sets a username, if any, for the redis connection (default: `(null)`).
   # OP_REDIS_USERNAME: "admin"
 
-  # Set the password required to connect to redis
+  # Set the password, if any, required to connect to redis (defult: `(null)`)
   # OP_REDIS_PASSWORD: "apv.zbu8wva8gwd1EFC-fake.password"
 
-  # Set whether the connection to Redis should be TLS-enabled (Boolean 0 or 1)
-  # OP_REDIS_SSL_ENABLED: "0"
+  # Optionally enforce SSL on redis server connections (default: `false`). (Boolean `0` or `1`)
+  # OP_REDIS_ENABLE_SSL: "0"
 
-  # Set whether insecure TLS connections should be permitted when OP_REDIS_SSL_ENABLED is true (Boolean 0 or 1)
+  # Set whether to allow insecure SSL on redis server connections when `OP_REDIS_ENABLE_SSL` is
+  # set to `1`. This may be useful for testing or self-signed
+  # environments (default: `false`) (Boolean `0` or `1`).
   # OP_REDIS_INSECURE_SSL: "0"
 
   # Set OP_PRETTY_LOGS to 1 colorize container logs. If not set, or set to 0, container logs are output in

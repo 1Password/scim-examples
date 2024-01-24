@@ -230,12 +230,12 @@ As of SCIM Bridge `v2.8.5`, additional Redis configuration options are available
 > **Note**  
 > `OP_REDIS_URL` must be unset, otherwise the following environment variables will be ignored.
 
-* `OP_REDIS_HOST`: set the hostname of your redis cache (e.g., `"localhost"`)
-* `OP_REDIS_PORT`: Set the Redis port (e.g., `"6379"`)  
-* `OP_REDIS_USERNAME`: Set the username required to connect to Redis (e.g., `"admin"`)
-* `OP_REDIS_PASSWORD`: Set the password required to connect to Redis (e.g., `"apv.zbu8wva8gwd1EFC-fake.password"`). Can accommodate URL-unfriendly characters that `OP_REDIS_URL` may not accommodate. 
-* `OP_REDIS_SSL_ENABLED`: Set whether the connection to Redis should be TLS-enabled (Boolean `0` or `1`)  
-* `OP_REDIS_INSECURE_SSL`: Set whether insecure TLS connections to Redis should be permitted when `OP_REDIS_SSL_ENABLED` is set to `1`. (Boolean `0` or `1`)
+* `OP_REDIS_HOST`:  overrides the default hostname of the redis server (default: `redis`). It can be either another hostname, or an IP address.
+* `OP_REDIS_PORT`: overrides the default port of the redis server connection (default: `6379`).
+* `OP_REDIS_USERNAME`: sets a username, if any, for the redis connection (default: `(null)`)
+* `OP_REDIS_PASSWORD`: Sets a password, if any, for the redis connection (default: `(null)`). Can accommodate URL-unfriendly characters that `OP_REDIS_URL` may not accommodate. 
+* `OP_REDIS_ENABLE_SSL`: Optionally enforce SSL on redis server connections (default: `false`).   (Boolean `0` or `1`)
+* `OP_REDIS_INSECURE_SSL`: Set whether to allow insecure SSL on redis server connections when `OP_REDIS_ENABLE_SSL` is set to `true`. This may be useful for testing or self-signed environments (default: `false`) (Boolean `0` or `1`).
 
 ## Appendix: Generate `scim.env` on Windows
 
