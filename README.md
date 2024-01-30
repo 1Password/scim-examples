@@ -1,6 +1,9 @@
 # 1Password SCIM Bridge deployment examples
 
-You can deploy 1Password SCIM Bridge on any supported infrastructure that allows ingress by your identity provider and egress to 1Password servers. Here you'll find configuration files and best practices to help with your deployment. Learn more about [automating 1Password provisioning with SCIM](https://support.1password.com/scim/).
+You can deploy 1Password SCIM Bridge on any supported infrastructure that allows ingress by your identity provider and egress to 1Password servers. Here you'll find configuration files and best practices to help with your deployment.
+
+> [!TIP]
+> Before you deploy your SCIM bridge, learn more about [automating provisioning in 1Password using SCIM](https://support.1password.com/scim/).
 
 ## Marketplace apps
 
