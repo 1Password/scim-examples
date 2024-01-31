@@ -40,18 +40,18 @@ Before you begin, familiarize yourself with [PREPARATION.md](/PREPARATION.md) an
 
 To connect the SCIM bridge with your 1Password account, you'll need to save the `scimsession` credentials as a secret variable in the Container App you create. These credentials need to be Base64-encoded to pass them into the environment, but they're saved as a plaintext file when you download them or save them in your 1Password account during the setup.
 
-> [!IMPORTANT] 
+> [!IMPORTANT]
 > You'll need to update the path to the `scimsession` file you saved during the preparation steps.
 
 Use the following command for your shell to get the Base64 encoded contents of your `scimsession` file:
 
 - **Bash**:
-  
+
   ```bash
   cat ./scimsession | base64
   ```
 - **PowerShell**:
-  
+
   ```pwsh
   [Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path $PWD.Path 'scimsession')))
   ```
@@ -184,7 +184,7 @@ If Google Workspace is your identity provider, follow the steps in this section 
 6. Click **Add**, then wait until the secret is created.
 
 7. Add two environment variables to the new secret:
-    1. `OP_WORKSPACE_CREDENTIALS` 
+    1. `OP_WORKSPACE_CREDENTIALS`
     2. `OP_WORKSPACE_SETTING`
 
 #### Step 2: Download and edit the `workspace-settings.json` file
@@ -324,16 +324,16 @@ After you download a new `scimsession` file, follow the steps below to replace t
 2. Copy and paste the following command, replace `$ConAppName` and `$ResourceGroup` with the names from your deployment, and run the command.
 
     - **Bash**:
-      
+
         ```bash
         az containerapp secret set \
             --name $ConAppName \
             --resource-group $ResourceGroup \
             --secrets scimsession="$(cat $HOME/scimsession | base64)"
         ```
-        
+
     - **PowerShell**:
-      
+
         ```pwsh
         az containerapp secret set `
             --name $ConAppName `
