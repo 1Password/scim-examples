@@ -225,12 +225,14 @@ If Google Workspace is your identity provider, follow the steps in this section 
       2. **Source**: Choose **Reference a secret**.
       3. **Value**: Select the `workspace-settings` secret.
 
-9. Click **Save**, then click **Create**.
+9. Click **Save**, then click **Create**.
 
 </details>
 
 <hr>
+
 ## Update your SCIM bridge
+
 
 > [!TIP]
 >
@@ -282,7 +284,7 @@ az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim
 
 ### High volume deployment
 
-For provisioning up to 5,000 users:
+If you're provisioning up to 5,000 users:
 
 ```sh
 az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge \
@@ -291,7 +293,7 @@ az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim
 
 ### Very high volume
 
-For provisioning more than 5,000 users:
+If you're provisioning more than 5,000 users:
 
 ```sh
 az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge \
@@ -378,8 +380,8 @@ After you download a new `scimsession` file, follow the steps below to replace t
 4. Choose **Secrets** from the Settings section in the sidebar.
 5. Edit the `scimsession` secret and paste the new value of your secret.
 6. Select the checkbox and click **Save**.
-7. Select the **Revisions** from the sidebar on the left hand side.
-8. Click your current active revision, select Restart along the top.
+7. Choose the **Revisions** from the Application section in the sidebar.
+8. Click your current active revision and choose **Restart** in the details pane.
 9. Open your SCIM bridge URL in a browser and enter your bearer token to test the bridge.
 10. Update your identity provider configuration with the new bearer token.
     </details>
