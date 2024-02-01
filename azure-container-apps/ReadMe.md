@@ -307,7 +307,7 @@ When you create or deploy the Container App Environment, Azure may present an er
 
 Your Container App Name, (the `ConAppName` variable) can contain lowercase letters, numbers, and hyphens. It must be between 2 and 32 characters long, cannot start or end with a hyphen, and cannot start with a number. [Learn more about the naming rules and restrictions for Azure resources](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/resource-name-rules#microsoftapp).
 
-### Viewing Logs in Azure Container Apps
+### Viewing logs in Azure Container Apps
 
 Logs for a container app can be viewed from the **Log Stream**, there is a separate log stream for both containers of the revision that is active. Often reviewing the logs of the **op-scim-bridge** container can help understand any startup issues.
 
