@@ -18,7 +18,6 @@ This deployment consists of two [containers](https://learn.microsoft.com/en-us/a
 - [Step 4: Connect your identity provider](#step-4-connect-your-identity-provider)
 - [Update your SCIM Bridge](#update-your-scim-bridge)
 - [Appendix: Resource recommendations](#appendix-resource-recommendations)
-- [Appendix: Customize your deployment](#appendix-customize-your-deployment)
 - [Get help](#get-help)
 
 ## Before you begin
