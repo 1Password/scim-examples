@@ -230,12 +230,10 @@ If Google Workspace is your identity provider, follow the steps in this section 
 </details>
 
 <hr>
-
 ## Update your SCIM bridge
 
 
 > [!TIP]
->
 > Check for 1Password SCIM Bridge updates on the [SCIM bridge release page](https://app-updates.agilebits.com/product_history/SCIM).
 
 You can update your SCIM bridge in the [Azure Cloud Shell](#in-the-azure-cloud-shell-or-az-cli) or the [Azure Portal](#in-the-azure-portal).
@@ -381,7 +379,7 @@ After you download a new `scimsession` file, follow the steps below to replace t
 5. Edit the `scimsession` secret and paste the new value of your secret.
 6. Select the checkbox and click **Save**.
 7. Choose the **Revisions** from the Application section in the sidebar.
-8. Click your current active revision and choose **Restart** in the details pane.
+8. Click your current active revision and choose **Restart** in the details pane.
 9. Open your SCIM bridge URL in a browser and enter your bearer token to test the bridge.
 10. Update your identity provider configuration with the new bearer token.
     </details>
