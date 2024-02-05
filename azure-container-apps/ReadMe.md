@@ -224,8 +224,8 @@ If Google Workspace is your identity provider, follow the steps in this section 
 </details>
 
 <hr>
-## Update your SCIM bridge
 
+## Update your SCIM bridge
 
 > [!TIP]
 > Check for 1Password SCIM Bridge updates on the [SCIM bridge release page](https://app-updates.agilebits.com/product_history/SCIM).
@@ -234,14 +234,7 @@ You can update your SCIM bridge in the [Azure Cloud Shell](#in-the-azure-cloud-s
 
 ### In the Azure Cloud Shell or AZ CLI
 
-1. Open the [Azure Shell](https://shell.azure.com) or use the `az` CLI tool.
-2. Copy and paste the following command, then replace `$ConAppName` and `$ResourceGroup` with the names from your deployment and change the version number (2.9.0) to match the latest version from the [SCIM bridge release notes page](https://app-updates.agilebits.com/product_history/SCIM).
-
-    ```bash
-    az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge --image docker.io/1password/scim:v2.9.0
-    ```
-
-3. Log into your SCIM bridge URL with your bearer token to validate in the top left hand side that you are running the version of the SCIM Bridge. (logging in with the bearer token will also update your Automated User Provisioning page with the latest access time and with the current version).
+[Learn how to update 1Password SCIM Bridge in the Cloud Shell or AZ CLI.](https://support.1password.com/scim-update/#azure-container-apps)
 
 ### In the Azure Portal
 
