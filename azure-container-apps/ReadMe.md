@@ -7,7 +7,7 @@ This deployment consists of two [containers](https://learn.microsoft.com/en-us/a
 - For standard deployments, the service will host your SCIM bridge for ~$16 USD/month (as of January 2024). Container Apps pricing is variable based on activity, and you can learn more on [Microsoft's pricing page](https://azure.microsoft.com/en-us/pricing/details/container-apps/).
 - You don't need to manage a DNS record. Azure Container Apps automatically provides a unique one for your SCIM bridge domain.
 - Azure Container Apps automatically handles TLS certificate management on your behalf.
-- The SCIM bridge can be deployed directly to Azure from the Portal or via the command line in your local terminal. There is no requirement to clone this repository.
+- The SCIM bridge can be deployed directly to Azure from the Portal using this guide or via the Azure Shell or command line tools in your local terminal using the [support guide](https://support.1password.com/scim-deploy-azure/). There is no requirement to clone this repository.
 
 **Table of contents:**
 
