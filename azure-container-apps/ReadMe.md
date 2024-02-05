@@ -29,11 +29,10 @@ Before you begin, familiarize yourself with [PREPARATION.md](/PREPARATION.md) an
 > [!NOTE]
 > If you don't have a Azure account, you can sign up for a free trial with starting credit: https://azure.microsoft.com/en-us/free/
 
-- [Azure CLI tool](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli) with the ContainerApp Extension or access to the [Azure Cloud Shell](https://learn.microsoft.com/en-us/azure/cloud-shell/quickstart) if you'd like to deploy using the command line.
 
 ### In this folder
 
-- [`aca-op-scim-bridge.yaml`](./aca-op-scim-bridge.yaml): an Container App configuration file of a container app for the 1Password SCIM bridge.
+- [`aca-op-scim-bridge.yaml`](./aca-op-scim-bridge.yaml): a Container App configuration file for 1Password SCIM Bridge that you can use when you deploy via the command line.
 
 ## Step 1: Configure the `scimsession` credentials
 
@@ -181,10 +180,6 @@ If Google Workspace is your identity provider, follow the steps in this section 
     2. **Value**: Paste the base64 value you just created.
 
 6. Click **Add**, then wait until the secret is created.
-
-7. Add two environment variables to the new secret:
-    1. `OP_WORKSPACE_CREDENTIALS`
-    2. `OP_WORKSPACE_SETTING`
 
 #### Step 2: Download and edit the `workspace-settings.json` file
 
