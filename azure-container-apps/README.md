@@ -29,7 +29,6 @@ Before you begin, familiarize yourself with [PREPARATION.md](/PREPARATION.md) an
 > [!NOTE]
 > If you don't have a Azure account, you can sign up for a free trial with starting credit: https://azure.microsoft.com/en-us/free/
 
-
 ### In this folder
 
 - [`aca-op-scim-bridge.yaml`](./aca-op-scim-bridge.yaml): a Container App configuration file for 1Password SCIM Bridge that you can use when you deploy via the command line.
