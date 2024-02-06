@@ -4,7 +4,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 3.0"
+      version = "~> 5.0"
     }
   }
 }
@@ -66,12 +66,15 @@ data "aws_vpc" "this" {
   tags    = var.vpc_name != "" ? { Name = var.vpc_name } : {}
 }
 
-data "aws_subnet_ids" "public" {
-  vpc_id = data.aws_vpc.this.id
-  # Find the public subnets in the VPC
+data "aws_subnets" "public" {
+  filter {
+    name = "vpc-id"
+    values = [data.aws_vpc.this.id]
+  }
+  # Find the public subnets in the VPC, or if the default VPC, use both
   tags = var.vpc_name != "" ? { SubnetTier = "public" } : {}
-}
 
+}
 data "aws_iam_policy_document" "assume_role_policy" {
   statement {
     actions = ["sts:AssumeRole"]
@@ -180,7 +183,7 @@ resource "aws_ecs_service" "op_scim_bridge" {
   }
 
   network_configuration {
-    subnets          = data.aws_subnet_ids.public.ids
+    subnets          = data.aws_subnets.public.ids
     assign_public_ip = true
     security_groups  = [aws_security_group.service.id]
   }
@@ -193,7 +196,7 @@ resource "aws_ecs_service" "op_scim_bridge" {
 resource "aws_alb" "op_scim_bridge" {
   name               = var.name_prefix == "" ? "op-scim-bridge-alb" : format("%s-%s", local.name_prefix, "alb")
   load_balancer_type = "application"
-  subnets            = data.aws_subnet_ids.public.ids
+  subnets            = data.aws_subnets.public.ids
   security_groups    = [aws_security_group.alb.id]
 
   tags = local.tags
