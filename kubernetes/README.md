@@ -21,9 +21,7 @@ _Learn how to deploy 1Password SCIM Bridge on a Kubernetes cluster._
 
 ## Before you begin
 
-Before you begin, familiarize yourself with [PREPARATION.md](/PREPARATION.md) and complete the necessary steps there.
-
-Clone this repository and switch to this working directory:
+Before you begin, complete the necessary [preparation steps to deploy 1Password SCIM Bridge](/PREPARATION.md). Then clone this repository and switch to this working directory:
 
 ```sh
 git clone https://github.com/1Password/scim-examples.git

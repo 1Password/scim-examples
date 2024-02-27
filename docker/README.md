@@ -17,7 +17,7 @@
 
 ## Before you begin
 
-Before you begin, familiarize yourself with [PREPARATION.md](/PREPARATION.md) and complete the necessary steps there.
+Before you begin, complete the necessary [preparation steps to deploy 1Password SCIM Bridge](/PREPARATION.md).
 
 ## Step 1: Choose a deployment option
 
@@ -124,7 +124,7 @@ Alternate Google Workspace stack deployment command:
 docker stack deploy -c docker-compose.yml -c gw-docker-compose.yml op-scim
 ```
 Learn more about [connecting Google Workspace to 1Password SCIM Bridge](https://support.1password.com/scim-google-workspace/).
-  
+
 ### Self managed TLS for Docker Swarm
 
 Provide your own key and cert files to the deployment as secrets, which disables Let's Encrypt functionality. In order to utilize self managed TLS key and certificate files, you need to define these as secrets using the following commands and And finally, use `docker stack` to deploy:
