@@ -4,10 +4,10 @@ _Learn how to deploy 1Password SCIM Bridge on the [Azure Container Apps](https:/
 
 This deployment consists of two [containers](https://learn.microsoft.com/en-us/azure/container-apps/containers): One for the SCIM bridge and another for Redis. There's also an [ingress](https://learn.microsoft.com/en-us/azure/container-apps/ingress-overview) for the SCIM bridge container. There are a few benefits to deploying 1Password SCIM Bridge on Azure Container Apps:
 
-- For standard deployments, the service will host your SCIM bridge for ~$16 USD/month (as of January 2024). Container Apps pricing is variable based on activity, and you can learn more on [Microsoft's pricing page](https://azure.microsoft.com/en-us/pricing/details/container-apps/).
-- You don't need to manage a DNS record. Azure Container Apps automatically provides a unique one for your SCIM bridge domain.
-- Azure Container Apps automatically handles TLS certificate management on your behalf.
-- The SCIM bridge can be deployed directly to Azure from the Portal using this guide or via the Azure Shell or command line tools in your local terminal using the [support guide](https://support.1password.com/scim-deploy-azure/). There is no requirement to clone this repository.
+- **Low cost:** For standard deployments, the service will host your SCIM bridge for ~$16 USD/month (as of January 2024). Container Apps pricing is variable based on activity, and you can learn more on [Microsoft's pricing page](https://azure.microsoft.com/en-us/pricing/details/container-apps/).
+- **Automatic DNS record management:** You don't need to manage a DNS record. Azure Container Apps automatically provides a unique one for your SCIM bridge domain.
+- **Automatic TLS certificate management:** Azure Container Apps automatically handles TLS certificate management on your behalf.
+- **Multiple deployment options:** The SCIM bridge can be deployed directly to Azure from the Portal using this guide or via the Azure Shell or command line tools in your local terminal using the [support guide](https://support.1password.com/scim-deploy-azure/). If you're using a custom deployment, cloning this repository is recommended.
 
 **Table of contents:**
 
@@ -51,7 +51,7 @@ Use the following command for your shell to get the Base64 encoded contents of y
   [Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path $PWD.Path 'scimsession')))
   ```
 
-Copy the output value to your clipboard to use it in the deployment, then save the encoded value in your 1Password account for future use:
+Copy the output value to your clipboard, then save the encoded value in 1Password:
 
 1. Find the "scimsession file" item in your 1Password account.
 2. Click **Edit**, then choose **Add another field** and select **Password**.
@@ -60,13 +60,13 @@ Copy the output value to your clipboard to use it in the deployment, then save t
 
 ## Step 2: Create the container app
 
-1. Open the Azure Portal and go to the [Container Apps](https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/Microsoft.App%2FcontainerApps) page.
+1. Sign in to the Azure Portal and go to the [Container Apps](https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/Microsoft.App%2FcontainerApps) page.
 2. Click **Create**, then fill out the following fields:
       1. **Resource group**: Choose an existing Resource Group or create a new one.
       2. **Container app name**: Enter a name you'd like to use, such as `op-scim-con-app`.
       3. **Region**: Choose the region you prefer.
-      4. **Container App Environment**: Choose an existing one or create a new one with the information in [step 2.1](#21-optional-create-a-container-app-environment).
-3. If you didn't create a new Container App Environment, continue to [step 2.2](#22--container-app-environment).
+      4. **Container App Environment**: Choose an existing Container App environment or create a new one with the information in [step 2.1](#21-optional-create-a-new-container-app-environment).
+3. If you didn't create a new Container App Environment, continue to [step 2.2](#22-continue-creating-the-container-app).
 
 ### 2.1: (Optional) Create a new Container App Environment
 
@@ -85,16 +85,16 @@ After you adjust these options, click **Create**.
 	2. **Image source**: Choose **Docker Hub or other registries**.
 	3. **Image and tag:** Enter `1password/scim:v2.9.0`.
 	4. **CPU and Memory**: Choose **0.25 CPU cores, 0.5 Gi memory**, which should be the default option.
-	5. **Environment variables**: Create two with the following details:
-		1. `OP_SESSION` as the Name and  `""` as the Value.
-		2. `OP_REDIS_URL` as the Name and `redis://localhost:6379` as the Value.
+	5. **Environment variables**: Create two environment variables.
+		1. Enter `OP_SESSION` as the Name and `""` as the Value.
+		2. Enter `OP_REDIS_URL` as the Name and `redis://localhost:6379` as the Value.
 
 3. Click **Next: Bindings >** at the bottom of the page, then click **Next : Ingress >** to continue.
 4. Click **Enabled** to turn on ingress, then adjust the following:
 	1. **Ingress Traffic**: Choose **Accept traffic from anywhere**.
 	2. **Target Port**: Enter `3002`.
 
-5. Click **Review + create** at the bottom of the page, then wait a moment for the page to load and click **Create.**
+5. Click **Review + create** at the bottom of the page. When the page loads, click **Create.**
 
 After the deployment is complete, click **Go to resource**, then continue to step 3.
 
@@ -107,12 +107,12 @@ After the deployment is complete, click **Go to resource**, then continue to ste
 
 1. Choose **Secrets** from the Settings section in the sidebar.
 2. Click **Add**, then enter `scimsession` in the Key field.
-3. Paste the base64 value into the **Value** field. This is the `scimsession` item that you added to your account in [step 1](#step-1-configure-the-scimsession-credentials).
+3. Paste the base64 value into the **Value** field. This is the `scimsession` item you added to your account in [step 1](#step-1-configure-the-scimsession-credentials).
 4. Choose **Add**, then wait until the secret is created.
 
 ### 3.2: Create a secret reference
 
-1. Choose **Containers** from Application section in the sidebar.
+1. Choose **Containers** from the Application section in the sidebar.
 2. Click **Edit and deploy**.
 3. Hover over your **op-scim-bridge** container and select it, then click **Edit**.
 4. Scroll down to the environment variables and adjust the following for the **OP_SESSION** variable:
@@ -133,7 +133,7 @@ After the deployment is complete, click **Go to resource**, then continue to ste
     6. **Environment variables**: Create one with`REDIS_ARGS` as the Name and `--maxmemory 256mb --maxmemory-policy volatile-lru` as the Value.
 
 3. Click **Add**, then click **Next : Scale >**.
-4. Drag both ends of the slider to select `1` in both **Scale rule setting** fields.
+4. Drag each end of the slider to select `1` as both the minimum and maximum replica range of the scale rule setting.
 5. Click **Create**.
 
 ### 3.4: Test your SCIM bridge
@@ -148,7 +148,7 @@ To finish setting up automated user provisioning, [connect your identity provide
 
 ### If Google Workspace is your identity provider
 
-If Google Workspace is your identity provider, follow the steps in this section to connect it your SCIM bridge.
+If Google Workspace is your identity provider, follow the steps in this section to connect it to your SCIM bridge.
 
 <details>
 <summary>Connect Google Workspace using the Azure Portal</summary>
@@ -172,7 +172,7 @@ If Google Workspace is your identity provider, follow the steps in this section 
 
 4. Choose **Secrets** from the Settings section in the sidebar.
 
-5. Click **Add**, the fill out the following fields:
+5. Click **Add**, then fill out the following fields:
     1. **Key**: Enter `workspace-credentials`.
     2. **Value**: Paste the base64 value you just created.
 
@@ -182,15 +182,16 @@ If Google Workspace is your identity provider, follow the steps in this section 
 
 1. Download the [`workspace-settings.json`](./google-workspace/workspace-settings.json) file from this repo.
 2. Edit the following in the .json file you downloaded:
-3. 1. **Actor**: Enter the email address of the administrator in Google Workspace that the service account is acting on behalf of.
-	2. **Bridge Address**: Enter your SCIM bridge domain (not your 1Password account sign-in address). This is the Application URL for your Container App found on the overview page. For example: `https://scim.example.com`.
-4. Save the file.
-5. Run the following command for your shell to create a base64 value for the file.
+2. Edit the following in the .json file you downloaded:
+    1. **Actor**: Enter the email address of the Google Workspace administrator for the service account.
+    2. **Bridge Address**: Enter your SCIM bridge domain. This is the Application URL for your Container App, found on the overview page (not your 1Password account sign-in address). For example: `https://scim.example.com`.
+3. Save the file.
+4. Run the following command for your shell to create a base64 value for the file.
     - **Bash**:
     ```bash
     cat /path/to/workspace-settings.json | base64
     ```
-    - **Using PowerShell**:
+    - **PowerShell**:
     ```pwsh
     [Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path $PWD.Path '/path/to/workspace-settings.json')))
     ```
@@ -203,15 +204,15 @@ If Google Workspace is your identity provider, follow the steps in this section 
      2. **Value**: Enter the base64 value you just created.
 
 3. Click **Add**, then wait until the secret is created.
-4. Choose **Containers** from Application section in the sidebar.
+4. Choose **Containers** from the Application section in the sidebar.
 5. Click **Edit and deploy**.
 6. Hover over your **op-scim-bridge** container and select it, then click **Edit**.
-7. Scroll down to the environment variables and add a new one. Then fill out the following fields:
+7. Scroll down to the environment variables. Create a new variable with the following fields:
       1. **Name**: Enter `OP_WORKSPACE_CREDENTIALS`.
       2. **Source**: Choose **Reference a secret**.
       3. **Value**: Select the `workspace-credentials` secret.
 
-8. Create another new variable and fill out the following fields:
+8. Create another new variable with the following fields:
       1. Name: **OP_WORKSPACE_SETTINGS**
       2. **Source**: Choose **Reference a secret**.
       3. **Value**: Select the `workspace-settings` secret.
@@ -247,14 +248,14 @@ The pod for 1Password SCIM Bridge should be vertically scaled you provision a la
 | High      | 1,000–5,000     | 0.5   | 1.0Gi  |
 | Very high | >5,000          | 1.0   | 1.0Gi  |
 
-If you're provisioning more than 1,000 users, update the resources assigned to the SCIM bridge container to follow these recommendations. The resources specified for the Redis container do not need to be adjusted.
+If you're provisioning more than 1,000 users, update the resources assigned to [the SCIM bridge container](#22-continue-creating-the-container-app) to follow these recommendations. The resources specified for the Redis container don't need to be adjusted.
 
 > [!TIP]
 > Learn more about [Container App Name (``ConAppName`) variable requirements](#container-app-name-requirements) that are referenced in the commands below.
 
 ### Default deployment
 
-To revert to the default specification that is suitable for provisioning up to 1,000 users, run the following command:
+If you're provisioning fewer than 1,000 users, run the following command:
 
 ```sh
 az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge \
@@ -283,7 +284,7 @@ az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim
 
 ### Region support
 
-When you create or deploy the Container App Environment, Azure may present an error that the region is not supported. You can review Azure documentation to make sure the region you selected supports [Azure Container Apps](https://azure.microsoft.com/en-ca/explore/global-infrastructure/products-by-region/?regions=all&products=container-apps).
+When you create or deploy the Container App Environment, Azure may present an error that the region isn't supported. You can review Azure documentation to make sure the region you selected supports [Azure Container Apps](https://azure.microsoft.com/en-ca/explore/global-infrastructure/products-by-region/?regions=all&products=container-apps).
 
 ### Container App Name requirements
 
@@ -291,7 +292,7 @@ Your Container App Name, (the `ConAppName` variable) can contain lowercase lette
 
 ### Viewing logs in Azure Container Apps
 
-Logs for a container app can be viewed from the **Log Stream**, there is a separate log stream for both containers of the revision that is active. Often reviewing the logs of the **op-scim-bridge** container can help understand any startup issues.
+You can [view logs for a container app](https://learn.microsoft.com/en-us/azure/container-apps/log-streaming?tabs=bash#view-log-streams-via-the-azure-portal) in the **Log Stream** area of your environment or container app in the Azure portal,. If you're having a start up issue with the SCIM bridge, reviewing the **op-scim-bridge** container logs can help you identify the problem.
 
 ### How to replace your `scimsession` secret in the deployment
 
