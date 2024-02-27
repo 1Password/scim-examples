@@ -22,12 +22,10 @@ This deployment consists of two [containers](https://learn.microsoft.com/en-us/a
 
 ## Before you begin
 
-Before you begin, familiarize yourself with [PREPARATION.md](/PREPARATION.md) and complete the necessary steps there. You'll also need the following:
-
-- An Azure account with permissions to create a Container App.
+Before you begin, familiarize yourself with [PREPARATION.md](/PREPARATION.md) and complete the necessary steps there. You'll also need an Azure account with permission to create a Container App.
 
 > [!NOTE]
-> If you don't have a Azure account, you can sign up for a free trial with starting credit: https://azure.microsoft.com/en-us/free/
+> If you don't have an Azure account, you can sign up for a free trial with starting credit: https://azure.microsoft.com/en-us/free/
 
 ### In this folder
 
@@ -223,27 +221,21 @@ If Google Workspace is your identity provider, follow the steps in this section 
 </details>
 
 <hr>
-
-## Update your SCIM bridge
+## Update your SCIM bridge in the Azure Portal
 
 > [!TIP]
 > Check for 1Password SCIM Bridge updates on the [SCIM bridge release page](https://app-updates.agilebits.com/product_history/SCIM).
 
-You can update your SCIM bridge in the [Azure Cloud Shell](#in-the-azure-cloud-shell-or-az-cli) or the [Azure Portal](#in-the-azure-portal).
-
-### In the Azure Cloud Shell or AZ CLI
-
-[Learn how to update 1Password SCIM Bridge in the Cloud Shell or AZ CLI.](https://support.1password.com/scim-update/#azure-container-apps)
-
-### In the Azure Portal
-
-1. Within Container App from the [Azure Container Apps Portal](https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/Microsoft.App%2FcontainerApps), Select **Containers** from the left hand side.
+1. Within Container App from the [Azure Container Apps Portal](https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/Microsoft.App%2FcontainerApps), select **Containers** from the sidebar.
 2. Click **Edit and deploy**.
 3. Put a check in the box next to your **op-scim-bridge** container and select **Edit**.
 4. Change the version number **2.9.0** in the **Image and Tag** field, **1password/scim:v2.9.0** to match the latest version from our [SCIM Bridge Release Notes page](https://app-updates.agilebits.com/product_history/SCIM).
 5. Select **Save**.
-6. Select **Create** to deploy a new revision using the updating image.
-7. Log into your SCIM bridge URL with your bearer token to validate in the top left hand side that you are running the version of the SCIM Bridge. (logging in with the bearer token will also update your Automated User Provisioning page with the latest access time and with the current version).
+6. Select **Create** to deploy a new revision using the updated image.
+7. Enter your SCIM bridge URL in a browser and sign in with your bearer token.
+8. Check the top left-hand side of the page to verify you're running the updated version of the SCIM Bridge.
+
+After you sign in to your SCIM bridge, the [Automated User Provisioning page](https://start.1password.com/integrations/active/) in your 1Password account will also update with the latest access time and SCIM bridge version.
 
 ## Appendix: Resource recommendations
 
@@ -257,7 +249,10 @@ The pod for 1Password SCIM Bridge should be vertically scaled you provision a la
 
 If you're provisioning more than 1,000 users, update the resources assigned to the SCIM bridge container to follow these recommendations. The resources specified for the Redis container do not need to be adjusted.
 
-### Default
+> [!TIP]
+> Learn more about [Container App Name (``ConAppName`) variable requirements](#container-app-name-requirements) that are referenced in the commands below.
+
+### Default deployment
 
 To revert to the default specification that is suitable for provisioning up to 1,000 users, run the following command:
 
@@ -266,16 +261,16 @@ az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim
   --cpu 0.25 --memory 0.5Gi
 ```
 
-### High volume deployment
+### High-volume deployment
 
-If you're provisioning up to 5,000 users:
+If you're provisioning between 1,000 and 5,000 users:
 
 ```sh
 az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge \
   --cpu 0.5 --memory 1.0Gi
 ```
 
-### Very high volume
+### Very high-volume deployment
 
 If you're provisioning more than 5,000 users:
 
