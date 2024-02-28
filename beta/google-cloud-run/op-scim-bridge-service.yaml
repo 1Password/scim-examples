@@ -12,32 +12,32 @@ spec:
         run.googleapis.com/startup-cpu-boost: "true"
     spec:
       containers:
-      - name: scim
-        image: 1password/scim:v2.9.0
-        ports:
-        - name: http1
-          containerPort: 3002
-        resources:
-          limits:
-            cpu: 500m
-            memory: 512Mi
-        volumeMounts:
-        - name: credentials
-          mountPath: /home/opuser/.op
-      - name: redis
-        image: redis
-        args:
-          - --maxmemory 256mb
-          - --maxmemory-policy volatile-lru
-          - --save ""
-        resources:
-          limits:
-            cpu: 500m
-            memory: 512Mi
+        - name: scim
+          image: 1password/scim:v2.9.0
+          ports:
+            - name: http1
+              containerPort: 3002
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          volumeMounts:
+            - name: credentials
+              mountPath: /home/opuser/.op
+        - name: redis
+          image: redis
+          args:
+            - --maxmemory 256mb
+            - --maxmemory-policy volatile-lru
+            - --save ""
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
       volumes:
-      - name: credentials
-        secret:
-          secretName: scimsession
-          items:
-          - key: latest
-            path: scimsession
+        - name: credentials
+          secret:
+            secretName: scimsession
+            items:
+              - key: latest
+                path: scimsession
