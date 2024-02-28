@@ -26,6 +26,10 @@ spec:
           mountPath: /home/opuser/.op
       - name: redis
         image: redis
+        args:
+          - --maxmemory 256mb
+          - --maxmemory-policy volatile-lru
+          - --save ""
         resources:
           limits:
             cpu: 500m
