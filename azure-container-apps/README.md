@@ -299,7 +299,7 @@ If you're provisioning more than 1,000 users, update the resources assigned to [
 
 ### Default deployment
 
-If you're provisioning fewer than 1,000 users, run the following command:
+If you're provisioning up to 1,000 users, run the following command:
 
 ```sh
 az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge \
