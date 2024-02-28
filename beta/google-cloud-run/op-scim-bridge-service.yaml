@@ -11,7 +11,7 @@ spec:
     spec:
       containers:
       - name: scim
-        image: registry-1.docker.io/1password/scim:v2.9.0
+        image: 1password/scim:v2.9.0
         ports:
         - name: http1
           containerPort: 3002
@@ -23,7 +23,7 @@ spec:
         - name: credentials
           mountPath: /home/opuser/.op
       - name: redis
-        image: registry-1.docker.io/library/redis
+        image: redis
         resources:
           limits:
             cpu: 125m
