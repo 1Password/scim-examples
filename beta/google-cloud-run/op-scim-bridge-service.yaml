@@ -19,7 +19,7 @@ spec:
           containerPort: 3002
         resources:
           limits:
-            cpu: 125m
+            cpu: 500m
             memory: 512Mi
         volumeMounts:
         - name: credentials
@@ -28,7 +28,7 @@ spec:
         image: redis
         resources:
           limits:
-            cpu: 125m
+            cpu: 500m
             memory: 512Mi
       volumes:
       - name: credentials
