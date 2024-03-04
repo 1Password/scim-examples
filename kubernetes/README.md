@@ -35,7 +35,6 @@ cd ./scim-examples/kubernetes
 - [`op-scim-config.yaml`](./op-scim-config.yaml): Configuration for the SCIM bridge deployment.
 - [`op-scim-deployment.yaml`](./op-scim-deployment.yaml): The deployment manifest for the SCIM bridge container.
 - [`op-scim-service.yaml`](./op-scim-service.yaml): Public load balancer for SCIM bridge to connect with your identity provider.
-- [`redis-config.yaml`](./redis-config.yaml): Configuration for the Redis cache.
 - [`redis-deployment.yaml`](./redis-deployment.yaml): The deployment manifest for a Redis cache in the cluster.
 - [`redis-service.yaml`](./redis-service.yaml): Kubernetes Service for the Redis cache to enable connectivity inside the cluster.
 - [`google-workspace/workspace-settings.json`](./google-workspace/workspace-settings.json): a settings file template for customers integrating with Google Workspace.
@@ -339,7 +338,6 @@ Delete the cluster resources for Redis:
 
 ```sh
 kubectl delete \
-  --filename=redis-config.yaml \
   --filename=redis-deployment.yaml \
   --filename=redis-service.yaml
 ```
@@ -379,7 +377,6 @@ Delete the cluster resources for Redis, if required:
 
 ```sh
 kubectl delete \
-  --filename=redis-config.yaml \
   --filename=redis-deployment.yaml \
   --filename=redis-service.yaml
 ```
