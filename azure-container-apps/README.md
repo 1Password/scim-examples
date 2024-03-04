@@ -16,17 +16,16 @@ This deployment consists of two [containers](https://learn.microsoft.com/en-us/a
 - [Step 2: Create the container app](#step-2-create-the-container-app)
 - [Step 3: Configure and deploy your SCIM bridge](#step-3-configure-and-deploy-your-scim-bridge)
 - [Step 4: Connect your identity provider](#step-4-connect-your-identity-provider)
-- [Update your SCIM Bridge](#update-your-scim-bridge)
+- [Update your SCIM Bridge](#update-your-scim-bridge-in-the-azure-portal)
 - [Appendix: Resource recommendations](#appendix-resource-recommendations)
 - [Get help](#get-help)
 
 ## Before you begin
 
-Before you begin, familiarize yourself with [PREPARATION.md](/PREPARATION.md) and complete the necessary steps there. You'll also need an Azure account with permission to create a Container App.
+Before you begin, complete the necessary [preparation steps to deploy 1Password SCIM Bridge](/PREPARATION.md). You'll also need an Azure account with permission to create a Container App.
 
 > [!NOTE]
-> If you don't have an Azure account, you can sign up for a free trial with starting credit: https://azure.microsoft.com/en-us/free/
-
+> If you don't have an Azure account, you can sign up for a free trial with starting credit: https://azure.microsoft.com/free/
 
 ## Step 1: Configure the `scimsession` credentials
 
@@ -76,7 +75,7 @@ After you adjust these options, click **Create**.
 
 ### 2.2: Continue creating the container app
 
-1. On the Create Container App page, click **Next : Container >**.
+1. On the Create Container App page, click **Next: Container >**.
 2. Deselect **Use quickstart image**, then adjust the following:
 	1. **Name**: Enter `op-scim-bridge`.
 	2. **Image source**: Choose **Docker Hub or other registries**.
@@ -86,7 +85,7 @@ After you adjust these options, click **Create**.
 		1. Enter `OP_SESSION` as the Name and `""` as the Value.
 		2. Enter `OP_REDIS_URL` as the Name and `redis://localhost:6379` as the Value.
 
-3. Click **Next: Bindings >** at the bottom of the page, then click **Next : Ingress >** to continue.
+3. Click **Next: Bindings >** at the bottom of the page, then click **Next: Ingress >** to continue.
 4. Click **Enabled** to turn on ingress, then adjust the following:
 	1. **Ingress Traffic**: Choose **Accept traffic from anywhere**.
 	2. **Target Port**: Enter `3002`.
@@ -127,9 +126,9 @@ After the deployment is complete, click **Go to resource**, then continue to ste
     3. **Image and tag**: Enter `redis`.
     4. **CPU cores**: Enter `0.25`
     5. Memory (Gi): Enter `0.5`.
-    6. **Environment variables**: Create one with`REDIS_ARGS` as the Name and `--maxmemory 256mb --maxmemory-policy volatile-lru` as the Value.
+    6. **Environment variables**: Create one with `REDIS_ARGS` as the Name and `--maxmemory 256mb --maxmemory-policy volatile-lru` as the Value.
 
-3. Click **Add**, then click **Next : Scale >**.
+3. Click **Add**, then click **Next: Scale >**.
 4. Drag each end of the slider to select `1` as both the minimum and maximum replica range of the scale rule setting.
 5. Click **Create**.
 
@@ -257,7 +256,7 @@ If Google Workspace is your identity provider, follow the steps in this section 
     --resource-group $ResourceGroup `
     --secrets workspace-creds="$([Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path $HOME 'workspace-credentials.json'))))"
     ```
-5. To restart your SCIM bridge so it can use the new secret, copy and paste the following command, replace `$ConAppName` and `$ResourceGroup` with the names from your deployment, and run the command.
+5. To restart your SCIM bridge so it can use the new secret, copy and paste the following command. Replace `$ConAppName` and `$ResourceGroup` with the names from your deployment, and run the command.
     ```
     az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge --set-env-vars OP_WORKSPACE_CREDENTIALS=secretref:workspace-creds OP_WORKSPACE_SETTINGS=secretref:workspace-settings
     ```
@@ -273,7 +272,7 @@ If Google Workspace is your identity provider, follow the steps in this section 
 
 1. Within Container App from the [Azure Container Apps Portal](https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/Microsoft.App%2FcontainerApps), select **Containers** from the sidebar.
 2. Click **Edit and deploy**.
-3. Put a check in the box next to your **op-scim-bridge** container and select **Edit**.
+3. Select the checkbox next to your **op-scim-bridge** container, then choose **Edit**.
 4. Change the version number **2.9.0** in the **Image and Tag** field, **1password/scim:v2.9.0** to match the latest version from our [SCIM Bridge Release Notes page](https://app-updates.agilebits.com/product_history/SCIM).
 5. Select **Save**.
 6. Select **Create** to deploy a new revision using the updated image.
@@ -284,7 +283,7 @@ After you sign in to your SCIM bridge, the [Automated User Provisioning page](ht
 
 ## Appendix: Resource recommendations
 
-The pod for 1Password SCIM Bridge should be vertically scaled you provision a large number of users or groups. These are our default resource specifications and recommended configurations for provisioning at scale:
+The pod for 1Password SCIM Bridge should be vertically scaled if you provision a large number of users or groups. These are our default resource specifications and recommended configurations for provisioning at scale:
 
 | Volume    | Number of users | CPU   | memory |
 | --------- | --------------- | ----- | ------ |
@@ -308,7 +307,7 @@ az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim
 
 ### High-volume deployment
 
-If you're provisioning between 1,000 and 5,000 users:
+If you're provisioning between 1,000 and 5,000 users, run the following command:
 
 ```sh
 az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge \
@@ -317,7 +316,7 @@ az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim
 
 ### Very high-volume deployment
 
-If you're provisioning more than 5,000 users:
+If you're provisioning more than 5,000 users, run the following command:
 
 ```sh
 az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge \
@@ -328,15 +327,15 @@ az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim
 
 ### Region support
 
-When you create or deploy the Container App Environment, Azure may present an error that the region isn't supported. You can review Azure documentation to make sure the region you selected supports [Azure Container Apps](https://azure.microsoft.com/en-ca/explore/global-infrastructure/products-by-region/?regions=all&products=container-apps).
+When you create or deploy the Container App Environment, Azure may present an error that the region isn't supported. You can review Azure documentation to make sure the region you selected supports [Azure Container Apps](https://azure.microsoft.com/explore/global-infrastructure/products-by-region/?regions=all&products=container-apps).
 
 ### Container App Name requirements
 
-Your Container App Name, (the `ConAppName` variable) can contain lowercase letters, numbers, and hyphens. It must be between 2 and 32 characters long, cannot start or end with a hyphen, and cannot start with a number. [Learn more about the naming rules and restrictions for Azure resources](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/resource-name-rules#microsoftapp).
+Your Container App Name (the `ConAppName` variable) can contain lowercase letters, numbers, and hyphens. It must be 2 to 32 characters long, cannot start or end with a hyphen, and cannot start with a number. [Learn more about the naming rules and restrictions for Azure resources](https://learn.microsoft.com/azure/azure-resource-manager/management/resource-name-rules#microsoftapp).
 
 ### Viewing logs in Azure Container Apps
 
-You can [view logs for a container app](https://learn.microsoft.com/en-us/azure/container-apps/log-streaming?tabs=bash#view-log-streams-via-the-azure-portal) in the **Log Stream** area of your environment or container app in the Azure portal,. If you're having a start up issue with the SCIM bridge, reviewing the **op-scim-bridge** container logs can help you identify the problem.
+You can [view logs for a container app](https://learn.microsoft.com/azure/container-apps/log-streaming?tabs=bash#view-log-streams-via-the-azure-portal) in the **Log Stream** area of your environment or container app in the Azure portal. If you're having an issue starting up the SCIM bridge, reviewing the **op-scim-bridge** container logs can help you identify the problem.
 
 ### How to replace your `scimsession` secret in the deployment
 
