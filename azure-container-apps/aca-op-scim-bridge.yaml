@@ -18,8 +18,6 @@ properties:
       - image: docker.io/1password/scim:v2.9.0
         name: op-scim-bridge
         env:
-          - name: OP_REDIS_URL
-            value: "redis://localhost:6379"
           - name: OP_SESSION
             secretRef: scimsession
         resources:
@@ -27,13 +25,13 @@ properties:
           memory: 0.5Gi
       - image: docker.io/redis
         name: op-scim-redis
-        env:
-          - name: REDIS_ARGS
-            value: "--maxmemory 256mb --maxmemory-policy volatile-lru"
+        args:
+          - --maxmemory 256mb
+          - --maxmemory-policy volatile-lru
+          - --save ""
         resources:
           cpu: 0.25
           memory: 0.5Gi
     scale:
       minReplicas: 1
       maxReplicas: 1
-      
