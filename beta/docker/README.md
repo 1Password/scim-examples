@@ -1,6 +1,6 @@
 # [Beta] Deploy 1Password SCIM Bridge using Docker Swarm
 
-This example describes how to deploy 1Password SCIM Bridge as a [stack](https://docs.docker.com/engine/swarm/stack-deploy/) using [Docker Swarm](https://docs.docker.com/engine/swarm/key-concepts/#what-is-a-swarm). The stack includes two [services](https://docs.docker.com/engine/swarm/how-swarm-mode-works/services/) (one each for the SCIM bridge container and the required Redis cache), a [Docker secret](https://docs.docker.com/engine/swarm/secrets/) for the `scimsession` credentials, a [Docker config](https://docs.docker.com/engine/swarm/configs/) for configuring Redis, and optional secrets and configuration required only for customers integrating with Google Workspace.
+This example describes how to deploy 1Password SCIM Bridge as a [stack](https://docs.docker.com/engine/swarm/stack-deploy/) using [Docker Swarm](https://docs.docker.com/engine/swarm/key-concepts/#what-is-a-swarm). The stack includes two [services](https://docs.docker.com/engine/swarm/how-swarm-mode-works/services/) (one each for the SCIM bridge container and the required Redis cache), a [Docker secret](https://docs.docker.com/engine/swarm/secrets/) for the `scimsession` credentials, and optional secrets and configuration required only for customers integrating with Google Workspace.
 
 ## In this folder
 
@@ -9,7 +9,6 @@ This example describes how to deploy 1Password SCIM Bridge as a [stack](https://
 - [`compose.gw.yaml`](./compose.gw.yaml): an [override configuration](https://docs.docker.com/compose/multiple-compose-files/merge/) to merge the configuration necessary for customers integrating with Google Workspace.
 - [`compose.http.yaml`](./compose.http.yaml): optional configuration for exposing an HTTP port on the Docker host for forwarding plain-text traffic within a private network from a public TLS termination endpoint
 - [`compose.tls.yaml`](./compose.http.yaml): optional configuration for enabling a self-managed TLS certificate
-- [`redis.conf`](./redis.conf): a [Redis configuration file](https://redis.io/docs/management/config/) to load the Redis cache with the base configuration required for SCIM bridge
 - [`scim.env`](./scim.env): an environment file used to customize the SCIM bridge configuration
 
 ## Overview
