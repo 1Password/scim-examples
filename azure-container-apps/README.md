@@ -27,44 +27,17 @@ Before you begin, complete the necessary [preparation steps to deploy 1Password 
 > [!NOTE]
 > If you don't have an Azure account, you can sign up for a free trial with starting credit: https://azure.microsoft.com/free/
 
-## Step 1: Configure the `scimsession` credentials
-
-To connect the SCIM bridge with your 1Password account, you'll need to save the `scimsession` credentials as a secret variable in the Container App you create. These credentials need to be Base64-encoded to pass them into the environment, but they're saved as a plaintext file when you download them or save them in your 1Password account during the setup.
-
-> [!IMPORTANT]
-> You'll need to update the path to the `scimsession` file you saved during the preparation steps.
-
-Use the following command for your shell to get the Base64 encoded contents of your `scimsession` file:
-
-- **Bash**:
-
-  ```bash
-  cat ./scimsession | base64
-  ```
-- **PowerShell**:
-
-  ```pwsh
-  [Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path $PWD.Path 'scimsession')))
-  ```
-
-Copy the output value to your clipboard, then save the encoded value in 1Password:
-
-1. Find the "scimsession file" item in your 1Password account.
-2. Click **Edit**, then choose **Add another field** and select **Password**.
-3. Rename the field label to `Base64 value`.
-4. Paste the Base64 value from your clipboard into the password field, then click **Save**.
-
-## Step 2: Create the container app
+## Step 1: Create the Container App
 
 1. Sign in to the Azure Portal and go to the [Container Apps](https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/Microsoft.App%2FcontainerApps) page.
 2. Click **Create**, then fill out the following fields:
-      1. **Resource group**: Choose an existing Resource Group or create a new one.
-      2. **Container app name**: Enter a name you'd like to use, such as `op-scim-con-app`.
-      3. **Region**: Choose the region you prefer.
-      4. **Container App Environment**: Choose an existing Container App environment or create a new one with the information in [step 2.1](#21-optional-create-a-new-container-app-environment).
-3. If you didn't create a new Container App Environment, continue to [step 2.2](#22-continue-creating-the-container-app).
+      - **Resource group**: Choose an existing Resource Group or create a new one.
+      - **Container app name**: Enter a name you'd like to use, such as `op-scim-con-app`.
+      - **Region**: Choose the region you prefer.
+      - **Container App Environment**: Choose an existing Container App environment or create a new one with the information in [step 2.1](#21-optional-create-a-new-container-app-environment).
+3. If you didn't create a new Container App Environment, continue to [step 1.2](#12-create-the-container-app-and-deploy-redis).
 
-### 2.1: (Optional) Create a new Container App Environment
+### 1.1: (Optional) Create a new Container App Environment
 
 If you choose to create a new Container App Environment, give it a name that makes sense for your organization, such as `op-scim-con-app-env`. Then adjust the following:
 
@@ -73,72 +46,59 @@ If you choose to create a new Container App Environment, give it a name that mak
 
 After you adjust these options, click **Create**.
 
-### 2.2: Continue creating the container app
+### 1.2: Create the Container App and deploy Redis
 
 1. On the Create Container App page, click **Next: Container >**.
 2. Deselect **Use quickstart image**, then adjust the following:
-	1. **Name**: Enter `op-scim-bridge`.
-	2. **Image source**: Choose **Docker Hub or other registries**.
-	3. **Image and tag:** Enter `1password/scim:v2.9.0`.
-	4. **CPU and Memory**: Choose **0.25 CPU cores, 0.5 Gi memory**, which should be the default option.
-	5. **Environment variables**: Create two environment variables.
-		1. Enter `OP_SESSION` as the Name and `""` as the Value.
-		2. Enter `OP_REDIS_URL` as the Name and `redis://localhost:6379` as the Value.
+    - **Name**: Enter `op-scim-redis`.
+    - **Image source**: Choose **Docker Hub or other registries**.
+    - **Image and tag:** Enter `redis`.
+    - **CPU and Memory**: Choose **0.25 CPU cores, 0.5 Gi memory**, which should be the default option.
+    - **Command override**: Enter `redis-server, --maxmemory 256mb, --maxmemory-policy volatile-lru, --save ""`
+3. Click **Review + create** at the bottom of the page. When the page loads, click **Create.**
 
-3. Click **Next: Bindings >** at the bottom of the page, then click **Next: Ingress >** to continue.
-4. Click **Enabled** to turn on ingress, then adjust the following:
-	1. **Ingress Traffic**: Choose **Accept traffic from anywhere**.
-	2. **Target Port**: Enter `3002`.
+After the deployment is complete, click **Go to resource**, then continue to step 2.
 
-5. Click **Review + create** at the bottom of the page. When the page loads, click **Create.**
-
-After the deployment is complete, click **Go to resource**, then continue to step 3.
-
-> [!NOTE]
-> The deployment will fail because it's expecting the second container to deploy successfully. Continue to step 3 to fully deploy the SCIM bridge.
-
-## Step 3: Configure and deploy your SCIM bridge
-
-### 3.1: Create a secret with your `scimsession` file
+## Step 2: Create a secret for your `scimsession` credentials
 
 1. Choose **Secrets** from the Settings section in the sidebar.
 2. Click **Add**, then enter `scimsession` in the Key field.
-3. Paste the base64 value into the **Value** field. This is the `scimsession` item you added to your account in [step 1](#step-1-configure-the-scimsession-credentials).
+3. Paste the plain-text contents of the `scimession` file into the **Value** field.
 4. Choose **Add**, then wait until the secret is created.
 
-### 3.2: Create a secret reference
-
-1. Choose **Containers** from the Application section in the sidebar.
-2. Click **Edit and deploy**.
-3. Hover over your **op-scim-bridge** container and select it, then click **Edit**.
-4. Scroll down to the environment variables and adjust the following for the **OP_SESSION** variable:
-	1. **Source**: Choose **Reference a secret**
-	2. **Value**: Choose the **scimsession** secret.
-
-5. Click **Save**.
-
-### 3.3: Create a Redis container
+### Step 3: Deploy the SCIM bridge container
 
 1. Choose **Add** > **App container**.
 2. Adjust the following:
-    1. **Name**: Enter `op-scim-redis`.
-    2. **Image source**: Choose **Docker Hub or other registries**.
-    3. **Image and tag**: Enter `redis`.
-    4. **CPU cores**: Enter `0.25`
-    5. Memory (Gi): Enter `0.5`.
-    6. **Environment variables**: Create one with `REDIS_ARGS` as the Name and `--maxmemory 256mb --maxmemory-policy volatile-lru` as the Value.
+    - **Name**: Enter `op-scim-bridge`.
+    - **Image source**: Choose **Docker Hub or other registries**.
+    - **Image and tag**: Enter `1password/scim:v2.9.0`.
+    - **CPU cores**: Enter `0.25`
+    - Memory (Gi): Enter `0.5`.
+3. Choose "Volume mounts". Click "Create new volume". Adjust the following:
+    - **Volume type**: Choose Secret.
+    - **Name**: Enter `credentials`
+    - **Mount all secrets:** should already be selected, but select it if is not.
+4. Click **Add** to save the volume specification. You should see the new `credentials` volume listed under **Volume name**.
+5. In the `Mount path` field for this volume, enter `/home/opuser/.op`.
+6. Click **Create**.
 
-3. Click **Add**, then click **Next: Scale >**.
-4. Drag each end of the slider to select `1` as both the minimum and maximum replica range of the scale rule setting.
-5. Click **Create**.
+### Step 4: Enable ingress to your SCIM bridge
 
-### 3.4: Test your SCIM bridge
+1. Wait for the notification that the revision deployment was successful, then choose **Ingress** from the Settings section in the sidebar.
+2. Select **Enabled** to allow and configure ingress. Adjust the following:
+    - **Ingress traffic**: Choose **Accepting traffic from anywhere**.
+    - **Client certificate mode**: Choose **Ignore**, which should be the selected option.
+    - **Target port**: Enter `3002`.
+3. Click **Save**.
 
-Wait for the notification that the revision deployment was successful, then choose **Overview**.
+### Step 5: Test your SCIM bridge
+
+Choose **Overview**.
 
 To test if your SCIM bridge is online, click **Application Url**. This URL is your SCIM bridge domain. You should be able to enter your bearer token to verify that your SCIM bridge is up and running.
 
-## Step 4: Connect your identity provider
+## Step 6: Connect your identity provider
 
 To finish setting up automated user provisioning, [connect your identity provider to the SCIM bridge](https://support.1password.com/scim/#step-3-connect-your-identity-provider).
 
