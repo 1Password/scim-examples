@@ -12,10 +12,12 @@ This deployment consists of two [containers](https://learn.microsoft.com/en-us/a
 **Table of contents:**
 
 - [Before you begin](#before-you-begin)
-- [Step 1: Configure the `scimsession` credentials](#step-1-configure-the-scimsession-credentials)
-- [Step 2: Create the container app](#step-2-create-the-container-app)
-- [Step 3: Configure and deploy your SCIM bridge](#step-3-configure-and-deploy-your-scim-bridge)
-- [Step 4: Connect your identity provider](#step-4-connect-your-identity-provider)
+- [Step 1: Create the Container App](#step-1-create-the-container-app)
+- [Step 2: Create a secret for your `scimsession` credentials](#step-2-create-a-secret-for-your-scimsession-credentials)
+- [Step 3: Deploy the SCIM bridge container](#step-3-deploy-the-scim-bridge-container)
+- [Step 4: Enable ingress to your SCIM bridge](#step-4-enable-ingress-to-your-scim-bridge)
+- [Step 5: Test your SCIM bridge](#step-5-)
+- [Step 6: Connect your identity provider](#step-6-connect-your-identity-provider)
 - [Update your SCIM Bridge](#update-your-scim-bridge-in-the-azure-portal)
 - [Appendix: Resource recommendations](#appendix-resource-recommendations)
 - [Get help](#get-help)
@@ -34,7 +36,7 @@ Before you begin, complete the necessary [preparation steps to deploy 1Password 
       - **Resource group**: Choose an existing Resource Group or create a new one.
       - **Container app name**: Enter a name you'd like to use, such as `op-scim-con-app`.
       - **Region**: Choose the region you prefer.
-      - **Container App Environment**: Choose an existing Container App environment or create a new one with the information in [step 2.1](#21-optional-create-a-new-container-app-environment).
+      - **Container App Environment**: Choose an existing Container App environment or create a new one with the information in [step 1.1](#11-optional-create-a-new-container-app-environment).
 3. If you didn't create a new Container App Environment, continue to [step 1.2](#12-create-the-container-app-and-deploy-redis).
 
 ### 1.1: (Optional) Create a new Container App Environment
@@ -66,7 +68,7 @@ After the deployment is complete, click **Go to resource**, then continue to ste
 3. Paste the plain-text contents of the `scimession` file into the **Value** field.
 4. Choose **Add**, then wait until the secret is created.
 
-### Step 3: Deploy the SCIM bridge container
+## Step 3: Deploy the SCIM bridge container
 
 1. Choose **Add** > **App container**.
 2. Adjust the following:
@@ -80,10 +82,10 @@ After the deployment is complete, click **Go to resource**, then continue to ste
     - **Name**: Enter `credentials`
     - **Mount all secrets:** should already be selected, but select it if is not.
 4. Click **Add** to save the volume specification. You should see the new `credentials` volume listed under **Volume name**.
-5. In the `Mount path` field for this volume, enter `/home/opuser/.op`.
+5. In the **Mount path** field for this volume, enter `/home/opuser/.op`.
 6. Click **Create**.
 
-### Step 4: Enable ingress to your SCIM bridge
+## Step 4: Enable ingress to your SCIM bridge
 
 1. Wait for the notification that the revision deployment was successful, then choose **Ingress** from the Settings section in the sidebar.
 2. Select **Enabled** to allow and configure ingress. Adjust the following:
@@ -92,7 +94,7 @@ After the deployment is complete, click **Go to resource**, then continue to ste
     - **Target port**: Enter `3002`.
 3. Click **Save**.
 
-### Step 5: Test your SCIM bridge
+## Step 5: Test your SCIM bridge
 
 Choose **Overview**.
 
