@@ -229,7 +229,7 @@ The pod for 1Password SCIM Bridge should be vertically scaled if you provision a
 If you're provisioning more than 1,000 users, update the resources assigned to [the SCIM bridge container](#22-continue-creating-the-container-app) to follow these recommendations. The resources specified for the Redis container don't need to be adjusted.
 
 > [!TIP]
-> Learn more about [Container App Name (``ConAppName`) variable requirements](#container-app-name-requirements) that are referenced in the commands below.
+> Learn more about [Container App Name (`ConAppName`) variable requirements](#container-app-name-requirements) that are referenced in the commands below.
 
 ### Default deployment
 
