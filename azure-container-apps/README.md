@@ -72,15 +72,15 @@ After the deployment is complete, click **Go to resource**, then continue to ste
 
 1. Choose **Add** > **App container**.
 2. Adjust the following:
-    1. **Name**: Enter `op-scim-bridge`.
-    2. **Image source**: Choose **Docker Hub or other registries**.
-    3. **Image and tag**: Enter `1password/scim:v2.9.0`.
-    4. **CPU cores**: Enter `0.25`
-    5. **Memory (Gi)**: Enter `0.5`.
+    - **Name**: Enter `op-scim-bridge`.
+    - **Image source**: Choose **Docker Hub or other registries**.
+    - **Image and tag**: Enter `1password/scim:v2.9.0`.
+    - **CPU cores**: Enter `0.25`
+    - **Memory (Gi)**: Enter `0.5`.
 3. Choose "Volume mounts", then click "Create new volume" below Secrets. Adjust the following:
-    1. **Volume type**: Choose Secret.
-    2. **Name**: Enter `credentials`.
-    3. **Mount all secrets:** should already be selected, but select it if is not.
+    - **Volume type**: Choose Secret.
+    - **Name**: Enter `credentials`.
+    - **Mount all secrets:** should already be selected, but select it if is not.
 4. Click **Add** to save the volume specification. You should see the new `credentials` volume listed under "Volume name".
 5. Enter `/home/opuser/.op` in the **Mount path** field for this volume.
 6. Click **Create**.
