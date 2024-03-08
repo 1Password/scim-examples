@@ -17,7 +17,7 @@
 
 ## Before you begin
 
-Before you begin, familiarize yourself with [PREPARATION.md](/PREPARATION.md) and complete the necessary steps there. Then:
+Before you begin, complete the necessary [preparation steps to deploy 1Password SCIM Bridge](/PREPARATION.md). You'll also need to:
 
 - Install [Terraform](https://www.terraform.io/downloads).
 - Have your `scimsession` file and bearer token (as seen in [PREPARATION.md](/PREPARATION.md)) ready.
