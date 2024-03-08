@@ -33,10 +33,10 @@ Before you begin, complete the necessary [preparation steps to deploy 1Password 
 
 1. Sign in to the Azure Portal and go to the [Container Apps](https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/Microsoft.App%2FcontainerApps) page.
 2. Click **Create**, then fill out the following fields:
-    1. **Resource group**: Choose an existing Resource Group or create a new one.
-    2. **Container app name**: Enter a name you'd like to use, such as `op-scim-con-app`.
-    3. **Region**: Choose the region you prefer.
-    4. **Container App Environment**: Choose an existing Container App environment or create a new one with the information in [step 1.1](#11-optional-create-a-new-container-app-environment).
+    - **Resource group**: Choose an existing Resource Group or create a new one.
+    - **Container app name**: Enter a name you'd like to use, such as `op-scim-con-app`.
+    - **Region**: Choose the region you prefer.
+    - **Container App Environment**: Choose an existing Container App environment or create a new one with the information in [step 1.1](#11-optional-create-a-new-container-app-environment).
 3. If you didn't create a new Container App Environment, continue to [step 1.2](#12-create-the-container-app-and-deploy-redis).
 
 ### 1.1: (Optional) Create a new Container App Environment
@@ -52,11 +52,11 @@ After you adjust these options, click **Create**.
 
 1. On the Create Container App page, click **Next: Container >**.
 2. Deselect **Use quickstart image**, then adjust the following:
-    1. **Name**: Enter `op-scim-redis`.
-    2. **Image source**: Choose **Docker Hub or other registries**.
-    3. **Image and tag:** Enter `redis`.
-    4. **CPU and Memory**: Choose **0.25 CPU cores, 0.5 Gi memory**.
-    5. **Command override**: Enter `redis-server, --maxmemory 256mb, --maxmemory-policy volatile-lru, --save ""`
+    - **Name**: Enter `op-scim-redis`.
+    - **Image source**: Choose **Docker Hub or other registries**.
+    - **Image and tag:** Enter `redis`.
+    - **CPU and Memory**: Choose **0.25 CPU cores, 0.5 Gi memory**.
+    - **Command override**: Enter `redis-server, --maxmemory 256mb, --maxmemory-policy volatile-lru, --save ""`
 3. Click **Review + create** at the bottom of the page. When the page loads, click **Create.**
 
 After the deployment is complete, click **Go to resource**, then continue to step 2.
@@ -72,31 +72,31 @@ After the deployment is complete, click **Go to resource**, then continue to ste
 
 1. Choose **Add** > **App container**.
 2. Adjust the following:
-    1. **Name**: Enter `op-scim-bridge`.
-    2. **Image source**: Choose **Docker Hub or other registries**.
-    3. **Image and tag**: Enter `1password/scim:v2.9.0`.
-    4. **CPU cores**: Enter `0.25`
-    5. **Memory (Gi)**: Enter `0.5`.
+    - **Name**: Enter `op-scim-bridge`.
+    - **Image source**: Choose **Docker Hub or other registries**.
+    - **Image and tag**: Enter `1password/scim:v2.9.0`.
+    - **CPU cores**: Enter `0.25`
+    - **Memory (Gi)**: Enter `0.5`.
 3. Choose "Volume mounts", then click "Create new volume" below Secrets. Adjust the following:
-    1. **Volume type**: Choose Secret.
-    2. **Name**: Enter `credentials`.
-    3. **Mount all secrets:** should already be selected, but select it if is not.
+    - **Volume type**: Choose Secret.
+    - **Name**: Enter `credentials`.
+    - **Mount all secrets:** should already be selected, but select it if is not.
 4. Click **Add** to save the volume specification. You should see the new `credentials` volume listed under "Volume name".
-5. Enter `/home/opuser/.op` in the **Mount path** field for this volume.
+5. Enter `/home/opuser/.op` in the **Mount path** field for this volume.
 6. Click **Create**.
 
 ## Step 4: Enable ingress to your SCIM bridge
 
 1. Wait for the notification that the revision deployment was successful, then choose **Ingress** from the Settings section in the sidebar.
 2. Select **Enabled** to allow and configure ingress. Adjust the following:
-    1. **Ingress traffic**: Choose **Accepting traffic from anywhere**.
-    2. **Client certificate mode**: Choose **Ignore**.
-    3. **Target port**: Enter `3002`.
+    - **Ingress traffic**: Choose **Accepting traffic from anywhere**.
+    - **Client certificate mode**: Choose **Ignore**.
+    - **Target port**: Enter `3002`.
 3. Click **Save**.
 
 ## Step 5: Test your SCIM bridge
 
-To test if your SCIM bridge is online, choose **Overview** in your application's sidebar, then click your **Application Url** link. This URL is your SCIM bridge domain. You should be able to enter your bearer token to verify that your SCIM bridge is up and running.
+To test if your SCIM bridge is online, choose **Overview** in your application's sidebar, then click your **Application Url** link. This URL is your SCIM bridge domain. You should be able to enter your bearer token to verify that your SCIM bridge is up and running.
 
 ## Step 6: Connect your identity provider
 
@@ -117,8 +117,8 @@ Follow the steps to [create a Google service account, key, and API client](https
 
 1. Download the [`workspace-settings.json`](./google-workspace/workspace-settings.json) file from this repo.
 2. Edit the following in this file:
-    1. **Actor**: Enter the email address of the Google Workspace administrator for the service account.
-    2. **Bridge Address**: Enter your SCIM bridge domain. This is the Application URL for your Container App, found on the overview page (**not** your 1Password account sign-in address). For example: `https://op-scim-bridge.example.eastus.azurecontainerapps.io`.
+    - **Actor**: Enter the email address of the Google Workspace administrator for the service account.
+    - **Bridge Address**: Enter your SCIM bridge domain. This is the Application URL for your Container App, found on the overview page (**not** your 1Password account sign-in address). For example: `https://op-scim-bridge.example.eastus.azurecontainerapps.io`.
 3. Save the file.
 
 #### 6.3: Create secrets for Google Workspace
@@ -127,13 +127,13 @@ Follow the steps to [create a Google service account, key, and API client](https
 2. Choose **Secrets** from the Settings section in the sidebar.
 3. Open the key file generated by Google for your service account you saved to your computer in [6.1](#61-get-your-google-workspace-service-account-key).
 4. Click **Add** to create a secret for the credentials file, then fill out the following fields:
-    1. **Key**: Enter `workspace-credentials`.
-    2. **Value**: Copy the entire contents of the key file. Paste it into this field.
+    - **Key**: Enter `workspace-credentials`.
+    - **Value**: Copy the entire contents of the key file. Paste it into this field.
 5. Click **Add**, then wait until the secret is created.
 6. Open the settings file you edited in [6.2](#62-download-and-edit-the-google-workspace-settings-template).
 7. Click **Add** to create another secret for the settings file, then fill out the following fields:
-    1. **Key**: Enter `workspace-settings`.
-    2. **Value**: Copy the entire contents of the settings file. Paste it into this field.
+    - **Key**: Enter `workspace-settings`.
+    - **Value**: Copy the entire contents of the settings file. Paste it into this field.
 8. Click **Add**, then wait until the secret is created.
 
 #### 6.4: Connect your SCIM Bridge to Google Workspace
@@ -144,8 +144,8 @@ Follow the steps to [create a Google service account, key, and API client](https
 4. Click on the **credentials** volume listed to edit the volume.
 5. Deselect **Mount all secrets**.
 6. Under **Select individual secrets to mount**, you should see all three secrets that you created. Add `.json` to the **File path** for each of the Google Workspace secrets:
-    1. **workspace-credentials**: `workspace-credentials.json`
-    2. **workspace-settings**: `workspace-settings.json`
+    - **workspace-credentials**: `workspace-credentials.json`
+    - **workspace-settings**: `workspace-settings.json`
 7. Click **Save**, then click **Create**.
 
 </details>
@@ -173,8 +173,8 @@ Follow the steps to [create a Google service account, key, and API client](https
     Invoke-RestMethod -Uri `https://raw.githubusercontent.com/1Password/scim-examples/solutions/main/azure-container-apps/google-workspace/workspace-settings.json -OutFile workspace-settings.json
     ```
 2. Edit the following in the .json file:
-    1. **Actor**: Enter the email address of the Google Workspace administrator for the service account.
-    2. **Bridge Address**: Enter your SCIM bridge domain. This is the Application URL for your Container App, found on the overview page (not your 1Password account sign-in address). For example: `https://scim.example.com`.
+    - **Actor**: Enter the email address of the Google Workspace administrator for the service account.
+    - **Bridge Address**: Enter your SCIM bridge domain. This is the Application URL for your Container App, found on the overview page (not your 1Password account sign-in address). For example: `https://scim.example.com`.
 3. Save the file.
 4. Copy and paste the following command for your shell, replace `$ConAppName` and `$ResourceGroup` with the names from your deployment, and run the command.
     - **Bash**:
@@ -229,7 +229,7 @@ The pod for 1Password SCIM Bridge should be vertically scaled if you provision a
 If you're provisioning more than 1,000 users, update the resources assigned to [the SCIM bridge container](#22-continue-creating-the-container-app) to follow these recommendations. The resources specified for the Redis container don't need to be adjusted.
 
 > [!TIP]
-> Learn more about [Container App Name (``ConAppName`) variable requirements](#container-app-name-requirements) that are referenced in the commands below.
+> Learn more about [Container App Name (`ConAppName`) variable requirements](#container-app-name-requirements) that are referenced in the commands below.
 
 ### Default deployment
 
@@ -277,7 +277,7 @@ You can [view logs for a container app](https://learn.microsoft.com/azure/contai
 After you download a new `scimsession` file, follow the steps below to replace the secret in your Container App.
 
 <details>
-<summary>Replace your `scimsession` secret using the Azure Cloud Shell or AZ CLI</summary>
+<summary>Replace your <code>scimsession</code> secret using the Azure Cloud Shell or AZ CLI</summary>
 
 1. Open the [Azure Shell](https://shell.azure.com) or use the `az` CLI tool.
 
@@ -317,7 +317,7 @@ After you download a new `scimsession` file, follow the steps below to replace t
     </details>
 
 <details>
-<summary>Replace your **scimsession** secret using the Azure Portal</summary>
+<summary>Replace your <code>scimsession</code> secret using the Azure Portal</summary>
 
 1. Open the Azure Portal and go to the [Container Apps](https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/Microsoft.App%2FcontainerApps) page.
 2. Choose **Secrets** from the Settings section in the sidebar.
