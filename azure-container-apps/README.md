@@ -77,7 +77,7 @@ After the deployment is complete, click **Go to resource**, then continue to ste
     3. **Image and tag**: Enter `1password/scim:v2.9.0`.
     4. **CPU cores**: Enter `0.25`
     5. **Memory (Gi)**: Enter `0.5`.
-3. Choose "Volume mounts". Click "Create new volume". Adjust the following:
+3. Choose "Volume mounts", then click "Create new volume" below Secrets. Adjust the following:
     1. **Volume type**: Choose Secret.
     2. **Name**: Enter `credentials`.
     3. **Mount all secrets:** should already be selected, but select it if is not.
@@ -96,7 +96,7 @@ After the deployment is complete, click **Go to resource**, then continue to ste
 
 ## Step 5: Test your SCIM bridge
 
-To test if your SCIM bridge is online, choose **Overview** in your application's sidebar, then click **Application Url**. This URL is your SCIM bridge domain. You should be able to enter your bearer token to verify that your SCIM bridge is up and running.
+To test if your SCIM bridge is online, choose **Overview** in your application's sidebar, then click your **Application Url** link. This URL is your SCIM bridge domain. You should be able to enter your bearer token to verify that your SCIM bridge is up and running.
 
 ## Step 6: Connect your identity provider
 
@@ -141,7 +141,7 @@ Follow the steps to [create a Google service account, key, and API client](https
 1. Choose **Containers** from the Application section in the sidebar.
 2. Click **Edit and deploy**
 3. Choose **Volumes**.
-4. Hover over the **credentials** volume and select it to edit the volume.
+4. Click on the **credentials** volume listed to edit the volume.
 5. Deselect **Mount all secrets**.
 6. Under **Select individual secrets to mount**, you should see all three secrets that you created. Add `.json` to the **File path** for each of the Google Workspace secrets:
     1. **workspace-credentials**: `workspace-credentials.json`
