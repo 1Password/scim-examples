@@ -37,7 +37,7 @@ variable "using_route53" {
 
 variable "log_retention_days" {
   type        = number
-  description = "Specifies the number of days to retain log events in CloudWatch. The log is retained indefinitely whne set to 0."
+  description = "Specifies the number of days to retain log events in CloudWatch. The log is retained indefinitely when set to 0."
 }
 
 # For customers integrating with Google Workspace
