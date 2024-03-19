@@ -182,14 +182,14 @@ Follow the steps to [create a Google service account, key, and API client](https
     az containerapp secret set \
     --name $ConAppName \
     --resource-group $ResourceGroup \
-    --secrets workspace-creds="$(cat $HOME/workspace-credentials.json | base64)"
+    --secrets workspace-creds="$(cat $HOME/workspace-credentials.json)" workspace-settings="$(cat $HOME/workspace-settings.json)"
     ```
     - **PowerShell**:
     ```pwsh
     az containerapp secret set `
     --name $ConAppName `
     --resource-group $ResourceGroup `
-    --secrets workspace-creds="$([Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path $HOME 'workspace-credentials.json'))))"
+    --secrets workspace-creds="$(Get-Content $HOME/workspace-credentials.json)" workspace-settings="$(Get-Content $HOME/workspace-settings.json)"
     ```
 5. To restart your SCIM bridge so it can use the new secret, copy and paste the following command. Replace `$ConAppName` and `$ResourceGroup` with the names from your deployment, and run the command.
     ```
@@ -279,6 +279,11 @@ After you download a new `scimsession` file, follow the steps below to replace t
 <details>
 <summary>Replace your <code>scimsession</code> secret using the Azure Cloud Shell or AZ CLI</summary>
 
+> [!TIP]
+> The following steps assume you have moved to mounting your secret from a volume mount and not using the base64 value. 
+> Follow the [command to update your deployment with the updated YAML file](https://support.1password.com/scim-deploy-azure/#step-3-set-up-and-deploy-1password-scim-bridge) to use a volume mounts, redefining your variables as needed for this command to succeed. 
+
+
 1. Open the [Azure Shell](https://shell.azure.com) or use the `az` CLI tool.
 
 2. Copy and paste the following command, replace `$ConAppName` and `$ResourceGroup` with the names from your deployment, and run the command.
@@ -289,7 +294,7 @@ After you download a new `scimsession` file, follow the steps below to replace t
         az containerapp secret set \
             --name $ConAppName \
             --resource-group $ResourceGroup \
-            --secrets scimsession="$(cat $HOME/scimsession | base64)"
+            --secrets scimsession="$(cat $HOME/scimsession)"
         ```
 
     - **PowerShell**:
@@ -298,7 +303,7 @@ After you download a new `scimsession` file, follow the steps below to replace t
         az containerapp secret set `
             --name $ConAppName `
             --resource-group $ResourceGroup `
-            --secrets scimsession="$([Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path $HOME 'scimsession'))))"
+            --secrets scimsession="$(Get-Content $HOME/scimsession)"
         ```
 
 3. Copy and paste the following command, which will have the `op-scim-bridge` container read the new secret. Replace `$ConAppName` and `$ResourceGroup` with the names from your deployment, then run the command.

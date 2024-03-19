@@ -17,11 +17,9 @@ properties:
     containers:
       - image: docker.io/1password/scim:v2.9.0
         name: op-scim-bridge
-        env:
-          - name: OP_REDIS_URL
-            value: "redis://localhost:6379"
-          - name: OP_SESSION
-            secretRef: scimsession
+        volumeMounts:
+          - mountPath: "/home/opuser/.op"
+            volumeName: credentials
         resources:
           cpu: 0.25
           memory: 0.5Gi
@@ -29,11 +27,17 @@ properties:
         name: op-scim-redis
         env:
           - name: REDIS_ARGS
-            value: "--maxmemory 256mb --maxmemory-policy volatile-lru"
+            value: "--maxmemory 256mb --maxmemory-policy volatile-lru --save''"
         resources:
           cpu: 0.25
           memory: 0.5Gi
     scale:
       minReplicas: 1
       maxReplicas: 1
+    volumes:
+      - name: credentials
+        storageType: Secret
+        secrets:
+        - secretRef: scimsession
+          path: scimsession
       
