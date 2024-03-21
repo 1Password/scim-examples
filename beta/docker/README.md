@@ -47,12 +47,13 @@ All following steps should be run on the same computer where you are already usi
 
 2. Open your preferred terminal. Clone this repository and switch to this directory:
 
-    ```sh
-    git clone https://github.com/1Password/scim-examples.git
-    cd ./scim-examples/beta/docker
-    ```
+   ```sh
+   git clone https://github.com/1Password/scim-examples.git
+   cd ./scim-examples/beta/docker
+   ```
 
 3. Save the `scimsession` credentials file from [the Automated User Provisioning setup](https://start.1password.com/integrations/directory/) to this working directory.
+
    > **Note**
    >
    > 💻 If you saved your `scimsession` file as an item in your 1Password account, you can
@@ -68,7 +69,7 @@ All following steps should be run on the same computer where you are already usi
    ```dotenv
    # ...
    OP_TLS_DOMAIN=scim.example.com
-   
+
    # ...
    ```
 
@@ -76,7 +77,7 @@ All following steps should be run on the same computer where you are already usi
 
 5. Create a Docker context to use for connecting to the Linux server:
 
-   *Example command:*
+   _Example command:_
 
    ```sh
    docker context create op-scim-bridge \
@@ -108,7 +109,7 @@ docker swarm init # --advertise-addr 192.0.2.1
 > **Note**
 >
 > Additional nodes may be optionally added to a swarm for fault tolerance. This command adds the Linux server as the
-> first (and only) node in the swarm, but Docker *requires* a unique IP address to advertise to other nodes (even if
+> first (and only) node in the swarm, but Docker _requires_ a unique IP address to advertise to other nodes (even if
 > no other nodes will be added). See [How nodes work](https://docs.docker.com/engine/swarm/how-swarm-mode-works/nodes/)
 > in the Docker documentation for more details.
 >
@@ -122,26 +123,26 @@ Additional configuration and credentials are required to integrate to integrate 
 > **Warning**
 >
 > ⏩ This section is **only** for customers who are integrating 1Password with Google Workspace for automated user
-> provisioning. If you are *not* integrating with Workspace, skip the steps in this section and
+> provisioning. If you are _not_ integrating with Workspace, skip the steps in this section and
 > [deploy your SCIM bridge](#%EF%B8%8F-deploy-1password-scim-bridge)
 
 See [Connect Google Workspace to 1Password SCIM Bridge](https://support.1password.com/scim-google-workspace/#step-1-create-a-google-service-account-key-and-api-client) for instructions to create the service account, key, and API client.
 
 1. Save the Google Workspace service account key to the working directory.
 2. Make sure the service account key is named `workspace-credentials.json`.
-3. Open the  [`workspace-settings.json`](./workspace-settings.json) file in a text editor and replace the values for each key:
+3. Open the [`workspace-settings.json`](./workspace-settings.json) file in a text editor and replace the values for each key:
 
-    - `actor`: the email address for the administrator that the service account is acting on behalf of
-    - `bridgeAddress`: the URL for your SCIM bridge based on the fully qualified domain name of the DNS record created in [Get started](#get-started)
+   - `actor`: the email address for the administrator that the service account is acting on behalf of
+   - `bridgeAddress`: the URL for your SCIM bridge based on the fully qualified domain name of the DNS record created in [Get started](#get-started)
 
-    ```json
-    {
-        "actor":"admin@example.com",
-        "bridgeAddress":"https://scim.example.com"
-    }
-    ```
+   ```json
+   {
+     "actor": "admin@example.com",
+     "bridgeAddress": "https://scim.example.com"
+   }
+   ```
 
-    Save the file.
+   Save the file.
 
 ## 🏗️ Deploy 1Password SCIM Bridge
 
@@ -160,7 +161,7 @@ If you are integrating with Google Workspace, use the `compose.gw.yaml` override
 > **Warning**
 >
 > ⏩ This section is **only** for customers who are integrating 1Password with Google Workspace for automated user
-> provisioning. If you are *not* integrating with Workspace, skip this section and [test your SCIM bridge](#-test-your-scim-bridge).
+> provisioning. If you are _not_ integrating with Workspace, skip this section and [test your SCIM bridge](#-test-your-scim-bridge).
 
 Merge the configuration to create and use the additional Docker secrets needed for Workspace into the canonical configuration:
 
@@ -183,19 +184,20 @@ Your SCIM bridge URL is based on the fully qualified domain name of the DNS reco
 
 You can also test your SCIM bridge by sending an authenticated SCIM API request.
 
-*Example command:*
+_Example command:_
 
 ```sh
 curl --header "Authorization: Bearer mF_9.B5f-4.1JqM" https://scim.example.com/Users
 ```
 
 Copy the example command to a text editor. Replace `mF_9.B5f-4.1JqM` with your bearer token and `scim.example.com` with the fully qualified domain name of the DNS record created in [Get started](#get-started) before running the command in your terminal.
+
 > **Note**
 >
 > 💻 If you saved your bearer token as an item in your 1Password account, you can [use 1Password CLI to securely pass the
 > bearer token](https://developer.1password.com/docs/cli/secrets-scripts#option-2-use-op-read-to-read-secrets)
 > instead of writing it out in the console. For example: `--header "Authorization: Bearer $(op read
-> "op://Private/bearer token/credential")"`
+"op://Private/bearer token/credential")"`
 
 <details>
 <summary>Example JSON response</summary>
@@ -264,7 +266,7 @@ Update the `op-scim-bridge_scim` service with the new image tag from the [`1pass
 
 ```sh
 docker service update op-scim-bridge_scim \
-    --image 1password/scim:v2.9.0
+    --image 1password/scim:v2.9.1
 ```
 
 > **Note**
@@ -295,7 +297,7 @@ docker service update op-scim-bridge_scim \
     --env-add OP_PRETTY_LOGS=1
 ```
 
-*Pretty logs pair nicely with the `--raw` parameter of the `docker service logs` command). 🤩*
+_Pretty logs pair nicely with the `--raw` parameter of the `docker service logs` command). 🤩_
 
 ### 🔃 Rotate credentials
 
@@ -387,16 +389,16 @@ docker stack config \
 
 ### Custom Redis Options
 
-* `OP_REDIS_URL`: You can specify a `redis://` or `rediss://` (for TLS) URL here to point towards a different Redis host. You can then remove the sections in `docker-compose.yml` that refer to Redis to not deploy that container. Redis is still required for the SCIM bridge to function.  
+- `OP_REDIS_URL`: You can specify a `redis://` or `rediss://` (for TLS) URL here to point towards a different Redis host. You can then remove the sections in `docker-compose.yml` that refer to Redis to not deploy that container. Redis is still required for the SCIM bridge to function.
 
 As of SCIM Bridge `v2.8.5`, additional Redis configuration options are available. `OP_REDIS_URL` must be unset for any of these environment variables to be read. These environment variables may be especially helpful if you need support for URL-unfriendly characters in your Redis credentials. These can be set in [`compose.template.yaml`](./compose.template.yaml) at `services.scim.environment`.
 
 > **Note**  
 > `OP_REDIS_URL` must be unset, otherwise the following environment variables will be ignored.
 
-* `OP_REDIS_HOST`:  overrides the default hostname of the redis server (default: `redis`). It can be either another hostname, or an IP address.
-* `OP_REDIS_PORT`: overrides the default port of the redis server connection (default: `6379`).
-* `OP_REDIS_USERNAME`: sets a username, if any, for the redis connection (default: `(null)`)
-* `OP_REDIS_PASSWORD`: Sets a password, if any, for the redis connection (default: `(null)`). Can accommodate URL-unfriendly characters that `OP_REDIS_URL` may not accommodate. 
-* `OP_REDIS_ENABLE_SSL`: Optionally enforce SSL on redis server connections (default: `false`).   (Boolean `0` or `1`)
-* `OP_REDIS_INSECURE_SSL`: Set whether to allow insecure SSL on redis server connections when `OP_REDIS_ENABLE_SSL` is set to `true`. This may be useful for testing or self-signed environments (default: `false`) (Boolean `0` or `1`).
+- `OP_REDIS_HOST`: overrides the default hostname of the redis server (default: `redis`). It can be either another hostname, or an IP address.
+- `OP_REDIS_PORT`: overrides the default port of the redis server connection (default: `6379`).
+- `OP_REDIS_USERNAME`: sets a username, if any, for the redis connection (default: `(null)`)
+- `OP_REDIS_PASSWORD`: Sets a password, if any, for the redis connection (default: `(null)`). Can accommodate URL-unfriendly characters that `OP_REDIS_URL` may not accommodate.
+- `OP_REDIS_ENABLE_SSL`: Optionally enforce SSL on redis server connections (default: `false`). (Boolean `0` or `1`)
+- `OP_REDIS_INSECURE_SSL`: Set whether to allow insecure SSL on redis server connections when `OP_REDIS_ENABLE_SSL` is set to `true`. This may be useful for testing or self-signed environments (default: `false`) (Boolean `0` or `1`).
