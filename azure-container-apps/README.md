@@ -152,13 +152,12 @@ Follow the steps to [create a Google service account, key, and API client](https
 
 <details>
 <summary>Connect Google Workspace using the Azure Cloud Shell or AZ CLI</summary>
-
-#### Step 1: Get your Google service account key
+#### Step 1: Get your Google Workspace service account key
 
 1. Follow the steps to [create a Google service account, key, and API client](https://support.1password.com/scim-google-workspace/#step-1-create-a-google-service-account-key-and-api-client).
 2. Open the [Azure Shell](https://shell.azure.com/) or open a new terminal window with the `az` CLI.
 3. Upload your `workspace-credentials.json/<keyfile>` file to the Cloud Shell. Click the **Upload/Download files** button in your Cloud Shell and choose **Upload**.
-4. Select the `<keyfile>.json` file that you saved to your computer
+4. Select the `<keyfile>.json` file that you saved to your computer.
 5. Make note of the upload destination, then click **Complete**.
 
 #### Step 2: Download and edit the `workspace-settings.json` file
