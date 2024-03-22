@@ -31,7 +31,7 @@ Before you begin, complete the necessary [preparation steps to deploy 1Password 
 * [`doctl`](https://docs.digitalocean.com/reference/doctl/how-to/install/#step-1-install-doctl)
 
 > [!NOTE]
-> If you're using macOS or Linux, you only need to follow [Step 1: Install doctl](https://docs.digitalocean.com/reference/doctl/how-to/install/#step-1-install-doctl) in the `doctl` installation guide is required.
+> If you're using macOS or Linux, you only need to follow [Step 1: Install doctl](https://docs.digitalocean.com/reference/doctl/how-to/install/#step-1-install-doctl) in the `doctl` installation guide.
 
 ## Step 1: Set up your command-line tools
 
@@ -109,7 +109,7 @@ curl --header "Authorization: Bearer $(op read op://${VAULT:-op-scim}/${ITEM:-"b
 Invoke-WebRequest -Method Get -Uri 'https://op-scim-bridge-example.ondigitalocean.app/Users' -Headers @{'Authorization' ="Bearer $(op read "op://op-scim/bearer token/credential")"}
 ```
 
-You can also access your SCIM bridge by visiting the domain in your web browser and entering your bearer token from the vault in 1Password.
+You can also access your SCIM bridge by visiting the SCIM bridge domain in your web browser and entering your bearer token from the vault in 1Password.
 
 ## Step 5: Connect your identity provider
 
@@ -121,7 +121,8 @@ Follow the steps in this section to connect your SCIM bridge to Google Workspace
 
 <details>
 <summary>Connect Google Workspace to your SCIM bridge</summary>
-#### 5.1: Get your Google Workspace service account key
+
+#### 5.1: Get your Google service account key
 
 Follow the steps to [create a Google service account, key, and API client](https://support.1password.com/scim-google-workspace/#step-1-create-a-google-service-account-key-and-api-client), then [save the file](https://support.1password.com/files/) to the 1Password vault you created in step 2.1. Name the item `workspace-credentials`.
 
@@ -146,7 +147,7 @@ Copy and paste the following command for your shell to [read the file using its 
 1. Download the [`workspace-settings.json`](./google-workspace/workspace-settings.json) file from this repo.
 2. Edit the following in this file:
 	- **Actor**: Enter the email address of the Google Workspace administrator for the service account.
-	- **Bridge Address**: Enter your SCIM bridge domain, **not** your 1Password account sign-in address. For example: `https://op-scim-bridge-example.ondigitalocean.app`.
+	- **Bridge Address**: Enter your SCIM bridge domain. Used in [Step 4](#step-4-test-your-scim-bridge) to test your SCIM bridge. This is not your 1Password account sign-in address. For example:  `https://op-scim-bridge-example.ondigitalocean.app`.
 3. Save the file.
 
 #### 5.4: Configure the `workspace-settings` file for App Platform
@@ -233,14 +234,21 @@ Invoke-RestMethod -Uri https://raw.githubusercontent.com/1Password/scim-examples
 If you're provisioning more than 1,000 users:
 
 1. Download the [`op-scim-bridge.yaml`](/do-app-platform-op-cli/op-scim-bridge.yaml) file and open it in a text editor.
-2. Update line 37 to the following:
-	```
-	instance_size_slug: basic-xs
-	```
-3. Copy and paste the following command, replace `<pathToFile>` with the path to the file you just edited, and run the command.
-	```sh
-	cat <pathToFile>/op-scim-bridge.yaml | op inject | doctl apps create --spec - --wait --upsert
-	```
+2. Change the `instance_size_slug` value for the `op-scim-bridge` service to `basic-xs`:
+
+    ```yaml
+    services:
+    # ...
+    - ### ...
+      instance_size_slug: basic-xs
+      name: op-scim-bridge
+    ```
+
+3. Run the following command (replace `./op-scim-bridge.yaml` with the path to your modified app spec file as needed):
+
+    ```sh
+    cat ./op-scim-bridge.yaml | op inject | doctl apps create --spec - --wait --upsert
+    ```
 
 ## Get help
 
