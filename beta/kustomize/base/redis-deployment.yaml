@@ -15,6 +15,10 @@ spec:
       containers:
         - name: op-scim-redis
           image: redis:latest
+          args:
+            - --maxmemory 256mb
+            - --maxmemory-policy volatile-lru
+            - --save ""
           ports:
             - containerPort: 6379
               name: redis

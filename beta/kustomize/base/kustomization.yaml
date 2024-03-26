@@ -4,7 +4,6 @@ resources:
 - op-scim-config.yaml
 - op-scim-deployment.yaml
 - op-scim-service.yaml
-- redis-config.yaml
 - redis-deployment.yaml
 - redis-service.yaml
 secretGenerator:
