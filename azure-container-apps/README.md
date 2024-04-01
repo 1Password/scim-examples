@@ -276,6 +276,21 @@ az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim
 
 When you create or deploy the Container App Environment, Azure may present an error that the region isn't supported. You can review Azure documentation to make sure the region you selected supports [Azure Container Apps](https://azure.microsoft.com/explore/global-infrastructure/products-by-region/?regions=all&products=container-apps).
 
+### Container App Operational Insights error
+
+Some customers receive an error when creating the Azure Container App Environment stating that the subscription is not registered for Microsoft.OperationalInsights resource provider. This error occurs if the Operational Insights which is used by Log Analytics workspace for Container Apps has never been enabled within the subscription. Run the command shown in the error: 
+```
+az provider register -n Microsoft.OperationalInsights --wait
+```
+Once the command is completed, you will need to re-run the [command to create the Container App Environment](https://support.1password.com/scim-deploy-azure/#24-create-the-container-app-environment) again, so the command completes successfully with the Log Analystics workspace. 
+
+### Container App working with multiple subscriptions
+
+If your are using an existing resource group or have multiple subsriptions within your Azure Cloud environment, you may receive errors stating that the subscription or the resource group can not be found. Use the following command to set your subscription within your Shell. Alternatively you can add the `--subscription <subsciptionIDorName>` to every `az` command.
+```
+az account set --subscription <subsciptionIDorName>
+```
+
 ### Container App Name requirements
 
 Your Container App Name (the `ConAppName` variable) can contain lowercase letters, numbers, and hyphens. It must be 2 to 32 characters long, cannot start or end with a hyphen, and cannot start with a number. [Learn more about the naming rules and restrictions for Azure resources](https://learn.microsoft.com/azure/azure-resource-manager/management/resource-name-rules#microsoftapp).
@@ -291,8 +306,7 @@ After you download a new `scimsession` file, follow the steps below to replace t
 <details>
 <summary>Replace your <code>scimsession</code> secret using the Azure Cloud Shell or AZ CLI</summary>
 
-> [!TIP]
-> The following steps assume you have moved to mounting your secret from a volume mount and not using the base64 value. 
+> The following steps assume you have moved to mounting your secret from a volume mount and not using the base64 value in your secrets. 
 > Follow the [command to update your deployment with the updated YAML file](https://support.1password.com/scim-deploy-azure/#step-3-set-up-and-deploy-1password-scim-bridge) to use a volume mounts, redefining your variables as needed for this command to succeed. 
 
 
