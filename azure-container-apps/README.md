@@ -158,7 +158,7 @@ Follow the steps to [create a Google service account, key, and API client](https
 1. Follow the steps to [create a Google service account, key, and API client](https://support.1password.com/scim-google-workspace/#step-1-create-a-google-service-account-key-and-api-client).
 2. Open the [Azure Shell](https://shell.azure.com/) or open a new terminal window with the `az` CLI.
 3. Upload your `workspace-credentials.json/<keyfile>` file to the Cloud Shell. Click the **Upload/Download files** button in your Cloud Shell and choose **Upload**.
-4. Select the `<keyfile>.json` file that you saved to your computer
+4. Select the `<keyfile>.json` file that you saved to your computer. _It is recommended at this point to rename the file to `workspace-credentials.json` or make note of the filename to change the command used in [step 3](#step-3-create-your-google-workspace-secrets-and-update-your-scim-bridge-deployment)._
 5. Make note of the upload destination, then click **Complete**.
 
 #### Step 2: Download and edit the `workspace-settings.json` file
@@ -176,7 +176,10 @@ Follow the steps to [create a Google service account, key, and API client](https
     - **Actor**: Enter the email address of the Google Workspace administrator for the service account.
     - **Bridge Address**: Enter your SCIM bridge domain. This is the Application URL for your Container App, found on the overview page (not your 1Password account sign-in address). For example: `https://scim.example.com`.
 3. Save the file.
-4. Copy and paste the following command for your shell, replace `$ConAppName` and `$ResourceGroup` with the names from your deployment, and run the command.
+
+#### Step 3: Create your Google Workspace secrets and update your SCIM bridge deployment
+
+1. Copy and paste the following command for your shell, replace `$ConAppName` and `$ResourceGroup` with the names from your deployment, and run the command.
     - **Bash**:
     ```bash
     az containerapp secret set \
@@ -191,9 +194,18 @@ Follow the steps to [create a Google service account, key, and API client](https
     --resource-group $ResourceGroup `
     --secrets workspace-creds="$(Get-Content $HOME/workspace-credentials.json)" workspace-settings="$(Get-Content $HOME/workspace-settings.json)"
     ```
-5. To restart your SCIM bridge so it can use the new secret, copy and paste the following command. Replace `$ConAppName` and `$ResourceGroup` with the names from your deployment, and run the command.
+2. To update your SCIM bridge so it can use the new secrets, copy and paste the following command. Replace `$ConAppName` and `$ResourceGroup` with the names from your deployment, and run the command.
+    - **Bash**:
+    ```bash
+    curl --silent --show-error https://raw.githubusercontent.com/1Password/scim-examples/main/azure-container-apps/google-workspace/aca-gw-op-scim-bridge.yaml |
+    	az containerapp update --resource-group $ResourceGroup --name $ConAppName \
+		--yaml /dev/stdin --query properties.configuration.ingress.fqdn
     ```
-    az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge --set-env-vars OP_WORKSPACE_CREDENTIALS=secretref:workspace-creds OP_WORKSPACE_SETTINGS=secretref:workspace-settings
+    - **PowerShell**:
+    ```pwsh
+    Invoke-RestMethod -Uri https://raw.githubusercontent.com/1Password/scim-examples/main/azure-container-apps/google-workspace/aca-gw-op-scim-bridge.yaml |
+		az containerapp update --resource-group $ResourceGroup --name $ConAppName `
+			--yaml /dev/stdin --query properties.configuration.ingress.fqdn
     ```
 
 </details>
