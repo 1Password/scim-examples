@@ -2,12 +2,12 @@
 
 _Learn how to deploy 1Password SCIM Bridge on the [DigitalOcean App Platform](https://docs.digitalocean.com/products/app-platform/) service._
 
-This deployment consists of two [resources](https://docs.digitalocean.com/glossary/resource/): A [service](https://docs.digitalocean.com/glossary/service/) for the for the SCIM bridge and an [internal service](https://docs.digitalocean.com/glossary/service/#internal-services) for Redis. There are a few benefits to deploying 1Password SCIM Bridge on DigitalOcean App Platform:
+This deployment consists of two [resources](https://docs.digitalocean.com/glossary/resource/): a [service](https://docs.digitalocean.com/glossary/service/) for the for the SCIM bridge and an [internal service](https://docs.digitalocean.com/glossary/service/#internal-services) for Redis. There are a few benefits to deploying 1Password SCIM Bridge on DigitalOcean App Platform:
 
-- **Low cost:** For standard deployments, the service will host your SCIM bridge for ~$10 USD/month (as of March 2024). App Platform pricing is variable based on activity, and you can learn more on [DigitalOcean's pricing page](https://www.digitalocean.com/pricing/app-platform).
+- **Low cost:** For standard deployments, the service will host your SCIM bridge for ~$10 USD/month (as of March 2024). App Platform pricing is variable based on activity. Learn more on [DigitalOcean's pricing page](https://www.digitalocean.com/pricing/app-platform).
 - **Automatic DNS record management:** You don't need to manage a DNS record. App Platform automatically provides a unique one for your SCIM bridge domain.
 - **Automatic TLS certificate management:** App Platform automatically handles TLS certificate management on your behalf.
-- **Multiple deployment options:** The SCIM bridge can be deployed directly to DigitalOcean from your local terminal using this guide, or from the DigitalOcean Apps portal using the [support guide](https://support.1password.com/cs/scim-deploy-digitalocean-ap/). If you're using a custom deployment, cloning this repository is recommended.
+- **Multiple deployment options:** You can deploy the SCIM bridge directly to DigitalOcean from your local terminal using this guide, or from the DigitalOcean Apps portal using the [support guide](https://support.1password.com/cs/scim-deploy-digitalocean-ap/). If you're using a custom deployment, cloning this repository is recommended.
 
 **Table of contents:**
 
@@ -38,10 +38,10 @@ Before you begin, complete the necessary [preparation steps to deploy 1Password 
 After you install 1Password CLI, add your 1Password account, then follow these steps:
 
 1. [Add your 1Password account](https://support.1password.com/add-account/) to 1Password 8 for Mac, Windows or Linux.
-2. [Connect 1Password CLI to the 1Password app](https://developer.1password.com/docs/cli/app-integration/).
+2. [Connect 1Password CLI to the 1Password app.](https://developer.1password.com/docs/cli/app-integration/)
 3. [Create a DigitalOcean personal access token](https://docs.digitalocean.com/reference/api/create-personal-access-token/) and select scopes for **read** and **write**.
 4. Grant access to `doctl`:
-	* If you're using macOS or Linux, [configure the DigitalOcean shell plugin](https://developer.1password.com/docs/cli/shell-plugins/digitalocean#step-1-configure-your-default-credentials) for 1Password CLI. Choose `Import into 1Password…` to save your DigitalOcean personal access token in your 1Password account and authenticate `doctl`.
+	* If you're using macOS or Linux, [configure the DigitalOcean shell plugin](https://developer.1password.com/docs/cli/shell-plugins/digitalocean/#step-2-configure-your-default-credentials) for 1Password CLI. Choose `Import into 1Password…` to save your DigitalOcean personal access token in your 1Password account and authenticate `doctl`.
 	* If you're using Windows, follow the steps to [use the API token to grant account access to doctl](https://docs.digitalocean.com/reference/doctl/how-to/install/#go_step-3-use-the-api-token-to-grant-account-access-to-doctl).
 5. Run the following command to confirm that `doctl` can authenticate:
 	```sh
@@ -109,7 +109,7 @@ curl --header "Authorization: Bearer $(op read op://${VAULT:-op-scim}/${ITEM:-"b
 Invoke-WebRequest -Method Get -Uri 'https://op-scim-bridge-example.ondigitalocean.app/Users' -Headers @{'Authorization' ="Bearer $(op read "op://op-scim/bearer token/credential")"}
 ```
 
-You can also access your SCIM bridge by visiting the SCIM bridge domain in your web browser and entering your bearer token from the vault in 1Password.
+You can also access your SCIM bridge by visiting the SCIM bridge domain in your web browser and entering the bearer token from your 1Password item.
 
 ## Step 5: Connect your identity provider
 
@@ -124,7 +124,7 @@ Follow the steps in this section to connect your SCIM bridge to Google Workspace
 
 #### 5.1: Get your Google service account key
 
-Follow the steps to [create a Google service account, key, and API client](https://support.1password.com/scim-google-workspace/#step-1-create-a-google-service-account-key-and-api-client), then [save the file](https://support.1password.com/files/) to the 1Password vault you created in step 2.1. Name the item `workspace-credentials`.
+Follow the steps to [create a Google service account, key, and API client](https://support.1password.com/scim-google-workspace/#step-1-create-a-google-service-account-key-and-api-client), then [save the file](https://support.1password.com/files/) to the 1Password vault you created in [step 2.1](#21-generate-your-scimsession-file-and-bearer-token). Name the item `workspace-credentials`.
 
 #### 5.2: Download and edit the Google Workspace settings template
 
@@ -147,7 +147,7 @@ Copy and paste the following command for your shell to [read the file using its 
 1. Download the [`workspace-settings.json`](./google-workspace/workspace-settings.json) file from this repo.
 2. Edit the following in this file:
 	- **Actor**: Enter the email address of the Google Workspace administrator for the service account.
-	- **Bridge Address**: Enter your SCIM bridge domain. Used in [Step 4](#step-4-test-your-scim-bridge) to test your SCIM bridge. This is not your 1Password account sign-in address. For example:  `https://op-scim-bridge-example.ondigitalocean.app`.
+	- **Bridge Address**: Enter your SCIM bridge domain. Used in [step 4](#step-4-test-your-scim-bridge) to test your SCIM bridge. This isn't your 1Password account sign-in address. For example:  `https://op-scim-bridge-example.ondigitalocean.app`.
 3. Save the file.
 
 #### 5.4: Configure the `workspace-settings` file for App Platform
@@ -200,13 +200,13 @@ curl -s https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-pl
 Invoke-RestMethod -Uri https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-platform-op-cli/op-scim-bridge.yaml | op inject | doctl apps create --spec - --wait --upsert
 ```
 
-The [op-scim-bridge.yaml](./op-scim-bridge.yaml) file that this command uses should have the latest version in it. If the version doesn't match the one on the [SCIM Bridge Release Notes page](https://app-updates.agilebits.com/product_history/SCIM), you can download the file and update it before you run the command.
+The [op-scim-bridge.yaml](./op-scim-bridge.yaml) file that this command uses should have the latest version in it. If the version doesn't match the one on the [SCIM bridge releases notes website](https://releases.1password.com/provisioning/scim-bridge/), you can download the file and update it before you run the command.
 
 ## Appendix: Resource recommendations
 
 The pod for 1Password SCIM Bridge should be vertically scaled if you provision a large number of users or groups. These are our default resource specifications and recommended configurations for provisioning at scale:
 
-| Volume  | Number of users | CPU  | memory |
+| Volume  | Number of users | CPU  | Memory |
 | ------- | --------------- | ---- | ------ |
 | Default | <1,000          | 0.25 | 0.5Gi  |
 | High    | >1,000          | 1.0  | 1.0Gi  |
