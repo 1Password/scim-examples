@@ -158,7 +158,7 @@ Follow the steps to [create a Google service account, key, and API client](https
 1. Follow the steps to [create a Google service account, key, and API client](https://support.1password.com/scim-google-workspace/#step-1-create-a-google-service-account-key-and-api-client).
 2. Open the [Azure Shell](https://shell.azure.com/) or open a new terminal window with the `az` CLI.
 3. Upload your `workspace-credentials.json/<keyfile>` file to the Cloud Shell. Click the **Upload/Download files** button in your Cloud Shell and choose **Upload**.
-4. Select the `<keyfile>.json` file that you saved to your computer
+4. Select the `<keyfile>.json` file that you saved to your computer.
 5. Make note of the upload destination, then click **Complete**.
 
 #### Step 2: Download and edit the `workspace-settings.json` file
@@ -203,12 +203,12 @@ Follow the steps to [create a Google service account, key, and API client](https
 ## Update your SCIM bridge in the Azure Portal
 
 > [!TIP]
-> Check for 1Password SCIM Bridge updates on the [SCIM bridge release page](https://app-updates.agilebits.com/product_history/SCIM).
+> Check for 1Password SCIM Bridge updates on the [SCIM bridge releases notes website](https://releases.1password.com/provisioning/scim-bridge/).
 
 1. Within Container App from the [Azure Container Apps Portal](https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/Microsoft.App%2FcontainerApps), select **Containers** from the sidebar.
 2. Click **Edit and deploy**.
 3. Select the checkbox next to your **op-scim-bridge** container, then choose **Edit**.
-4. Change the version number **2.9.1** in the **Image and Tag** field, **1password/scim:v2.9.1** to match the latest version from our [SCIM Bridge Release Notes page](https://app-updates.agilebits.com/product_history/SCIM).
+4. Change the version number **2.9.1** in the **Image and Tag** field, **1password/scim:v2.9.1** to match the latest version from our [SCIM bridge releases notes website](https://releases.1password.com/provisioning/scim-bridge/).
 5. Select **Save**.
 6. Select **Create** to deploy a new revision using the updated image.
 7. Enter your SCIM bridge URL in a browser and sign in with your bearer token.

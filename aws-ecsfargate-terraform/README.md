@@ -150,7 +150,7 @@ To finish setting up automated user provisioning, [connect your identity provide
 
 ## Update your SCIM Bridge
 
-👍 Check for 1Password SCIM Bridge updates on the [SCIM bridge release page](https://app-updates.agilebits.com/product_history/SCIM).
+👍 Check for 1Password SCIM Bridge updates on the [SCIM bridge releases notes website](https://releases.1password.com/provisioning/scim-bridge/).
 
 To update your SCIM bridge:
 
@@ -170,7 +170,7 @@ To update your deployment to the latest version, edit the `task-definitions/scim
     "image": "1password/scim:v2.9.1",
 ```
 
-Learn about the changes included in each version on the [1Password SCIM Bridge release notes page](https://app-updates.agilebits.com/product_history/SCIM).
+Learn about the changes included in each version on the [SCIM bridge releases notes website](https://releases.1password.com/provisioning/scim-bridge/).
 
 Then, reapply your Terraform settings:
 

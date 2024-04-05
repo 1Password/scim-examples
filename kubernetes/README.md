@@ -188,8 +188,7 @@ kubectl set image deploy/op-scim-bridge op-scim-bridge=1password/scim:v2.9.1
 
 > **Note**
 >
-> You can find details about the changes in each release of 1Password SCIM Bridge on our [Release
-> Notes](https://app-updates.agilebits.com/product_history/SCIM) page. The most recent version should be pinned in the
+> You can find details about the changes on the [SCIM bridge releases notes website](https://releases.1password.com/provisioning/scim-bridge/). The most recent version should be pinned in the
 > [`op-scim-deployment.yaml`](./op-scim-deployment.yaml) file (and in the command above in this file) in the main
 > branch of this repository.
 
