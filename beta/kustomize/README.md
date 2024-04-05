@@ -44,9 +44,9 @@ containing the contents of your `scimsession` file, named as `scimsession`.
 
 There are currently 3 overlays defined for modifying the deployment of the bridge, in
 addition to the deployment overlay. In most standard deployments, the `letsencrypt`
-overlay is going to be used. This overlay configures the SCIM bridge to request a 
-certificate from Let's Encrypt using a domain name defined in the overlay ConfigMap. 
-If you're bringing your own TLS certificate, the `self-managed-tls` overlay is to be 
+overlay is going to be used. This overlay configures the SCIM bridge to request a
+certificate from Let's Encrypt using a domain name defined in the overlay ConfigMap.
+If you're bringing your own TLS certificate, the `self-managed-tls` overlay is to be
 used instead.
 
 While you will be enabling the Let's Encrypt overlay, there are final changes that will
@@ -94,11 +94,11 @@ configure the domain that 1Password SCIM Bridge should request a certificate for
 After your initial deploy, run `kubectl get service`. The output will show three services,
 one with the type of LoadBalancer. If an external IP address is pending for the
 LoadBalancer, run the command again until an external IP address is shown. This IP
-address should be configured as the target IP address of the public DNS record for your SCIM bridge, as mentioned in 
+address should be configured as the target IP address of the public DNS record for your SCIM bridge, as mentioned in
 the Preparation document. As an example, it could be `scim.example.com`, where
 `example.com` is a domain you control.
 
-After creating the DNS record with your DNS provider, edit the file 
+After creating the DNS record with your DNS provider, edit the file
 `patch-configmap.yaml` in the Let's Encrypt overlay folder. Replace the value
 `scim.example.com` with the DNS record created. Save this file.
 
@@ -114,15 +114,16 @@ To finish setting up automated user provisioning, [connect your identity provide
 
 👍 Check for 1Password SCIM Bridge updates on the [SCIM bridge release page](https://app-updates.agilebits.com/product_history/SCIM).
 
-To update the SCIM bridge, connect to your Kubernetes cluster and run the following command, replacing v2.9.0 with the latest version:
+To update the SCIM bridge, connect to your Kubernetes cluster and run the following command, replacing v2.9.1 with the latest version:
 
 ```bash
-kubectl set image deploy/op-scim-bridge op-scim-bridge=1password/scim:v2.9.0 -n=op-scim
+kubectl set image deploy/op-scim-bridge op-scim-bridge=1password/scim:v2.9.1 -n=op-scim
 ```
 
 The update should take 2-3 minutes for Kubernetes to complete.
 
-## Appendix: 
+## Appendix:
+
 ### Resource recommendations
 
 The default resource recommendations for the SCIM bridge and Redis deployments are acceptable in most scenarios, but they may fall short in high-volume deployments where a large number of users and/or groups are being managed. We strongly recommend increasing the resources for both the SCIM bridge and Redis deployments.
