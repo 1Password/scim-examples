@@ -152,6 +152,7 @@ Follow the steps to [create a Google service account, key, and API client](https
 
 <details>
 <summary>Connect Google Workspace using the Azure Cloud Shell or AZ CLI</summary>
+
 #### Step 1: Get your Google service account key
 
 1. Follow the steps to [create a Google service account, key, and API client](https://support.1password.com/scim-google-workspace/#step-1-create-a-google-service-account-key-and-api-client).
