@@ -202,12 +202,12 @@ Follow the steps to [create a Google service account, key, and API client](https
 ## Update your SCIM bridge in the Azure Portal
 
 > [!TIP]
-> Check for 1Password SCIM Bridge updates on the [SCIM bridge release page](https://app-updates.agilebits.com/product_history/SCIM).
+> Check for 1Password SCIM Bridge updates on the [SCIM bridge releases notes website](https://releases.1password.com/provisioning/scim-bridge/).
 
 1. Within Container App from the [Azure Container Apps Portal](https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/Microsoft.App%2FcontainerApps), select **Containers** from the sidebar.
 2. Click **Edit and deploy**.
 3. Select the checkbox next to your **op-scim-bridge** container, then choose **Edit**.
-4. Change the version number **2.9.0** in the **Image and Tag** field, **1password/scim:v2.9.0** to match the latest version from our [SCIM Bridge Release Notes page](https://app-updates.agilebits.com/product_history/SCIM).
+4. Change the version number **2.9.0** in the **Image and Tag** field, **1password/scim:v2.9.0** to match the latest version from our [SCIM bridge releases notes website](https://releases.1password.com/provisioning/scim-bridge/).
 5. Select **Save**.
 6. Select **Create** to deploy a new revision using the updated image.
 7. Enter your SCIM bridge URL in a browser and sign in with your bearer token.
