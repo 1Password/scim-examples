@@ -97,7 +97,7 @@ To udpate to the very high-volume within the Azure Portal:
 
 ### Confirmation Interval
 
-Use OP_CONFIRMATION_INTERVAL environment variable to set how often the ConfirmationWatcher component runs in seconds. The minimum
+Use the OP_CONFIRMATION_INTERVAL environment variable to set how often the ConfirmationWatcher component runs in seconds. The minimum
 interval is 30 seconds. If not set, the default value of 300 seconds (5 minutes) is used.
 
 For example set `OP_CONFIRMATION_INTERVAL` to `30` to have the ConfirmationWatcher running every 30 seconds.
@@ -116,7 +116,7 @@ To udpate within the Azure Portal:
 
 ### Colorful logs
 
-Use OP_PRETTY_LOGS environment variable to set `OP_PRETTY_LOGS` to `1` to colorize container logs.
+Use the OP_PRETTY_LOGS environment variable to set `OP_PRETTY_LOGS` to `1` to colorize container logs.
 
 ```bash
 az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge --set-env-vars OP_PRETTY_LOGS=1
@@ -182,7 +182,7 @@ To udpate within the Azure Portal:
 4. Add a new **Environment variable**, using the **name** of `OP_TRACE`, the **source** of **Manual entry** and enter `1` for the **value**
 5. Click **Save**, then click **Create**.
 
-This may be useful for troubleshooting Let’s Encrypt integration issues.
+This may be useful for troubleshooting issues.
 
 ## Get help
 
