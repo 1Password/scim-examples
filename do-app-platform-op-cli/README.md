@@ -1,314 +1,285 @@
-# Deploy 1Password SCIM Bridge on DigitalOcean App Platform with 1Password CLI
+# Deploy 1Password SCIM Bridge on DigitalOcean App Platform using 1Password CLI
 
-This deployment example describes how to deploy 1Password SCIM bridge as an app on DigitalOcean's [App Platform](https://docs.digitalocean.com/products/app-platform/) service using [1Password CLI](https://developer.1password.com/docs/cli), the DigitalOcean command line interface ([`doctl`](https://docs.digitalocean.com/reference/doctl/)), and optionally the DigitalOcean [1Password Shell Plugin](https://developer.1password.com/docs/cli/shell-plugins/) (for Mac and Linux users).
+_Learn how to deploy 1Password SCIM Bridge on the [DigitalOcean App Platform](https://docs.digitalocean.com/products/app-platform/) service._
 
-Alternatively, you can [deploy 1Password SCIM Bridge to DigitalOcean App Platform using the DigitalOcean portal](https://support.1password.com/cs/scim-deploy-digitalocean-ap/).
+This deployment consists of two [resources](https://docs.digitalocean.com/glossary/resource/): a [service](https://docs.digitalocean.com/glossary/service/) for the for the SCIM bridge and an [internal service](https://docs.digitalocean.com/glossary/service/#internal-services) for Redis. There are a few benefits to deploying 1Password SCIM Bridge on DigitalOcean App Platform:
 
-The app consists of two [resources](https://docs.digitalocean.com/glossary/resource/): a [service](https://docs.digitalocean.com/glossary/service/) for the SCIM bridge container and an [internal service](https://docs.digitalocean.com/glossary/service/#internal-services) for Redis.
-
-## In this folder
-
-- [`README.md`](./README.md): the document that you are reading. 👋😃
-- [`op-scim-bridge.yaml`](./op-scim-bridge.yaml): an App Platform [app spec](https://docs.digitalocean.com/glossary/app-spec/) for 1Password SCIM bridge [templated with secret references](https://developer.1password.com/docs/cli/secrets-template-syntax) to load secrets from your 1Password account.
+- **Low cost:** For standard deployments, the service will host your SCIM bridge for ~$10 USD/month (as of March 2024). App Platform pricing is variable based on activity. Learn more on [DigitalOcean's pricing page](https://www.digitalocean.com/pricing/app-platform).
+- **Automatic DNS record management:** You don't need to manage a DNS record. App Platform automatically provides a unique one for your SCIM bridge domain.
+- **Automatic TLS certificate management:** App Platform automatically handles TLS certificate management on your behalf.
+- **Multiple deployment options:** You can deploy the SCIM bridge directly to DigitalOcean from your local terminal using this guide, or from the DigitalOcean Apps portal using the [support guide](https://support.1password.com/cs/scim-deploy-digitalocean-ap/). If you're using a custom deployment, cloning this repository is recommended.
 
 **Table of contents:**
 
-- [Overview](#Overview)
-- [Prerequisites](#Prerequisites)
-- [Getting Started](#Getting-Started)
-- [Deploy 1Password SCIM bridge to App Platform](#Deploy-1Password-SCIM-bridge-to-App-Platform)
-- [Connect your Identity Provider to your deployed SCIM bridge](#follow-the-steps-to-connect-your-identity-provider-to-the-scim-bridge)
-- [Appendix](#Appendix) - Including updating your SCIM bridge, proposing the spec for cost estimates, resource recommendations
+- [Before you begin](#before-you-begin)
+- [Step 1: Set up your command-line tools ](#step-1-set-up-your-command-line-tools)
+- [Step 2: Generate and configure 1Password credentials](#step-2-generate-and-configure-1password-credentials)
+- [Step 3: Deploy your SCIM bridge](#step-3-deploy-your-scim-bridge)
+- [Step 4: Test your SCIM bridge](#step-4-test-your-scim-bridge)
+- [Step 5: Connect your identity provider](#step-5-connect-your-identity-provider)
+- [Update your SCIM Bridge](#update-your-scim-bridge)
+- [Appendix: Resource recommendations](#appendix-resource-recommendations)
+- [Get help](#get-help)
 
-## Overview
+## Before you begin
 
-Deploying 1Password SCIM bridge on App Platform comes with a few benefits:
+Before you begin, complete the necessary [preparation steps to deploy 1Password SCIM Bridge](/PREPARATION.md). You'll also need:
 
-- For standard deployments, App Platform will host your SCIM bridge for a predictable cost of $10 USD/month (at the time of last review).
-- You do not need to manage a DNS record. DigitalOcean automatically provides a unique URL for your SCIM bridge.
-- App Platform automatically handles TLS certificate management on your behalf to ensure a secure connection from your identity provider.
-- You will deploy 1Password SCIM bridge directly to DigitalOcean from your local terminal. There is no requirement to clone this repository for this deployment.
+* A DigitalOcean account with available quota for two droplets.
+* 1Password 8 for [Mac](https://1password.com/downloads/mac/) or [Windows](https://1password.com/downloads/windows/) or [Linux](https://1password.com/downloads/linux/).
+* [1Password CLI 2.9.0](https://developer.1password.com/docs/cli/get-started/#install) or later.
+* [`doctl`](https://docs.digitalocean.com/reference/doctl/how-to/install/#step-1-install-doctl)
 
-## Prerequisites
+> [!NOTE]
+> If you're using macOS or Linux, you only need to follow [Step 1: Install doctl](https://docs.digitalocean.com/reference/doctl/how-to/install/#step-1-install-doctl) in the `doctl` installation guide.
 
-- A 1Password account with an active 1Password Business subscription or trial
-  > **Note**
-  >
-  > Try 1Password Business free for 14 days: <https://start.1password.com/sign-up/business>
-- A DigitalOcean account with available quota for two droplets
-  > **Note**
-  >
-  > If you don't have a DigitalOcean account, you can sign up for a free trial with starting credit: <https://try.digitalocean.com/freetrialoffer/>
-- Access to Zsh or Bash on Mac or Linux, or PowerShell on Windows
+## Step 1: Set up your command-line tools
 
-## Getting started
-
-### Step 1: Install 1Password and DigitalOcean tools
-
-Install the following on your Mac, Windows or Linux machine:
-
-- 1Password 8 for [Mac](https://1password.com/downloads/mac/) or [Windows](https://1password.com/downloads/windows/) or [Linux](https://1password.com/downloads/linux/)
-- [1Password CLI 2.9.0](https://developer.1password.com/docs/cli/get-started/#install) or later
-- [`doctl`](https://docs.digitalocean.com/reference/doctl/how-to/install/#step-1-install-doctl)
-  > **Note**
-  >
-  > **Only** [Step 1: Install doctl](https://docs.digitalocean.com/reference/doctl/how-to/install/#step-1-install-doctl) in the `doctl` installation guide is required for this step for Mac and Linux. 
-
-### Step 2: Add your 1Password account and configure your DigitalOcean credentials.
-
-If you haven't already done so, add your 1Password account and connect 1Password CLI to your desktop app, then configure the DigitalOcean shell plugin:
+After you install 1Password CLI, add your 1Password account, then follow these steps:
 
 1. [Add your 1Password account](https://support.1password.com/add-account/) to 1Password 8 for Mac, Windows or Linux.
-2. [Connect 1Password CLI to the 1Password app](https://developer.1password.com/docs/cli/about-biometric-unlock#step-1-connect-1password-cli-with-the-1password-app).
-3. [Create a DigitalOcean personal access token](https://docs.digitalocean.com/reference/api/create-personal-access-token/) with both read and write scopes.
-4. [Configure the DigitalOcean shell plugin](https://developer.1password.com/docs/cli/shell-plugins/digitalocean#step-1-configure-your-default-credentials) for Mac and Linux. Choose `Import into 1Password…` to save your DigitalOcean personal access token in your 1Password account and authenticate `doctl`.
-5. Windows users, follow the steps in [Step 3 Use the API token to grant account access to doctl](https://docs.digitalocean.com/reference/doctl/how-to/install/#step-1-install-doctl).
+2. [Connect 1Password CLI to the 1Password app.](https://developer.1password.com/docs/cli/app-integration/)
+3. [Create a DigitalOcean personal access token](https://docs.digitalocean.com/reference/api/create-personal-access-token/) and select scopes for **read** and **write**.
+4. Grant access to `doctl`:
+	* If you're using macOS or Linux, [configure the DigitalOcean shell plugin](https://developer.1password.com/docs/cli/shell-plugins/digitalocean/#step-2-configure-your-default-credentials) for 1Password CLI. Choose `Import into 1Password…` to save your DigitalOcean personal access token in your 1Password account and authenticate `doctl`.
+	* If you're using Windows, follow the steps to [use the API token to grant account access to doctl](https://docs.digitalocean.com/reference/doctl/how-to/install/#go_step-3-use-the-api-token-to-grant-account-access-to-doctl).
+5. Run the following command to confirm that `doctl` can authenticate:
+	```sh
+	doctl account get
+	```
 
-Your terminal should now authenticate `doctl` using the access token stored in your 1Password account (you do _not_ need to run `doctl auth init` unless on Windows as detailed in the last step). You can confirm by [retrieving your account details](https://docs.digitalocean.com/reference/doctl/reference/account/get/):
+## Step 2: Generate and configure 1Password credentials
 
-```sh
-doctl account get
-```
-
-### Step 3: Generate credentials for automated user provisioning with 1Password
+### 2.1: Generate your `scimsession` file and bearer token
 
 1. [Sign in](https://start.1password.com) to your account on 1Password.com.
-2. [Create a vault](https://support.1password.com/create-share-vaults-teams/#create-a-vault) to store your 1Password SCIM bridge credentials. This guide assumes the vault is named `op-scim` by default, but you can change it to something else if you like.
-   > **Note**
-   >
-   > 💻 You have to sign in at 1Password.com to set up automated provisioning, but you can create a vault from any 1Password app, including [1Password CLI](https://developer.1password.com/docs/cli/reference/management-commands/vault#vault-create), for example:
-   >
-   > ```sh
-   > op vault create "op-scim" --description "1Password SCIM bridge credentials" --icon id-card
-   > ```
-   >
-3. Click [Integrations](https://start.1password.com/integrations/directory) in the sidebar.
+2. [Create a vault](https://support.1password.com/create-share-vaults-teams/#create-a-vault) to store your 1Password SCIM Bridge credentials in. This guide is written with the vault name `op-scim`, but you can change it to something else if you prefer.
+3. Choose **[Integrations](https://start.1password.com/integrations/directory)** in the sidebar.
 4. Choose your identity provider from the User Provisioning section.
-5. Choose "Custom deployment".
-6. Use the "Save in 1Password" buttons for both the `scimsession` file and bearer token to save them as items in your 1Password account. Save each in the `op-scim` vault (or the chosen name for the vault created above). Use the supplied name for these items (or make a note of their names if you choose your own).
+5. Select **Custom**, then choose **Next**.
+6. Choose **Save in 1Password** for both the `scimsession` file and bearer token to save them as items in your 1Password account. Save each item in the vault you just created.
 
-### Step 4: Configure the `scimession` credentials for passing to App Platform
+### 2.2: Configure your credentials for DigitalOcean
 
-The `scimsession` credentials will be saved as an environment variable in App Platform that DigitalOcean automatically encrypts on your behalf. These credentials have to be Base64-encoded to pass them into the environment, but they're saved as a file in your 1Password item.
+In this step, you'll save the `scimsession` credentials as an environment variable in App Platform, which DigitalOcean will encrypt on your behalf. These credentials have to be Base64-encoded to pass them into the environment, but they're saved as a file in your 1Password item.
 
-Use 1Password CLI to [read the file using its secret reference](https://developer.1password.com/docs/cli/reference/commands/read), encode the credentials, and store them as a new field in the "scimession file" item saved in your 1Password account:
+Copy and paste the following command for your shell to [read the file using its secret reference](https://developer.1password.com/docs/cli/reference/commands/read), encode the credentials, and store them as a new field in the "scimession file" item saved in your 1Password account. If you gave the vault a custom name, replace `op-scim` with the name of your vault, then run the command.
 
-Using Bash:
+**Bash**:
+
 ```sh
 op item edit "scimsession file" --vault "op-scim" base64_encoded=$(op read "op://op-scim/scimsession file/scimsession" | base64 | tr -d "\n")
 ```
 
-Using Powershell:
+**Powershell**:
+
 ```pwsh
 op item edit "scimsession file" --vault "op-scim" base64_encoded=$([Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($(op read "op://op-scim/scimsession file/scimsession"))))
 ```
 
-> **Note**
->
-> If you used a different vault or item name for your SCIM bridge credentials, replace `op-scim` and `scimsession file` with the respective name(s) you chose.
+## Step 3: Deploy your SCIM bridge
 
-## Deploy 1Password SCIM bridge to App Platform
+Run the following command for your shell to stream the app spec template from this repository, use [`op inject`](https://developer.1password.com/docs/cli/reference/commands/inject) to load in the Base64-encoded `scimesssion` credentials from your 1Password account, and pipe the output into `doctl`.
 
-Stream the app spec template from this repository, use [`op inject`](https://developer.1password.com/docs/cli/reference/commands/inject) to load in the Base64-encoded `scimesssion` credentials from your 1Password account, then pipe the output into `doctl` to deploy 1Password SCIM bridge.
+**Bash**:
 
-For example:
-
-Using Bash:
 ```sh
 curl -s https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-platform-op-cli/op-scim-bridge.yaml | op inject | doctl apps create --spec - --wait
 ```
 
-Using Powershell:
+**Powershell**:
 
 ```pwsh
 Invoke-RestMethod -Uri https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-platform-op-cli/op-scim-bridge.yaml | op inject | doctl apps create --spec - --wait
 ```
 
-1Password SCIM bridge deploys with a live URL output to the terminal (found under the `Default Ingress` column). This is your SCIM bridge URL. Use your bearer token with the URL to test the connection to 1Password. For example:
+## Step 4: Test your SCIM bridge
 
-Using Bash:
+After you deploy your SCIM bridge, you'll see a URL in the `Default Ingress` column of the terminal output. This URL is your SCIM bridge domain. Run the following command for your shell to test the connection to 1Password.
+
+**Bash**:
+
 ```sh
 curl --header "Authorization: Bearer $(op read op://${VAULT:-op-scim}/${ITEM:-"bearer token"}/credential)" https://op-scim-bridge-example.ondigitalocean.app/Users
 ```
 
-Using Powershell:
+**Powershell**:
+
 ```pwsh
 Invoke-WebRequest -Method Get -Uri 'https://op-scim-bridge-example.ondigitalocean.app/Users' -Headers @{'Authorization' ="Bearer $(op read "op://op-scim/bearer token/credential")"}
 ```
 
-You can also access your SCIM bridge by visting the URL in your web browser. Sign in with the bearer token saved in your 1Password account.
+You can also access your SCIM bridge by visiting the SCIM bridge domain in your web browser and entering the bearer token from your 1Password item.
 
-## Follow the steps to connect your Identity provider to the SCIM bridge.
- - [Connect your Identity Provider](https://support.1password.com/scim/#step-3-connect-your-identity-provider)
+## Step 5: Connect your identity provider
 
-  <details>
-  <summary> If Google Workspace is your IdP, connect Google Workspace using the CLI tools</summary>
-  The following steps only apply if you use Google Workspace as your identity provider. If you use another identity provider, do not perform these steps and follow the steps in Connectting your Identity Provider (linked above).
+To finish setting up automated user provisioning, [connect your identity provider to the SCIM bridge](https://support.1password.com/scim/#step-3-connect-your-identity-provider).
 
-  1. Follow the steps to [create a Google service account, key, and API client](https://support.1password.com/scim-google-workspace/#step-1-create-a-google-service-account-key-and-api-client).
+### If Google Workspace is your identity provider
 
-  2. Configure the `workspace-credentials` for passing to App Platform.
-  
-  The `workspace-credentials` will be saved as an environment variable in App Platform that DigitalOcean automatically encrypts on your behalf. These credentials have to be Base64-encoded to pass them into the environment, but they're saved as a file from configuring your API key.
+Follow the steps in this section to connect your SCIM bridge to Google Workspace.
 
-  Use 1Password CLI to [read the file using its secret reference](https://developer.1password.com/docs/cli/reference/commands/read), encode the credentials, and store them as a new field in the "workspace-credentials" item saved in your 1Password account. Edit the commands to reference the location/path of the file you saved in the last step.
+<details>
+<summary>Connect Google Workspace to your SCIM bridge</summary>
 
-  Using Bash:
+#### 5.1: Get your Google service account key
+
+Follow the steps to [create a Google service account, key, and API client](https://support.1password.com/scim-google-workspace/#step-1-create-a-google-service-account-key-and-api-client), then [save the file](https://support.1password.com/files/) to the 1Password vault you created in [step 2.1](#21-generate-your-scimsession-file-and-bearer-token). Name the item `workspace-credentials`.
+
+#### 5.2: Download and edit the Google Workspace settings template
+
+Copy and paste the following command for your shell to [read the file using its secret reference](https://developer.1password.com/docs/cli/reference/commands/read), encode the credentials, and store them as a new field in the `workspace-credentials` item you just saved in your 1Password account. If you gave the vault a custom name, replace `op-scim` with the name of your vault, then run the command.
+
+**Bash**:
+
   ```sh
-  op document create "pathToFile/workspace-credentials.json" --title "workspace-credentials" --vault "op-scim"
   op item edit "workspace-credentials" --vault "op-scim" base64_encoded_credentials=$(op read "op://op-scim/workspace-credentials/workspace-credentials.json" | base64 | tr -d "\n")
   ```
 
-  Using Powershell:
+**Powershell**:
+
   ```pwsh
-  op document create "pathToFile/workspace-credentials.json" --title "workspace-credentials" --vault "op-scim"
   op item edit "workspace-credentials" --vault "op-scim" base64_encoded_credentials=$([Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($(op read "op://op-scim/workspace-credentials/workspace-credentials.json"))))
   ```
 
-  3. Download and open the  [`workspace-settings.json`](/do-app-platform-op-cli/google-workspace/workspace-settings.json)) file in a text editor and replace the values for each key:
+#### 5.3: Download and edit the Google Workspace settings template
 
-  - `actor`: the email address for the administrator that the service account is acting on behalf of
-  - `bridgeAddress`: the URL you will use for your SCIM bridge (not your 1Password account sign-in address). This is the Application URL for your Container App found on the overview page. For example: https://op-scim-bridge-example.ondigitalocean.app
+1. Download the [`workspace-settings.json`](./google-workspace/workspace-settings.json) file from this repo.
+2. Edit the following in this file:
+	- **Actor**: Enter the email address of the Google Workspace administrator for the service account.
+	- **Bridge Address**: Enter your SCIM bridge domain. Used in [step 4](#step-4-test-your-scim-bridge) to test your SCIM bridge. This isn't your 1Password account sign-in address. For example:  `https://op-scim-bridge-example.ondigitalocean.app`.
+3. Save the file.
 
-  ```json
-  {
-      "actor":"admin@example.com",
-      "bridgeAddress":"https://op-scim-bridge-example.ondigitalocean.app"
-  }
-  ```
+#### 5.4: Configure the `workspace-settings` file for App Platform
 
-  Save the file.
+Next, you'll need to create a Base64 value for the `workspace-settings` file. Copy and paste the following command for your shell. If you gave the vault a custom name, replace `op-scim` with the name of your vault, then run the command.
 
-  4. Configure the `workspace-settings` for passing to App Platform, just like the `workspace-credentials`, this value is passed to the App Platform as a base64 value. Edit the commands to reference the location/path of the file you saved in the last step.
+**Bash**:
 
-  Using Bash:
   ```sh
   op item edit "workspace-credentials" --vault "op-scim" base64_encoded_settings=$(cat "pathToFile/workspace-settings.json" | base64 | tr -d "\n")
   ```
 
-  Using Powershell:
+**Powershell**:
+
   ```pwsh
   op item edit "workspace-credentials" --vault "op-scim" base64_encoded_settings=$([Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($(cat "pathToFile/workspace-settings.json"))))
   ```
 
-  5. Update your deployed by applying the Workspace specific configuration yaml [op-scim-bridge-gw.yaml](/do-app-platform-op-cli/google-workspace/op-scim-bridge-gw.yaml) injecting the base64 values for the Workspace configuration.
+#### 5.5: Connect Google Workspace
 
-  Using Bash:
+To finish connecting Google Workspace to your SCIM bridge, run the following command to get the [op-scim-bridge-gw.yaml](/do-app-platform-op-cli/google-workspace/op-scim-bridge-gw.yaml) file and inject the Base64 values for your Workspace configuration.
+
+**Bash**:
+
   ```sh
   curl -s https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-platform-op-cli/google-workspace/op-scim-bridge-gw.yaml | op inject | doctl apps create --spec - --wait --upsert
   ```
 
-  Using Powershell:
+**Powershell**:
+
   ```pwsh
   Invoke-RestMethod -Uri https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-platform-op-cli/google-workspace/op-scim-bridge-gw.yaml | op inject | doctl apps create --spec - --wait --upsert
   ```
 
-  </details>
+</details>
 
-## Appendix
+## Update your SCIM bridge
 
-### Supply custom vault and item names
+To update your SCIM bridge, run the following command for your shell.
 
-If you chose your own name for the vault and items where you saved your SCIM bridge credentials, you can override the defaults using the `VAULT` and `ITEM` variables in the secret references. For example:
+**Bash**:
 
-Using Bash:
+```sh
+curl -s https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-platform-op-cli/op-scim-bridge.yaml | op inject | doctl apps create --spec - --wait --upsert
+```
+
+**Powershell**:
+
+```pwsh
+Invoke-RestMethod -Uri https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-platform-op-cli/op-scim-bridge.yaml | op inject | doctl apps create --spec - --wait --upsert
+```
+
+The [op-scim-bridge.yaml](./op-scim-bridge.yaml) file that this command uses should have the latest version in it. If the version doesn't match the one on the [SCIM bridge releases notes website](https://releases.1password.com/provisioning/scim-bridge/), you can download the file and update it before you run the command.
+
+## Appendix: Resource recommendations
+
+The pod for 1Password SCIM Bridge should be vertically scaled if you provision a large number of users or groups. These are our default resource specifications and recommended configurations for provisioning at scale:
+
+| Volume  | Number of users | CPU  | Memory |
+| ------- | --------------- | ---- | ------ |
+| Default | <1,000          | 0.25 | 0.5Gi  |
+| High    | >1,000          | 1.0  | 1.0Gi  |
+
+If you're provisioning more than 1,000 users, update the resources assigned to the SCIM bridge container to follow these recommendations. The resources specified for the Redis container don't need to be adjusted.
+
+#### Default deployment
+
+If you're provisioning up to 1,000 users, run the following command:
+
+**Bash**:
+
+```sh
+curl -s https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-platform-op-cli/op-scim-bridge.yaml | op inject | doctl apps create --spec - --wait --upsert
+```
+
+**Powershell**:
+
+```pwsh
+Invoke-RestMethod -Uri https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-platform-op-cli/op-scim-bridge.yaml | op inject | doctl apps create --spec - --wait --upsert
+```
+
+#### High-volume deployment
+
+If you're provisioning more than 1,000 users:
+
+1. Download the [`op-scim-bridge.yaml`](/do-app-platform-op-cli/op-scim-bridge.yaml) file and open it in a text editor.
+2. Change the `instance_size_slug` value for the `op-scim-bridge` service to `basic-xs`:
+
+    ```yaml
+    services:
+    # ...
+    - ### ...
+      instance_size_slug: basic-xs
+      name: op-scim-bridge
+    ```
+
+3. Run the following command (replace `./op-scim-bridge.yaml` with the path to your modified app spec file as needed):
+
+    ```sh
+    cat ./op-scim-bridge.yaml | op inject | doctl apps create --spec - --wait --upsert
+    ```
+
+## Get help
+
+### Use a custom vault or item name
+
+If you choose a custom name for vault or items where you saved your SCIM bridge credentials, you can override the defaults using the `VAULT` and `ITEM` variables in the secret references. For example:
+
+**Bash**:
+
 ```sh
 curl -s https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-platform-op-cli/op-scim-bridge.yaml | VAULT="vault name" ITEM="item name" op inject | doctl apps create --spec - --wait
 ```
 
-Using Powershell:
+**Powershell**:
+
 ```pwsh
 Invoke-RestMethod -Uri https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-platform-op-cli/op-scim-bridge.yaml | VAULT="vault name" ITEM="item name" op inject | doctl apps create --spec - --wait
 ```
 
-### Update 1Password SCIM bridge
+### Verify server cost before you deploy
 
-The latest version of 1Password SCIM bridge is posted on our [Release Notes](https://app-updates.agilebits.com/product_history/SCIM) website, where you can find details about the latest changes. The most recent version should also be pinned in [`op-scim-bridge.yaml`](./op-scim-bridge.yaml), so you can update using the same command as above with the `--upsert` parameter:
+To verify the cost of your SCIM bridge deployment with DigitalOcean before you deploy, run the following command for your shell.
 
-Using Bash:
-```sh
-curl -s https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-platform-op-cli/op-scim-bridge.yaml | op inject | doctl apps create --spec - --wait --upsert
-```
+**Bash**:
 
-Using Powershell:
-```pwsh
-Invoke-RestMethod -Uri https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-platform-op-cli/op-scim-bridge.yaml | op inject | doctl apps create --spec - --wait --upsert
-```
-
-### Propose the app spec
-
-You can optionally propose the raw app spec template to verify the cost before deploying to DigitalOcean:
-
-Using Bash:
 ```sh
 curl -s https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-platform-op-cli/op-scim-bridge.yaml | doctl apps propose --spec -
 ```
 
-Using Powershell: 
+**Powershell**: 
+
 ```pwsh
 Invoke-RestMethod -Uri https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-platform-op-cli/op-scim-bridge.yaml | doctl apps propose --spec -
 ```
-
-### Resource recommendations
-
-The 1Password SCIM Bridge Pod should be vertically scaled when provisioning a large number of users or groups. Our default resource specifications and recommended configurations for provisioning at scale are listed in the below table:
-
-| Volume    | Number of users | CPU   | memory |
-| --------- | --------------- | ----- | ------ |
-| Default   | <1,000          | 0.25  | 0.5Gi  |
-| High      | 1,000–5,000     | 0.5   | 1.0Gi  |
-| Very high | >5,000          | 1.0   | 1.0Gi  |
-
-If provisioning more than 1,000 users, the resources assigned to the SCIM bridge container should be updated as recommended in the above table. The resources specified for the Redis container do not need to be adjusted.
-
-Our current default resource requirements are:
-
-<details>
-  <summary>Default</summary>
-
-To revert to the default specification that is suitable for provisioning up to 1,000 users:
-
-Using Bash:
-```sh
-curl -s https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-platform-op-cli/op-scim-bridge.yaml | op inject | doctl apps create --spec - --wait --upsert
-```
-
-Using Powershell:
-```pwsh
-Invoke-RestMethod -Uri https://raw.githubusercontent.com/1Password/scim-examples/main/do-app-platform-op-cli/op-scim-bridge.yaml | op inject | doctl apps create --spec - --wait --upsert
-```
-</details>
-
-These values can be scaled down again to the default values after the initial large provisioning event.
-
-<details>
-  <summary>High volume deployment</summary>
-
-For provisioning up to 5,000 users:
-
-Download and open [`op-scim-bridge.yaml`](/do-app-platform-op-cli/op-scim-bridge.yaml) file in a text editor and replace the value in line 37:
-
-`instance_size_slug: basic-xs` 
-Changing from basic-x**x**s to basic-xs.
-
-```sh
-cat pathToFile/op-scim-bridge.yaml | op inject | doctl apps create --spec - --wait --upsert
-```
-
-</details>
-
-<details>
-  <summary>Very high volume deployment</summary>
-
-For provisioning more than 5,000 users:
-
-Download and open [`op-scim-bridge.yaml`](/do-app-platform-op-cli/op-scim-bridge.yaml) file in a text editor and replace the value in line 37:
-
-`instance_size_slug: basic-xs`
-Changing from basic-x**x**s to basic-xs.
-
-```sh
-cat pathToFile/op-scim-bridge.yaml | op inject | doctl apps create --spec - --wait --upsert
-```
-
-</details>

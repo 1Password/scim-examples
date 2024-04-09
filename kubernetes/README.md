@@ -183,13 +183,12 @@ To finish setting up automated user provisioning, [connect your identity provide
 To update SCIM bridge, connect to your Kubernetes cluster and run the following command:
 
 ```sh
-kubectl set image deploy/op-scim-bridge op-scim-bridge=1password/scim:v2.9.0
+kubectl set image deploy/op-scim-bridge op-scim-bridge=1password/scim:v2.9.1
 ```
 
 > **Note**
 >
-> You can find details about the changes in each release of 1Password SCIM Bridge on our [Release
-> Notes](https://app-updates.agilebits.com/product_history/SCIM) page. The most recent version should be pinned in the
+> You can find details about the changes on the [SCIM bridge releases notes website](https://releases.1password.com/provisioning/scim-bridge/). The most recent version should be pinned in the
 > [`op-scim-deployment.yaml`](./op-scim-deployment.yaml) file (and in the command above in this file) in the main
 > branch of this repository.
 
@@ -344,7 +343,7 @@ kubectl delete \
 
 ### Advanced Redis configuration
 
-If you are using an external Redis cache with your SCIM bridge and need additional configuration options, you can use the following environment variables in place of `OP_REDIS_URL`. These environment variables may be especially helpful if you need support for URL-unfriendly characters in your Redis credentials. `OP_REDIS_URL` must be unset, otherwise the following environment variables will be ignored. 
+If you are using an external Redis cache with your SCIM bridge and need additional configuration options, you can use the following environment variables in place of `OP_REDIS_URL`. These environment variables may be especially helpful if you need support for URL-unfriendly characters in your Redis credentials. `OP_REDIS_URL` must be unset, otherwise the following environment variables will be ignored.
 
 These values can be set in [`op-scim-config.yaml`](./op-scim-config.yaml)
 
@@ -352,19 +351,19 @@ These values can be set in [`op-scim-config.yaml`](./op-scim-config.yaml)
 >
 > If `OP_REDIS_URL` has any value, the environment variables below are ignored.
 
-* `OP_REDIS_HOST`:  overrides the default hostname of the redis server (default: `redis`). It can be either another hostname, or an IP address.
-* `OP_REDIS_PORT`: overrides the default port of the redis server connection (default: `6379`).
-* `OP_REDIS_USERNAME`: sets a username, if any, for the redis connection (default: `(null)`).
-* `OP_REDIS_PASSWORD`: Sets a password, if any, for the redis connection (default: `(null)`). Can accommodate URL-unfriendly characters that `OP_REDIS_URL` may not accommodate. 
-* `OP_REDIS_ENABLE_SSL`: Optionally enforce SSL on redis server connections (default: `false`) (Boolean `0` or `1`).
-* `OP_REDIS_INSECURE_SSL`: Set whether to allow insecure SSL on redis server connections when `OP_REDIS_ENABLE_SSL` is set to `true`. This may be useful for testing or self-signed environments (default: `false`) (Boolean `0` or `1`).
+- `OP_REDIS_HOST`: overrides the default hostname of the redis server (default: `redis`). It can be either another hostname, or an IP address.
+- `OP_REDIS_PORT`: overrides the default port of the redis server connection (default: `6379`).
+- `OP_REDIS_USERNAME`: sets a username, if any, for the redis connection (default: `(null)`).
+- `OP_REDIS_PASSWORD`: Sets a password, if any, for the redis connection (default: `(null)`). Can accommodate URL-unfriendly characters that `OP_REDIS_URL` may not accommodate.
+- `OP_REDIS_ENABLE_SSL`: Optionally enforce SSL on redis server connections (default: `false`) (Boolean `0` or `1`).
+- `OP_REDIS_INSECURE_SSL`: Set whether to allow insecure SSL on redis server connections when `OP_REDIS_ENABLE_SSL` is set to `true`. This may be useful for testing or self-signed environments (default: `false`) (Boolean `0` or `1`).
 
 #### If you already deployd your SCIM bridge
 
 You can unset `OP_REDIS_URL` and set any of the above environment variables directly to reboot SCIM bridge and connect to the specified Redis server:
 
- _Example command:_
- 
+_Example command:_
+
 ```sh
 kubectl set env deploy/op-scim-bridge OP_REDIS_URL="" \
 OP_REDIS_HOST="hostname" \
@@ -437,5 +436,5 @@ When cluster resources are updated in place, Kubernetes will create a new revisi
 If there are enough resources in the cluster available to schedule the new Pod revision, you can restart the Deployment to evict the existing Pod, free up the resources, and allow the new Pod to start:
 
 ```sh
-kubectl rollout restart deployment/op-scim-bridge 
+kubectl rollout restart deployment/op-scim-bridge
 ```
