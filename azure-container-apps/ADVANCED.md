@@ -2,7 +2,7 @@
 
 _Learn how to deploy 1Password SCIM Bridge on the [Azure Container Apps](https://azure.microsoft.com/en-us/products/container-apps/#overview) service._
 
-This deployment consists of two [containers](https://learn.microsoft.com/en-us/azure/container-apps/containers): One for the SCIM bridge and another for Redis. There's also an [ingress](https://learn.microsoft.com/en-us/azure/container-apps/ingress-overview) for the SCIM bridge container. There are a few benefits to deploying 1Password SCIM Bridge on Azure Container Apps:
+This guide goes into more advanced cusomtizations or configurations for the Azure Container App deployment of your 1Password SCIM Bridge. There are a few benefits to deploying 1Password SCIM Bridge on Azure Container Apps:
 
 - **Low cost:** For standard deployments, the service will host your SCIM bridge for ~$16 USD/month (as of January 2024). Container Apps pricing is variable based on activity, and you can learn more on [Microsoft's pricing page](https://azure.microsoft.com/en-us/pricing/details/container-apps/).
 - **Automatic DNS record management:** You don't need to manage a DNS record. Azure Container Apps automatically provides a unique one for your SCIM bridge domain.
@@ -11,20 +11,11 @@ This deployment consists of two [containers](https://learn.microsoft.com/en-us/a
 
 **Table of contents:**
 
-- [Update your SCIM Bridge](#update-your-scim-bridge-in-the-azure-cloud-shell)
 - [Resource recommendations](#resource-recommendations)
 - [Customize your deployment](#customize-your-deployment)
 - [Get help](#get-help)
+- [Updating your SCIM Bridge](#updating-your-scim-bridge-in-the-azure-cloud-shell)
 - [Connect Google Workspace as your IdP](#if-google-workspace-is-your-identity-provider)
-
-## Update your SCIM bridge in the Azure Cloud Shell
-
-> [!TIP]
-> Check for 1Password SCIM Bridge updates on the [SCIM bridge release page](https://app-updates.agilebits.com/product_history/SCIM).
-
-1. Follow the steps on our [SCIM bridge Update guide](https://support.1password.com/scim-update/#azure-container-apps).
-
-After you sign in to your SCIM bridge, the [Automated User Provisioning page](https://start.1password.com/integrations/active/) in your 1Password account will also update with the latest access time and SCIM bridge version.
 
 ## Resource recommendations
 
@@ -36,7 +27,7 @@ The pod for 1Password SCIM Bridge should be vertically scaled if you provision a
 | High      | 1,000–5,000     | 0.5   | 1.0Gi  |
 | Very high | >5,000          | 1.0   | 1.0Gi  |
 
-If you're provisioning more than 1,000 users, update the resources assigned to [the SCIM bridge container](#22-continue-creating-the-container-app) to follow these recommendations. The resources specified for the Redis container don't need to be adjusted.
+If you're provisioning more than 1,000 users, update the resources assigned to the SCIM bridge container to follow these recommendations. The resources specified for the Redis container don't need to be adjusted.
 
 > [!TIP]
 > Learn more about [Container App Name (`ConAppName`) variable requirements](#container-app-name-requirements) that are referenced in the commands below. Copy the following command to a text editor and replace `$ConAppName` and `$ResourceGroup` with the names from your deployment similar to how you did originally in our [deployment guide](https://support.1password.com/scim-deploy-azure/#22-define-variables). 
@@ -258,6 +249,15 @@ Replace your <code>scimsession</code> secret using the Azure Cloud Shell or AZ C
 4. Open your SCIM bridge URL in a browser and enter your bearer token to test the bridge.
 
 5. Update your identity provider configuration with the new bearer token.
+
+### Updating your SCIM bridge in the Azure Cloud Shell
+
+> [!TIP]
+> Check for 1Password SCIM Bridge updates on the [SCIM bridge release page](https://app-updates.agilebits.com/product_history/SCIM).
+
+1. Follow the steps on our [SCIM bridge Update guide](https://support.1password.com/scim-update/#azure-container-apps).
+
+After you sign in to your SCIM bridge, the [Automated User Provisioning page](https://start.1password.com/integrations/active/) in your 1Password account will also update with the latest access time and SCIM bridge version.
 
 ## If Google Workspace is your identity provider
 
