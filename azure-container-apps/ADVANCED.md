@@ -1,4 +1,4 @@
-# Advanced Options for your 1Password SCIM Bridge on Azure Container Apps
+# Advanced details for your 1Password SCIM Bridge on Azure Container Apps
 
 _Learn how to deploy 1Password SCIM Bridge on the [Azure Container Apps](https://azure.microsoft.com/en-us/products/container-apps/#overview) service._
 
@@ -12,7 +12,8 @@ This deployment consists of two [containers](https://learn.microsoft.com/en-us/a
 **Table of contents:**
 
 - [Update your SCIM Bridge](#update-your-scim-bridge-in-the-azure-cloud-shell)
-- [Resource recommendations](#appendix-resource-recommendations)
+- [Resource recommendations](#resource-recommendations)
+- [Customize your deployment](#customize-your-deployment)
 - [Get help](#get-help)
 - [Connect Google Workspace as your IdP](#if-google-workspace-is-your-identity-provider)
 
@@ -25,7 +26,7 @@ This deployment consists of two [containers](https://learn.microsoft.com/en-us/a
 
 After you sign in to your SCIM bridge, the [Automated User Provisioning page](https://start.1password.com/integrations/active/) in your 1Password account will also update with the latest access time and SCIM bridge version.
 
-## Appendix: Resource recommendations
+## Resource recommendations
 
 The pod for 1Password SCIM Bridge should be vertically scaled if you provision a large number of users or groups. These are our default resource specifications and recommended configurations for provisioning at scale:
 
@@ -38,15 +39,14 @@ The pod for 1Password SCIM Bridge should be vertically scaled if you provision a
 If you're provisioning more than 1,000 users, update the resources assigned to [the SCIM bridge container](#22-continue-creating-the-container-app) to follow these recommendations. The resources specified for the Redis container don't need to be adjusted.
 
 > [!TIP]
-> Learn more about [Container App Name (`ConAppName`) variable requirements](#container-app-name-requirements) that are referenced in the commands below. Copy the following command to a text editor and replace `$ConAppName` and `$ResourceGroup` with the names from your deployment.
+> Learn more about [Container App Name (`ConAppName`) variable requirements](#container-app-name-requirements) that are referenced in the commands below. Copy the following command to a text editor and replace `$ConAppName` and `$ResourceGroup` with the names from your deployment similar to how you did originally in our [deployment guide](https://support.1password.com/scim-deploy-azure/#22-define-variables). 
 
 ### Default deployment
 
 If you're provisioning up to 1,000 users, run the following command to reset the specs back to the default:
 
-```sh
-az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge \
-  --cpu 0.25 --memory 0.5Gi
+```bash
+az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge --cpu 0.25 --memory 0.5Gi
 ```
 
 To udpate back to the defaults within the Azure Portal: 
@@ -61,9 +61,8 @@ To udpate back to the defaults within the Azure Portal:
 
 If you're provisioning between 1,000 and 5,000 users, run the following command:
 
-```sh
-az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge \
-  --cpu 0.5 --memory 1.0Gi
+```bash
+az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge --cpu 0.5 --memory 1.0Gi
 ```
 
 To udpate to the high-volume within the Azure Portal: 
@@ -78,9 +77,8 @@ To udpate to the high-volume within the Azure Portal:
 
 If you're provisioning more than 5,000 users, run the following command:
 
-```sh
-az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge \
-  --cpu 1.0 --memory 1.0Gi
+```bash
+az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge --cpu 1.0 --memory 1.0Gi
 ```
 
 To udpate to the very high-volume within the Azure Portal: 
@@ -90,6 +88,101 @@ To udpate to the very high-volume within the Azure Portal:
 3. Select the checkbox next to your **op-scim-bridge** container, then choose **Edit**.
 4. Set the **CPU cores** to `1.0` and the **Memory (Gi)** to `1.0`.
 5. Click **Save**, then click **Create**.
+
+## Customize your deployment
+
+> [!TIP]
+> Copy the following command(s) below to set certain enviornment variables, define these variables again to align to your deployment similar to how you did originally in our [deployment guide](https://support.1password.com/scim-deploy-azure/#22-define-variables). 
+> Alternatively you can add the environment variables through Azure Portal as detailed below.
+
+### Confirmation Interval
+
+Use OP_CONFIRMATION_INTERVAL environment variable to set how often the ConfirmationWatcher component runs in seconds. The minimum
+interval is 30 seconds. If not set, the default value of 300 seconds (5 minutes) is used.
+
+For example set `OP_CONFIRMATION_INTERVAL` to `30` to have the ConfirmationWatcher running every 30 seconds.
+
+```bash
+az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge --set-env-vars OP_CONFIRMATION_INTERVAL=30
+```
+
+To udpate within the Azure Portal: 
+
+1. Within Container App from the [Azure Container Apps Portal](https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/Microsoft.App%2FcontainerApps), select **Containers** from the sidebar.
+2. Click **Edit and deploy**.
+3. Select the checkbox next to your **op-scim-bridge** container, then choose **Edit**.
+4. Add a new **Environment variable**, using the **name** of `OP_CONFIRMATION_INTERVAL`, the **source** of **Manual entry** and enter the time in seconds for the **value**
+5. Click **Save**, then click **Create**.
+
+### Colorful logs
+
+Use OP_PRETTY_LOGS environment variable to set `OP_PRETTY_LOGS` to `1` to colorize container logs.
+
+```bash
+az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge --set-env-vars OP_PRETTY_LOGS=1
+```
+
+To udpate within the Azure Portal: 
+
+1. Within Container App from the [Azure Container Apps Portal](https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/Microsoft.App%2FcontainerApps), select **Containers** from the sidebar.
+2. Click **Edit and deploy**.
+3. Select the checkbox next to your **op-scim-bridge** container, then choose **Edit**.
+4. Add a new **Environment variable**, using the **name** of `OP_PRETTY_LOGS`, the **source** of **Manual entry** and enter `1` for the **value**
+5. Click **Save**, then click **Create**.
+
+### JSON logs
+
+By default, container logs are output in a human-readable format. Set the environment variable `OP_JSON_LOGS` to `1` for newline-delimited JSON logs.
+
+```bash
+az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge --set-env-vars OP_JSON_LOGS=1
+```
+
+To udpate within the Azure Portal: 
+
+1. Within Container App from the [Azure Container Apps Portal](https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/Microsoft.App%2FcontainerApps), select **Containers** from the sidebar.
+2. Click **Edit and deploy**.
+3. Select the checkbox next to your **op-scim-bridge** container, then choose **Edit**.
+4. Add a new **Environment variable**, using the **name** of `OP_JSON_LOGS`, the **source** of **Manual entry** and enter `1` for the **value**
+5. Click **Save**, then click **Create**.
+
+This can be useful for capturing structured logs.
+
+### Debug logs
+
+Set the environment variable `OP_DEBUG` to `1` to enable debug level logging:
+
+```bash
+az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge --set-env-vars OP_DEBUG=1
+```
+
+To udpate within the Azure Portal: 
+
+1. Within Container App from the [Azure Container Apps Portal](https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/Microsoft.App%2FcontainerApps), select **Containers** from the sidebar.
+2. Click **Edit and deploy**.
+3. Select the checkbox next to your **op-scim-bridge** container, then choose **Edit**.
+4. Add a new **Environment variable**, using the **name** of `OP_DEBUG`, the **source** of **Manual entry** and enter `1` for the **value**
+5. Click **Save**, then click **Create**.
+
+This may be useful for troubleshooting, or when contacting 1Password Support.
+
+### Trace logs
+
+Set the environment variable `OP_TRACE` to `1` to enable trace level debug output in the logs:
+
+```bash
+az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge --set-env-vars OP_TRACE=1
+```
+
+To udpate within the Azure Portal: 
+
+1. Within Container App from the [Azure Container Apps Portal](https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/Microsoft.App%2FcontainerApps), select **Containers** from the sidebar.
+2. Click **Edit and deploy**.
+3. Select the checkbox next to your **op-scim-bridge** container, then choose **Edit**.
+4. Add a new **Environment variable**, using the **name** of `OP_TRACE`, the **source** of **Manual entry** and enter `1` for the **value**
+5. Click **Save**, then click **Create**.
+
+This may be useful for troubleshooting Let’s Encrypt integration issues.
 
 ## Get help
 
@@ -127,7 +220,7 @@ After you download a new `scimsession` file, follow the steps below to replace t
 Replace your <code>scimsession</code> secret using the Azure Cloud Shell or AZ CLI
 
 > The following steps assume you have moved to mounting your secret from a volume mount and not using the base64 value in your secrets. 
-> Follow the [command to update your deployment with the updated YAML file](https://support.1password.com/scim-deploy-azure/#step-3-set-up-and-deploy-1password-scim-bridge) to use a volume mounts, redefining your variables as needed for this command to succeed. 
+> Follow the [command to update your deployment with the updated YAML file](https://support.1password.com/scim-deploy-azure/#step-3-set-up-and-deploy-1password-scim-bridge) to use volume mounts, redefining your variables as needed for this command to succeed. 
 
 
 1. Open the [Azure Shell](https://shell.azure.com) or use the `az` CLI tool.

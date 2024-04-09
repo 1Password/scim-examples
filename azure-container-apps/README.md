@@ -190,7 +190,7 @@ If you're provisioning more than 1,000 users, update the resources assigned to [
 ## Get help
 
 > [!TIP]
-> For more advanced tips follow the get help section in our [Advanced guide](ADVANCED.md).
+> For more advanced tips follow the Customize your Deployment, or Get Help section in our [Advanced guide](ADVANCED.md).
 
 ### How to update the **scimsession** secret
 
