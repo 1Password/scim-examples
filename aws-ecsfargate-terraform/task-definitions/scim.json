@@ -8,7 +8,7 @@
     "dependsOn": [
       {
         "containerName": "redis",
-        "condition": "START"
+        "condition": "HEALTHY"
       }
     ],
     "portMappings": [
@@ -19,10 +19,6 @@
       }
     ],
     "environment": [
-      {
-        "name": "OP_REDIS_URL",
-        "value": "redis://localhost:6379"
-      },
       {
         "name": "OP_TLS_DOMAIN",
         "value": ""
@@ -51,7 +47,13 @@
   },
   {
     "name": "redis",
-    "image": "redis:latest",
+    "image": "redis",
+    "command": [
+      "redis-server",
+      "--maxmemory 256mb",
+      "--maxmemory-policy volatile-lru",
+      "--save \"\""
+    ],
     "cpu": 128,
     "memory": 512,
     "essential": true,
@@ -64,17 +66,20 @@
         "awslogs-stream-prefix": "ecs-redis"
       }
     },
+    "healthCheck": {
+      "command": [
+        "CMD-SHELL",
+        "redis-cli ping | grep PONG"
+      ],
+      "interval": 30,
+      "timeout": 5,
+      "retries": 3
+    },
     "portMappings": [
       {
         "containerPort": 6379,
         "hostPort": 6379,
         "protocol": "tcp"
-      }
-    ],
-    "environment": [
-      {
-        "name": "REDIS_ARGS",
-        "value": "--maxmemory 256mb --maxmemory-policy volatile-lru"
       }
     ],
     "mountPoints": [],

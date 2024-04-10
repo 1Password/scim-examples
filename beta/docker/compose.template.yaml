@@ -1,10 +1,11 @@
 services:
   redis:
     image: redis
-    configs:
-      - source: redis
-        target: /usr/local/etc/redis/redis.conf
-    command: redis-server /usr/local/etc/redis/redis.conf
+    command:
+      - redis-server
+      - --maxmemory 256mb
+      - --maxmemory-policy volatile-lru
+      - --save ""
     networks:
       - op-scim
     deploy:
@@ -17,7 +18,9 @@ services:
       restart_policy:
         condition: any
     healthcheck:
-      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      test: 
+        - CMD-SHELL
+        - redis-cli ping | grep PONG
       interval: 1s
       timeout: 3s
       retries: 5
@@ -51,10 +54,6 @@ services:
 networks:
   op-scim:
     name: op-scim
-configs:
-  redis:
-    name: op-redis-config
-    file: ./redis.conf
 secrets:
   scimsession:
     name: scimsession
