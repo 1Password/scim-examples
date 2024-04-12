@@ -68,7 +68,7 @@ data "aws_vpc" "this" {
 
 data "aws_subnets" "public" {
   filter {
-    name   = "vpc-id"
+    name  = "vpc-id"
     values = [data.aws_vpc.this.id]
   }
   # Find the public subnets in the VPC, or if the default VPC, use both
@@ -334,10 +334,10 @@ module "google_workspace" {
 
   source = "./modules/google-workspace"
 
-  name_prefix   = local.name_prefix
-  tags          = local.tags
-  iam_role      = aws_iam_role.op_scim_bridge
-  enabled       = local.using_google_workspace
+  name_prefix  = local.name_prefix
+  tags         = local.tags
+  iam_role     = aws_iam_role.op_scim_bridge
+  enabled      = local.using_google_workspace
   actor         = var.google_workspace_actor
   bridgeAddress = "https://${var.domain_name}"
 }
