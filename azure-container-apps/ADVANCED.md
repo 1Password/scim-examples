@@ -286,7 +286,7 @@ To connect Google Workspace using the Azure Portal interface, you can follow the
     ```
 2. Edit the following in the .json file:
     - **Actor**: Enter the email address of the Google Workspace administrator for the service account.
-    - **Bridge Address**: Enter your SCIM bridge domain. This is the Application URL for your Container App, found on the overview page (not your 1Password account sign-in address). For example: `https://scim.example.com`.
+    - **Bridge Address**: Enter your SCIM bridge domain. This is the Application URL for your Container App, found on the overview page (not your 1Password account sign-in address). For example: `https://scim.example.com`. Ensure to leave the `https://` in the bridge address, and do not add any trailing `/` to your URL.
 3. Save the file.
 
 ### Step 3: Create your Google Workspace secrets and update your SCIM bridge deployment
