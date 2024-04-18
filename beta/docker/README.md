@@ -2,6 +2,20 @@
 
 This example describes how to deploy 1Password SCIM Bridge as a [stack](https://docs.docker.com/engine/swarm/stack-deploy/) using [Docker Swarm](https://docs.docker.com/engine/swarm/key-concepts/#what-is-a-swarm). The stack includes two [services](https://docs.docker.com/engine/swarm/how-swarm-mode-works/services/) (one each for the SCIM bridge container and the required Redis cache), a [Docker secret](https://docs.docker.com/engine/swarm/secrets/) for the `scimsession` credentials, a [Docker config](https://docs.docker.com/engine/swarm/configs/) for configuring Redis, and optional secrets and configuration required only for customers integrating with Google Workspace.
 
+**Table of contents:**
+
+- [In this folder](#in-this-folder)
+- [Overview](#overview)
+- [Prerequisites](#prerequisites)
+- [Get started](#get-started)
+- [Deploy 1Password SCIM bridge](#deploy-1password-scim-bridge)
+- [Test your SCIM bridge](#test-your-scim-bridge)
+- [Connect your identity provider](#connect-your-identity-provider)
+- [Update 1Password SCIM Bridge](#update-1password-scim-bridge)
+- [Rotate credentials](#rotate-credentials)
+- [Appendix: Resource recommendations](#appendix-resource-recommendations)
+- [Appendix: Customize your SCIM bridge](#appendix-customize-your-scim-bridge)
+
 ## In this folder
 
 - [`README.md`](./README.md): the document that you are reading. 👋😃
@@ -144,7 +158,7 @@ See [Connect Google Workspace to 1Password SCIM Bridge](https://support.1passwor
 
    Save the file.
 
-## 🏗️ Deploy 1Password SCIM Bridge
+## Deploy 1Password SCIM Bridge
 
 Use the Compose template to output a canonical configuration for use with Docker Swarm and create the stack from this configuration inline. Your SCIM bridge should automatically acquire and manage a TLS certificate from Let's Encrypt on your behalf:
 
@@ -172,7 +186,7 @@ docker stack config \
         docker stack deploy --compose-file - op-scim-bridge
 ```
 
-## 🧪 Test your SCIM bridge
+## Test your SCIM bridge
 
 Run this command to retrieve logs from the service for the SCIM bridge container:
 
@@ -250,17 +264,16 @@ Copy the example command to a text editor. Replace `mF_9.B5f-4.1JqM` with your b
 
 </details>
 
-## 🪪 Connect your identity provider
+## Connect your identity provider
 
 Use your SCIM bridge URL and bearer token to [connect your identity provider to 1Password SCIM Bridge](https://support.1password.com/scim/#step-3-connect-your-identity-provider).
 
-## Appendix
+
+## Update 1Password SCIM Bridge
 
 Swarm mode in Docker Engine uses a declarative service model. Services will automatically restart tasks when updating their configuration.
 
 Use the Docker context from [Prepare your desktop](#-prepare-your-desktop) to connect to your Docker host and manage your stack.
-
-### ✨ Update 1Password SCIM Bridge
 
 Update the `op-scim-bridge_scim` service with the new image tag from the [`1password/scim` repository on Docker Hub](https://hub.docker.com/r/1password/scim/tags) to update your SCIM bridge to a new version:
 
@@ -278,28 +291,7 @@ docker service update op-scim-bridge_scim \
 
 Your SCIM bridge should automatically reboot using the specified version, typically in a few moments.
 
-### ⚙️ Customize your SCIM bridge
-
-Many SCIM bridge configuration changes can be made by adding or removing environment variables. These can be customized by making changes to [`scim.env`](./scim.env) (that can be commited to your source control) before deploying (or redeploying) your SCIM bridge using the `docker stack deploy` command. For some use cases, it may be desirable to update the configuration "on the fly" from your terminal.
-
-For example, to reboot your SCIM bridge with debug logging enabled:
-
-```sh
-docker service update op-scim-bridge_scim \
-    --env-add OP_DEBUG=1
-```
-
-To turn off debug logging and inject some colour into the logs in your console:
-
-```sh
-docker service update op-scim-bridge_scim \
-    --env-rm OP_DEBUG \
-    --env-add OP_PRETTY_LOGS=1
-```
-
-_Pretty logs pair nicely with the `--raw` parameter of the `docker service logs` command). 🤩_
-
-### 🔃 Rotate credentials
+## Rotate credentials
 
 Docker secrets are immutable and cannot be removed while in use by a Swarm service. To use new secret values in your stack, you must remove the existing secret from the service configuration, replace the Docker secret (or add a new one), and update the service configuration to mount the new secret value.
 
@@ -413,6 +405,27 @@ docker service update op-scim-bridge --reserve-cpu 1024m --reserve-memory 1024M 
 ```
 
 Please reach out to our [support team](https://support.1password.com/contact/) if you need help with the configuration or to tweak the values for your deployment.
+
+## Appendix: Customize your SCIM bridge
+
+Many SCIM bridge configuration changes can be made by adding or removing environment variables. These can be customized by making changes to [`scim.env`](./scim.env) (that can be commited to your source control) before deploying (or redeploying) your SCIM bridge using the `docker stack deploy` command. For some use cases, it may be desirable to update the configuration "on the fly" from your terminal.
+
+For example, to reboot your SCIM bridge with debug logging enabled:
+
+```sh
+docker service update op-scim-bridge_scim \
+    --env-add OP_DEBUG=1
+```
+
+To turn off debug logging and inject some colour into the logs in your console:
+
+```sh
+docker service update op-scim-bridge_scim \
+    --env-rm OP_DEBUG \
+    --env-add OP_PRETTY_LOGS=1
+```
+
+_Pretty logs pair nicely with the `--raw` parameter of the `docker service logs` command). 🤩_
 
 ### 🔒 Advanced TLS options
 
