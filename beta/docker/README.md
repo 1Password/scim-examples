@@ -357,6 +357,63 @@ For example, if you regenerate credentials for the automated user provisioning i
 
 A similar process can be used to update the values for any other Docker secrets used in your configuration.
 
+## Appendix: Resource recommendations
+
+The 1Password SCIM Bridge Pod should be vertically scaled when provisioning a large number of users or groups. Our default resource specifications and recommended configurations for provisioning at scale are listed in the below table:
+
+| Volume    | Number of users | CPU   | memory |
+| --------- | --------------- | ----- | ------ |
+| Default   | <1,000          | 125m  | 512M   |
+| High      | 1,000–5,000     | 500m  | 1024M  |
+| Very high | >5,000          | 1000m | 1024M  |
+
+If provisioning more than 1,000 users, the resources assigned to the SCIM bridge container should be updated as recommended in the above table. The resources specified for the Redis container do not need to be adjusted.
+
+Resource configuration can be updated in place:
+
+### Default resources
+
+Resources for the SCIM bridge container are defined in [`compose.template.yaml`](https://github.com/1Password/scim-examples/blob/main/beta/docker/compose.template.yaml):
+
+```yaml
+services:
+  ...
+  scim:
+    ...
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.125"
+          memory: 512M
+        limits:
+          memory: 512M
+          ...
+```
+
+After making any changes to the Deployment resource in your cluster, you can apply the unmodified manifest to revert to the default specifications defined above:
+
+```sh
+docker stack deploy -c compose.template.yaml {stack-name}
+```
+
+### High volume
+
+For provisioning up to 5,000 users:
+
+```sh
+docker service update op-scim-bridge --reserve-cpu 512m --reserve-memory 1024M --limit-memory 1024M
+```
+
+### Very high volume
+
+For provisioning more than 5,000 users:
+
+```sh
+docker service update op-scim-bridge --reserve-cpu 1024m --reserve-memory 1024M --limit-memory 1024M
+```
+
+Please reach out to our [support team](https://support.1password.com/contact/) if you need help with the configuration or to tweak the values for your deployment.
+
 ### 🔒 Advanced TLS options
 
 Identity providers strictly require an HTTPS endpoint with a vlid TLS certificate to use for the SCIM bridge URL. SCIM Bridge includes an optional CertificateManager component that (by default) acquires and manages a TLS certificate using Let's Encrypt, and terminates TLS traffic at the SCIM bridge container using this certificate. This requires port 443 of the Docker host to be publicly accessible to ensure Let's Encrypt can initiate an inbound connection to your SCIM bridge.
