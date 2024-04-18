@@ -385,7 +385,7 @@ services:
 After making any changes to the Deployment resource in your cluster, you can apply the unmodified manifest to revert to the default specifications defined above:
 
 ```sh
-docker stack deploy -c compose.template.yaml {stack-name}
+docker stack deploy -c compose.template.yaml op-scim
 ```
 
 ### High volume
@@ -393,7 +393,7 @@ docker stack deploy -c compose.template.yaml {stack-name}
 For provisioning up to 5,000 users:
 
 ```sh
-docker service update op-scim-bridge --reserve-cpu 512m --reserve-memory 1024M --limit-memory 1024M
+docker service update op-scim-bridge --reserve-cpu 500m --reserve-memory 1024M --limit-memory 1024M
 ```
 
 ### Very high volume
@@ -401,7 +401,7 @@ docker service update op-scim-bridge --reserve-cpu 512m --reserve-memory 1024M -
 For provisioning more than 5,000 users:
 
 ```sh
-docker service update op-scim-bridge --reserve-cpu 1024m --reserve-memory 1024M --limit-memory 1024M
+docker service update op-scim-bridge --reserve-cpu 1000m --reserve-memory 1024M --limit-memory 1024M
 ```
 
 Please reach out to our [support team](https://support.1password.com/contact/) if you need help with the configuration or to tweak the values for your deployment.
