@@ -19,7 +19,7 @@ spec:
         fsGroup: 999
       containers:
         - name: op-scim-bridge
-          image: 1password/scim:v2.9.1
+          image: 1password/scim:v2.9.3
           securityContext:
             allowPrivilegeEscalation: false
           ports:
