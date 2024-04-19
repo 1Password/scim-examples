@@ -351,7 +351,7 @@ A similar process can be used to update the values for any other Docker secrets 
 
 ## Appendix: Resource recommendations
 
-The 1Password SCIM Bridge Pod should be vertically scaled when provisioning a large number of users or groups. Our default resource specifications and recommended configurations for provisioning at scale are listed in the below table:
+The 1Password SCIM Bridge container should be vertically scaled when provisioning a large number of users or groups. Our default resource specifications and recommended configurations for provisioning at scale are listed in the below table:
 
 | Volume    | Number of users | CPU   | memory |
 | --------- | --------------- | ----- | ------ |
