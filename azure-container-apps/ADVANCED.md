@@ -1,4 +1,4 @@
-# Advanced details for your 1Password SCIM Bridge on Azure Container Apps
+# Advanced details for 1Password SCIM Bridge on Azure Container Apps
 
 _Learn how to deploy 1Password SCIM Bridge on the [Azure Container Apps](https://azure.microsoft.com/en-us/products/container-apps/#overview) service._
 
