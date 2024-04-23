@@ -13,8 +13,8 @@ In this guide, you can learn about advanced customizations for the Azure Contain
 
 - [Resource recommendations](#resource-recommendations)
 - [Customize your deployment](#customize-your-deployment)
+- [Update your SCIM bridge](#updating-your-azure-container-app-scim-bridge)
 - [Get help](#get-help)
-- [Update your SCIM Bridge](#update-your-scim-bridge-in-the-azure-cloud-shell)
 - [Connect Google Workspace as your IdP](#if-google-workspace-is-your-identity-provider)
 
 ## Resource recommendations
@@ -32,7 +32,8 @@ If you're provisioning more than 1,000 users, update the resources assigned to t
 > [!TIP]
 > Learn more about [Container App Name (`ConAppName`) variable requirements](#container-app-name-requirements) that are referenced in the commands below. Copy the following command to a text editor and replace `$ConAppName` and `$ResourceGroup` with the names from your deployment similar to how you did originally in our [deployment guide](https://support.1password.com/scim-deploy-azure/#22-define-variables). 
 
-### Default deployment
+<details>
+<summary>Default deployment</summary>
 
 If you're provisioning up to 1,000 users, run the following command to reset the specs back to the default:
 
@@ -47,8 +48,10 @@ To update back to the defaults within the Azure Portal:
 3. Select the checkbox next to your **op-scim-bridge** container, then choose **Edit**.
 4. Set the **CPU cores** to `0.25` and the **Memory (Gi)** to `0.5`.
 5. Click **Save**, then click **Create**.
+</details>
 
-### High-volume deployment
+<details>
+<summary>High-volume deployment</summary>
 
 If you're provisioning between 1,000 and 5,000 users, run the following command:
 
@@ -63,8 +66,10 @@ To update the high-volume within the Azure Portal:
 3. Select the checkbox next to your **op-scim-bridge** container, then choose **Edit**.
 4. Set the **CPU cores** to `0.5` and the **Memory (Gi)** to `1.0`.
 5. Click **Save**, then click **Create**.
+</details>
 
-### Very high-volume deployment
+<details>
+<summary>Very high-volume deployment</summary>
 
 If you're provisioning more than 5,000 users, run the following command:
 
@@ -79,8 +84,11 @@ To update the very high-volume within the Azure Portal:
 3. Select the checkbox next to your **op-scim-bridge** container, then choose **Edit**.
 4. Set the **CPU cores** to `1.0` and the **Memory (Gi)** to `1.0`.
 5. Click **Save**, then click **Create**.
+</details>
 
 ## Customize your deployment
+
+You can customize your 1Password SCIM Bridge deployment using some of the methods below.
 
 > [!TIP]
 > Copy the following commands to set certain environment variables, then define these variables to align to your deployment like you did in the [deployment guide](https://support.1password.com/scim-deploy-azure/#22-define-variables) before you run the commands.
@@ -88,8 +96,9 @@ To update the very high-volume within the Azure Portal:
 
 ### Confirmation Interval
 
-Use the OP_CONFIRMATION_INTERVAL environment variable to set how often the ConfirmationWatcher component runs in seconds. The minimum
-interval is 30 seconds. If not set, the default value of 300 seconds (5 minutes) is used.
+<details>
+<summary>Use the OP_CONFIRMATION_INTERVAL environment variable to set how often the ConfirmationWatcher component runs in seconds. The minimum
+interval is 30 seconds. If not set, the default value of 300 seconds (5 minutes) is used.</summary>
 
 For example set `OP_CONFIRMATION_INTERVAL` to `30` to have the ConfirmationWatcher running every 30 seconds.
 
@@ -104,10 +113,12 @@ To update within the Azure Portal:
 3. Select the checkbox next to your **op-scim-bridge** container, then choose **Edit**.
 4. Add a new **Environment variable**, using the **name** of `OP_CONFIRMATION_INTERVAL`, the **source** of **Manual entry** and enter the time in seconds for the **value**
 5. Click **Save**, then click **Create**.
+</details>
 
 ### Colorful logs
 
-Use the OP_PRETTY_LOGS environment variable to set `OP_PRETTY_LOGS` to `1` to colorize container logs.
+<details>
+<summary>Use the OP_PRETTY_LOGS environment variable to set `OP_PRETTY_LOGS` to `1` to colorize container logs.</summary>
 
 ```bash
 az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge --set-env-vars OP_PRETTY_LOGS=1
@@ -120,10 +131,12 @@ To update within the Azure Portal:
 3. Select the checkbox next to your **op-scim-bridge** container, then choose **Edit**.
 4. Add a new **Environment variable**, using the **name** of `OP_PRETTY_LOGS`, the **source** of **Manual entry** and enter `1` for the **value**
 5. Click **Save**, then click **Create**.
+</details>
 
 ### JSON logs
 
-By default, container logs are output in a human-readable format. Set the environment variable `OP_JSON_LOGS` to `1` for newline-delimited JSON logs.
+<details>
+<summary>By default, container logs are output in a human-readable format. Set the environment variable `OP_JSON_LOGS` to `1` for newline-delimited JSON logs.</summary>
 
 ```bash
 az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge --set-env-vars OP_JSON_LOGS=1
@@ -138,10 +151,12 @@ To update within the Azure Portal:
 5. Click **Save**, then click **Create**.
 
 This can be useful for capturing structured logs.
+</details>
 
 ### Debug logs
 
-Set the environment variable `OP_DEBUG` to `1` to enable debug level logging:
+<details>
+<summary>Set the environment variable `OP_DEBUG` to `1` to enable debug level logging:</summary>
 
 ```bash
 az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge --set-env-vars OP_DEBUG=1
@@ -156,10 +171,12 @@ To update within the Azure Portal:
 5. Click **Save**, then click **Create**.
 
 This may be useful for troubleshooting, or when contacting 1Password Support.
+</details>
 
 ### Trace logs
 
-Set the environment variable `OP_TRACE` to `1` to enable trace level debug output in the logs:
+<details>
+<summary>Set the environment variable `OP_TRACE` to `1` to enable trace level debug output in the logs:</summary>
 
 ```bash
 az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge --set-env-vars OP_TRACE=1
@@ -174,8 +191,22 @@ To update within the Azure Portal:
 5. Click **Save**, then click **Create**.
 
 This may be useful for troubleshooting issues.
+</details>
+
+## Updating your Azure Container App SCIM bridge
+
+> [!TIP]
+> Check for 1Password SCIM Bridge updates on the [SCIM bridge release page](https://releases.1password.com/provisioning/scim-bridge/).
+
+For updating in the Azure Cloud Shell, follow the steps on our [Update 1Password SCIM Bridge guide](https://support.1password.com/scim-update/#azure-container-apps).
+
+If you prefer to update through the Azure Portal > Container App blade, you can follow these steps: [Update your SCIM bridge in the Azure Portal](./README.md#update-your-scim-bridge-in-the-azure-portal)
+
+After you sign in to your SCIM bridge, the [Automated User Provisioning page](https://start.1password.com/integrations/active/) in your 1Password account will also updated with the latest access time and SCIM bridge version.
 
 ## Get help
+
+Here are some troubleshooting tips for your Azure Container Apps 1Password SCIM Bridge deployment.
 
 ### Region support
 
@@ -249,15 +280,6 @@ Replace your <code>scimsession</code> secret using the Azure Cloud Shell or AZ C
 4. Open your SCIM bridge URL in a browser and enter your bearer token to test the bridge.
 
 5. Update your identity provider configuration with the new bearer token.
-
-### Updating your SCIM bridge in the Azure Cloud Shell
-
-> [!TIP]
-> Check for 1Password SCIM Bridge updates on the [SCIM bridge release page](https://app-updates.agilebits.com/product_history/SCIM).
-
-1. Follow the steps on our [SCIM bridge Update guide](https://support.1password.com/scim-update/#azure-container-apps).
-
-After you sign in to your SCIM bridge, the [Automated User Provisioning page](https://start.1password.com/integrations/active/) in your 1Password account will also update with the latest access time and SCIM bridge version.
 
 ## If Google Workspace is your identity provider
 
