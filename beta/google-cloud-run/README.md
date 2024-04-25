@@ -9,6 +9,7 @@ The included [Cloud Run service YAML](https://cloud.google.com/run/docs/referenc
 *Table of contents:*
 
 - [Before you begin](#before-you-begin)
+
 <!-- !TODO: Complete ToC  -->
 
 ## Before you begin
@@ -36,9 +37,11 @@ The Cloud Run service for SCIM Bridge will be configured to mount volume using a
 1. Click **⋮** _(More)_ > **Upload** in the Cloud Shell terminal menu bar.
 2. Click **Choose Files**. Select the `scimsession` file that you saved to your computer.
 3. Use the suggested destination directory. Click **Upload**.
+
     > [!NOTE]
     > If the file is saved to a different directory or using a different file name, make a note of the full path to
     > the file.
+
 4. Create a secret with the contents of this file as its first secret version using the following command:
 
     ```sh
