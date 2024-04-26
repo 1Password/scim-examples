@@ -94,11 +94,11 @@ You can customize your 1Password SCIM Bridge deployment using some of the method
 > Copy the following commands to set certain environment variables, then define these variables to align to your deployment like you did in the [deployment guide](https://support.1password.com/scim-deploy-azure/#22-define-variables) before you run the commands.
 > Alternatively you can add the environment variables through Azure Portal as detailed below.
 
-### Confirmation Interval
-
 <details>
-<summary>Use the OP_CONFIRMATION_INTERVAL environment variable to set how often the ConfirmationWatcher component runs in seconds. The minimum
-interval is 30 seconds. If not set, the default value of 300 seconds (5 minutes) is used.</summary>
+<summary>Confirmation Interval</summary>
+
+Use the OP_CONFIRMATION_INTERVAL environment variable to set how often the ConfirmationWatcher component runs in seconds. The minimum
+interval is 30 seconds. If not set, the default value of 300 seconds (5 minutes) is used.
 
 For example set `OP_CONFIRMATION_INTERVAL` to `30` to have the ConfirmationWatcher running every 30 seconds.
 
@@ -115,10 +115,10 @@ To update within the Azure Portal:
 5. Click **Save**, then click **Create**.
 </details>
 
-### Colorful logs
-
 <details>
-<summary>Use the OP_PRETTY_LOGS environment variable to set `OP_PRETTY_LOGS` to `1` to colorize container logs.</summary>
+<summary>Colorful logs</summary>
+
+Use the OP_PRETTY_LOGS environment variable to set `OP_PRETTY_LOGS` to `1` to colorize container logs.
 
 ```bash
 az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge --set-env-vars OP_PRETTY_LOGS=1
@@ -133,10 +133,10 @@ To update within the Azure Portal:
 5. Click **Save**, then click **Create**.
 </details>
 
-### JSON logs
-
 <details>
-<summary>By default, container logs are output in a human-readable format. Set the environment variable `OP_JSON_LOGS` to `1` for newline-delimited JSON logs.</summary>
+<summary>JSON logs</summary>
+
+By default, container logs are output in a human-readable format. Set the environment variable `OP_JSON_LOGS` to `1` for newline-delimited JSON logs.
 
 ```bash
 az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge --set-env-vars OP_JSON_LOGS=1
@@ -153,10 +153,10 @@ To update within the Azure Portal:
 This can be useful for capturing structured logs.
 </details>
 
-### Debug logs
-
 <details>
-<summary>Set the environment variable `OP_DEBUG` to `1` to enable debug level logging:</summary>
+<summary>Debug logs</summary>
+
+Set the environment variable `OP_DEBUG` to `1` to enable debug level logging:
 
 ```bash
 az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge --set-env-vars OP_DEBUG=1
@@ -173,10 +173,10 @@ To update within the Azure Portal:
 This may be useful for troubleshooting, or when contacting 1Password Support.
 </details>
 
-### Trace logs
-
 <details>
-<summary>Set the environment variable `OP_TRACE` to `1` to enable trace level debug output in the logs:</summary>
+<summary>Trace logs</summary>
+
+Set the environment variable `OP_TRACE` to `1` to enable trace level debug output in the logs:
 
 ```bash
 az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge --set-env-vars OP_TRACE=1
@@ -211,14 +211,6 @@ Here are some troubleshooting tips for your Azure Container Apps 1Password SCIM 
 ### Region support
 
 When you create or deploy the Container App Environment, Azure may present an error that the region isn't supported. You can review Azure documentation to make sure the region you selected supports [Azure Container Apps](https://azure.microsoft.com/explore/global-infrastructure/products-by-region/?regions=all&products=container-apps).
-
-### Container App Operational Insights error
-
-If you see a "subscription not registered for Microsoft.OperationalInsights resource provider" error when you create the Azure Container App Environment, run the command shown in the error to resolve this issue:
-```
-az provider register -n Microsoft.OperationalInsights --wait
-```
-Once the command is completed, you will need to re-run the [command to create the Container App Environment](https://support.1password.com/scim-deploy-azure/#24-create-the-container-app-environment) again, so the command completes successfully with the Log Analystics workspace. 
 
 ### Container App working with multiple subscriptions
 
@@ -281,7 +273,7 @@ Replace your <code>scimsession</code> secret using the Azure Cloud Shell or AZ C
 
 5. Update your identity provider configuration with the new bearer token.
 
-## If Google Workspace is your identity provider
+## Appendix: If Google Workspace is your identity provider
 
 Follow the steps in this section to connect your deployed Azure Container App SCIM bridge to Google Workspace.
 Connect Google Workspace using the Azure Cloud Shell or AZ CLI. 
