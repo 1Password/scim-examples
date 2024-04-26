@@ -13,9 +13,9 @@ In this guide, you can learn about advanced customizations for the Azure Contain
 
 - [Resource recommendations](#resource-recommendations)
 - [Customize your deployment](#customize-your-deployment)
-- [Update your SCIM bridge](#updating-your-azure-container-app-scim-bridge)
+- [Update your SCIM bridge](#update-your-scim-bridge)
 - [Get help](#get-help)
-- [Connect Google Workspace as your IdP](#if-google-workspace-is-your-identity-provider)
+- [Appendix: If Google Workspace is your identity provider](#appendix-if-google-workspace-is-your-identity-provider)
 
 ## Resource recommendations
 
@@ -193,7 +193,7 @@ To update within the Azure Portal:
 This may be useful for troubleshooting issues.
 </details>
 
-## Updating your Azure Container App SCIM bridge
+## Update your SCIM bridge
 
 > [!TIP]
 > Check for 1Password SCIM Bridge updates on the [SCIM bridge release page](https://releases.1password.com/provisioning/scim-bridge/).
