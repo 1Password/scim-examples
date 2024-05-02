@@ -165,9 +165,7 @@ Similar information is presented graphically by accessing your SCIM Bridge URL i
 ## Step 5: Connect your identity provider
 
 > [!IMPORTANT]
-> Additional steps are required to enable automated provisioning with Google Workspace. The [`google-workspace` subfolder](./google-workspace/) in this directory includes [a template JSON file](./google-workspace/workspace-settings.json) used to configure the connection to Workspace, [a Cloud Run YAML](./google-workspace/op-scim-bridge-gw.yaml) that includes the additional configuration required by Cloud Run.
->
-> Learn how: [Connect 1Password SCIM Bridge to Google Workspace](./google-workspace/README.md)
+> Additional steps are required to [connect 1Password SCIM Bridge to Google Workspace](./google-workspace/README.md)
 
 To finish setting up automated user provisioning, [connect your identity provider to your SCIM Bridge](https://support.1password.com/scim/#step-3-connect-your-identity-provider).
 

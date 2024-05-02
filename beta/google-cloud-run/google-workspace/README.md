@@ -2,6 +2,8 @@
 
 _Learn how to configure your 1Password SCIM Bridge deployed on [Cloud Run](https://cloud.google.com/run/docs/overview/what-is-cloud-run) using the Cloud Shell._
 
+This directory includes [a template JSON file](./google-workspace/workspace-settings.json) used to configure the connection to Workspace and [a Cloud Run YAML](./google-workspace/op-scim-bridge-gw.yaml) that includes the additional configuration required by Cloud Run.
+
 > [!IMPORTANT]
 > You must [deploy 1Password SCIM Bridge on Cloud Run](../README.md) before you can connect to Google Workspace.
 
