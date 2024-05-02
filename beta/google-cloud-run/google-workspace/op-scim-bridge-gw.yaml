@@ -17,6 +17,11 @@ spec:
           ports:
             - name: http1
               containerPort: 3002
+          env:
+          - name: OP_WORKSPACE_CREDENTIALS
+            value: /home/opuser/.op/workspace-credentials/.json
+          - name: OP_WORKSPACE_SETTINGS
+            value: /home/opuser/.op/workspace-settings/.json
           resources:
             limits:
               cpu: 500m
