@@ -1,6 +1,6 @@
 # Connect 1Password SCIM Bridge to Google Workspace
 
-_Learn how to configure your 1Password SCIM Bridge deployed on [Cloud Run](https://cloud.google.com/run/docs/overview/what-is-cloud-run) using the Cloud Shell._
+_Learn how to configure your 1Password SCIM Bridge deployed on [Cloud Run](https://cloud.google.com/run/docs/overview/what-is-cloud-run) to connect to Google Workspace using Cloud Shell._
 
 This directory includes [a template JSON file](./workspace-settings.json) used to configure the connection to Workspace and [a Cloud Run YAML](./op-scim-bridge-gw.yaml) that includes the additional configuration required by Cloud Run.
 
@@ -26,7 +26,7 @@ This directory includes [a template JSON file](./workspace-settings.json) used t
     ```
 
     Copy the client ID returned by this command to use in the next step.
-3. In a separate browser tab or window, open the domain-wide delegation setup in the Workspace console: https://admin.google.com/ac/owl/domainwidedelegation. Click **Add new**, then fill out the information:
+3. In a separate browser tab or window, open the domain-wide delegation setup in the Workspace console: <https://admin.google.com/ac/owl/domainwidedelegation>. Click **Add new**, then fill out the information:
     - **Client ID**: paste the client ID for the service account key that is output by the last command.
     - **OAuth scopes**: paste this comma-separated list:
 

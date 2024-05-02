@@ -2,19 +2,25 @@
 
 _Learn how to deploy 1Password SCIM Bridge on [Cloud Run](https://cloud.google.com/run/docs/overview/what-is-cloud-run) using the Cloud Shell in Google Cloud._
 
-This guide can be used to deploy 1Password SCIM Bridge as an ingress container to a single replica [Cloud Run service](https://cloud.google.com/run/docs/overview/what-is-cloud-run#services) with the required Redis cache deployed as a sidecar container. Credentials are stored in Secret Manager and mounted as volumes attached to the SCIM Bridge container.
-
+This guide can be used to deploy 1Password SCIM Bridge as an ingress container for a single replica [Cloud Run service](https://cloud.google.com/run/docs/overview/what-is-cloud-run#services) with the required Redis cache deployed as a sidecar container. Credentials are stored in Secret Manager and mounted as volumes attached to the SCIM Bridge container.
+  
 The included [Cloud Run service YAML](https://cloud.google.com/run/docs/reference/yaml/v1#service) manifests are suitable for use in a production environment without modification, but are intentionally minimal for simplicity, to allow any identity provider to connect to its public endpoint, and to facilitate its use as a base for a customized deployment.
 
-*Table of contents:*
+**Table of contents:**
 
 - [Before you begin](#before-you-begin)
-
-<!-- !TODO: Complete ToC  -->
+- [Step 1: Set up Google Cloud](#step-1-set-up-google-cloud)
+- [Step 2: Create a secret for your `scimsession` credentials](#step-2-create-a-secret-for-your-scimsession-credentials)
+- [Step 3: Deploy your SCIM Bridge](#step-3-deploy-your-scim-bridge)
+- [Step 4: Test your SCIM bridge](#step-4-test-your-scim-bridge)
+- [Step 5: Connect your identity provider](#step-5-connect-your-identity-provider)
 
 ## Before you begin
 
-<!-- !TODO: Document prereqs  -->
+Complete the necessary [preparation steps to deploy 1Password SCIM Bridge](/PREPARATION.md). You'll also need an Google Cloud account with permissions to create a project, set up billing, and enable Google Cloud APIs to create and manage secrets in Secret Manager.
+
+> [!NOTE]
+> If you don't have a Google Cloud account, you can sign up for a free trial with starting credit: <https://console.cloud.google.com/freetrial>
 
 ## Step 1: Set up Google Cloud
 
@@ -123,39 +129,39 @@ Replace `mF_9.B5f-4.1JqM` with your bearer token and `https://op-scim-bridge-exa
 <details>
 <summary>Example JSON response:</summary>
 
-> ```json
-> {
->   "build": "209031",
->   "version": "2.9.3",
->   "reports": [
->     {
->       "source": "ConfirmationWatcher",
->       "time": "2024-04-25T14:06:09Z",
->       "expires": "2024-04-25T14:16:09Z",
->       "state": "healthy"
->     },
->     {
->       "source": "RedisCache",
->       "time": "2024-04-25T14:06:09Z",
->       "expires": "2024-04-25T14:16:09Z",
->       "state": "healthy"
->     },
->     {
->       "source": "SCIMServer",
->       "time": "2024-04-25T14:06:56Z",
->       "expires": "2024-04-25T14:16:56Z",
->       "state": "healthy"
->     },
->     {
->       "source": "StartProvisionWatcher",
->       "time": "2024-04-25T14:06:09Z",
->       "expires": "2024-04-25T14:16:09Z",
->       "state": "healthy"
->     }
->   ],
->   "retrievedAt": "2024-04-25T14:06:56Z"
-> }
-> ```
+```json
+{
+  "build": "209031",
+  "version": "2.9.3",
+  "reports": [
+    {
+      "source": "ConfirmationWatcher",
+      "time": "2024-04-25T14:06:09Z",
+      "expires": "2024-04-25T14:16:09Z",
+      "state": "healthy"
+    },
+    {
+      "source": "RedisCache",
+      "time": "2024-04-25T14:06:09Z",
+      "expires": "2024-04-25T14:16:09Z",
+      "state": "healthy"
+    },
+    {
+      "source": "SCIMServer",
+      "time": "2024-04-25T14:06:56Z",
+      "expires": "2024-04-25T14:16:56Z",
+      "state": "healthy"
+    },
+    {
+      "source": "StartProvisionWatcher",
+      "time": "2024-04-25T14:06:09Z",
+      "expires": "2024-04-25T14:16:09Z",
+      "state": "healthy"
+    }
+  ],
+  "retrievedAt": "2024-04-25T14:06:56Z"
+}
+```
 
 </details>
 <br />
