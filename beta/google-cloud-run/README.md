@@ -165,7 +165,7 @@ Similar information is presented graphically by accessing your SCIM Bridge URL i
 ## Step 5: Connect your identity provider
 
 > [!IMPORTANT]
-> Additional steps are required to [connect 1Password SCIM Bridge to Google Workspace](./google-workspace/README.md)
+> Additional steps are required to [connect 1Password SCIM Bridge to Google Workspace](./google-workspace/README.md).
 
 To finish setting up automated user provisioning, [connect your identity provider to your SCIM Bridge](https://support.1password.com/scim/#step-3-connect-your-identity-provider).
 
