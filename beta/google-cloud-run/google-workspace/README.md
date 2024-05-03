@@ -73,3 +73,22 @@ In the Cloud Console:
 3. Select the Google group(s) you would like to assign to 1Password in the Google Workspace configuration. Click **Save**.
 
 Learn more about automated provisioning in 1Password with Google Workspace: [Connect Google Workspace to 1Password SCIM Bridge (Next steps)](https://support.1password.com/scim-google-workspace/#next-steps).
+
+## Update your SCIM Bridge when Google Workspace is your IdP
+
+> [!TIP]
+> Check for 1Password SCIM Bridge updates on the [SCIM bridge releases notes website](https://releases.1password.com/provisioning/scim-bridge/).
+
+1. Connect to your Cloud Shell and run the following command:
+
+```sh
+curl --silent --show-error \
+  https://raw.githubusercontent.com/1Password/scim-examples/beta/google-cloud-run/google-workspace/op-scim-bridge.yaml |
+  gcloud run services replace -
+```
+
+2. Enter your SCIM Bridge URL in a browser and sign in with your bearer token.
+3. Check the top left-hand side of the page to verify you're running the updated version of the SCIM Bridge.
+
+After you sign in to your SCIM bridge, the [Automated User Provisioning page](https://start.1password.com/integrations/active/) in your 1Password account will also update with the latest access time and SCIM bridge version.
+

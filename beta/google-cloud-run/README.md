@@ -11,9 +11,10 @@ The included [Cloud Run service YAML](https://cloud.google.com/run/docs/referenc
 - [Before you begin](#before-you-begin)
 - [Step 1: Set up Google Cloud](#step-1-set-up-google-cloud)
 - [Step 2: Create a secret for your `scimsession` credentials](#step-2-create-a-secret-for-your-scimsession-credentials)
-- [Step 3: Deploy your SCIM Bridge](#step-3-deploy-your-scim-bridge)
++ [Step 3: Deploy your SCIM bridge](#step-3-deploy-your-scim-bridge)
 - [Step 4: Test your SCIM bridge](#step-4-test-your-scim-bridge)
 - [Step 5: Connect your identity provider](#step-5-connect-your-identity-provider)
+- [Appendix: Update your SCIM Bridge](#update-your-scim-bridge)
 
 ## Before you begin
 
@@ -174,6 +175,27 @@ Similar information is presented graphically by accessing your SCIM Bridge URL i
 > Additional steps are required to [connect 1Password SCIM Bridge to Google Workspace](./google-workspace/README.md).
 
 To finish setting up automated user provisioning, [connect your identity provider to your SCIM Bridge](https://support.1password.com/scim/#step-3-connect-your-identity-provider).
+
+## Update your SCIM Bridge
+
+> [!TIP]
+> Check for 1Password SCIM Bridge updates on the [SCIM Bridge releases notes website](https://releases.1password.com/provisioning/scim-bridge/).
+
+> [!IMPORTANT]
+> If you used Google Workspace, follow the [steps here to update your deployment](./google-workspace/README.md#Update-your-SCIM-bridge-when-Google-Workspace-is-your-IdP)
+
+1. Connect to your Cloud Shell and run the following command:
+
+```sh
+curl --silent --show-error \
+  https://raw.githubusercontent.com/1Password/scim-examples/main/beta/google-cloud-run/op-scim-bridge.yaml |
+  gcloud run services replace -
+```
+
+2. Enter your SCIM Bridge URL in a browser and sign in with your bearer token.
+3. Check the top left-hand side of the page to verify you're running the updated version of the SCIM Bridge.
+
+After you sign in to your SCIM Bridge, the [Automated User Provisioning page](https://start.1password.com/integrations/active/) in your 1Password account will also update with the latest access time and SCIM Bridge version.
 
 <!-- Collecting references that may be relevant to document and possibly hyperlinked somewhere above.
 
