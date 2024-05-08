@@ -18,14 +18,15 @@ The included [Cloud Run service YAML](https://cloud.google.com/run/docs/referenc
 
 ## Before you begin
 
-Complete the necessary [preparation steps to deploy 1Password SCIM Bridge](/PREPARATION.md). You'll also need an Google Cloud account with permissions to create a project, set up billing, and enable Google Cloud APIs to create and manage secrets in Secret Manager.
+Complete the necessary [preparation steps to deploy 1Password SCIM Bridge](/PREPARATION.md). You'll also need a Google Cloud account with permissions to create a project, set up billing, and enable Google Cloud APIs to create and manage secrets in Secret Manager.
 
 > [!NOTE]
 > If you don't have a Google Cloud account, you can sign up for a free trial with starting credit: <https://console.cloud.google.com/freetrial>
 
 ## Step 1: Set up Google Cloud
 
-1. Create a [project](https://cloud.google.com/docs/overview#projects) to organize the Google Cloud resources for your 1Password SCIM Bridge deployment, and set it as the default project for your Cloud Shell environment:
+1. Sign in to the Google Cloud console and activate Cloud Shell: <https://console.cloud.google.com?cloudshell=true>
+2. Create a [project](https://cloud.google.com/docs/overview#projects) to organize the Google Cloud resources for your 1Password SCIM Bridge deployment, and set it as the default project for your Cloud Shell environment:
 
     ```sh
     gcloud projects create op-scim-bridge --set-as-default
@@ -38,13 +39,13 @@ Complete the necessary [preparation steps to deploy 1Password SCIM Bridge](/PREP
 > gcloud config set project op-scim-bridge
 > ```
 
-2. Enable the Secret Manager and Cloud Run APIs for your project:
+3. Enable the Secret Manager and Cloud Run APIs for your project:
 
     ```sh
     gcloud services enable secretmanager.googleapis.com run.googleapis.com
     ```
 
-3. Set the default region for Cloud Shell:
+34. Set the default region for Cloud Shell:
 
     ```sh
     gcloud config set compute/region us-central1

@@ -19,7 +19,8 @@ Complete the steps to [deploy SCIM Bridge on Cloud Run](../README.md). To connec
 
 ## Step 1: Create a secret for Workspace credentials
 
-1. Enable the Admin SDK API, create a service account named `onepassword-provisioning` and a secret named `workspace-credentials`, and add a secret version from a private key for the service account:
+1. Sign in to the Google Cloud console and activate Cloud Shell: <https://console.cloud.google.com?cloudshell=true>
+2. Enable the Admin SDK API, create a service account named `onepassword-provisioning` and a secret named `workspace-credentials`, and add a secret version from a private key for the service account:
 
     ```sh
     gcloud services enable admin.googleapis.com &&
@@ -29,14 +30,14 @@ Complete the steps to [deploy SCIM Bridge on Cloud Run](../README.md). To connec
       ) | gcloud secrets versions add workspace-credentials --data-file=-
     ```
 
-2. Get the client ID of the service account:
+3. Get the client ID of the service account:
 
     ```sh
     gcloud secrets versions access latest --secret=workspace-credentials | jq '.private_key_id' --raw-output
     ```
 
     Copy the client ID returned by this command to use in the next step.
-3. In a separate browser tab or window, open the domain-wide delegation setup in the Workspace console: <https://admin.google.com/ac/owl/domainwidedelegation>. Click **Add new**, then fill out the information:
+4. In a separate browser tab or window, open the domain-wide delegation setup in the Workspace console: <https://admin.google.com/ac/owl/domainwidedelegation>. Click **Add new**, then fill out the information:
     - **Client ID**: paste the client ID for the service account key that is output by the last command.
     - **OAuth scopes**: paste this comma-separated list:
 
