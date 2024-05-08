@@ -45,10 +45,10 @@ Complete the necessary [preparation steps to deploy 1Password SCIM Bridge](/PREP
     gcloud services enable secretmanager.googleapis.com run.googleapis.com
     ```
 
-34. Set the default region for Cloud Shell:
+34. Set the default region for Cloud Run in Cloud Shell:
 
     ```sh
-    gcloud config set compute/region us-central1
+    gcloud config set run/region us-central1
     ```
 
 > [!NOTE]
@@ -89,7 +89,7 @@ The Cloud Run service for SCIM Bridge will be configured to mount volume using a
         gcloud iam service-accounts list --filter="$(
           gcloud projects describe op-scim-bridge --format="value(projectNumber)"
         )-compute@developer.gserviceaccount.com" --format="value(email)"
-      )
+      ) \
       --role=roles/secretmanager.secretAccessor
     ```
 
@@ -164,7 +164,7 @@ Similar information is presented graphically by accessing your SCIM Bridge URL i
 ## Step 5: Connect your identity provider
 
 > [!IMPORTANT]
-> Additional steps are required to [connect 1Password SCIM Bridge to Google Workspace](./google-workspace/README.md).
+> Additional steps are required if you are [connecting your 1Password SCIM Bridge to Google Workspace](./google-workspace/README.md).
 
 To finish setting up automated user provisioning, [connect your identity provider to your SCIM Bridge](https://support.1password.com/scim/#step-3-connect-your-identity-provider).
 

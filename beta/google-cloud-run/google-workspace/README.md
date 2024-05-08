@@ -33,7 +33,7 @@ Complete the steps to [deploy SCIM Bridge on Cloud Run](../README.md). To connec
 3. Get the client ID of the service account:
 
     ```sh
-    gcloud secrets versions access latest --secret=workspace-credentials | jq '.private_key_id' --raw-output
+    gcloud secrets versions access latest --secret=workspace-credentials | jq '.client_id' --raw-output
     ```
 
     Copy the client ID returned by this command to use in the next step.
@@ -75,7 +75,7 @@ In the Cloud Console:
 
     ```sh
     curl --silent --show-error \
-      https://raw.githubusercontent.com/1Password/scim-examples/main/beta/google-cloud-run/google-workspace/op-scim-bridge.yaml |
+      https://raw.githubusercontent.com/1Password/scim-examples/main/beta/google-cloud-run/google-workspace/op-scim-bridge-gw.yaml |
       gcloud run services replace - &&
       gcloud run services describe op-scim-bridge --format="value(status.url)"
     ```
