@@ -50,7 +50,7 @@ This directory includes [a template JSON file](./workspace-settings.json) used t
 
 ## Step 2: Download and edit the Workspace settings template
 
-1. Download the [`workspace-settings.json`](./google-workspace/workspace-settings.json) template file from this repository.
+1. Download the [`workspace-settings.json`](./workspace-settings.json) template file from this repository.
 2. Edit the following in this file:
     - **Actor**: Enter the email address for a Google Workspace administrator to use with the service account.
     - **Bridge Address**: Enter your SCIM Bridge URL.
