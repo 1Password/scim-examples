@@ -99,20 +99,11 @@ Run this command to stream [`op-scim-bridge.yaml`](./op-scim-bridge.yaml) Cloud 
 
 ```sh
 curl --silent --show-error \
-  https://raw.githubusercontent.com/1Password/scim-examples/solutions/pike/google-cloud-run/beta/google-cloud-run/op-scim-bridge.yaml |
+  https://raw.githubusercontent.com/1Password/scim-examples/main/beta/google-cloud-run/op-scim-bridge.yaml |
   gcloud run services replace - &&
   gcloud run services add-iam-policy-binding op-scim-bridge --member=allUsers --role=roles/run.invoker &&
   gcloud run services describe op-scim-bridge --format="value(status.url)"
 ```
-
-<!-- !TODO: Replace the URL above with the link to its path when it is merged into main.
-```sh
-curl --silent --show-error \
-  https://raw.githubusercontent.com/1Password/scim-examples/main/beta/google-cloud-run/op-scim-bridge.yaml |
-  gcloud run services replace - &&
-  gcloud run services add-iam-policy-binding op-scim-bridge --member=allUsers --role=roles/run.invoker
-```
--->
 
 The final line of the above chained command should output a URL for the HTTPS endpoint provded by Cloud Run. This is your **SCIM Bridge URL**.
 
@@ -197,14 +188,3 @@ curl --silent --show-error \
 3. Check the top left-hand side of the page to verify you're running the updated version of the SCIM Bridge.
 
 After you sign in to your SCIM Bridge, the [Automated User Provisioning page](https://start.1password.com/integrations/active/) in your 1Password account will also update with the latest access time and SCIM Bridge version.
-
-<!-- Collecting references that may be relevant to document and possibly hyperlinked somewhere above.
-
-## References
-
-- <https://cloud.google.com/iam/docs/keys-create-delete?hl=en#required-permissions>
-- <https://cloud.google.com/run/docs/reference/yaml/v1#service>
-- <https://cloud.google.com/secret-manager/docs/create-secret-quickstart#gcloud>
-- <https://cloud.google.com/shell/docs/uploading-and-downloading-files>
-- <https://cloud.google.com/secret-manager/docs/manage-access-to-secrets#required_roles>
--->
