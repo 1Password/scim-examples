@@ -11,7 +11,7 @@ The included [Cloud Run service YAML](https://cloud.google.com/run/docs/referenc
 - [Before you begin](#before-you-begin)
 - [Step 1: Set up Google Cloud](#step-1-set-up-google-cloud)
 - [Step 2: Create a secret for your `scimsession` credentials](#step-2-create-a-secret-for-your-scimsession-credentials)
-+ [Step 3: Deploy your SCIM bridge](#step-3-deploy-your-scim-bridge)
+- [Step 3: Deploy your SCIM bridge](#step-3-deploy-your-scim-bridge)
 - [Step 4: Test your SCIM bridge](#step-4-test-your-scim-bridge)
 - [Step 5: Connect your identity provider](#step-5-connect-your-identity-provider)
 - [Appendix: Update your SCIM Bridge](#update-your-scim-bridge)
@@ -45,7 +45,7 @@ Complete the necessary [preparation steps to deploy 1Password SCIM Bridge](/PREP
     gcloud services enable secretmanager.googleapis.com run.googleapis.com
     ```
 
-34. Set the default region for Cloud Run in Cloud Shell:
+4. Set the default region for Cloud Run:
 
     ```sh
     gcloud config set run/region us-central1
@@ -61,11 +61,9 @@ The Cloud Run service for SCIM Bridge will be configured to mount volume using a
 1. Click **⋮** _(More)_ > **Upload** in the Cloud Shell terminal menu bar.
 2. Click **Choose Files**. Select the `scimsession` file that you saved to your computer.
 3. Use the suggested destination directory. Click **Upload**.
-
 > [!NOTE]
 > If the file is saved to a different directory or using a different file name, make a note of the full path to
 > the file.
-
 4. Create a secret with the contents of this file as its first secret version using the following command:
 
     ```sh
@@ -84,13 +82,11 @@ The Cloud Run service for SCIM Bridge will be configured to mount volume using a
 5. Enable Cloud Run to access the secret using the Compute Engine default service account for the project:
 
     ```sh
-    gcloud secrets add-iam-policy-binding scimsession \
-      --member=serviceAccount:$(
-        gcloud iam service-accounts list --filter="$(
-          gcloud projects describe op-scim-bridge --format="value(projectNumber)"
-        )-compute@developer.gserviceaccount.com" --format="value(email)"
-      ) \
-      --role=roles/secretmanager.secretAccessor
+    gcloud secrets add-iam-policy-binding scimsession --member=serviceAccount:$(
+      gcloud iam service-accounts list --filter="$(
+        gcloud projects describe op-scim-bridge --format="value(projectNumber)"
+      )-compute@developer.gserviceaccount.com" --format="value(email)"
+    ) --role=roles/secretmanager.secretAccessor
     ```
 
 ## Step 3: Deploy your SCIM Bridge
@@ -105,7 +101,7 @@ curl --silent --show-error \
   gcloud run services describe op-scim-bridge --format="value(status.url)"
 ```
 
-The final line of the above chained command should output a URL for the HTTPS endpoint provded by Cloud Run. This is your **SCIM Bridge URL**.
+The final line of the above chained command should output a URL for the HTTPS endpoint provided by Cloud Run. This is your **SCIM Bridge URL**.
 
 ## Step 4: Test your SCIM bridge
 
@@ -164,27 +160,27 @@ Similar information is presented graphically by accessing your SCIM Bridge URL i
 ## Step 5: Connect your identity provider
 
 > [!IMPORTANT]
-> Additional steps are required if you are [connecting your 1Password SCIM Bridge to Google Workspace](./google-workspace/README.md).
+> **If Google Workspace is your identity provider**, additional steps are required: [connect your 1Password SCIM Bridge to Google Workspace](./google-workspace/README.md).
 
 To finish setting up automated user provisioning, [connect your identity provider to your SCIM Bridge](https://support.1password.com/scim/#step-3-connect-your-identity-provider).
 
 ## Update your SCIM Bridge
 
+> [!IMPORTANT]
+> **If Google Workspace is your identity provider**, alternate steps are required: [update your SCIM Bridge when Google Workspace is your IdP](./google-workspace/README.md#update-your-scim-bridge-when-google-workspace-is-your-idp)
+
+1. Sign in to the Google Cloud console and activate Cloud Shell: <https://console.cloud.google.com?cloudshell=true>
+
+2. Redeploy your SCIM Bridge using the latest version of the Cloud Run services YAML from this directory in our repository:
+
+    ```sh
+    curl --silent --show-error \
+      https://raw.githubusercontent.com/1Password/scim-examples/main/beta/google-cloud-run/op-scim-bridge.yaml |
+      gcloud run services replace -
+    ```
+
 > [!TIP]
 > Check for 1Password SCIM Bridge updates on the [SCIM Bridge releases notes website](https://releases.1password.com/provisioning/scim-bridge/).
+3. [Test your SCIM Bridge deployment](#step-4-test-your-scim-bridge) using your bearer token.
 
-> [!IMPORTANT]
-> If you used Google Workspace, follow the [steps here to update your deployment](./google-workspace/README.md#Update-your-SCIM-bridge-when-Google-Workspace-is-your-IdP)
-
-1. Connect to your Cloud Shell and run the following command:
-
-```sh
-curl --silent --show-error \
-  https://raw.githubusercontent.com/1Password/scim-examples/main/beta/google-cloud-run/op-scim-bridge.yaml |
-  gcloud run services replace -
-```
-
-2. Enter your SCIM Bridge URL in a browser and sign in with your bearer token.
-3. Check the top left-hand side of the page to verify you're running the updated version of the SCIM Bridge.
-
-After you sign in to your SCIM Bridge, the [Automated User Provisioning page](https://start.1password.com/integrations/active/) in your 1Password account will also update with the latest access time and SCIM Bridge version.
+The new version number that you updated to should appear in the health check, the container logs for SCIM Bridge, and the top left-hand side of the page if signing in to the SCIM Bridge at its URL in a web browser. After you sign in to your SCIM Bridge, the [Automated User Provisioning page](https://start.1password.com/integrations/provisioning/) in your 1Password account will also update with the latest access time and SCIM Bridge version.

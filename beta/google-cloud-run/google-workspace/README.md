@@ -15,7 +15,10 @@ This directory includes [a template JSON file](./workspace-settings.json) used t
 
 ## Before you begin
 
-Complete the steps to [deploy SCIM Bridge on Cloud Run](../README.md). To connect your SCIM Bridge to Workspace, you'll need permissions in Google Cloud to enable the required APIs, create a service account, and an administrator with the required permissions to use the service account with your Workspace tenant.
+> [!IMPORTANT]
+> Complete the steps to [deploy 1Password SCIM Bridge on Cloud Run](../README.md) **before** the next steps in this guide.
+
+ To connect your SCIM Bridge to Workspace, you'll need permissions in Google Cloud to enable the required APIs, create a service account, and an administrator with the required permissions to use the service account with your Workspace tenant.
 
 ## Step 1: Create a secret for Workspace credentials
 
@@ -87,19 +90,18 @@ Learn more about automated provisioning in 1Password with Google Workspace: [Con
 
 ## Update your SCIM Bridge when Google Workspace is your IdP
 
-1. Create a new revision of your SCIM Bridge deployment using the latest version of the [`op-scim-bridge-gw.yaml`](./op-scim-bridge-gw.yaml) Cloud Run services YAML in this directory:
+1. Sign in to the Google Cloud console and activate Cloud Shell: <https://console.cloud.google.com?cloudshell=true>
 
-```sh
-curl --silent --show-error \
-  https://raw.githubusercontent.com/1Password/scim-examples/main/beta/beta/google-cloud-run/google-workspace/op-scim-bridge.yaml |
-  gcloud run services replace -
-```
+2. Create a new revision of your SCIM Bridge deployment using the latest version of the [`op-scim-bridge-gw.yaml`](./op-scim-bridge-gw.yaml) Cloud Run services YAMLL from this directory in our repository:
 
-> [!NOTE]
-> Check for 1Password SCIM Bridge updates and learn about the changes in each version on the [releases notes
-> website](https://releases.1password.com/provisioning/scim-bridge/).
+    ```sh
+    curl --silent --show-error \
+      https://raw.githubusercontent.com/1Password/scim-examples/main/beta/google-cloud-run/google-workspace/op-scim-bridge-gw.yaml |
+      gcloud run services replace -
+    ```
 
-2. Enter your SCIM Bridge URL in a browser and sign in with your bearer token.
-3. Check the top left-hand side of the page to verify you're running the updated version of the SCIM Bridge.
+> [!TIP]
+> Check for 1Password SCIM Bridge updates on the [SCIM Bridge releases notes website](https://releases.1password.com/provisioning/scim-bridge/).
+3. [Test your SCIM Bridge deployment](../README.md#step-4-test-your-scim-bridge) using your bearer token.
 
-After you sign in to your SCIM bridge, the [Automated User Provisioning page](https://start.1password.com/integrations/active/) in your 1Password account will also update with the latest access time and SCIM bridge version.
+The new version number that you updated to should appear in the health check, the container logs for SCIM Bridge, and the top left-hand side of the page if signing in to the SCIM Bridge at its URL in a web browser. After you sign in to your SCIM Bridge, the [Automated User Provisioning page](https://start.1password.com/integrations/provisioning/) in your 1Password account will also update with the latest access time and SCIM Bridge version.
