@@ -74,7 +74,7 @@ In the Cloud Console:
 
 ## Step 4: Redeploy your SCIM Bridge to connect to Workspace
 
-1. Use the [`op-scim-bridge-gw.yaml`](./google-workspace/op-scim-bridge-gw.yaml) Cloud Run YAML from this repository to create a new revision of the service that is configured to connect to Google Workspace:
+1. Use the [`op-scim-bridge-gw.yaml`](./op-scim-bridge-gw.yaml) Cloud Run YAML from this repository to create a new revision of the service that is configured to connect to Google Workspace:
 
     ```sh
     curl --silent --show-error \
@@ -92,7 +92,7 @@ Learn more about automated provisioning in 1Password with Google Workspace: [Con
 
 1. Sign in to the Google Cloud console and activate Cloud Shell: <https://console.cloud.google.com?cloudshell=true>
 
-2. Create a new revision of your SCIM Bridge deployment using the latest version of the [`op-scim-bridge-gw.yaml`](./op-scim-bridge-gw.yaml) Cloud Run services YAMLL from this directory in our repository:
+2. Create a new revision of your SCIM Bridge deployment using the latest version of the [`op-scim-bridge-gw.yaml`](./op-scim-bridge-gw.yaml) Cloud Run services YAML from this directory in our repository:
 
     ```sh
     curl --silent --show-error \
