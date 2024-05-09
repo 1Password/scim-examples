@@ -44,8 +44,9 @@ If you have particular requirements for your environment, we recommend an advanc
 
 These are beta versions of 1Password SCIM Bridge deployment examples. These deployments _should_ work, but aren't guaranteed and will change in the future. See the [README](./beta/README.md) for more information about the "beta" designation.
 
-- ✨ **NEW** [AWS with CloudFormation](/beta/aws-ecsfargate-cfn)
-- ✨ **NEW** [Docker](/beta/docker)
+- [AWS with CloudFormation](/beta/aws-ecsfargate-cfn)
+- [Docker](/beta/docker)
+- ✨ **NEW** [Google Cloud Run](/beta/google-cloud-run)
 
 ## Deprecated deployment methods
 
