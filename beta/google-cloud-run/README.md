@@ -6,16 +6,6 @@ This guide can be used to deploy 1Password SCIM Bridge as an ingress container f
   
 The included [Cloud Run service YAML](https://cloud.google.com/run/docs/reference/yaml/v1#service) manifests are suitable for use in a production environment without modification, but are intentionally minimal for simplicity, to allow any identity provider to connect to its public endpoint, and to facilitate its use as a base for a customized deployment.
 
-**Table of contents:**
-
-- [Before you begin](#before-you-begin)
-- [Step 1: Set up Google Cloud](#step-1-set-up-google-cloud)
-- [Step 2: Create a secret for your `scimsession` credentials](#step-2-create-a-secret-for-your-scimsession-credentials)
-- [Step 3: Deploy your SCIM bridge](#step-3-deploy-your-scim-bridge)
-- [Step 4: Test your SCIM bridge](#step-4-test-your-scim-bridge)
-- [Step 5: Connect your identity provider](#step-5-connect-your-identity-provider)
-- [Appendix: Update your SCIM Bridge](#update-your-scim-bridge)
-
 ## Before you begin
 
 Complete the necessary [preparation steps to deploy 1Password SCIM Bridge](/PREPARATION.md). You'll also need a Google Cloud account with permissions to create a project, set up billing, and enable Google Cloud APIs to create and manage secrets in Secret Manager.

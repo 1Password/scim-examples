@@ -4,15 +4,6 @@ _Learn how to configure your 1Password SCIM Bridge deployed on [Cloud Run](https
 
 This directory includes [a template JSON file](./workspace-settings.json) used to configure the connection to Workspace and [a Cloud Run YAML](./op-scim-bridge-gw.yaml) that includes the additional configuration required by Cloud Run.
 
-**Table of contents:**
-
-- [Before you begin](#before-you-begin)
-- [Step 1: Create a secret for Workspace credentials](#step-1-create-a-secret-for-workspace-credentials)
-- [Step 2: Download and edit the Workspace settings template](#step-2-download-and-edit-the-workspace-settings-template)
-- [Step 3: Create a secret for Workspace setting](#step-3-create-a-secret-for-workspace-settings)
-- [Step 4: Redeploy your SCIM Bridge to connect to Workspace](#step-4-redeploy-your-scim-bridge-to-connect-to-workspace)
-- [Appendix: Update your SCIM Bridge when Google Workspace is your IdP](#update-your-scim-bridge-when-google-workspace-is-your-idp)
-
 ## Before you begin
 
 > [!IMPORTANT]

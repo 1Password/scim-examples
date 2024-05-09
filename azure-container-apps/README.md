@@ -9,19 +9,6 @@ This deployment consists of two [containers](https://learn.microsoft.com/en-us/a
 - **Automatic TLS certificate management:** Azure Container Apps automatically handles TLS certificate management on your behalf.
 - **Multiple deployment options:** The SCIM bridge can be deployed directly to Azure from the Portal using this guide or via the Azure Shell or command line tools in your local terminal using the [support guide](https://support.1password.com/scim-deploy-azure/). If you're using a custom deployment, cloning this repository is recommended.
 
-**Table of contents:**
-
-- [Before you begin](#before-you-begin)
-- [Step 1: Create the Container App](#step-1-create-the-container-app)
-- [Step 2: Create a secret for your `scimsession` credentials](#step-2-create-a-secret-for-your-scimsession-credentials)
-- [Step 3: Deploy the SCIM bridge container](#step-3-deploy-the-scim-bridge-container)
-- [Step 4: Enable ingress to your SCIM bridge](#step-4-enable-ingress-to-your-scim-bridge)
-- [Step 5: Test your SCIM bridge](#step-5-test-your-scim-bridge)
-- [Step 6: Connect your identity provider](#step-6-connect-your-identity-provider)
-- [Update your SCIM Bridge](#update-your-scim-bridge-in-the-azure-portal)
-- [Appendix: Resource recommendations](#appendix-resource-recommendations)
-- [Get help](#get-help)
-
 ## Before you begin
 
 Before you begin, complete the necessary [preparation steps to deploy 1Password SCIM Bridge](/PREPARATION.md). You'll also need an Azure account with permission to create a Container App.

@@ -2,20 +2,6 @@
 
 This example describes how to deploy 1Password SCIM Bridge as a [stack](https://docs.docker.com/engine/swarm/stack-deploy/) using [Docker Swarm](https://docs.docker.com/engine/swarm/key-concepts/#what-is-a-swarm). The stack includes two [services](https://docs.docker.com/engine/swarm/how-swarm-mode-works/services/) (one each for the SCIM bridge container and the required Redis cache), a [Docker secret](https://docs.docker.com/engine/swarm/secrets/) for the `scimsession` credentials, a [Docker config](https://docs.docker.com/engine/swarm/configs/) for configuring Redis, and optional secrets and configuration required only for customers integrating with Google Workspace.
 
-**Table of contents:**
-
-- [In this folder](#in-this-folder)
-- [Overview](#overview)
-- [Prerequisites](#prerequisites)
-- [Get started](#get-started)
-- [Deploy 1Password SCIM bridge](#deploy-1password-scim-bridge)
-- [Test your SCIM bridge](#test-your-scim-bridge)
-- [Connect your identity provider](#connect-your-identity-provider)
-- [Update 1Password SCIM Bridge](#update-1password-scim-bridge)
-- [Rotate credentials](#rotate-credentials)
-- [Appendix: Resource recommendations](#appendix-resource-recommendations)
-- [Appendix: Customize your SCIM bridge](#appendix-customize-your-scim-bridge)
-
 ## In this folder
 
 - [`README.md`](./README.md): the document that you are reading. 👋😃

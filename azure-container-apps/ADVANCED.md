@@ -9,14 +9,6 @@ In this guide, you can learn about advanced customizations for the Azure Contain
 - **Automatic TLS certificate management:** Azure Container Apps automatically handles TLS certificate management on your behalf.
 - **Multiple deployment options:** The SCIM bridge can be deployed directly to Azure from the Portal using [this guide](README.md) or via the Azure Shell or command line tools in your local terminal using the [support guide](https://support.1password.com/scim-deploy-azure/). If you're using a custom deployment, cloning this repository is recommended.
 
-**Table of contents:**
-
-- [Resource recommendations](#resource-recommendations)
-- [Customize your deployment](#customize-your-deployment)
-- [Update your SCIM bridge](#update-your-scim-bridge)
-- [Get help](#get-help)
-- [Appendix: If Google Workspace is your identity provider](#appendix-if-google-workspace-is-your-identity-provider)
-
 ## Resource recommendations
 
 The pod for 1Password SCIM Bridge should be vertically scaled if you provision a large number of users or groups. These are our default resource specifications and recommended configurations for provisioning at scale:
