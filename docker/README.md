@@ -2,19 +2,6 @@
 
 *Learn how to deploy 1Password SCIM Bridge using Docker Compose or Docker Swarm.*
 
-**Table of contents:**
-
-- [Before you begin](#before-you-begin)
-- [Step 1: Choose a deployment option](#step-1-choose-a-deployment-option)
-- [Step 2: Install Docker tools](#step-2-install-docker-tools)
-- [Step 3: Deploy 1Password SCIM Bridge](#step-3-deploy-1password-scim-bridge)
-- [Step 4: Test the SCIM bridge](#step-4-test-the-scim-bridge)
-- [Step 5: Connect your identity provider](#step-5-connect-your-identity-provider)
-- [Update your SCIM bridge](#update-your-scim-bridge)
-- [Advanced: Manual SCIM bridge deployment](#Advanced-Manual-deployment)
-- [Appendix: Advanced `scim.env` options](#appendix-advanced-scimenv-options)
-- [Appendix: Generate `scim.env` on Windows](#appendix-generate-scimenv-on-windows)
-
 ## Before you begin
 
 Before you begin, complete the necessary [preparation steps to deploy 1Password SCIM Bridge](/PREPARATION.md).

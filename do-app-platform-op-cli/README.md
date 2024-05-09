@@ -9,18 +9,6 @@ This deployment consists of two [resources](https://docs.digitalocean.com/glossa
 - **Automatic TLS certificate management:** App Platform automatically handles TLS certificate management on your behalf.
 - **Multiple deployment options:** You can deploy the SCIM bridge directly to DigitalOcean from your local terminal using this guide, or from the DigitalOcean Apps portal using the [support guide](https://support.1password.com/cs/scim-deploy-digitalocean-ap/). If you're using a custom deployment, cloning this repository is recommended.
 
-**Table of contents:**
-
-- [Before you begin](#before-you-begin)
-- [Step 1: Set up your command-line tools ](#step-1-set-up-your-command-line-tools)
-- [Step 2: Generate and configure 1Password credentials](#step-2-generate-and-configure-1password-credentials)
-- [Step 3: Deploy your SCIM bridge](#step-3-deploy-your-scim-bridge)
-- [Step 4: Test your SCIM bridge](#step-4-test-your-scim-bridge)
-- [Step 5: Connect your identity provider](#step-5-connect-your-identity-provider)
-- [Update your SCIM Bridge](#update-your-scim-bridge)
-- [Appendix: Resource recommendations](#appendix-resource-recommendations)
-- [Get help](#get-help)
-
 ## Before you begin
 
 Before you begin, complete the necessary [preparation steps to deploy 1Password SCIM Bridge](/PREPARATION.md). You'll also need:

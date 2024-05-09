@@ -6,18 +6,6 @@ _Learn how to deploy 1Password SCIM Bridge on a Kubernetes cluster using Kustomi
 >
 > If you use Azure Kubernetes Service, learn how to [deploy the SCIM bridge there](https://support.1password.com/scim-deploy-azure/).
 
-**Table of contents:**
-
-- [Before you begin](#before-you-begin)
-- [Step 1: Prepare your scimsession file](#step-1-prepare-your-scimsession-file)
-- [Step 2: Determine which overlays to use](#step-2-determine-which-overlays-to-use)
-- [Step 3: Configure the overlays (optional)](#step-3-optional-configure-the-overlays)
-- [Step 4: Prepare the deployment](#step-4-prepare-the-deployment)
-- [Step 5: Final configuration](#step-5-final-configuration)
-- [Step 6: Connect your identity provider](#step-6-connect-your-identity-provider)
-- [Update your SCIM Bridge](#update-your-scim-bridge)
-- [Appendix: Resource recommendations](#appendix-resource-recommendations)
-
 ## Before you begin
 
 Before you begin, familiarize yourself with [PREPARATION.md](/PREPARATION.md) and complete the necessary steps there.

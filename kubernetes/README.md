@@ -6,19 +6,6 @@ _Learn how to deploy 1Password SCIM Bridge on a Kubernetes cluster._
 >
 > If you use Azure Kubernetes Service, learn how to [deploy the SCIM bridge there](https://support.1password.com/scim-deploy-azure/).
 
-**Table of contents:**
-
-- [Before you begin](#before-you-begin)
-- [Step 1: Create the `scimsession` Kubenetes Secret](#step-1-create-the-scimsession-kubernetes-secret)
-- [Step 2: Deploy 1Password SCIM Bridge to the Kubernetes cluster](#step-2-deploy-1password-scim-bridge-to-the-kubernetes-cluster)
-- [Step 3: Create a DNS record](#step-3-create-a-dns-record)
-- [Step 4: Configure Let's Encrypt](#step-4-configure-lets-encrypt)
-- [Step 5: Test the SCIM bridge](#step-5-test-your-scim-bridge)
-- [Step 6: Connect your identity provider](#step-6-connect-your-identity-provider)
-- [Update your SCIM Bridge](#update-your-scim-bridge)
-- [Appendix: Resource recommendations](#appendix-resource-recommendations)
-- [Appendix: Customize your deployment](#appendix-customize-your-deployment)
-
 ## Before you begin
 
 Before you begin, complete the necessary [preparation steps to deploy 1Password SCIM Bridge](/PREPARATION.md). Then clone this repository and switch to this working directory:
