@@ -83,21 +83,67 @@ Invoke-RestMethod -Uri https://raw.githubusercontent.com/1Password/scim-examples
 
 ## Step 4: Test your SCIM bridge
 
-After you deploy your SCIM bridge, you'll see a URL in the `Default Ingress` column of the terminal output. This URL is your SCIM bridge domain. Run the following command for your shell to test the connection to 1Password.
+After you deploy your SCIM bridge, you'll see a URL in the `Default Ingress` column of the terminal output. This is your **SCIM Bridge URL**. Run the following command for your shell to test the connection to 1Password.
+
+Copy the following, replace `https://op-scim-bridge-example.ondigitalocean.app` with your SCIM Bridge URL, then run the command in your terminal to test the connection and view status information:
 
 **Bash**:
 
-```sh
-curl --header "Authorization: Bearer $(op read op://${VAULT:-op-scim}/${ITEM:-"bearer token"}/credential)" https://op-scim-bridge-example.ondigitalocean.app/Users
+```bash
+curl --silent --show-error --request GET --header "Accept: application/json" --header "Authorization: Bearer $(
+  op read op://${VAULT:-op-scim}/${ITEM:-"bearer token"}/credential)"
+) https://op-scim-bridge-example.ondigitalocean.app/health
 ```
 
-**Powershell**:
+**PowerShell**:
 
 ```pwsh
-Invoke-WebRequest -Method Get -Uri 'https://op-scim-bridge-example.ondigitalocean.app/Users' -Headers @{'Authorization' ="Bearer $(op read "op://op-scim/bearer token/credential")"}
+Invoke-RestMethod -Method GET -Auth OAuth -Token $(
+    op read "op://op-scim/bearer token/credential" | ConvertTo-SecureString -AsPlainText
+) -Uri https://op-scim-bridge-example.ondigitalocean.app/health | ConvertTo-Json
 ```
 
-You can also access your SCIM bridge by visiting the SCIM bridge domain in your web browser and entering the bearer token from your 1Password item.
+<details>
+<summary>Example JSON response:</summary>
+
+```json
+{
+  "build": "209031",
+  "version": "2.9.3",
+  "reports": [
+    {
+      "source": "ConfirmationWatcher",
+      "time": "2024-04-25T14:06:09Z",
+      "expires": "2024-04-25T14:16:09Z",
+      "state": "healthy"
+    },
+    {
+      "source": "RedisCache",
+      "time": "2024-04-25T14:06:09Z",
+      "expires": "2024-04-25T14:16:09Z",
+      "state": "healthy"
+    },
+    {
+      "source": "SCIMServer",
+      "time": "2024-04-25T14:06:56Z",
+      "expires": "2024-04-25T14:16:56Z",
+      "state": "healthy"
+    },
+    {
+      "source": "StartProvisionWatcher",
+      "time": "2024-04-25T14:06:09Z",
+      "expires": "2024-04-25T14:16:09Z",
+      "state": "healthy"
+    }
+  ],
+  "retrievedAt": "2024-04-25T14:06:56Z"
+}
+```
+
+</details>
+<br />
+
+Similar information is presented graphically by accessing your SCIM Bridge URL in a web browser. Sign in with your bearer token to view status information and download container log files.
 
 ## Step 5: Connect your identity provider
 

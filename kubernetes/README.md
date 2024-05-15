@@ -96,70 +96,59 @@ kubectl set env deploy/op-scim-bridge OP_TLS_DOMAIN=scim.example.com
 
 Replace `scim.example.com` with the fully qualified domain name of the DNS record before running this command. Your SCIM bridge will restart, request a TLS certificate from Let's Encrypt, and automatically renew the certificate on your behalf.
 
-## Step 5: Test your SCIM bridge
+## Step 5: Test your SCIM Bridge
 
-You can test the connection to your SCIM bridge and view status and logs in a web browser at the URL based on its fully qualified domain name (for example `https://scim.example.com/`). Sign in to your SCIM bridge using the bearer token associated with the `scimsession` credentials stored as a Secret on your cluster.
-
-You can also test your SCIM bridge by sending an authenticated SCIM API request.
-
-_Example command:_
+Use your SCIM Bridge URL to test the connection and view status information. For example:
 
 ```sh
-curl --header "Authorization: Bearer mF_9.B5f-4.1JqM" https://scim.example.com/Users
+curl --silent --show-error --request GET --header "Accept: application/json" \
+  --header "Authorization: Bearer mF_9.B5f-4.1JqM" \
+  https:/scim.example.com/health
 ```
 
-Copy the example command to a text editor. Replace `mF_9.B5f-4.1JqM` with your bearer token and `scim.example.com` with its fully qualified domain name.
+Replace `mF_9.B5f-4.1JqM` with your bearer token and `https://scim.example.com` with your SCIM Bridge URL.
 
 <details>
-<summary>Example JSON response</summary>
+<summary>Example JSON response:</summary>
 
-> ```json
-> {
->   "Resources": [
->     {
->       "active": true,
->       "displayName": "Eggs Ample",
->       "emails": [
->         {
->           "primary": true,
->           "type": "",
->           "value": "eggs.ample@example.com"
->         }
->       ],
->       "externalId": "",
->       "groups": [
->         {
->           "value": "f7eqriu7ht27mq5zmm63gf2dhq",
->           "ref": "https://scim.example.com/Groups/f7eqriu7ht27mq5zmm63gf2dhq"
->         }
->       ],
->       "id": "FECPUMYBHZB2PB6K4WKM4Q2HAU",
->       "meta": {
->         "created": "",
->         "lastModified": "",
->         "location": "",
->         "resourceType": "User",
->         "version": ""
->       },
->       "name": {
->         "familyName": "Ample",
->         "formatted": "Eggs Ample",
->         "givenName": "Eggs",
->         "honorificPrefix": "",
->         "honorificSuffix": "",
->         "middleName": ""
->       },
->       "schemas": [
->         "urn:ietf:params:scim:schemas:core:2.0:User"
->       ],
->       "userName": "eggs.ample@example.com"
->     },
->     ...
->   ]
-> }
-> ```
+```json
+{
+  "build": "209031",
+  "version": "2.9.3",
+  "reports": [
+    {
+      "source": "ConfirmationWatcher",
+      "time": "2024-04-25T14:06:09Z",
+      "expires": "2024-04-25T14:16:09Z",
+      "state": "healthy"
+    },
+    {
+      "source": "RedisCache",
+      "time": "2024-04-25T14:06:09Z",
+      "expires": "2024-04-25T14:16:09Z",
+      "state": "healthy"
+    },
+    {
+      "source": "SCIMServer",
+      "time": "2024-04-25T14:06:56Z",
+      "expires": "2024-04-25T14:16:56Z",
+      "state": "healthy"
+    },
+    {
+      "source": "StartProvisionWatcher",
+      "time": "2024-04-25T14:06:09Z",
+      "expires": "2024-04-25T14:16:09Z",
+      "state": "healthy"
+    }
+  ],
+  "retrievedAt": "2024-04-25T14:06:56Z"
+}
+```
 
 </details>
+<br />
+
+Similar information is presented graphically by accessing your SCIM Bridge URL in a web browser. Sign in with your bearer token to view status information and download container log files.
 
 ## Step 6: Connect your identity provider
 
@@ -179,7 +168,7 @@ kubectl set image deploy/op-scim-bridge op-scim-bridge=1password/scim:v2.9.4
 > [`op-scim-deployment.yaml`](./op-scim-deployment.yaml) file (and in the command above in this file) in the main
 > branch of this repository.
 
-Your SCIM bridge should automatically reboot using the specified version, typically in a few moments.
+Your SCIM Bridge should automatically reboot using the specified version, typically in a few moments.
 
 ## Rotate credentials
 
@@ -194,9 +183,8 @@ If you regenenerate credentials for your SCIM bridge:
    ```
 
    Kubernetes automatically updates the credentials file mounted in the Pod with the new Secret value.
-
-3. Test your SCIM bridge using the new bearer token associated with the regenerated `scimsession` file.
-4. Update your identity provider configuration with the new bearer token.
+3. [Test your SCIM bridge](#step-5-test-your-scim-bridge) using the new bearer token associated with the regenerated `scimsession` file.
+4. Update your identity provider configuration with your new bearer token.
 
 ## Appendix: Resource recommendations
 

@@ -174,81 +174,61 @@ docker stack config \
 
 ## Test your SCIM bridge
 
-Run this command to retrieve logs from the service for the SCIM bridge container:
+Run this command to view logs from the service for the SCIM Bridge container:
 
 ```sh
 docker service logs op-scim-bridge_scim --raw
 ```
 
-Your SCIM bridge URL is based on the fully qualified domain name of the DNS record created in [Get started](#get-started), for example `https://scim.example.com/`. You can access your SCIM bridge in a web browser at this URL by signing in using your bearer token.
-
-You can also test your SCIM bridge by sending an authenticated SCIM API request.
-
-_Example command:_
+Your **SCIM Bridge URL** is based on the fully qualified domain name of the DNS record created in [Get started](#get-started), for example `https://scim.example.com`. Replace `mF_9.B5f-4.1JqM` with your bearer token and `https://scim.example.com` with your SCIM Bridge URL to test the connection and view status information.
 
 ```sh
-curl --header "Authorization: Bearer mF_9.B5f-4.1JqM" https://scim.example.com/Users
+curl --silent --show-error --request GET --header "Accept: application/json" \
+  --header "Authorization: Bearer mF_9.B5f-4.1JqM" \
+  https:/scim.example.com/health
 ```
 
-Copy the example command to a text editor. Replace `mF_9.B5f-4.1JqM` with your bearer token and `scim.example.com` with the fully qualified domain name of the DNS record created in [Get started](#get-started) before running the command in your terminal.
-
-> **Note**
->
-> 💻 If you saved your bearer token as an item in your 1Password account, you can [use 1Password CLI to securely pass the
-> bearer token](https://developer.1password.com/docs/cli/secrets-scripts#option-2-use-op-read-to-read-secrets)
-> instead of writing it out in the console. For example: `--header "Authorization: Bearer $(op read
-"op://Private/bearer token/credential")"`
-
 <details>
-<summary>Example JSON response</summary>
+<summary>Example JSON response:</summary>
 
-> ```json
-> {
->   "Resources": [
->     {
->       "active": true,
->       "displayName": "Eggs Ample",
->       "emails": [
->         {
->           "primary": true,
->           "type": "",
->           "value": "eggs.ample@example.com"
->         }
->       ],
->       "externalId": "",
->       "groups": [
->         {
->           "value": "f7eqriu7ht27mq5zmm63gf2dhq",
->           "ref": "https://scim.example.com/Groups/f7eqriu7ht27mq5zmm63gf2dhq"
->         }
->       ],
->       "id": "FECPUMYBHZB2PB6K4WKM4Q2HAU",
->       "meta": {
->         "created": "",
->         "lastModified": "",
->         "location": "",
->         "resourceType": "User",
->         "version": ""
->       },
->       "name": {
->         "familyName": "Ample",
->         "formatted": "Eggs Ample",
->         "givenName": "Eggs",
->         "honorificPrefix": "",
->         "honorificSuffix": "",
->         "middleName": ""
->       },
->       "schemas": [
->         "urn:ietf:params:scim:schemas:core:2.0:User"
->       ],
->       "userName": "eggs.ample@example.com"
->     },
->     ...
->   ]
-> }
-> ```
+```json
+{
+  "build": "209031",
+  "version": "2.9.3",
+  "reports": [
+    {
+      "source": "ConfirmationWatcher",
+      "time": "2024-04-25T14:06:09Z",
+      "expires": "2024-04-25T14:16:09Z",
+      "state": "healthy"
+    },
+    {
+      "source": "RedisCache",
+      "time": "2024-04-25T14:06:09Z",
+      "expires": "2024-04-25T14:16:09Z",
+      "state": "healthy"
+    },
+    {
+      "source": "SCIMServer",
+      "time": "2024-04-25T14:06:56Z",
+      "expires": "2024-04-25T14:16:56Z",
+      "state": "healthy"
+    },
+    {
+      "source": "StartProvisionWatcher",
+      "time": "2024-04-25T14:06:09Z",
+      "expires": "2024-04-25T14:16:09Z",
+      "state": "healthy"
+    }
+  ],
+  "retrievedAt": "2024-04-25T14:06:56Z"
+}
+```
 
 </details>
+<br />
+
+Similar information is presented graphically by accessing your SCIM Bridge URL in a web browser. Sign in with your bearer token to view status information and download container log files.
 
 ## Connect your identity provider
 
