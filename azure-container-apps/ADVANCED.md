@@ -250,14 +250,12 @@ Replace your `scimsession` secret using the Azure Cloud Shell or AZ CLI
             --secrets scimsession="$(Get-Content $HOME/scimsession)"
         ```
 
-3. Copy and paste the following command, which will have the `op-scim-bridge` container read the new secret. Replace `$ConAppName` and `$ResourceGroup` with the names from your deployment, then run the command.
-    ```bash
-    az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge --query properties.latestRevisionName
-    ```
+3. Copy and paste the following, replace `$ConAppName` and `$ResourceGroup` with the names from your deployment, then run the command to restart the `op-scim-bridge` container and read the new secret value:
 
-    Update the revsion name to use the output of the above command
-    ```
-    az containerapp revision restart -n $ConAppName -g $ResourceGroup --revision revisionName
+    ```sh
+    az containerapp revision restart -n $ConAppName -g $ResourceGroup --revision $(
+        az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge --query properties.latestRevisionName
+    )
     ```
 
 4. Enter your SCIM Bridge URL in another browser tab or window and sign in using your new bearer token to [test your SCIM Bridge](./README.md#step-5-test-your-scim-bridge).
