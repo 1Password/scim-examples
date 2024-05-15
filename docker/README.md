@@ -113,6 +113,7 @@ Alternate Google Workspace stack deployment command:
 # deploy your Stack with Google Workspace settings
 docker stack deploy -c docker-compose.yml -c gw-docker-compose.yml op-scim
 ```
+
 Learn more about [connecting Google Workspace to 1Password SCIM Bridge](https://support.1password.com/scim-google-workspace/).
 
 ### Self managed TLS for Docker Swarm

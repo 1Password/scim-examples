@@ -181,9 +181,9 @@ If you're provisioning more than 1,000 users, update the resources assigned to [
 
 ### How to update the **scimsession** secret
 
-After you download a new `scimsession` file, follow the steps below to replace the secret in your Container App.
+To use a new `scimsession` credentials file for your SCIM Bridge, follow replace the secret in your Container App:
 
-Replace your <code>scimsession</code> secret using the Azure Portal
+Replace your `scimsession` secret using the Azure Portal
 
 1. Open the Azure Portal and go to the [Container Apps](https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/Microsoft.App%2FcontainerApps) page.
 2. Choose **Secrets** from the Settings section in the sidebar.

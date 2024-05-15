@@ -177,10 +177,10 @@ If you regenenerate credentials for your SCIM bridge:
 1. Download the new `scimsession` file from your 1Password account.
 2. Delete the `scimsession` Secret on your cluster and recreate it from the new file:
 
-   ```sh
-   kubectl delete secret scimsession
-   kubectl create secret generic scimsession --from-file=scimsession=./scimsession
-   ```
+    ```sh
+    kubectl delete secret scimsession
+    kubectl create secret generic scimsession --from-file=scimsession=./scimsession
+    ```
 
    Kubernetes automatically updates the credentials file mounted in the Pod with the new Secret value.
 3. [Test your SCIM bridge](#step-5-test-your-scim-bridge) using the new bearer token associated with the regenerated `scimsession` file.

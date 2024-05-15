@@ -234,7 +234,6 @@ Similar information is presented graphically by accessing your SCIM Bridge URL i
 
 Use your SCIM bridge URL and bearer token to [connect your identity provider to 1Password SCIM Bridge](https://support.1password.com/scim/#step-3-connect-your-identity-provider).
 
-
 ## Update 1Password SCIM Bridge
 
 Swarm mode in Docker Engine uses a declarative service model. Services will automatically restart tasks when updating their configuration.
