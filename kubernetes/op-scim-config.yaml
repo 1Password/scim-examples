@@ -65,7 +65,7 @@ data:
   # OP_PING_SERVER: "1"
 
   # Use OP_CONFIRMATION_INTERVAL to set how often the ConfirmationWatcher component runs in seconds. The minimum
-  # interval is 30 seconds. If not set, the default value of 300 seconds (5 minutes) is used.
+  # interval is 5 seconds. If not set, the default value of 300 seconds (5 minutes) is used.
   # OP_CONFIRMATION_INTERVAL: "30"
 
   # Set OP_DNS_CHALLENGE_CONFIG_FILE to the path of a valid configuration file mounted in the container filesystem to

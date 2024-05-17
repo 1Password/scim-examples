@@ -90,7 +90,7 @@ You can customize your 1Password SCIM Bridge deployment using some of the method
 <summary>Confirmation Interval</summary>
 
 Use the OP_CONFIRMATION_INTERVAL environment variable to set how often the ConfirmationWatcher component runs in seconds. The minimum
-interval is 30 seconds. If not set, the default value of 300 seconds (5 minutes) is used.
+interval is 5 seconds. If not set, the default value of 300 seconds (5 minutes) is used.
 
 For example set `OP_CONFIRMATION_INTERVAL` to `30` to have the ConfirmationWatcher running every 30 seconds.
 
