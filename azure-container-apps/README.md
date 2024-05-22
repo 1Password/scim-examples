@@ -193,8 +193,8 @@ To use a new `scimsession` credentials file for your SCIM bridge, replace the se
 5. Choose the **Revisions** from the Application section in the sidebar.
 6. Click your current active revision and choose **Restart** in the details pane.
 7. Enter your SCIM bridge URL in another browser tab or window and sign in using your new bearer token to [test your SCIM bridge](#step-5-test-your-scim-bridge).
-</details>
 8. Update your identity provider configuration with the new bearer token.
+</details>
 
 <details>
 <summary>Replace your <code>scimsession</code> secret using the Azure Cloud Shell or AZ CLI</summary>
