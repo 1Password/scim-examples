@@ -39,6 +39,9 @@ The logs from the SCIM bridge and Redis containers will be streamed to your mach
 
 At this point, you should set a DNS record routing the domain name to the IP address of the `op-scim` container.
 
+> [!IMPORTANT]
+> The DNS record name is used for your **SCIM bridge URL**. For example, if the record name is `op-scim-bridge.example.com`, then your SCIM bridge URL is `https://op-scim-bridge.example.com`.
+
 ### Docker Compose
 
 To deploy with Docker Compose, you'll need Docker Desktop set up either locally or remotely. Learn how to [set up Docker Desktop](https://docs.docker.com/desktop/). Then follow these steps:
@@ -110,6 +113,7 @@ Alternate Google Workspace stack deployment command:
 # deploy your Stack with Google Workspace settings
 docker stack deploy -c docker-compose.yml -c gw-docker-compose.yml op-scim
 ```
+
 Learn more about [connecting Google Workspace to 1Password SCIM Bridge](https://support.1password.com/scim-google-workspace/).
 
 ### Self managed TLS for Docker Swarm
@@ -159,13 +163,57 @@ It is not recommended to use Docker Compose for your SCIM bridge deployment if y
 
 ## Step 4: Test the SCIM bridge
 
-To test if your SCIM bridge is online, open the public IP address of the Docker Host for your bridge in a web browser. You should be able to enter your bearer token to verify that your SCIM bridge is up and running.
+Use your SCIM bridge URL to test the connection and view status information. For example:
 
-You can also use the following `curl` command to test the SCIM bridge from the command line:
-
-```bash
-curl --header "Authorization: Bearer TOKEN_GOES_HERE" https://<domain>/scim/Users
+```sh
+curl --silent --show-error --request GET --header "Accept: application/json" \
+  --header "Authorization: Bearer mF_9.B5f-4.1JqM" \
+  https://op-scim-bridge.example.com/health
 ```
+
+Replace `mF_9.B5f-4.1JqM` with your bearer token and `https://op-scim-bridge.example.com` with your SCIM bridge URL.
+
+<details>
+<summary>Example JSON response:</summary>
+
+```json
+{
+  "build": "209031",
+  "version": "2.9.3",
+  "reports": [
+    {
+      "source": "ConfirmationWatcher",
+      "time": "2024-04-25T14:06:09Z",
+      "expires": "2024-04-25T14:16:09Z",
+      "state": "healthy"
+    },
+    {
+      "source": "RedisCache",
+      "time": "2024-04-25T14:06:09Z",
+      "expires": "2024-04-25T14:16:09Z",
+      "state": "healthy"
+    },
+    {
+      "source": "SCIMServer",
+      "time": "2024-04-25T14:06:56Z",
+      "expires": "2024-04-25T14:16:56Z",
+      "state": "healthy"
+    },
+    {
+      "source": "StartProvisionWatcher",
+      "time": "2024-04-25T14:06:09Z",
+      "expires": "2024-04-25T14:16:09Z",
+      "state": "healthy"
+    }
+  ],
+  "retrievedAt": "2024-04-25T14:06:56Z"
+}
+```
+
+</details>
+<br />
+
+To view this information in a visual format, visit your SCIM bridge URL in a web browser. Sign in with your bearer token, then you can view status information and download container log files.
 
 ## Step 5: Connect your identity provider
 

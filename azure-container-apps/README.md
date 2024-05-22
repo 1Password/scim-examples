@@ -83,7 +83,7 @@ After the deployment is complete, click **Go to resource**, then continue to ste
 
 ## Step 5: Test your SCIM bridge
 
-To test if your SCIM bridge is online, choose **Overview** in your application's sidebar, then click your **Application Url** link. This URL is your SCIM bridge domain. You should be able to enter your bearer token to verify that your SCIM bridge is up and running.
+To test if your SCIM bridge is online, choose **Overview** in your application's sidebar, then click your **Application Url** link. This is your **SCIM bridge URL**. Sign in using your bearer token to verify that your SCIM bridge is connected to your 1Password account.
 
 ## Step 6: Connect your identity provider
 
@@ -181,9 +181,10 @@ If you're provisioning more than 1,000 users, update the resources assigned to [
 
 ### How to update the **scimsession** secret
 
-After you download a new `scimsession` file, follow the steps below to replace the secret in your Container App.
+To use a new `scimsession` credentials file for your SCIM bridge, replace the secret in your Container App:
 
-Replace your <code>scimsession</code> secret using the Azure Portal
+<details>
+<summary>Replace your `scimsession` secret using the Azure Portal</summary>
 
 1. Open the Azure Portal and go to the [Container Apps](https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/Microsoft.App%2FcontainerApps) page.
 2. Choose **Secrets** from the Settings section in the sidebar.
@@ -191,8 +192,9 @@ Replace your <code>scimsession</code> secret using the Azure Portal
 4. Select the checkbox and click **Save**.
 5. Choose the **Revisions** from the Application section in the sidebar.
 6. Click your current active revision and choose **Restart** in the details pane.
-7. Open your SCIM bridge URL in a browser and enter you new bearer token to test the bridge.
+7. Enter your SCIM bridge URL in another browser tab or window and sign in using your new bearer token to [test your SCIM bridge](#step-5-test-your-scim-bridge).
 8. Update your identity provider configuration with the new bearer token.
+</details>
 
 <details>
 <summary>Replace your <code>scimsession</code> secret using the Azure Cloud Shell or AZ CLI</summary>

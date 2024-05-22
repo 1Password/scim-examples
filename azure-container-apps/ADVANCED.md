@@ -223,15 +223,14 @@ To view logs for your container app, click **Log Stream** on your environment or
 
 After you download a new `scimsession` file, follow the steps below to replace the secret in your Container App.
 
-Replace your <code>scimsession</code> secret using the Azure Cloud Shell or AZ CLI
+Replace your `scimsession` secret using the Azure Cloud Shell or AZ CLI
 
-> The following steps assume you have moved to mounting your secret from a volume mount and not using the base64 value in your secrets. 
+> The following steps assume you have moved to mounting your secret from a volume mount and not using the base64 value in your secrets.
 > Follow the [command to update your deployment with the updated YAML file](https://support.1password.com/scim-deploy-azure/#step-3-set-up-and-deploy-1password-scim-bridge) to use volume mounts, redefining your variables as needed for this command to succeed. 
-
 
 1. Open the [Azure Shell](https://shell.azure.com) or use the `az` CLI tool.
 
-2. Copy and paste the following command, replace `$ConAppName` and `$ResourceGroup` with the names from your deployment, and run the command.
+2. Copy and paste the following, replace `$ConAppName` and `$ResourceGroup` with the names from your deployment, then run the command:
 
     - **Bash**:
 
@@ -251,17 +250,15 @@ Replace your <code>scimsession</code> secret using the Azure Cloud Shell or AZ C
             --secrets scimsession="$(Get-Content $HOME/scimsession)"
         ```
 
-3. Copy and paste the following command, which will have the `op-scim-bridge` container read the new secret. Replace `$ConAppName` and `$ResourceGroup` with the names from your deployment, then run the command.
-    ```bash
-    az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge --query properties.latestRevisionName
+3. Copy and paste the following, replace `$ConAppName` and `$ResourceGroup` with the names from your deployment, then run the command to restart the `op-scim-bridge` container and read the new secret value.
+
+    ```sh
+    az containerapp revision restart -n $ConAppName -g $ResourceGroup --revision $(
+        az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge --query properties.latestRevisionName
+    )
     ```
 
-    Update the revsion name to use the output of the above command
-    ```
-    az containerapp revision restart -n $ConAppName -g $ResourceGroup --revision revisionName
-    ```
-
-4. Open your SCIM bridge URL in a browser and enter your bearer token to test the bridge.
+4. Enter your SCIM bridge URL in another browser tab or window and sign in using your new bearer token to [test your SCIM bridge](./README.md#step-5-test-your-scim-bridge).
 
 5. Update your identity provider configuration with the new bearer token.
 
@@ -283,13 +280,17 @@ To connect Google Workspace using the Azure Portal interface, you can follow the
 
 1. Run the following command for your shell to get the `./google-workspace/workspace-settings.json` file.
     - **Bash**:
-    ```bash
-    curl https://raw.githubusercontent.com/1Password/scim-examples/solutions/main/azure-container-apps/google-workspace/workspace-settings.json --output workspace-settings.json --silent
-    ```
+
+        ```bash
+        curl https://raw.githubusercontent.com/1Password/scim-examples/solutions/main/azure-container-apps/google-workspace/workspace-settings.json --output workspace-settings.json --silent
+        ```
+
     - **PowerShell**:
-    ```pwsh
-    Invoke-RestMethod -Uri `https://raw.githubusercontent.com/1Password/scim-examples/solutions/main/azure-container-apps/google-workspace/workspace-settings.json -OutFile workspace-settings.json
-    ```
+
+        ```pwsh
+        Invoke-RestMethod -Uri `https://raw.githubusercontent.com/1Password/scim-examples/solutions/main/azure-container-apps/google-workspace/workspace-settings.json -OutFile workspace-settings.json
+        ```
+
 2. Edit the following in the .json file:
     - **Actor**: Enter the email address of the Google Workspace administrator for the service account.
     - **Bridge Address**: Enter your SCIM bridge domain. This is the Application URL for your Container App, found on the overview page (not your 1Password account sign-in address). For example: `https://scim.example.com`. Ensure to leave the `https://` in the bridge address, and do not add any trailing `/` to your URL.
