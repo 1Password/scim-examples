@@ -183,7 +183,8 @@ If you're provisioning more than 1,000 users, update the resources assigned to [
 
 To use a new `scimsession` credentials file for your SCIM bridge, replace the secret in your Container App:
 
-Replace your `scimsession` secret using the Azure Portal
+<details>
+<summary>Replace your `scimsession` secret using the Azure Portal</summary>
 
 1. Open the Azure Portal and go to the [Container Apps](https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/Microsoft.App%2FcontainerApps) page.
 2. Choose **Secrets** from the Settings section in the sidebar.
@@ -192,6 +193,7 @@ Replace your `scimsession` secret using the Azure Portal
 5. Choose the **Revisions** from the Application section in the sidebar.
 6. Click your current active revision and choose **Restart** in the details pane.
 7. Enter your SCIM bridge URL in another browser tab or window and sign in using your new bearer token to [test your SCIM bridge](#step-5-test-your-scim-bridge).
+</details>
 8. Update your identity provider configuration with the new bearer token.
 
 <details>
