@@ -174,7 +174,7 @@ docker stack config \
 
 ## Test your SCIM bridge
 
-Run this command to view logs from the service for the SCIM Bridge container:
+Run this command to view logs from the service for the SCIM bridge container:
 
 ```sh
 docker service logs op-scim-bridge_scim --raw
@@ -228,7 +228,7 @@ curl --silent --show-error --request GET --header "Accept: application/json" \
 </details>
 <br />
 
-Similar information is presented graphically by accessing your SCIM Bridge URL in a web browser. Sign in with your bearer token to view status information and download container log files.
+To view this information in a visual format, visit your SCIM bridge URL in a web browser. Sign in with your bearer token, then you can view status information and download container log files.
 
 ## Connect your identity provider
 

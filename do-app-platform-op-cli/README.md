@@ -83,9 +83,9 @@ Invoke-RestMethod -Uri https://raw.githubusercontent.com/1Password/scim-examples
 
 ## Step 4: Test your SCIM bridge
 
-After you deploy your SCIM bridge, you'll see a URL in the `Default Ingress` column of the terminal output. This is your **SCIM Bridge URL**. Run the following command for your shell to test the connection to 1Password.
+After you deploy your SCIM bridge, you'll see a URL in the `Default Ingress` column of the terminal output. This is your **SCIM bridge URL**. Run the following command for your shell to test the connection to 1Password.
 
-Copy the following, replace `https://op-scim-bridge-example.ondigitalocean.app` with your SCIM Bridge URL, then run the command in your terminal to test the connection and view status information:
+Copy the following command, replace `https://op-scim-bridge-example.ondigitalocean.app` with your SCIM bridge URL, then run the command in your terminal to test the connection and view status information.
 
 **Bash**:
 
@@ -143,7 +143,7 @@ Invoke-RestMethod -Method GET -Auth OAuth -Token $(
 </details>
 <br />
 
-Similar information is presented graphically by accessing your SCIM Bridge URL in a web browser. Sign in with your bearer token to view status information and download container log files.
+To view this information in a visual format, visit your SCIM bridge URL in a web browser. Sign in with your bearer token, then you can view status information and download container log files.
 
 ## Step 5: Connect your identity provider
 

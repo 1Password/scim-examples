@@ -40,7 +40,7 @@ The logs from the SCIM bridge and Redis containers will be streamed to your mach
 At this point, you should set a DNS record routing the domain name to the IP address of the `op-scim` container.
 
 > [!IMPORTANT]
-> This domain name of this DNS record is used for your **SCIM Bridge URL**. For example, if the record name is `op-scim-bridge.example.com`, then your SCIM Bridge URL is `https://op-scim-bridge.example.com`.
+> The DNS record name is used for your **SCIM bridge URL**. For example, if the record name is `op-scim-bridge.example.com`, then your SCIM bridge URL is `https://op-scim-bridge.example.com`.
 
 ### Docker Compose
 
@@ -163,7 +163,7 @@ It is not recommended to use Docker Compose for your SCIM bridge deployment if y
 
 ## Step 4: Test the SCIM bridge
 
-Use your SCIM Bridge URL to test the connection and view status information. For example:
+Use your SCIM bridge URL to test the connection and view status information. For example:
 
 ```sh
 curl --silent --show-error --request GET --header "Accept: application/json" \
@@ -171,7 +171,7 @@ curl --silent --show-error --request GET --header "Accept: application/json" \
   https://op-scim-bridge.example.com/health
 ```
 
-Replace `mF_9.B5f-4.1JqM` with your bearer token and `https://op-scim-bridge.example.com` with your SCIM Bridge URL.
+Replace `mF_9.B5f-4.1JqM` with your bearer token and `https://op-scim-bridge.example.com` with your SCIM bridge URL.
 
 <details>
 <summary>Example JSON response:</summary>
@@ -213,7 +213,7 @@ Replace `mF_9.B5f-4.1JqM` with your bearer token and `https://op-scim-bridge.exa
 </details>
 <br />
 
-Similar information is presented graphically by accessing your SCIM Bridge URL in a web browser. Sign in with your bearer token to view status information and download container log files.
+To view this information in a visual format, visit your SCIM bridge URL in a web browser. Sign in with your bearer token, then you can view status information and download container log files.
 
 ## Step 5: Connect your identity provider
 

@@ -83,7 +83,7 @@ After the deployment is complete, click **Go to resource**, then continue to ste
 
 ## Step 5: Test your SCIM bridge
 
-To test if your SCIM bridge is online, choose **Overview** in your application's sidebar, then click your **Application Url** link. Thi is your **SCIM Bridge URL**. Sign in using your bearer token to verify that your SCIM Bridge is connected to your 1Password account.
+To test if your SCIM bridge is online, choose **Overview** in your application's sidebar, then click your **Application Url** link. This is your **SCIM bridge URL**. Sign in using your bearer token to verify that your SCIM bridge is connected to your 1Password account.
 
 ## Step 6: Connect your identity provider
 
@@ -181,7 +181,7 @@ If you're provisioning more than 1,000 users, update the resources assigned to [
 
 ### How to update the **scimsession** secret
 
-To use a new `scimsession` credentials file for your SCIM Bridge, follow replace the secret in your Container App:
+To use a new `scimsession` credentials file for your SCIM bridge, replace the secret in your Container App:
 
 Replace your `scimsession` secret using the Azure Portal
 
@@ -191,7 +191,7 @@ Replace your `scimsession` secret using the Azure Portal
 4. Select the checkbox and click **Save**.
 5. Choose the **Revisions** from the Application section in the sidebar.
 6. Click your current active revision and choose **Restart** in the details pane.
-7. Enter your SCIM Bridge URL in another browser tab or window and sign in using your new bearer token to [test your SCIM Bridge](#step-5-test-your-scim-bridge).
+7. Enter your SCIM bridge URL in another browser tab or window and sign in using your new bearer token to [test your SCIM bridge](#step-5-test-your-scim-bridge).
 8. Update your identity provider configuration with the new bearer token.
 
 <details>
