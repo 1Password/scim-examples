@@ -1,6 +1,6 @@
 variable "aws_region" {
   type        = string
-  description = "The region of the AWS account where the 1Password SCIM bridge will be deployed."
+  description = "The region of the AWS account where the 1Password SCIM Bridge will be deployed."
 }
 
 variable "domain_name" {

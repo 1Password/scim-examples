@@ -131,7 +131,7 @@ You'll be asked to validate your configuration. Check it to make sure it's corre
 terraform apply "./op-scim.plan"
 ```
 
-After a few minutes, and once the DNS has updated, go to the SCIM Bridge URL you set. You should be able to enter your bearer token to verify that your SCIM bridge is up and running.
+After a few minutes, and once the DNS has updated, go to the SCIM bridge URL you set. You should be able to enter your bearer token to verify that your SCIM bridge is up and running.
 
 ## Step 3: Connect your identity provider
 
@@ -139,7 +139,7 @@ To finish setting up automated user provisioning, [connect your identity provide
 
 ---
 
-## Update your SCIM Bridge
+## Update your SCIM bridge
 
 👍 Check for 1Password SCIM Bridge updates on the [SCIM bridge releases notes website](https://releases.1password.com/provisioning/scim-bridge/).
 
@@ -190,7 +190,7 @@ The resource allocations for 1Password SCIM Bridge should be increased when prov
 | High      | 1,000–5,000     | 512             | 1024               | 1024     | 2048        |
 | Very high | >5,000          | 1024            | 1024               | 2048     | 4096        |
 
-If provisioning more than 1,000 users, the resources assigned to the container definition for 1Password SCIM bridge should be updated as recommended in the above table. The resource allocation specified for the Redis container does not need to be adjusted. The task definition must also be updated to allocate enough resources for both containers. Fargate task resources are constrained by AWS; the recommended configurations are the minimum resources required for both containers (see [Fargate task definition considerations: Task CPU and memory](https://docs.aws.amazon.com/AmazonECS/latest/userguide/fargate-task-defs.html#fargate-tasks-size)).
+If provisioning more than 1,000 users, the resources assigned to the container definition for 1Password SCIM Bridge should be updated as recommended in the above table. The resource allocation specified for the Redis container does not need to be adjusted. The task definition must also be updated to allocate enough resources for both containers. Fargate task resources are constrained by AWS; the recommended configurations are the minimum resources required for both containers (see [Fargate task definition considerations: Task CPU and memory](https://docs.aws.amazon.com/AmazonECS/latest/userguide/fargate-task-defs.html#fargate-tasks-size)).
 
 Resources for the SCIM bridge container are declared in [`scim.json`](https://github.com/1Password/scim-examples/blob/master/aws-ecsfargate-terraform/task-definitions/scim.json):
 
@@ -222,7 +222,7 @@ If you need help with the configuration, [contact 1Password Support](https://sup
 
 ## Customize Redis
 
-As of SCIM Bridge `v2.8.5`, additional Redis configuration options are available. `OP_REDIS_URL` must be unset for any of these environment variables to be read. These environment variables may be especially helpful if you need support for URL-unfriendly characters in your Redis credentials.
+As of SCIM bridge `v2.8.5`, additional Redis configuration options are available. `OP_REDIS_URL` must be unset for any of these environment variables to be read. These environment variables may be especially helpful if you need support for URL-unfriendly characters in your Redis credentials.
 
 > **Note**  
 > `OP_REDIS_URL` must be unset, otherwise the following environment variables will be ignored.
