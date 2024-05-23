@@ -123,7 +123,7 @@ Follow the steps to [create a Google service account, key, and API client](https
    - **Value**: Copy the entire contents of the settings file. Paste it into this field.
 8. Click **Add**, then wait until the secret is created.
 
-#### 6.4: Connect your SCIM Bridge to Google Workspace
+#### 6.4: Connect your SCIM bridge to Google Workspace
 
 1. Choose **Containers** from the Application section in the sidebar.
 2. Click **Edit and deploy**
@@ -158,7 +158,7 @@ To connect Google Workspace using the Azure Cloud Shell or AZ CLI, follow the st
 5. Select **Save**.
 6. Select **Create** to deploy a new revision using the updated image.
 7. Enter your SCIM bridge URL in a browser and sign in with your bearer token.
-8. Check the top left-hand side of the page to verify you're running the updated version of the SCIM Bridge.
+8. Check the top left-hand side of the page to verify you're running the updated version of the SCIM bridge.
 
 After you sign in to your SCIM bridge, the [Automated User Provisioning page](https://start.1password.com/integrations/active/) in your 1Password account will also update with the latest access time and SCIM bridge version.
 

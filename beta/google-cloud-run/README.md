@@ -2,7 +2,7 @@
 
 _Learn how to deploy 1Password SCIM Bridge on [Cloud Run](https://cloud.google.com/run/docs/overview/what-is-cloud-run) using the Cloud Shell in Google Cloud._
 
-This guide can be used to deploy 1Password SCIM Bridge as an ingress container for a single replica [Cloud Run service](https://cloud.google.com/run/docs/overview/what-is-cloud-run#services) with the required Redis cache deployed as a sidecar container. Credentials are stored in Secret Manager and mounted as volumes attached to the SCIM Bridge container.
+This guide can be used to deploy 1Password SCIM Bridge as an ingress container for a single replica [Cloud Run service](https://cloud.google.com/run/docs/overview/what-is-cloud-run#services) with the required Redis cache deployed as a sidecar container. Credentials are stored in Secret Manager and mounted as volumes attached to the SCIM bridge container.
   
 The included [Cloud Run service YAML](https://cloud.google.com/run/docs/reference/yaml/v1#service) manifests are suitable for use in a production environment without modification, but are intentionally minimal for simplicity, to allow any identity provider to connect to its public endpoint, and to facilitate its use as a base for a customized deployment.
 
@@ -23,7 +23,7 @@ Complete the necessary [preparation steps to deploy 1Password SCIM Bridge](/PREP
     ```
 
 > [!TIP]
-> If you have already created a project for SCIM Bridge, set it as the default project for this Cloud Shell session. For example:
+> If you have already created a project for SCIM bridge, set it as the default project for this Cloud Shell session. For example:
 >
 > ```sh
 > gcloud config set project op-scim-bridge
@@ -46,7 +46,7 @@ Complete the necessary [preparation steps to deploy 1Password SCIM Bridge](/PREP
 
 ## Step 2: Create a secret for your `scimsession` credentials
 
-The Cloud Run service for SCIM Bridge will be configured to mount volume using a secret from Secret Manager. Follow these steps to upload your `scimsession` credentials file to the Cloud Shell, create a secret, and store the file contents as its first secret version:
+The Cloud Run service for SCIM bridge will be configured to mount volume using a secret from Secret Manager. Follow these steps to upload your `scimsession` credentials file to the Cloud Shell, create a secret, and store the file contents as its first secret version:
 
 1. Click **⋮** _(More)_ > **Upload** in the Cloud Shell terminal menu bar.
 2. Click **Choose Files**. Select the `scimsession` file that you saved to your computer.
@@ -79,9 +79,9 @@ The Cloud Run service for SCIM Bridge will be configured to mount volume using a
     ) --role=roles/secretmanager.secretAccessor
     ```
 
-## Step 3: Deploy your SCIM Bridge
+## Step 3: Deploy your SCIM bridge
 
-Run this command to stream [`op-scim-bridge.yaml`](./op-scim-bridge.yaml) Cloud Run service YAML from this repository, use it to deploy SCIM Bridge inline, and enable public ingress for your SCIM Bridge so that you and your identity provider can connect to its public endpoint:
+Run this command to stream [`op-scim-bridge.yaml`](./op-scim-bridge.yaml) Cloud Run service YAML from this repository, use it to deploy SCIM bridge inline, and enable public ingress for your SCIM bridge so that you and your identity provider can connect to its public endpoint:
 
 ```sh
 curl --silent --show-error \
@@ -91,11 +91,11 @@ curl --silent --show-error \
   gcloud run services describe op-scim-bridge --format="value(status.url)"
 ```
 
-The final line of the above chained command should output a URL for the HTTPS endpoint provided by Cloud Run. This is your **SCIM Bridge URL**.
+The final line of the above chained command should output a URL for the HTTPS endpoint provided by Cloud Run. This is your **SCIM bridge URL**.
 
 ## Step 4: Test your SCIM bridge
 
-Use your SCIM Bridge URL to test the connection and view status information. For example:
+Use your SCIM bridge URL to test the connection and view status information. For example:
 
 ```sh
 curl --silent --show-error --request GET --header "Accept: application/json" \
@@ -103,7 +103,7 @@ curl --silent --show-error --request GET --header "Accept: application/json" \
   https://op-scim-bridge-example-uc.a.run.app/health
 ```
 
-Replace `mF_9.B5f-4.1JqM` with your bearer token and `https://op-scim-bridge-example-uc.a.run.app` with your SCIM Bridge URL.
+Replace `mF_9.B5f-4.1JqM` with your bearer token and `https://op-scim-bridge-example-uc.a.run.app` with your SCIM bridge URL.
 
 <details>
 <summary>Example JSON response:</summary>
@@ -145,23 +145,23 @@ Replace `mF_9.B5f-4.1JqM` with your bearer token and `https://op-scim-bridge-exa
 </details>
 <br />
 
-Similar information is presented graphically by accessing your SCIM Bridge URL in a web browser. Sign in with your bearer token to view status information and download container log files.
+Similar information is presented graphically by accessing your SCIM bridge URL in a web browser. Sign in with your bearer token to view status information and download container log files.
 
 ## Step 5: Connect your identity provider
 
 > [!IMPORTANT]
 > **If Google Workspace is your identity provider**, additional steps are required: [connect your 1Password SCIM Bridge to Google Workspace](./google-workspace/README.md).
 
-To finish setting up automated user provisioning, [connect your identity provider to your SCIM Bridge](https://support.1password.com/scim/#step-3-connect-your-identity-provider).
+To finish setting up automated user provisioning, [connect your identity provider to your SCIM bridge](https://support.1password.com/scim/#step-3-connect-your-identity-provider).
 
-## Update your SCIM Bridge
+## Update your SCIM bridge
 
 > [!IMPORTANT]
-> **If Google Workspace is your identity provider**, alternate steps are required: [update your SCIM Bridge when Google Workspace is your IdP](./google-workspace/README.md#update-your-scim-bridge-when-google-workspace-is-your-idp)
+> **If Google Workspace is your identity provider**, alternate steps are required: [update your SCIM bridge when Google Workspace is your IdP](./google-workspace/README.md#update-your-scim-bridge-when-google-workspace-is-your-idp)
 
 1. Sign in to the Google Cloud console and activate Cloud Shell: <https://console.cloud.google.com?cloudshell=true>
 
-2. Redeploy your SCIM Bridge using the latest version of the Cloud Run services YAML from this directory in our repository:
+2. Redeploy your SCIM bridge using the latest version of the Cloud Run services YAML from this directory in our repository:
 
     ```sh
     curl --silent --show-error \
@@ -170,7 +170,7 @@ To finish setting up automated user provisioning, [connect your identity provide
     ```
 
 > [!TIP]
-> Check for 1Password SCIM Bridge updates on the [SCIM Bridge releases notes website](https://releases.1password.com/provisioning/scim-bridge/).
-3. [Test your SCIM Bridge deployment](#step-4-test-your-scim-bridge) using your bearer token.
+> Check for 1Password SCIM Bridge updates on the [SCIM bridge releases notes website](https://releases.1password.com/provisioning/scim-bridge/).
+3. [Test your SCIM bridge deployment](#step-4-test-your-scim-bridge) using your bearer token.
 
-The new version number that you updated to should appear in the health check, the container logs for SCIM Bridge, and the top left-hand side of the page if signing in to the SCIM Bridge at its URL in a web browser. After you sign in to your SCIM Bridge, the [Automated User Provisioning page](https://start.1password.com/integrations/provisioning/) in your 1Password account will also update with the latest access time and SCIM Bridge version.
+The new version number that you updated to should appear in the health check, the container logs for SCIM bridge, and the top left-hand side of the page if signing in to the SCIM bridge at its URL in a web browser. After you sign in to your SCIM bridge, the [Automated User Provisioning page](https://start.1password.com/integrations/provisioning/) in your 1Password account will also update with the latest access time and SCIM bridge version.

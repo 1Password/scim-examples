@@ -94,7 +94,7 @@ A deployment example may be in beta for whatever length of time is required to m
   - All documented configurations _must_ be tested by the author and at least one reviewer. Tests must reliably succeed.
   - Some number of customers, greater than one (but no specific minimum is prescribed), are known to have used the deployment example in whatever is deemed a "standard" or common configuration for that example.
     - There must be documentation of these deployments, such as if it was assisted by 1Password Solutions Architect or developer. 
-  - Ideally at least _one_ customer has used the deployment example to deploy 1Password SCIM bridge in other, less typical, configurations, if applicable. 
+  - Ideally at least _one_ customer has used the deployment example to deploy 1Password SCIM Bridge in other, less typical, configurations, if applicable. 
     - There must be documentation of these deployments, such as if it was assisted by 1Password Solutions Architect or developer.
   - SCIM bridges deployed using the deployment example _must_ be in use by customers through at least one SCIM bridge update release with no evidence of failure or issues. 
 - Documentation

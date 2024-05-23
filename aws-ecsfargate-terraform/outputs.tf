@@ -1,5 +1,5 @@
 output "scim_bridge_url" {
-  description = "The URL of your 1Password SCIM bridge"
+  description = "The URL of your 1Password SCIM Bridge"
   value       = "https://${var.domain_name}"
 }
 
