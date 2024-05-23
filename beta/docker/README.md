@@ -394,7 +394,7 @@ _Pretty logs pair nicely with the `--raw` parameter of the `docker service logs`
 
 ### 🔒 Advanced TLS options
 
-Identity providers strictly require an HTTPS endpoint with a vlid TLS certificate to use for the SCIM bridge URL. SCIM bridge includes an optional CertificateManager component that (by default) acquires and manages a TLS certificate using Let's Encrypt, and terminates TLS traffic at the SCIM bridge container using this certificate. This requires port 443 of the Docker host to be publicly accessible to ensure Let's Encrypt can initiate an inbound connection to your SCIM bridge.
+Identity providers strictly require an HTTPS endpoint with a vlid TLS certificate to use for the SCIM bridge URL. 1Password SCIM Bridge includes an optional CertificateManager component that (by default) acquires and manages a TLS certificate using Let's Encrypt, and terminates TLS traffic at the SCIM bridge container using this certificate. This requires port 443 of the Docker host to be publicly accessible to ensure Let's Encrypt can initiate an inbound connection to your SCIM bridge.
 
 Other supported options include:
 
@@ -426,7 +426,7 @@ docker stack config \
 
 - `OP_REDIS_URL`: You can specify a `redis://` or `rediss://` (for TLS) URL here to point towards a different Redis host. You can then remove the sections in `docker-compose.yml` that refer to Redis to not deploy that container. Redis is still required for the SCIM bridge to function.
 
-As of SCIM bridge `v2.8.5`, additional Redis configuration options are available. `OP_REDIS_URL` must be unset for any of these environment variables to be read. These environment variables may be especially helpful if you need support for URL-unfriendly characters in your Redis credentials. These can be set in [`compose.template.yaml`](./compose.template.yaml) at `services.scim.environment`.
+As of 1Password SCIM Bridge `v2.8.5`, additional Redis configuration options are available. `OP_REDIS_URL` must be unset for any of these environment variables to be read. These environment variables may be especially helpful if you need support for URL-unfriendly characters in your Redis credentials. These can be set in [`compose.template.yaml`](./compose.template.yaml) at `services.scim.environment`.
 
 > **Note**  
 > `OP_REDIS_URL` must be unset, otherwise the following environment variables will be ignored.

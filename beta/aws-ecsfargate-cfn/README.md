@@ -146,7 +146,7 @@ Edit the example above as follows before running the command from the working di
 - Uncomment the appropriate lines as needed to adjust the CIDR block for the VPC, the scale of the deployment based on its provisoning volume, and add tags as key-value pairs to apply to all supported resources in the stack.
 - If you prefer, set the value for `--stack-name` to choose your own (for example, `--stack-name your-stack-name`). CloudFormation will use the stack name (or a truncated version where needed) as a prefix when naming the created AWS resources.
 > [!NOTE]
-> 📄 We use `op-scim-bridge` as a shorthand for 1Password SCIM Bridge throughout our examples and supporting documentation, but the choice is arbitrary.
+> We use `op-scim-bridge` as a shorthand for 1Password SCIM Bridge throughout our examples and supporting documentation, but the choice is arbitrary.
 
 After you run the command, you should see:
 

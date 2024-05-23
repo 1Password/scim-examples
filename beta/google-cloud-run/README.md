@@ -23,7 +23,7 @@ Complete the necessary [preparation steps to deploy 1Password SCIM Bridge](/PREP
     ```
 
 > [!TIP]
-> If you have already created a project for SCIM bridge, set it as the default project for this Cloud Shell session. For example:
+> If you have already created a project for your SCIM bridge, set it as the default project for this Cloud Shell session. For example:
 >
 > ```sh
 > gcloud config set project op-scim-bridge
@@ -46,7 +46,7 @@ Complete the necessary [preparation steps to deploy 1Password SCIM Bridge](/PREP
 
 ## Step 2: Create a secret for your `scimsession` credentials
 
-The Cloud Run service for SCIM bridge will be configured to mount volume using a secret from Secret Manager. Follow these steps to upload your `scimsession` credentials file to the Cloud Shell, create a secret, and store the file contents as its first secret version:
+The Cloud Run service for the SCIM bridge will be configured to mount volume using a secret from Secret Manager. Follow these steps to upload your `scimsession` credentials file to the Cloud Shell, create a secret, and store the file contents as its first secret version:
 
 1. Click **⋮** _(More)_ > **Upload** in the Cloud Shell terminal menu bar.
 2. Click **Choose Files**. Select the `scimsession` file that you saved to your computer.
@@ -81,7 +81,7 @@ The Cloud Run service for SCIM bridge will be configured to mount volume using a
 
 ## Step 3: Deploy your SCIM bridge
 
-Run this command to stream [`op-scim-bridge.yaml`](./op-scim-bridge.yaml) Cloud Run service YAML from this repository, use it to deploy SCIM bridge inline, and enable public ingress for your SCIM bridge so that you and your identity provider can connect to its public endpoint:
+Run this command to stream [`op-scim-bridge.yaml`](./op-scim-bridge.yaml) Cloud Run service YAML from this repository, use it to deploy 1Password SCIM Bridge inline, and enable public ingress for your SCIM bridge so that you and your identity provider can connect to its public endpoint:
 
 ```sh
 curl --silent --show-error \
@@ -173,4 +173,4 @@ To finish setting up automated user provisioning, [connect your identity provide
 > Check for 1Password SCIM Bridge updates on the [SCIM bridge releases notes website](https://releases.1password.com/provisioning/scim-bridge/).
 3. [Test your SCIM bridge deployment](#step-4-test-your-scim-bridge) using your bearer token.
 
-The new version number that you updated to should appear in the health check, the container logs for SCIM bridge, and the top left-hand side of the page if signing in to the SCIM bridge at its URL in a web browser. After you sign in to your SCIM bridge, the [Automated User Provisioning page](https://start.1password.com/integrations/provisioning/) in your 1Password account will also update with the latest access time and SCIM bridge version.
+The new version number that you updated to should appear in the health check, the container logs for 1Password SCIM Bridge, and the top left-hand side of the page if signing in to the SCIM bridge at its URL in a web browser. After you sign in to your SCIM bridge, the [Automated User Provisioning page](https://start.1password.com/integrations/provisioning/) in your 1Password account will also update with the latest access time and SCIM bridge version.
