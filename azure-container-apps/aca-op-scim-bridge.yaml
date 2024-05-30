@@ -15,7 +15,7 @@ properties:
       transport: Auto
   template:
     containers:
-      - image: docker.io/1password/scim:v2.9.4
+      - image: docker.io/1password/scim:v2.9.5
         name: op-scim-bridge
         volumeMounts:
           - mountPath: "/home/opuser/.op"

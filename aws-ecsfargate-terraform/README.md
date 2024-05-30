@@ -158,7 +158,7 @@ Below you can learn about some common update scenarios.
 To update your deployment to the latest version, edit the `task-definitions/scim.json` file and edit the following line:
 
 ```json
-    "image": "1password/scim:v2.9.4",
+    "image": "1password/scim:v2.9.5",
 ```
 
 Learn about the changes included in each version on the [SCIM bridge releases notes website](https://releases.1password.com/provisioning/scim-bridge/).

@@ -159,7 +159,7 @@ To finish setting up automated user provisioning, [connect your identity provide
 To update SCIM bridge, connect to your Kubernetes cluster and run the following command:
 
 ```sh
-kubectl set image deploy/op-scim-bridge op-scim-bridge=1password/scim:v2.9.4
+kubectl set image deploy/op-scim-bridge op-scim-bridge=1password/scim:v2.9.5
 ```
 
 > **Note**
