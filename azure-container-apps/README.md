@@ -61,7 +61,7 @@ After the deployment is complete, click **Go to resource**, then continue to ste
 2. Adjust the following:
    - **Name**: Enter `op-scim-bridge`.
    - **Image source**: Choose **Docker Hub or other registries**.
-   - **Image and tag**: Enter `1password/scim:v2.9.4`.
+   - **Image and tag**: Enter `1password/scim:v2.9.5`.
    - **CPU cores**: Enter `0.25`
    - **Memory (Gi)**: Enter `0.5`.
 3. Choose "Volume mounts", then click "Create new volume" below Secrets. Adjust the following:
@@ -154,7 +154,7 @@ To connect Google Workspace using the Azure Cloud Shell or AZ CLI, follow the st
 1. Within your deployed 1Password SCIM Bridge Container App in the [Azure Container Apps Portal](https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/Microsoft.App%2FcontainerApps), select **Containers** from the sidebar.
 2. Click **Edit and deploy**.
 3. Select the checkbox next to your **op-scim-bridge** container, then choose **Edit**.
-4. Change the version number **2.9.4** in the **Image and Tag** field, **1password/scim:v2.9.4** to match the latest version from our [SCIM bridge releases notes website](https://releases.1password.com/provisioning/scim-bridge/).
+4. Change the version number **2.9.5** in the **Image and Tag** field, **1password/scim:v2.9.5** to match the latest version from our [SCIM bridge releases notes website](https://releases.1password.com/provisioning/scim-bridge/).
 5. Select **Save**.
 6. Select **Create** to deploy a new revision using the updated image.
 7. Enter your SCIM bridge URL in a browser and sign in with your bearer token.

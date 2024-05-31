@@ -102,10 +102,10 @@ To finish setting up automated user provisioning, [connect your identity provide
 
 👍 Check for 1Password SCIM Bridge updates on the [SCIM bridge release page](https://app-updates.agilebits.com/product_history/SCIM).
 
-To update the SCIM bridge, connect to your Kubernetes cluster and run the following command, replacing v2.9.4 with the latest version:
+To update the SCIM bridge, connect to your Kubernetes cluster and run the following command, replacing v2.9.5 with the latest version:
 
 ```bash
-kubectl set image deploy/op-scim-bridge op-scim-bridge=1password/scim:v2.9.4 -n=op-scim
+kubectl set image deploy/op-scim-bridge op-scim-bridge=1password/scim:v2.9.5 -n=op-scim
 ```
 
 The update should take 2-3 minutes for Kubernetes to complete.
