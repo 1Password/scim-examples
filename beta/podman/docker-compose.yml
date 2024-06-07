@@ -1,0 +1,34 @@
+version: "2.2"
+services:
+  scim:
+    image: docker.io/1password/scim:v2.9.1
+    ports:
+      - "3002:3002"
+      - "80:8080"
+      - "443:8443"
+    networks:
+      - op-scim
+    secrets:
+      - source: scimsession
+        target: scimsession
+        uid: "999"
+        gid: "999"
+        mode: 0440
+    env_file: scim.env
+    environment:
+      - OP_SESSION=/run/secrets/scimsession
+      - OP_REDIS_URL=redis://redis:6379
+    restart: always
+  redis:
+    image: docker.io/redis:latest
+    networks:
+      - op-scim
+    env_file: redis.env
+    restart: always
+
+networks:
+  op-scim:
+secrets:
+  scimsession:
+    name: scimsession
+    file: ./scimsession
