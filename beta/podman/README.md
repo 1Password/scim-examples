@@ -1,6 +1,7 @@
 # [Beta] Deploy 1Password SCIM Bridge using Podman
 
-This example describes how to deploy 1Password SCIM Bridge using [Podman](https://podman.io/) and [Podman-compose](https://github.com/containers/podman-compose). The stack includes two [services](https://docs.docker.com/engine/swarm/how-swarm-mode-works/services/) (one each for the SCIM bridge container and the required Redis cache), a [Docker secret](https://docs.docker.com/engine/swarm/secrets/) for the `scimsession` credentials, a [Docker config](https://docs.docker.com/engine/swarm/configs/) for configuring Redis, and optional secrets and configuration required only for customers integrating with Google Workspace.
+This example describes how to deploy 1Password SCIM Bridge using [Podman](https://podman.io/) and [Podman-compose](https://github.com/containers/podman-compose). The deployment includes two containers, one each for the SCIM bridge container and the required Redis cache. This deployment is recommended for users who can only use Red Hat Enterprise Linux (RHEL) VM for their on-prem deployment since Docker will have issues running on these VMs.
+Podman-compose is a community developed package that enables Podman to achieve the same functionality as Docker Compose. It allows users to specify all the necessary details inside a single file, usually called `docker-compose.yml`.
 
 ## In this folder
 
@@ -15,39 +16,37 @@ This example assumes that the Linux server is exposed directly to the public int
 
 ## Prerequisites
 
-- AMD64/ARM64 VM or bare metal server with a Podman-supported Linux distribution (e.g. Ubuntu, Debian, Fedora, etc.)
-- a public DNS A record pointing to the Linux server
-- SSH access to the Linux server
-
-## Get started
-
 > **Note**
 >
 > 📚 Before proceeding, review the [Preparation Guide](/PREPARATION.md) at the root of this repository.
 
-Create a public DNS A record that points to the public IP address of the Linux server for your SCIM bridge. For example, `scim.example.com`.
+- AMD64/ARM64 VM or bare metal server with a Podman-supported Linux distribution (usually RHEL)
+- Create a public DNS A record that points to the public IP address of the Linux server for your SCIM bridge. For example, `scim.example.com`.
+- SSH access to the Linux server
 
-### 🛠️ Prepare the Linux server
+## Get started
+### 🛠️ Install Podman and Podman-compose
 
 On the Linux machine that you will be using as the Podman host for your SCIM bridge:
 
 1. [Install Podman](https://podman.io/docs/installation) on the Linux server.
-2. [Install podman-compose](https://github.com/containers/podman-compose?tab=readme-ov-file#installation). Some versions of VMs may have the dnf package manager missing some python libraries that are required. If that's the case, run `pip3 install podman-compose`.
+2. [Install podman-compose](https://github.com/containers/podman-compose?tab=readme-ov-file#installation) on the Linux server. 
+> **`sudo dnf install podman-compose` not working?**
+>
+> Dnf package manager may be missing some python libraries including podman-compose on some versions of VMs. If that's the case, run `pip3 install podman-compose`.
 
-### 👨‍💻 Prepare your desktop
+### 👨‍💻 Start the deployment
 
 All following steps should be run on the same computer where you are already using 1Password, or another machine that can access the Linux server using SSH and has access to the `scimsession` file from the integration setup:
 
-1. If you haven't already done so, install Docker. You can use [Docker Desktop](https://docs.docker.com/engine/install/#desktop), [install Docker Engine from binaries](https://docs.docker.com/engine/install/binaries/), or install Docker using your favourite package manager.
-
-2. Open your preferred terminal. Clone this repository and switch to this directory:
+1. Open your preferred terminal. Clone this repository and switch to this directory:
 
    ```sh
    git clone https://github.com/1Password/scim-examples.git
    cd ./scim-examples/beta/podman
    ```
 
-3. Save the `scimsession` credentials file from [the Automated User Provisioning setup](https://start.1password.com/integrations/directory/) to this working directory.
+2. Save the `scimsession` credentials file from [the Automated User Provisioning setup](https://start.1password.com/integrations/directory/) to this working directory.
 
    > **Note**
    >
@@ -59,7 +58,7 @@ All following steps should be run on the same computer where you are already usi
    > op read "op://Private/scimsession file/scimsession" --out-file ./scimsession
    > ```
 
-4. Open `scim.env` in your favourite text editor. Set the value of `OP_TLS_DOMAIN` to the fully qualififed domain name of the public DNS record for your SCIM bridge created in [Get started](#get-started). For example:
+3. Open `scim.env` in your favourite text editor. Set the value of `OP_TLS_DOMAIN` to the fully qualififed domain name of the public DNS record for your SCIM bridge created in [Get started](#get-started). For example:
 
    ```dotenv
    # ...
@@ -70,7 +69,7 @@ All following steps should be run on the same computer where you are already usi
 
    Save the file.
 
-5. Run the compose file by using the command below
+4. Run the compose file by using the command below
 
    _Example command:_
 
