@@ -3,16 +3,16 @@
 This example describes how to deploy 1Password SCIM Bridge using [Podman](https://podman.io/) and [Podman-compose](https://github.com/containers/podman-compose). The deployment includes two containers, one each for the SCIM bridge container and the required Redis cache. This deployment is recommended for users who can only use Red Hat Enterprise Linux (RHEL) VM for their on-prem deployment since Docker will have issues running on these VMs.
 Podman-compose is a community developed package that enables Podman to achieve the same functionality as Docker Compose. It allows users to specify all the necessary details inside a single file, usually called `docker-compose.yml`.
 
+> **Before you move on**
+>
+> If you are using Google Workspace or need to send more than 1000 provisioning requests at a time, please reach out to 1Password support team as these are not supported with Podman deployment yet.
+
 ## In this folder
 
 - [`README.md`](./README.md): the document that you are reading. 👋😃
 - [`docker-compose.yaml`](./docker-compose.yaml): a [Compose Specification](https://docs.docker.com/compose/compose-file/) format [Compose file](https://docs.docker.com/compose/compose-file/03-compose-file/) for 1Password SCIM Bridge.
 - [`redis.conf`](./redis.conf): a [Redis configuration file](https://redis.io/docs/management/config/) to load the Redis cache with the base configuration required for SCIM bridge
 - [`scim.env`](./scim.env): an environment file used to customize the SCIM bridge configuration
-
-## Overview
-
-This example assumes that the Linux server is exposed directly to the public internet with Podman acting as a reverse proxy to the SCIM bridge container.
 
 ## Prerequisites
 
