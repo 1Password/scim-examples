@@ -57,20 +57,23 @@ After the deployment is complete, click **Go to resource**, then continue to ste
 
 ## Step 3: Deploy the SCIM bridge container
 
-1. Choose **Add** > **App container**.
-2. Adjust the following:
+1. Choose **Containers** from the Application section in the sidebar.
+2. Click **Edit and Deploy**.
+3. Choose **Add** > **App container**.
+4. Adjust the following:
    - **Name**: Enter `op-scim-bridge`.
    - **Image source**: Choose **Docker Hub or other registries**.
    - **Image and tag**: Enter `1password/scim:v2.9.5`.
    - **CPU cores**: Enter `0.25`
    - **Memory (Gi)**: Enter `0.5`.
-3. Choose "Volume mounts", then click "Create new volume" below Secrets. Adjust the following:
+5. Choose **Volume mounts** tab at the top of the 'Add a container' blade.
+6. Click "Create new volume" below Secrets. Click **Ok** if it prompts 'your unsaved edits will be discarded'. Adjust the following:
    - **Volume type**: Choose Secret.
    - **Name**: Enter `credentials`.
    - **Mount all secrets:** should already be selected, but select it if is not.
-4. Click **Add** to save the volume specification. You should see the new `credentials` volume listed under "Volume name".
-5. Enter `/home/opuser/.op` in the **Mount path** field for this volume.
-6. Click **Create**.
+7. Click **Add** to save the volume specification. You should see the new `credentials` volume listed under "Volume name".
+8. Enter `/home/opuser/.op` in the **Mount path** field for this volume.
+9. Click **Create**.
 
 ## Step 4: Enable ingress to your SCIM bridge
 
