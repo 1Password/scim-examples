@@ -265,6 +265,7 @@ resource "aws_lb_listener" "https" {
   load_balancer_arn = aws_alb.op_scim_bridge.arn
   port              = 443
   protocol          = "HTTPS"
+  ssl_policy        = var.tls_policy
   certificate_arn = !var.wildcard_cert ? (
     var.using_route53 ?
     aws_acm_certificate_validation.op_scim_bridge[0].certificate_arn : aws_acm_certificate.op_scim_bridge[0].arn
