@@ -1,0 +1,11 @@
+services:
+  scim:
+    secrets:
+      - workspace-credentials
+      - workspace-settings
+
+secrets:
+  workspace-credentials:
+    external: true
+  workspace-settings:
+    external: true
