@@ -1,0 +1,4 @@
+services:
+  scim:
+    ports:
+      - 443:8443
