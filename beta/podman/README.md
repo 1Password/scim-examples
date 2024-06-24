@@ -46,36 +46,72 @@ All following steps should be run on the same computer where you are already usi
    cd ./scim-examples/beta/podman
    ```
 
-2. Save the `scimsession` credentials file from [the Automated User Provisioning setup](https://start.1password.com/integrations/directory/) to this working directory.
+2. Run the commands below to make the shell script files executable.
 
-   > **Note**
-   >
-   > 💻 If you saved your `scimsession` file as an item in your 1Password account, you can
-   > [use 1Password CLI](https://developer.1password.com/docs/cli/reference/commands/read) to save the file to this
-   > directory. For example:
-   >
-   > ```sh
-   > op read "op://Private/scimsession file/scimsession" --out-file ./scimsession
-   > ```
+  ```sh
+  chmod u+x deploy.sh
+  chmod u+x teardown.sh
+  ```
 
-3. Open `scim.env` in your favourite text editor. Set the value of `OP_TLS_DOMAIN` to the fully qualififed domain name of the public DNS record for your SCIM bridge created in [Get started](#get-started). For example:
+3. Save the `scimsession` credentials file from [the Automated User Provisioning setup](https://start.1password.com/integrations/directory/) to this working directory.
+Once this is done, you should be able to see `scimsession` listed when you run `ls`.
 
-   ```dotenv
-   # ...
-   OP_TLS_DOMAIN=scim.example.com
 
-   # ...
+4. Run the `deploy.sh` script by using the command below.
+
+> **Warning**
+>
+> ⏩ If you're using Google Workspace for automated user provisioning, 
+> skip this step and move to the section below
+  
+  ```sh
+  ./deploy.sh --file podman.http.yaml
+  ```
+  
+  Continue from [Test your SCIM bridge](#test-your-scim-bridge).
+
+### If you're using Google Workspace as your IdP
+Additional configuration and credentials are required to integrate your 1Password account with Google Workspace.
+
+> **Warning**
+>
+> ⏩ This section is **only** for customers who are integrating 1Password with Google Workspace for automated user
+> provisioning. If you are _not_ integrating with Workspace, skip the steps in this section and
+> [Test your SCIM bridge](#test-your-scim-bridge)
+
+See [Connect Google Workspace to 1Password SCIM Bridge](https://support.1password.com/scim-google-workspace/#step-1-create-a-google-service-account-key-and-api-client) for instructions to create the service account, key, and API client.
+
+1. Save the Google Workspace service account key to the working directory.
+2. Make sure the service account key is named `workspace-credentials.json`.
+3. Open the [`workspace-settings.json`](./workspace-settings.json) file in a text editor and replace the values for each key:
+
+   - `actor`: the email address for the administrator that the service account is acting on behalf of
+   - `bridgeAddress`: the URL for your SCIM bridge based on the fully qualified domain name of the DNS record created in [Get started](#get-started)
+
+   ```json
+   {
+     "actor": "admin@example.com",
+     "bridgeAddress": "https://scim.example.com"
+   }
    ```
 
-   Save the file.
+4. Open `scim.env` in your favourite text editor. Uncomment `OP_WORKSPACE_CREDENTIALS` and `OP_WORKSPACE_SETTINGS` in the last paragraph of the file.
 
-4. Run the compose file by using the command below
+  ```dotenv
+  ...
+  # (GOOGLE WORKSPACE) the options below are intended for users of our Google Workspace integration
+  # OP_WORKSPACE_CREDENTIALS should be base64-encoded Google Service Account credentials JSON
+  OP_WORKSPACE_CREDENTIALS=/run/secrets/workspace-credentials
+  # OP_WORKSPACE_SETTINGS is a base64-encoded string containing Workspace settings JSON for your bridge
+  OP_WORKSPACE_SETTINGS=/run/secrets/workspace-settings
+  ...
+  ```
 
-   _Example command:_
+5. Run the `deploy.sh` script by using the command below
 
-   ```sh
-   podman-compose up --build -d
-   ```
+  ```sh
+  ./deploy.sh --file podman.http.yaml --file podman.gw.yaml
+  ```
 
 
 ## Test your SCIM bridge
