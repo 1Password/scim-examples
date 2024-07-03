@@ -2,18 +2,15 @@ services:
   scim:
     secrets:
       - source: workspace-credentials
-        target: workspace-credentials.json
+        target: /home/opuser/.op/workspace-credentials.json
         uid: "999"
         gid: "999"
         mode: 0440
       - source: workspace-settings
-        target: workspace-settings.json
+        target: /home/opuser/.op/workspace-settings.json
         uid: "999"
         gid: "999"
         mode: 0440
-    environment:
-      - OP_WORKSPACE_CREDENTIALS=/run/secrets/workspace-credentials.json
-      - OP_WORKSPACE_SETTINGS=/run/secrets/workspace-settings.json
 secrets:
   workspace-credentials:
     name: workspace-credentials

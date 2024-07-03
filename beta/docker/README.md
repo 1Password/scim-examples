@@ -1,6 +1,6 @@
 # [Beta] Deploy 1Password SCIM Bridge using Docker Swarm
 
-This example describes how to deploy 1Password SCIM Bridge as a [stack](https://docs.docker.com/engine/swarm/stack-deploy/) using [Docker Swarm](https://docs.docker.com/engine/swarm/key-concepts/#what-is-a-swarm). The stack includes two [services](https://docs.docker.com/engine/swarm/how-swarm-mode-works/services/) (one each for the SCIM bridge container and the required Redis cache), a [Docker secret](https://docs.docker.com/engine/swarm/secrets/) for the `scimsession` credentials, a [Docker config](https://docs.docker.com/engine/swarm/configs/) for configuring Redis, and optional secrets and configuration required only for customers integrating with Google Workspace.
+This example describes how to deploy 1Password SCIM Bridge as a [stack](https://docs.docker.com/engine/swarm/stack-deploy/) using [Docker Swarm](https://docs.docker.com/engine/swarm/key-concepts/#what-is-a-swarm). The stack includes two [services](https://docs.docker.com/engine/swarm/how-swarm-mode-works/services/) (one each for the SCIM bridge container and the required Redis cache), a [Docker secret](https://docs.docker.com/engine/swarm/secrets/) for the `scimsession` credentials, and optional secrets and configuration required only for customers integrating with Google Workspace.
 
 ## In this folder
 
@@ -9,7 +9,6 @@ This example describes how to deploy 1Password SCIM Bridge as a [stack](https://
 - [`compose.gw.yaml`](./compose.gw.yaml): an [override configuration](https://docs.docker.com/compose/multiple-compose-files/merge/) to merge the configuration necessary for customers integrating with Google Workspace.
 - [`compose.http.yaml`](./compose.http.yaml): optional configuration for exposing an HTTP port on the Docker host for forwarding plain-text traffic within a private network from a public TLS termination endpoint
 - [`compose.tls.yaml`](./compose.http.yaml): optional configuration for enabling a self-managed TLS certificate
-- [`redis.conf`](./redis.conf): a [Redis configuration file](https://redis.io/docs/management/config/) to load the Redis cache with the base configuration required for SCIM bridge
 - [`scim.env`](./scim.env): an environment file used to customize the SCIM bridge configuration
 
 ## Overview
@@ -26,11 +25,10 @@ The open source Docker Engine tooling can be used to deploy 1Password SCIM Bridg
 
 ## Get started
 
-> **Note**
->
-> 📚 Before proceeding, review the [Preparation Guide](/PREPARATION.md) at the root of this repository.
+> [!Note]
+> Before proceeding, review the [Preparation Guide](/PREPARATION.md) at the root of this repository.
 
-Create a public DNS A record that points to the public IP address of the Linux server for your SCIM bridge. For example, `scim.example.com`.
+Create a public DNS record that points to the public IP address of the Linux server for your SCIM bridge. For example, `op-scim-bridge.example.com`.
 
 ### 🛠️ Prepare the Linux server
 
@@ -68,7 +66,7 @@ All following steps should be run on the same computer where you are already usi
 
    ```dotenv
    # ...
-   OP_TLS_DOMAIN=scim.example.com
+   OP_TLS_DOMAIN=op-scim-bridge.example.com
 
    # ...
    ```
@@ -82,10 +80,10 @@ All following steps should be run on the same computer where you are already usi
    ```sh
    docker context create op-scim-bridge \
        --description "1Password SCIM Bridge Docker host" \
-       --docker host=ssh://user@scim.example.com
+       --docker host=ssh://user@op-scim-bridge.example.com
    ```
 
-   Copy the example command to a text editor. Replace `user` with the appropriate username for your Linux server and `scim.example.com` with the host name or IP address used for SSH access to the Linux server before running the command in your terminal.
+   Copy the example command to a text editor. Replace `user` with the appropriate username for your Linux server and `op-scim-bridge.example.com` with the host name or IP address used for SSH access to the Linux server before running the command in your terminal.
 
    > **Note**
    >
@@ -138,7 +136,7 @@ See [Connect Google Workspace to 1Password SCIM Bridge](https://support.1passwor
    ```json
    {
      "actor": "admin@example.com",
-     "bridgeAddress": "https://scim.example.com"
+     "bridgeAddress": "https://op-scim-bridge.example.com"
    }
    ```
 
@@ -180,12 +178,12 @@ Run this command to view logs from the service for the SCIM bridge container:
 docker service logs op-scim-bridge_scim --raw
 ```
 
-Your **SCIM bridge URL** is based on the fully qualified domain name of the DNS record created in [Get started](#get-started). For example: `https://scim.example.com`. Replace `mF_9.B5f-4.1JqM` with your bearer token and `https://scim.example.com` with your SCIM bridge URL to test the connection and view status information.
+Your **SCIM bridge URL** is based on the fully qualified domain name of the DNS record created in [Get started](#get-started). For example: `https://op-scim-bridge.example.com`. Replace `mF_9.B5f-4.1JqM` with your bearer token and `https://op-scim-bridge.example.com` with your SCIM bridge URL to test the connection and view status information.
 
 ```sh
 curl --silent --show-error --request GET --header "Accept: application/json" \
   --header "Authorization: Bearer mF_9.B5f-4.1JqM" \
-  https:/scim.example.com/health
+  https:/op-scim-bridge.example.com/health
 ```
 
 <details>
