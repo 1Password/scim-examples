@@ -1,0 +1,170 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "containerAppName": {
+            "defaultValue": "op-scim-con-app",
+            "type": "String",
+            "metadata": {
+                "description": "The name of the container app."
+            }
+        },
+        "containerAppEnvName": {
+            "defaultValue": "op-scim-con-app-env",
+            "type": "String",
+            "metadata": {
+                "description": "The name of the container app environment."
+            }
+        },
+        "logAnalyticsName": {
+            "defaultValue": "op-scim-con-app-log-analytics",
+            "type": "String",
+            "metadata": {
+                "description": "The name of the log analytics workspace."
+            }
+        },
+        "scimsession": {
+            "type": "SecureString",
+            "metadata": {
+                "description": "The content of your scimsession file in plain text"
+            }
+        },
+        "scim cpu": {
+            "defaultValue": "0.25",
+            "type": "String",
+            "allowedValues": [
+                "0.25",
+                "0.5",
+                "1"
+            ],
+            "metadata": {
+                "description": "cpu for your scim bridge (default is 0.25)"
+            }
+        },
+        "scim memory": {
+            "defaultValue": "0.5Gi",
+            "type": "String",
+            "allowedValues": [
+                "0.5Gi",
+                "1Gi"
+            ],
+            "metadata": {
+                "description": "cpu for your scim bridge (default is 0.5Gi)"
+            }
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.OperationalInsights/workspaces",
+            "apiVersion": "2022-10-01",
+            "name": "[parameters('logAnalyticsName')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "sku": {
+                    "name": "PerGB2018"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.App/managedEnvironments",
+            "apiVersion": "2023-05-01",
+            "name": "[parameters('containerAppEnvName')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsName'))]"
+            ],
+            "sku": {
+                "name": "Consumption"
+            },
+            "properties": {
+                "appLogsConfiguration": {
+                    "destination": "log-analytics",
+                    "logAnalyticsConfiguration": {
+                        "customerId": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsName'))).customerId]",
+                        "sharedKey": "[listKeys(resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsName')), '2022-10-01').primarySharedKey]"
+                    }
+                },
+                "zoneRedundant": false
+            }
+        },
+        {
+            "type": "Microsoft.App/containerApps",
+            "apiVersion": "2023-05-01",
+            "name": "[parameters('containerAppName')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.App/managedEnvironments', parameters('containerAppEnvName'))]"
+            ],
+            "tags": {
+                "purpose": "1Password SCIM Bridge"
+            },
+            "properties": {
+                "managedEnvironmentId": "[resourceId('Microsoft.App/managedEnvironments', parameters('containerAppEnvName'))]",
+                "configuration": {
+                    "secrets": [
+                        {
+                            "name": "scimsession",
+                            "value": "[parameters('scimsession')]"
+                        }
+                    ],
+                    "activeRevisionsMode": "Single",
+                    "ingress": {
+                        "external": true,
+                        "targetPort": 3002,
+                        "allowInsecure": false,
+                        "traffic": [
+                            {
+                                "latestRevision": true,
+                                "weight": 100
+                            }
+                        ]
+                    }
+                },
+                "template": {
+                    "containers": [
+                        {
+                            "image": "docker.io/1password/scim:v2.9.5",
+                            "name": "op-scim-bridge",
+                            "resources": {
+                                "cpu": "[parameters('scim cpu')]",
+                                "memory": "[parameters('scim memory')]"
+                            },
+                            "volumeMounts": [
+                                {
+                                    "mountPath": "/home/opuser/.op",
+                                    "volumeName": "credentials"
+                                }
+                            ]
+                        },
+                        {
+                            "image": "docker.io/redis",
+                            "name": "op-scim-redis",
+                            "env": [
+                                {
+                                    "name": "REDIS_ARGS",
+                                    "value": "--maxmemory 256mb --maxmemory-policy volatile-lru --save''"
+                                }
+                            ],
+                            "resources": {
+                                "cpu": 0.25,
+                                "memory": "0.5Gi"
+                            }
+                        }
+                    ],
+                    "volumes": [
+                        {
+                            "name": "credentials",
+                            "storageType": "Secret",
+                            "secrets": [
+                                {
+                                    "secretRef": "scimsession",
+                                    "path": "scimsession"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}
