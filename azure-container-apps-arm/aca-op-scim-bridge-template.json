@@ -1,6 +1,22 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
+    "variables": {
+        "resourceSettings": {
+            "base": {
+                "cpu": "0.25",
+                "memory": "0.5Gi"
+            },
+            "high": {
+                "cpu": "0.5",
+                "memory": "1Gi"
+            },
+            "very high": {
+                "cpu": "1",
+                "memory": "2Gi"
+            }
+        }
+    },
     "parameters": {
         "containerAppName": {
             "defaultValue": "op-scim-con-app",
@@ -16,7 +32,7 @@
                 "description": "The name of the container app environment."
             }
         },
-        "logAnalyticsName": {
+        "logAnalyticsWorkspaceName": {
             "defaultValue": "op-scim-con-app-log-analytics",
             "type": "String",
             "metadata": {
@@ -29,27 +45,16 @@
                 "description": "The content of your scimsession file in plain text"
             }
         },
-        "scim cpu": {
-            "defaultValue": "0.25",
+        "provisioningVolume": {
+            "defaultValue": "base",
             "type": "String",
             "allowedValues": [
-                "0.25",
-                "0.5",
-                "1"
+                "base",
+                "high",
+                "very high"
             ],
             "metadata": {
-                "description": "cpu for your scim bridge (default is 0.25)"
-            }
-        },
-        "scim memory": {
-            "defaultValue": "0.5Gi",
-            "type": "String",
-            "allowedValues": [
-                "0.5Gi",
-                "1Gi"
-            ],
-            "metadata": {
-                "description": "cpu for your scim bridge (default is 0.5Gi)"
+                "description": "The expected volume of provisioning activity. Use base for provisioning less than 1,000 users, high for up to 5,000 users, or very-high for more than 5,000 users."
             }
         }
     },
@@ -57,7 +62,7 @@
         {
             "type": "Microsoft.OperationalInsights/workspaces",
             "apiVersion": "2022-10-01",
-            "name": "[parameters('logAnalyticsName')]",
+            "name": "[parameters('logAnalyticsWorkspaceName')]",
             "location": "[resourceGroup().location]",
             "properties": {
                 "sku": {
@@ -71,7 +76,7 @@
             "name": "[parameters('containerAppEnvName')]",
             "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsName'))]"
+                "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName'))]"
             ],
             "sku": {
                 "name": "Consumption"
@@ -80,8 +85,8 @@
                 "appLogsConfiguration": {
                     "destination": "log-analytics",
                     "logAnalyticsConfiguration": {
-                        "customerId": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsName'))).customerId]",
-                        "sharedKey": "[listKeys(resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsName')), '2022-10-01').primarySharedKey]"
+                        "customerId": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName'))).customerId]",
+                        "sharedKey": "[listKeys(resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName')), '2022-10-01').primarySharedKey]"
                     }
                 },
                 "zoneRedundant": false
@@ -126,8 +131,8 @@
                             "image": "docker.io/1password/scim:v2.9.5",
                             "name": "op-scim-bridge",
                             "resources": {
-                                "cpu": "[parameters('scim cpu')]",
-                                "memory": "[parameters('scim memory')]"
+                                "cpu": "[variables('resourceSettings')[parameters('provisioningVolume')].cpu]",
+                                "memory": "[variables('resourceSettings')[parameters('provisioningVolume')].memory]"
                             },
                             "volumeMounts": [
                                 {
@@ -154,13 +159,7 @@
                     "volumes": [
                         {
                             "name": "credentials",
-                            "storageType": "Secret",
-                            "secrets": [
-                                {
-                                    "secretRef": "scimsession",
-                                    "path": "scimsession"
-                                }
-                            ]
+                            "storageType": "Secret"
                         }
                     ]
                 }
