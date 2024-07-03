@@ -1,61 +1,40 @@
 services:
   redis:
-    image: redis
-    configs:
-      - source: redis
-        target: /usr/local/etc/redis/redis.conf
-    command: redis-server /usr/local/etc/redis/redis.conf
-    networks:
-      - op-scim
+    command: --maxmemory 256mb --maxmemory-policy volatile-lru --save ""
     deploy:
       resources:
         reservations:
           cpus: "0.125"
-          memory: 512M
         limits:
           memory: 512M
-      restart_policy:
-        condition: any
     healthcheck:
-      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
-      interval: 1s
-      timeout: 3s
-      retries: 5
+      test: redis-cli ping | grep PONG
+    image: redis
+    networks: [op-scim]
+    user: 999:999
   scim:
-    image: 1password/scim:v2.9.6
-    depends_on:
-      - redis
+    depends_on: [redis]
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.125"
+        limits:
+          memory: 512M
+    env_file: ./scim.env
+    environment: [OP_REDIS_URL=redis://redis:6379]
+    image: 1password/scim:v2.9.5
+    networks: [op-scim]
+    ports: [443:8443]
     secrets:
-      - source: scimsession
-        target: scimsession
+      - source: credentials
+        target: /home/opuser/.op/scimsession
         uid: "999"
         gid: "999"
         mode: 0440
-    env_file: ./scim.env
-    environment:
-      - OP_SESSION=/run/secrets/scimsession
-      - OP_REDIS_URL=redis://redis:6379
-    networks:
-      - op-scim
-    ports:
-      - "443:8443"
-    deploy:
-      resources:
-        reservations:
-          cpus: "0.125"
-          memory: 512M
-        limits:
-          memory: 512M
-      restart_policy:
-        condition: any
+    user: 999:999
 networks:
   op-scim:
-    name: op-scim
-configs:
-  redis:
-    name: op-redis-config
-    file: ./redis.conf
 secrets:
-  scimsession:
-    name: scimsession
+  credentials:
     file: ./scimsession
+    name: scimsession
