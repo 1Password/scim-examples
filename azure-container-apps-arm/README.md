@@ -17,7 +17,7 @@ Before you begin, complete the necessary [preparation steps to deploy 1Password 
 > If you don't have an Azure account, you can sign up for a free trial with starting credit: https://azure.microsoft.com/free/
 
 ## Step 1: Download the template file
-1. Navigate to this page and download the template file using the download icon at the top right.
+1. Download the [ARM(Azure Resource Manager) template](./aca-op-scim-bridge-template.json) file using the download icon at the top right.
 
 ## Step 2: Create the Container App
 
@@ -126,7 +126,7 @@ The pod for 1Password SCIM Bridge should be vertically scaled if you provision a
 | --------- | --------------- | ---- | ------ |
 | Default   | <1,000          | 0.25 | 0.5Gi  |
 | High      | 1,000–5,000     | 0.5  | 1.0Gi  |
-| Very high | >5,000          | 1.0  | 1.0Gi  |
+| Very high | >5,000          | 1.0  | 2.0Gi  |
 
 If you're provisioning more than 1,000 users, update the resources assigned to [the SCIM bridge container](#22-continue-creating-the-container-app) to follow these recommendations. The resources specified for the Redis container don't need to be adjusted. Steps can be found on our [Advanced guide](ADVANCED.md) on how to update your resources.
 
