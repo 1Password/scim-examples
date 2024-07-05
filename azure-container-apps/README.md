@@ -165,18 +165,6 @@ To connect Google Workspace using the Azure Cloud Shell or AZ CLI, follow the st
 
 After you sign in to your SCIM bridge, the [Automated User Provisioning page](https://start.1password.com/integrations/active/) in your 1Password account will also update with the latest access time and SCIM bridge version.
 
-## Appendix: Resource recommendations
-
-The pod for 1Password SCIM Bridge should be vertically scaled if you provision a large number of users or groups. These are our default resource specifications and recommended configurations for provisioning at scale:
-
-| Volume    | Number of users | CPU  | memory |
-| --------- | --------------- | ---- | ------ |
-| Default   | <1,000          | 0.25 | 0.5Gi  |
-| High      | 1,000–5,000     | 0.5  | 1.0Gi  |
-| Very high | >5,000          | 1.0  | 2.0Gi  |
-
-If you're provisioning more than 1,000 users, update the resources assigned to [the SCIM bridge container](#22-continue-creating-the-container-app) to follow these recommendations. The resources specified for the Redis container don't need to be adjusted. Steps can be found on our [Advanced guide](ADVANCED.md) on how to update your resources.
-
 ## Get help
 
 > [!TIP]

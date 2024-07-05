@@ -66,7 +66,7 @@ To update the high-volume within the Azure Portal:
 If you're provisioning more than 5,000 users, run the following command:
 
 ```bash
-az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge --cpu 1.0 --memory 1.0Gi
+az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge --cpu 1.0 --memory 2.0Gi
 ```
 
 To update the very high-volume within the Azure Portal: 
