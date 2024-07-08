@@ -2,22 +2,9 @@
 
 *Learn how to deploy 1Password SCIM Bridge using Docker Compose or Docker Swarm.*
 
-**Table of contents:**
-
-- [Before you begin](#before-you-begin)
-- [Step 1: Choose a deployment option](#step-1-choose-a-deployment-option)
-- [Step 2: Install Docker tools](#step-2-install-docker-tools)
-- [Step 3: Deploy 1Password SCIM Bridge](#step-3-deploy-1password-scim-bridge)
-- [Step 4: Test the SCIM bridge](#step-4-test-the-scim-bridge)
-- [Step 5: Connect your identity provider](#step-5-connect-your-identity-provider)
-- [Update your SCIM bridge](#update-your-scim-bridge)
-- [Advanced: Manual SCIM bridge deployment](#Advanced-Manual-deployment)
-- [Appendix: Advanced `scim.env` options](#appendix-advanced-scimenv-options)
-- [Appendix: Generate `scim.env` on Windows](#appendix-generate-scimenv-on-windows)
-
 ## Before you begin
 
-Before you begin, familiarize yourself with [PREPARATION.md](/PREPARATION.md) and complete the necessary steps there.
+Before you begin, complete the necessary [preparation steps to deploy 1Password SCIM Bridge](/PREPARATION.md).
 
 ## Step 1: Choose a deployment option
 
@@ -51,6 +38,9 @@ After you've created a swarm, log in with `docker swarm join`. Then use the prov
 The logs from the SCIM bridge and Redis containers will be streamed to your machine. If everything seems to have deployed successfully, press Ctrl+C to exit, and the containers will remain running on the remote machine.
 
 At this point, you should set a DNS record routing the domain name to the IP address of the `op-scim` container.
+
+> [!IMPORTANT]
+> The DNS record name is used for your **SCIM bridge URL**. For example, if the record name is `op-scim-bridge.example.com`, then your SCIM bridge URL is `https://op-scim-bridge.example.com`.
 
 ### Docker Compose
 
@@ -123,8 +113,9 @@ Alternate Google Workspace stack deployment command:
 # deploy your Stack with Google Workspace settings
 docker stack deploy -c docker-compose.yml -c gw-docker-compose.yml op-scim
 ```
+
 Learn more about [connecting Google Workspace to 1Password SCIM Bridge](https://support.1password.com/scim-google-workspace/).
-  
+
 ### Self managed TLS for Docker Swarm
 
 Provide your own key and cert files to the deployment as secrets, which disables Let's Encrypt functionality. In order to utilize self managed TLS key and certificate files, you need to define these as secrets using the following commands and And finally, use `docker stack` to deploy:
@@ -172,21 +163,65 @@ It is not recommended to use Docker Compose for your SCIM bridge deployment if y
 
 ## Step 4: Test the SCIM bridge
 
-To test if your SCIM bridge is online, open the public IP address of the Docker Host for your bridge in a web browser. You should be able to enter your bearer token to verify that your SCIM bridge is up and running.
+Use your SCIM bridge URL to test the connection and view status information. For example:
 
-You can also use the following `curl` command to test the SCIM bridge from the command line:
-
-```bash
-curl --header "Authorization: Bearer TOKEN_GOES_HERE" https://<domain>/scim/Users
+```sh
+curl --silent --show-error --request GET --header "Accept: application/json" \
+  --header "Authorization: Bearer mF_9.B5f-4.1JqM" \
+  https://op-scim-bridge.example.com/health
 ```
+
+Replace `mF_9.B5f-4.1JqM` with your bearer token and `https://op-scim-bridge.example.com` with your SCIM bridge URL.
+
+<details>
+<summary>Example JSON response:</summary>
+
+```json
+{
+  "build": "209031",
+  "version": "2.9.3",
+  "reports": [
+    {
+      "source": "ConfirmationWatcher",
+      "time": "2024-04-25T14:06:09Z",
+      "expires": "2024-04-25T14:16:09Z",
+      "state": "healthy"
+    },
+    {
+      "source": "RedisCache",
+      "time": "2024-04-25T14:06:09Z",
+      "expires": "2024-04-25T14:16:09Z",
+      "state": "healthy"
+    },
+    {
+      "source": "SCIMServer",
+      "time": "2024-04-25T14:06:56Z",
+      "expires": "2024-04-25T14:16:56Z",
+      "state": "healthy"
+    },
+    {
+      "source": "StartProvisionWatcher",
+      "time": "2024-04-25T14:06:09Z",
+      "expires": "2024-04-25T14:16:09Z",
+      "state": "healthy"
+    }
+  ],
+  "retrievedAt": "2024-04-25T14:06:56Z"
+}
+```
+
+</details>
+<br />
+
+To view this information in a visual format, visit your SCIM bridge URL in a web browser. Sign in with your bearer token, then you can view status information and download container log files.
 
 ## Step 5: Connect your identity provider
 
 To finish setting up automated user provisioning, [connect your identity provider to the SCIM bridge](https://support.1password.com/scim/#step-3-connect-your-identity-provider).
 
-## Update your SCIM Bridge
+## Update your SCIM bridge
 
-👍 Check for 1Password SCIM Bridge updates on the [SCIM bridge release page](https://app-updates.agilebits.com/product_history/SCIM).
+👍 Check for 1Password SCIM Bridge updates on the [SCIM bridge releases notes website](https://releases.1password.com/provisioning/scim-bridge/).
 
 To upgrade your SCIM bridge, `git pull` the latest versions from this repository. Then re-apply the `.yml` file. For example:
 
@@ -219,11 +254,23 @@ The following options are available for advanced or custom deployments. Unless y
 
 * `OP_TLS_CERT_FILE` and `OP_TLS_KEY_FILE`: These two variables can be set to the paths of a key file and certificate file secrets, which will disable Let's Encrypt functionality, causing the SCIM bridge to use your own manually-defined certificate when `OP_TLS_DOMAIN` is also defined. This is only supported with Docker Swarm, not Docker Compose. Note the additional steps above in the [manual self managed TLS section](#Self-managed-TLS-for-Docker-Swarm) for enabling this feature.
 * `OP_PORT`: When `OP_TLS_DOMAIN` is set to blank, you can use `OP_PORT` to change the default port from 3002 to one you choose.
-* `OP_REDIS_URL`: You can specify a `redis://` or `rediss://` (for TLS) URL here to point towards a different Redis host. You can then remove the sections in `docker-compose.yml` that refer to Redis to not deploy that container. Redis is still required for the SCIM bridge to function.
+* `OP_REDIS_URL`: You can specify a `redis://` or `rediss://` (for TLS) URL here to point towards a different Redis host. You can then remove the sections in `docker-compose.yml` that refer to Redis to not deploy that container. Redis is still required for the SCIM bridge to function.  
 * `OP_PRETTY_LOGS`: You can set this to `1` if you'd like the SCIM bridge to output logs in a human-readable format. This can be helpful if you aren't planning on doing custom log ingestion in your environment.
 * `OP_DEBUG`: You can set this to `1` to enable debug output in the logs, which is useful for troubleshooting or working with 1Password Support to diagnose an issue.
 * `OP_TRACE`: You can set this to `1` to enable trace-level log output, which is useful for debugging Let’s Encrypt integration errors.
 * `OP_PING_SERVER`: You can set this to `1` to enable an optional `/ping` endpoint on port `80`, which is useful for health checks. It's disabled if `OP_TLS_DOMAIN` is unset and TLS is not in use.
+
+As of 1Password SCIM Bridge `v2.8.5`, additional Redis configuration options are available. `OP_REDIS_URL` must be unset for any of these environment variables to be read. These environment variables may be especially helpful if you need support for URL-unfriendly characters in your Redis credentials. 
+
+> **Note**  
+> `OP_REDIS_URL` must be unset, otherwise the following environment variables will be ignored.
+
+* `OP_REDIS_HOST`:  overrides the default hostname of the redis server (default: `redis`). It can be either another hostname, or an IP address.
+* `OP_REDIS_PORT`: overrides the default port of the redis server connection (default: `6379`).
+* `OP_REDIS_USERNAME`: sets a username, if any, for the redis connection (default: `(null)`)
+* `OP_REDIS_PASSWORD`: Sets a password, if any, for the redis connection (default: `(null)`). Can accommodate URL-unfriendly characters that `OP_REDIS_URL` may not accommodate. 
+* `OP_REDIS_ENABLE_SSL`: Optionally enforce SSL on redis server connections (default: `false`).   (Boolean `0` or `1`)
+* `OP_REDIS_INSECURE_SSL`: Set whether to allow insecure SSL on redis server connections when `OP_REDIS_ENABLE_SSL` is set to `true`. This may be useful for testing or self-signed environments (default: `false`) (Boolean `0` or `1`).
 
 ## Appendix: Generate `scim.env` on Windows
 

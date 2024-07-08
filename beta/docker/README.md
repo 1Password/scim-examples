@@ -18,7 +18,7 @@ The open source Docker Engine tooling can be used to deploy 1Password SCIM Bridg
 
 ## Prerequisites
 
-- AMD64 VM or bare metal server with a Docker-supported Linux distribution (e.g. Ubuntu, Debian, Fedora, etc.)
+- AMD64/ARM64 VM or bare metal server with a Docker-supported Linux distribution (e.g. Ubuntu, Debian, Fedora, etc.)
 - Docker Engine (see [Docker Engine installation overview](https://docs.docker.com/engine/install/#server)) installed on the Linux server
 - a public DNS A record pointing to the Linux server
 - SSH access to the Linux server
@@ -47,12 +47,13 @@ All following steps should be run on the same computer where you are already usi
 
 2. Open your preferred terminal. Clone this repository and switch to this directory:
 
-    ```sh
-    git clone https://github.com/1Password/scim-examples.git
-    cd ./scim-examples/beta/docker
-    ```
+   ```sh
+   git clone https://github.com/1Password/scim-examples.git
+   cd ./scim-examples/beta/docker
+   ```
 
 3. Save the `scimsession` credentials file from [the Automated User Provisioning setup](https://start.1password.com/integrations/directory/) to this working directory.
+
    > **Note**
    >
    > 💻 If you saved your `scimsession` file as an item in your 1Password account, you can
@@ -68,7 +69,7 @@ All following steps should be run on the same computer where you are already usi
    ```dotenv
    # ...
    OP_TLS_DOMAIN=scim.example.com
-   
+
    # ...
    ```
 
@@ -76,7 +77,7 @@ All following steps should be run on the same computer where you are already usi
 
 5. Create a Docker context to use for connecting to the Linux server:
 
-   *Example command:*
+   _Example command:_
 
    ```sh
    docker context create op-scim-bridge \
@@ -108,42 +109,42 @@ docker swarm init # --advertise-addr 192.0.2.1
 > **Note**
 >
 > Additional nodes may be optionally added to a swarm for fault tolerance. This command adds the Linux server as the
-> first (and only) node in the swarm, but Docker *requires* a unique IP address to advertise to other nodes (even if
+> first (and only) node in the swarm, but Docker _requires_ a unique IP address to advertise to other nodes (even if
 > no other nodes will be added). See [How nodes work](https://docs.docker.com/engine/swarm/how-swarm-mode-works/nodes/)
 > in the Docker documentation for more details.
 >
 > If multiple IP addresses are detected, Docker returns an error; uncomment the `--advertise-addr` parameter (delete
 > `#`), replace the example IP (`192.0.2.1`) with the appropriate IP address, and run the command again.
 
-### Configure 1Password SCIM bridge to connect to Google Workspace
+### Configure 1Password SCIM Bridge to connect to Google Workspace
 
 Additional configuration and credentials are required to integrate to integrate your 1Password account with Google Workspace.
 
 > **Warning**
 >
 > ⏩ This section is **only** for customers who are integrating 1Password with Google Workspace for automated user
-> provisioning. If you are *not* integrating with Workspace, skip the steps in this section and
+> provisioning. If you are _not_ integrating with Workspace, skip the steps in this section and
 > [deploy your SCIM bridge](#%EF%B8%8F-deploy-1password-scim-bridge)
 
 See [Connect Google Workspace to 1Password SCIM Bridge](https://support.1password.com/scim-google-workspace/#step-1-create-a-google-service-account-key-and-api-client) for instructions to create the service account, key, and API client.
 
 1. Save the Google Workspace service account key to the working directory.
 2. Make sure the service account key is named `workspace-credentials.json`.
-3. Open the  [`workspace-settings.json`](./workspace-settings.json) file in a text editor and replace the values for each key:
+3. Open the [`workspace-settings.json`](./workspace-settings.json) file in a text editor and replace the values for each key:
 
-    - `actor`: the email address for the administrator that the service account is acting on behalf of
-    - `bridgeAddress`: the URL for your SCIM bridge based on the fully qualified domain name of the DNS record created in [Get started](#get-started)
+   - `actor`: the email address for the administrator that the service account is acting on behalf of
+   - `bridgeAddress`: the URL for your SCIM bridge based on the fully qualified domain name of the DNS record created in [Get started](#get-started)
 
-    ```json
-    {
-        "actor":"admin@example.com",
-        "bridgeAddress":"https://scim.example.com"
-    }
-    ```
+   ```json
+   {
+     "actor": "admin@example.com",
+     "bridgeAddress": "https://scim.example.com"
+   }
+   ```
 
-    Save the file.
+   Save the file.
 
-## 🏗️ Deploy 1Password SCIM Bridge
+## Deploy 1Password SCIM Bridge
 
 Use the Compose template to output a canonical configuration for use with Docker Swarm and create the stack from this configuration inline. Your SCIM bridge should automatically acquire and manage a TLS certificate from Let's Encrypt on your behalf:
 
@@ -160,7 +161,7 @@ If you are integrating with Google Workspace, use the `compose.gw.yaml` override
 > **Warning**
 >
 > ⏩ This section is **only** for customers who are integrating 1Password with Google Workspace for automated user
-> provisioning. If you are *not* integrating with Workspace, skip this section and [test your SCIM bridge](#-test-your-scim-bridge).
+> provisioning. If you are _not_ integrating with Workspace, skip this section and [test your SCIM bridge](#-test-your-scim-bridge).
 
 Merge the configuration to create and use the additional Docker secrets needed for Workspace into the canonical configuration:
 
@@ -171,100 +172,79 @@ docker stack config \
         docker stack deploy --compose-file - op-scim-bridge
 ```
 
-## 🧪 Test your SCIM bridge
+## Test your SCIM bridge
 
-Run this command to retrieve logs from the service for the SCIM bridge container:
+Run this command to view logs from the service for the SCIM bridge container:
 
 ```sh
 docker service logs op-scim-bridge_scim --raw
 ```
 
-Your SCIM bridge URL is based on the fully qualified domain name of the DNS record created in [Get started](#get-started), for example `https://scim.example.com/`. You can access your SCIM bridge in a web browser at this URL by signing in using your bearer token.
-
-You can also test your SCIM bridge by sending an authenticated SCIM API request.
-
-*Example command:*
+Your **SCIM bridge URL** is based on the fully qualified domain name of the DNS record created in [Get started](#get-started). For example: `https://scim.example.com`. Replace `mF_9.B5f-4.1JqM` with your bearer token and `https://scim.example.com` with your SCIM bridge URL to test the connection and view status information.
 
 ```sh
-curl --header "Authorization: Bearer mF_9.B5f-4.1JqM" https://scim.example.com/Users
+curl --silent --show-error --request GET --header "Accept: application/json" \
+  --header "Authorization: Bearer mF_9.B5f-4.1JqM" \
+  https:/scim.example.com/health
 ```
 
-Copy the example command to a text editor. Replace `mF_9.B5f-4.1JqM` with your bearer token and `scim.example.com` with the fully qualified domain name of the DNS record created in [Get started](#get-started) before running the command in your terminal.
-> **Note**
->
-> 💻 If you saved your bearer token as an item in your 1Password account, you can [use 1Password CLI to securely pass the
-> bearer token](https://developer.1password.com/docs/cli/secrets-scripts#option-2-use-op-read-to-read-secrets)
-> instead of writing it out in the console. For example: `--header "Authorization: Bearer $(op read
-> "op://Private/bearer token/credential")"`
-
 <details>
-<summary>Example JSON response</summary>
+<summary>Example JSON response:</summary>
 
-> ```json
-> {
->   "Resources": [
->     {
->       "active": true,
->       "displayName": "Eggs Ample",
->       "emails": [
->         {
->           "primary": true,
->           "type": "",
->           "value": "eggs.ample@example.com"
->         }
->       ],
->       "externalId": "",
->       "groups": [
->         {
->           "value": "f7eqriu7ht27mq5zmm63gf2dhq",
->           "ref": "https://scim.example.com/Groups/f7eqriu7ht27mq5zmm63gf2dhq"
->         }
->       ],
->       "id": "FECPUMYBHZB2PB6K4WKM4Q2HAU",
->       "meta": {
->         "created": "",
->         "lastModified": "",
->         "location": "",
->         "resourceType": "User",
->         "version": ""
->       },
->       "name": {
->         "familyName": "Ample",
->         "formatted": "Eggs Ample",
->         "givenName": "Eggs",
->         "honorificPrefix": "",
->         "honorificSuffix": "",
->         "middleName": ""
->       },
->       "schemas": [
->         "urn:ietf:params:scim:schemas:core:2.0:User"
->       ],
->       "userName": "eggs.ample@example.com"
->     },
->     ...
->   ]
-> }
-> ```
+```json
+{
+  "build": "209031",
+  "version": "2.9.3",
+  "reports": [
+    {
+      "source": "ConfirmationWatcher",
+      "time": "2024-04-25T14:06:09Z",
+      "expires": "2024-04-25T14:16:09Z",
+      "state": "healthy"
+    },
+    {
+      "source": "RedisCache",
+      "time": "2024-04-25T14:06:09Z",
+      "expires": "2024-04-25T14:16:09Z",
+      "state": "healthy"
+    },
+    {
+      "source": "SCIMServer",
+      "time": "2024-04-25T14:06:56Z",
+      "expires": "2024-04-25T14:16:56Z",
+      "state": "healthy"
+    },
+    {
+      "source": "StartProvisionWatcher",
+      "time": "2024-04-25T14:06:09Z",
+      "expires": "2024-04-25T14:16:09Z",
+      "state": "healthy"
+    }
+  ],
+  "retrievedAt": "2024-04-25T14:06:56Z"
+}
+```
 
 </details>
+<br />
 
-## 🪪 Connect your identity provider
+To view this information in a visual format, visit your SCIM bridge URL in a web browser. Sign in with your bearer token, then you can view status information and download container log files.
+
+## Connect your identity provider
 
 Use your SCIM bridge URL and bearer token to [connect your identity provider to 1Password SCIM Bridge](https://support.1password.com/scim/#step-3-connect-your-identity-provider).
 
-## Appendix
+## Update 1Password SCIM Bridge
 
 Swarm mode in Docker Engine uses a declarative service model. Services will automatically restart tasks when updating their configuration.
 
 Use the Docker context from [Prepare your desktop](#-prepare-your-desktop) to connect to your Docker host and manage your stack.
 
-### ✨ Update 1Password SCIM Bridge
-
 Update the `op-scim-bridge_scim` service with the new image tag from the [`1password/scim` repository on Docker Hub](https://hub.docker.com/r/1password/scim/tags) to update your SCIM bridge to a new version:
 
 ```sh
 docker service update op-scim-bridge_scim \
-    --image 1password/scim:v2.8.4
+    --image 1password/scim:v2.9.5
 ```
 
 > **Note**
@@ -276,28 +256,7 @@ docker service update op-scim-bridge_scim \
 
 Your SCIM bridge should automatically reboot using the specified version, typically in a few moments.
 
-### ⚙️ Customize your SCIM bridge
-
-Many SCIM bridge configuration changes can be made by adding or removing environment variables. These can be customized by making changes to [`scim.env`](./scim.env) (that can be commited to your source control) before deploying (or redeploying) your SCIM bridge using the `docker stack deploy` command. For some use cases, it may be desirable to update the configuration "on the fly" from your terminal.
-
-For example, to reboot your SCIM bridge with debug logging enabled:
-
-```sh
-docker service update op-scim-bridge_scim \
-    --env-add OP_DEBUG=1
-```
-
-To turn off debug logging and inject some colour into the logs in your console:
-
-```sh
-docker service update op-scim-bridge_scim \
-    --env-rm OP_DEBUG \
-    --env-add OP_PRETTY_LOGS=1
-```
-
-*Pretty logs pair nicely with the `--raw` parameter of the `docker service logs` command). 🤩*
-
-### 🔃 Rotate credentials
+## Rotate credentials
 
 Docker secrets are immutable and cannot be removed while in use by a Swarm service. To use new secret values in your stack, you must remove the existing secret from the service configuration, replace the Docker secret (or add a new one), and update the service configuration to mount the new secret value.
 
@@ -355,9 +314,87 @@ For example, if you regenerate credentials for the automated user provisioning i
 
 A similar process can be used to update the values for any other Docker secrets used in your configuration.
 
+## Appendix: Resource recommendations
+
+The 1Password SCIM Bridge container should be vertically scaled when provisioning a large number of users or groups. Our default resource specifications and recommended configurations for provisioning at scale are listed in the below table:
+
+| Volume    | Number of users | CPU   | memory |
+| --------- | --------------- | ----- | ------ |
+| Default   | <1,000          | 125m  | 512M   |
+| High      | 1,000–5,000     | 500m  | 1024M  |
+| Very high | >5,000          | 1000m | 1024M  |
+
+If provisioning more than 1,000 users, the resources assigned to the SCIM bridge container should be updated as recommended in the above table. The resources specified for the Redis container do not need to be adjusted.
+
+Resource configuration can be updated in place:
+
+### Default resources
+
+Resources for the SCIM bridge container are defined in [`compose.template.yaml`](https://github.com/1Password/scim-examples/blob/main/beta/docker/compose.template.yaml):
+
+```yaml
+services:
+  ...
+  scim:
+    ...
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.125"
+          memory: 512M
+        limits:
+          memory: 512M
+          ...
+```
+
+After making any changes to the Deployment resource in your cluster, you can apply the unmodified manifest to revert to the default specifications defined above:
+
+```sh
+docker stack deploy -c compose.template.yaml op-scim
+```
+
+### High volume
+
+For provisioning up to 5,000 users:
+
+```sh
+docker service update op-scim-bridge --reserve-cpu 500m --reserve-memory 1024M --limit-memory 1024M
+```
+
+### Very high volume
+
+For provisioning more than 5,000 users:
+
+```sh
+docker service update op-scim-bridge --reserve-cpu 1000m --reserve-memory 1024M --limit-memory 1024M
+```
+
+Please reach out to our [support team](https://support.1password.com/contact/) if you need help with the configuration or to tweak the values for your deployment.
+
+## Appendix: Customize your SCIM bridge
+
+Many SCIM bridge configuration changes can be made by adding or removing environment variables. These can be customized by making changes to [`scim.env`](./scim.env) (that can be commited to your source control) before deploying (or redeploying) your SCIM bridge using the `docker stack deploy` command. For some use cases, it may be desirable to update the configuration "on the fly" from your terminal.
+
+For example, to reboot your SCIM bridge with debug logging enabled:
+
+```sh
+docker service update op-scim-bridge_scim \
+    --env-add OP_DEBUG=1
+```
+
+To turn off debug logging and inject some colour into the logs in your console:
+
+```sh
+docker service update op-scim-bridge_scim \
+    --env-rm OP_DEBUG \
+    --env-add OP_PRETTY_LOGS=1
+```
+
+_Pretty logs pair nicely with the `--raw` parameter of the `docker service logs` command). 🤩_
+
 ### 🔒 Advanced TLS options
 
-Identity providers strictly require an HTTPS endpoint with a vlid TLS certificate to use for the SCIM bridge URL. SCIM Bridge includes an optional CertificateManager component that (by default) acquires and manages a TLS certificate using Let's Encrypt, and terminates TLS traffic at the SCIM bridge container using this certificate. This requires port 443 of the Docker host to be publicly accessible to ensure Let's Encrypt can initiate an inbound connection to your SCIM bridge.
+Identity providers strictly require an HTTPS endpoint with a vlid TLS certificate to use for the SCIM bridge URL. 1Password SCIM Bridge includes an optional CertificateManager component that (by default) acquires and manages a TLS certificate using Let's Encrypt, and terminates TLS traffic at the SCIM bridge container using this certificate. This requires port 443 of the Docker host to be publicly accessible to ensure Let's Encrypt can initiate an inbound connection to your SCIM bridge.
 
 Other supported options include:
 
@@ -384,3 +421,19 @@ docker stack config \
     --compose-file ./compose.tls.yaml |
         docker stack deploy --compose-file - op-scim-bridge
 ```
+
+### Custom Redis Options
+
+- `OP_REDIS_URL`: You can specify a `redis://` or `rediss://` (for TLS) URL here to point towards a different Redis host. You can then remove the sections in `docker-compose.yml` that refer to Redis to not deploy that container. Redis is still required for the SCIM bridge to function.
+
+As of 1Password SCIM Bridge `v2.8.5`, additional Redis configuration options are available. `OP_REDIS_URL` must be unset for any of these environment variables to be read. These environment variables may be especially helpful if you need support for URL-unfriendly characters in your Redis credentials. These can be set in [`compose.template.yaml`](./compose.template.yaml) at `services.scim.environment`.
+
+> **Note**  
+> `OP_REDIS_URL` must be unset, otherwise the following environment variables will be ignored.
+
+- `OP_REDIS_HOST`: overrides the default hostname of the redis server (default: `redis`). It can be either another hostname, or an IP address.
+- `OP_REDIS_PORT`: overrides the default port of the redis server connection (default: `6379`).
+- `OP_REDIS_USERNAME`: sets a username, if any, for the redis connection (default: `(null)`)
+- `OP_REDIS_PASSWORD`: Sets a password, if any, for the redis connection (default: `(null)`). Can accommodate URL-unfriendly characters that `OP_REDIS_URL` may not accommodate.
+- `OP_REDIS_ENABLE_SSL`: Optionally enforce SSL on redis server connections (default: `false`). (Boolean `0` or `1`)
+- `OP_REDIS_INSECURE_SSL`: Set whether to allow insecure SSL on redis server connections when `OP_REDIS_ENABLE_SSL` is set to `true`. This may be useful for testing or self-signed environments (default: `false`) (Boolean `0` or `1`).

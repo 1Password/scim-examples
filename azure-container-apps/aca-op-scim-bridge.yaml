@@ -1,0 +1,43 @@
+type: Microsoft.App/containerApps
+name: op-scim-bridge-con-app
+tags:
+  purpose: "1Password SCIM Bridge"
+properties:
+  configuration:
+    activeRevisionsMode: Single
+    ingress:
+      external: true
+      allowInsecure: false
+      targetPort: 3002
+      traffic:
+        - latestRevision: true
+          weight: 100
+      transport: Auto
+  template:
+    containers:
+      - image: docker.io/1password/scim:v2.9.5
+        name: op-scim-bridge
+        volumeMounts:
+          - mountPath: "/home/opuser/.op"
+            volumeName: credentials
+        resources:
+          cpu: 0.25
+          memory: 0.5Gi
+      - image: docker.io/redis
+        name: op-scim-redis
+        env:
+          - name: REDIS_ARGS
+            value: "--maxmemory 256mb --maxmemory-policy volatile-lru --save''"
+        resources:
+          cpu: 0.25
+          memory: 0.5Gi
+    scale:
+      minReplicas: 1
+      maxReplicas: 1
+    volumes:
+      - name: credentials
+        storageType: Secret
+        secrets:
+        - secretRef: scimsession
+          path: scimsession
+      

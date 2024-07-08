@@ -1,0 +1,43 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: op-scim-bridge
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
+        autoscaling.knative.dev/maxScale: "1"
+        run.googleapis.com/cpu-throttling: "false"
+        run.googleapis.com/startup-cpu-boost: "true"
+    spec:
+      containers:
+        - name: scim
+          image: 1password/scim:v2.9.5
+          ports:
+            - name: http1
+              containerPort: 3002
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          volumeMounts:
+            - name: credentials
+              mountPath: /home/opuser/.op
+        - name: redis
+          image: redis
+          args:
+            - --maxmemory 256mb
+            - --maxmemory-policy volatile-lru
+            - --save ""
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+      volumes:
+        - name: credentials
+          secret:
+            secretName: scimsession
+            items:
+              - key: latest
+                path: scimsession

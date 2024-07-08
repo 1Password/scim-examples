@@ -4,7 +4,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = ">= 4.35"
+      version = "~> 5.0"
     }
   }
 }
@@ -62,8 +62,8 @@ locals {
 
 data "aws_vpc" "this" {
   # Use the default VPC or find the VPC by name if specified
-  default = var.vpc_id == "" ? true : false
-  id      = var.vpc_id != "" ? var.vpc_id : ""
+  default = var.vpc_name == "" ? true : false
+  tags    = var.vpc_name != "" ? { Name = var.vpc_name } : {}
 }
 
 data "aws_subnets" "public" {
@@ -71,10 +71,10 @@ data "aws_subnets" "public" {
     name = "vpc-id"
     values = [data.aws_vpc.this.id]
   }
-  # Find the public subnets in the VPC
-  tags = var.vpc_id != "" ? { SubnetTier = "public" } : {}
-}
+  # Find the public subnets in the VPC, or if the default VPC, use both
+  tags = var.vpc_name != "" ? { SubnetTier = "public" } : {}
 
+}
 data "aws_iam_policy_document" "assume_role_policy" {
   statement {
     actions = ["sts:AssumeRole"]
@@ -101,7 +101,7 @@ data "aws_iam_policy_document" "scimsession" {
 data "aws_acm_certificate" "wildcard_cert" {
   count = !var.wildcard_cert ? 0 : 1
 
-  domain = local.domain
+  domain = "*.${local.domain}"
 }
 
 data "aws_route53_zone" "zone" {

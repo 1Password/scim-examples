@@ -179,7 +179,7 @@ do
 done
 
 echo " "
-echo "Using the following parameters to deploy the SCIM Bridge"
+echo "Using the following parameters to deploy the SCIM bridge"
 echo "Deployment type:" $docker_type
 echo "scimsession file path:" $scimsession_file
 echo "Domain name:" $domain_name
@@ -222,5 +222,5 @@ fi
 echo " "
 echo "Deployment of the 1Password SCIM Bridge is complete!"
 echo " "
-echo "If you have any issues deploying the SCIM Bridge, please either reach out to 1Password Business Support, or look through our helpful discussion forums: https://discussions.agilebits.com/categories/scim-bridge"
+echo "If you have any issues deploying the SCIM bridge, please either reach out to 1Password Business Support, or look through our helpful discussion forums: https://discussions.agilebits.com/categories/scim-bridge"
 echo " "

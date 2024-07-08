@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: op-scim-configmap
 data:
-  # Set this to the FQDN you've selected for your SCIM Bridge deployment
+  # Set this to the FQDN you've selected for your SCIM bridge deployment
   # this will enable the complimentary LetsEncrypt challenge server if OP_TLS_CERT_FILE and OP_TLS_KEY_FILE are not set (or valid)
   # OP_TLS_DOMAIN: ""
   # (advanced) only change the options below if you need to

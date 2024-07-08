@@ -27,5 +27,5 @@ variable "actor" {
 
 variable "bridgeAddress" {
   type        = string
-  description = "The URL of 1Password SCIM bridge."
+  description = "The URL of 1Password SCIM Bridge."
 }

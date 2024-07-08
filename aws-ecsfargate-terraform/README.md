@@ -1,23 +1,14 @@
 # Deploy 1Password SCIM Bridge on AWS Fargate with Terraform
 
-*Learn how to deploy 1Password SCIM Bridge on AWS Fargate using Terraform.*
+_Learn how to deploy 1Password SCIM Bridge on AWS Fargate using Terraform._
 
 > **Note**
 >
 > Due to the highly advanced and customizable nature of Amazon Web Services, this is only a suggested starting point. You can modify it to fit your existing infrastructure.
 
-**Table of contents:**
-
-- [Before you begin](#before-you-begin)
-- [Step 1: Configure the deployment](#step-1-configure-the-deployment)
-- [Step 2: Deploy 1Password SCIM Bridge](#step-2-deploy-1password-scim-bridge)
-- [Step 3: Connect your identity provider](#step-3-connect-your-identity-provider)
-- [Update your SCIM Bridge](#update-your-scim-bridge)
-- [Troubleshooting](#troubleshooting)
-
 ## Before you begin
 
-Before you begin, familiarize yourself with [PREPARATION.md](/PREPARATION.md) and complete the necessary steps there. Then:
+Before you begin, complete the necessary [preparation steps to deploy 1Password SCIM Bridge](/PREPARATION.md). You'll also need to:
 
 - Install [Terraform](https://www.terraform.io/downloads).
 - Have your `scimsession` file and bearer token (as seen in [PREPARATION.md](/PREPARATION.md)) ready.
@@ -140,7 +131,7 @@ You'll be asked to validate your configuration. Check it to make sure it's corre
 terraform apply "./op-scim.plan"
 ```
 
-After a few minutes, and once the DNS has updated, go to the SCIM Bridge URL you set. You should be able to enter your bearer token to verify that your SCIM bridge is up and running.
+After a few minutes, and once the DNS has updated, go to the SCIM bridge URL you set. You should be able to enter your bearer token to verify that your SCIM bridge is up and running.
 
 ## Step 3: Connect your identity provider
 
@@ -148,9 +139,9 @@ To finish setting up automated user provisioning, [connect your identity provide
 
 ---
 
-## Update your SCIM Bridge
+## Update your SCIM bridge
 
-👍 Check for 1Password SCIM Bridge updates on the [SCIM bridge release page](https://app-updates.agilebits.com/product_history/SCIM).
+👍 Check for 1Password SCIM Bridge updates on the [SCIM bridge releases notes website](https://releases.1password.com/provisioning/scim-bridge/).
 
 To update your SCIM bridge:
 
@@ -167,10 +158,10 @@ Below you can learn about some common update scenarios.
 To update your deployment to the latest version, edit the `task-definitions/scim.json` file and edit the following line:
 
 ```json
-    "image": "1password/scim:v2.8.4",
+    "image": "1password/scim:v2.9.5",
 ```
 
-Learn about the changes included in each version on the [1Password SCIM Bridge release notes page](https://app-updates.agilebits.com/product_history/SCIM).
+Learn about the changes included in each version on the [SCIM bridge releases notes website](https://releases.1password.com/provisioning/scim-bridge/).
 
 Then, reapply your Terraform settings:
 
@@ -199,7 +190,7 @@ The resource allocations for 1Password SCIM Bridge should be increased when prov
 | High      | 1,000–5,000     | 512             | 1024               | 1024     | 2048        |
 | Very high | >5,000          | 1024            | 1024               | 2048     | 4096        |
 
-If provisioning more than 1,000 users, the resources assigned to the container definition for 1Password SCIM bridge should be updated as recommended in the above table. The resource allocation specified for the Redis container does not need to be adjusted. The task definition must also be updated to allocate enough resources for both containers. Fargate task resources are constrained by AWS; the recommended configurations are the minimum resources required for both containers (see [Fargate task definition considerations: Task CPU and memory](https://docs.aws.amazon.com/AmazonECS/latest/userguide/fargate-task-defs.html#fargate-tasks-size)).
+If provisioning more than 1,000 users, the resources assigned to the container definition for 1Password SCIM Bridge should be updated as recommended in the above table. The resource allocation specified for the Redis container does not need to be adjusted. The task definition must also be updated to allocate enough resources for both containers. Fargate task resources are constrained by AWS; the recommended configurations are the minimum resources required for both containers (see [Fargate task definition considerations: Task CPU and memory](https://docs.aws.amazon.com/AmazonECS/latest/userguide/fargate-task-defs.html#fargate-tasks-size)).
 
 Resources for the SCIM bridge container are declared in [`scim.json`](https://github.com/1Password/scim-examples/blob/master/aws-ecsfargate-terraform/task-definitions/scim.json):
 
@@ -229,6 +220,54 @@ resource "aws_ecs_task_definition" "op_scim_bridge" {
 
 If you need help with the configuration, [contact 1Password Support](https://support.1password.com/contact/).
 
+## Customize Redis
+
+As of SCIM bridge `v2.8.5`, additional Redis configuration options are available. `OP_REDIS_URL` must be unset for any of these environment variables to be read. These environment variables may be especially helpful if you need support for URL-unfriendly characters in your Redis credentials.
+
+> **Note**  
+> `OP_REDIS_URL` must be unset, otherwise the following environment variables will be ignored.
+
+- `OP_REDIS_HOST`: overrides the default hostname of the redis server (default: `redis`). It can be either another hostname, or an IP address.
+- `OP_REDIS_PORT`: overrides the default port of the redis server connection (default: `6379`).
+- `OP_REDIS_USERNAME`: sets a username, if any, for the redis connection (default: `(null)`)
+- `OP_REDIS_PASSWORD`: Sets a password, if any, for the redis connection (default: `(null)`). Can accommodate URL-unfriendly characters that `OP_REDIS_URL` may not accommodate.
+- `OP_REDIS_ENABLE_SSL`: Optionally enforce SSL on redis server connections (default: `false`). (Boolean `0` or `1`)
+- `OP_REDIS_INSECURE_SSL`: Set whether to allow insecure SSL on redis server connections when `OP_REDIS_ENABLE_SSL` is set to `true`. This may be useful for testing or self-signed environments (default: `false`) (Boolean `0` or `1`).
+
+To apply these customizations, replace the following lines in [`scim.json`](./task-definitions/scim.json):
+
+```
+{
+  "name": "OP_REDIS_URL",
+  "value": "redis://localhost:6379"
+},
+```
+
+with the desired environment variables and their values, e.g.,:
+
+```
+{
+  "name": "OP_REDIS_HOST",
+  "value": "hostname"
+},
+{
+  "name": "OP_REDIS_PORT",
+  "value": "6379"
+},
+{
+  "name": "OP_REDIS_USERNAME",
+  "value": "op-redis-admin"
+},
+{
+  "name": "OP_REDIS_PASSWORD",
+  "value": "apv.zbu8wva8gwd1EFC-fake.password"
+},
+{
+  "name": "OP_REDIS_ENABLE_SSL",
+  "value": "1"
+},
+```
+
 ## Troubleshooting
 
 ### Logs
@@ -242,3 +281,27 @@ If you want to view the logs for your SCIM bridge within AWS, go to **Cloudwatch
 If you open your SCIM bridge domain in a browser and see a `Sign In With 1Password` button, the `scimsession` file was not properly installed. Due to the nature of the ECS deployment, **this “sign in” option cannot be used** to complete the setup of your SCIM bridge.
 
 To fix this, [copy the `scimsession` file](#11-copy-scimsession-file) again and stop the ECS task for your SCIM bridge. The ECS service will ensure that the task is restarted to reboot your SCIM bridge and apply the changes.
+
+#### If you can't access AWS Secrets Manager
+
+Because the `aws_security_group.service` resource creates a security group that restricts outbound traffic from the Fargate task, 1Password SCIM Bridge may only connect to the 1Password service over HTTPS on this port. If the VPC where the Fargate task is deployed hasn't been configured to support DNS resolution through the Amazon DNS server, this security group will also restrict DNS resolution.
+
+**_Example error:_**
+
+> ```sh
+> ResourceInitializationError: unable to pull secrets or registry auth: execution resource retrieval failed: unable to retrieve secret from asm: service call has been retried 5 time(s): failed to fetch secret arn:aws:secretsmanager:us-east-1:…:secret:op-scim-bridge-sercretARN from secrets manager: RequestCanceled: request context canceled caused by: context deadline exceeded. Please check your task network configuration.
+> ```
+
+To resolve this issue, enable the Amazon DNS server for the VPC where your SCIM bridge is deployed. See Learn more in the [view and update DNS attributes for your VPC documentation](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-dns.html#vpc-dns-updating). Select Enable for at least "DNS resolution" to resolve this.
+
+Alternatively, add an additional block to to the `aws_security_group.service` resource in `main.tf` to create a security group rule that enables DNS resolution. For example:
+
+```terraform
+  # Allow DNS resolution
+  egress {
+    from_port   = 53
+    to_port     = 53
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+```

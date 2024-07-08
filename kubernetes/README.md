@@ -6,24 +6,9 @@ _Learn how to deploy 1Password SCIM Bridge on a Kubernetes cluster._
 >
 > If you use Azure Kubernetes Service, learn how to [deploy the SCIM bridge there](https://support.1password.com/scim-deploy-azure/).
 
-**Table of contents:**
-
-- [Before you begin](#before-you-begin)
-- [Step 1: Create the `scimsession` Kubenetes Secret](#step-1-create-the-scimsession-kubernetes-secret)
-- [Step 2: Deploy 1Password SCIM Bridge to the Kubernetes cluster](#step-2-deploy-1password-scim-bridge-to-the-kubernetes-cluster)
-- [Step 3: Create a DNS record](#step-3-create-a-dns-record)
-- [Step 4: Configure Let's Encrypt](#step-4-configure-lets-encrypt)
-- [Step 5: Test the SCIM bridge](#step-5-test-your-scim-bridge)
-- [Step 6: Connect your identity provider](#step-6-connect-your-identity-provider)
-- [Update your SCIM Bridge](#update-your-scim-bridge)
-- [Appendix: Resource recommendations](#appendix-resource-recommendations)
-- [Appendix: Customize your deployment](#appendix-customize-your-deployment)
-
 ## Before you begin
 
-Before you begin, familiarize yourself with [PREPARATION.md](/PREPARATION.md) and complete the necessary steps there.
-
-Clone this repository and switch to this working directory:
+Before you begin, complete the necessary [preparation steps to deploy 1Password SCIM Bridge](/PREPARATION.md). Then clone this repository and switch to this working directory:
 
 ```sh
 git clone https://github.com/1Password/scim-examples.git
@@ -37,7 +22,7 @@ cd ./scim-examples/kubernetes
 - [`op-scim-service.yaml`](./op-scim-service.yaml): Public load balancer for SCIM bridge to connect with your identity provider.
 - [`redis-config.yaml`](./redis-config.yaml): Configuration for the Redis cache.
 - [`redis-deployment.yaml`](./redis-deployment.yaml): The deployment manifest for a Redis cache in the cluster.
-- [`redis-service.yaml`](./op-scim-service.yaml): Kubernetes Service for the Redis cache to enable connectivity inside the cluster.
+- [`redis-service.yaml`](./redis-service.yaml): Kubernetes Service for the Redis cache to enable connectivity inside the cluster.
 - [`google-workspace/workspace-settings.json`](./google-workspace/workspace-settings.json): a settings file template for customers integrating with Google Workspace.
 
 ## Step 1: Create the `scimsession` Kubernetes Secret
@@ -113,68 +98,57 @@ Replace `scim.example.com` with the fully qualified domain name of the DNS recor
 
 ## Step 5: Test your SCIM bridge
 
-You can test the connection to your SCIM bridge and view status and logs in a web browser at the URL based on its fully qualified domain name (for example `https://scim.example.com/`). Sign in to your SCIM bridge using the bearer token associated with the `scimsession` credentials stored as a Secret on your cluster.
-
-You can also test your SCIM bridge by sending an authenticated SCIM API request.
-
-_Example command:_
+Use your SCIM bridge URL to test the connection and view status information. For example:
 
 ```sh
-curl --header "Authorization: Bearer mF_9.B5f-4.1JqM" https://scim.example.com/Users
+curl --silent --show-error --request GET --header "Accept: application/json" \
+  --header "Authorization: Bearer mF_9.B5f-4.1JqM" \
+  https:/scim.example.com/health
 ```
 
-Copy the example command to a text editor. Replace `mF_9.B5f-4.1JqM` with your bearer token and `scim.example.com` with its fully qualified domain name.
+Replace `mF_9.B5f-4.1JqM` with your bearer token and `https://scim.example.com` with your SCIM bridge URL.
 
 <details>
-<summary>Example JSON response</summary>
+<summary>Example JSON response:</summary>
 
-> ```json
-> {
->   "Resources": [
->     {
->       "active": true,
->       "displayName": "Eggs Ample",
->       "emails": [
->         {
->           "primary": true,
->           "type": "",
->           "value": "eggs.ample@example.com"
->         }
->       ],
->       "externalId": "",
->       "groups": [
->         {
->           "value": "f7eqriu7ht27mq5zmm63gf2dhq",
->           "ref": "https://scim.example.com/Groups/f7eqriu7ht27mq5zmm63gf2dhq"
->         }
->       ],
->       "id": "FECPUMYBHZB2PB6K4WKM4Q2HAU",
->       "meta": {
->         "created": "",
->         "lastModified": "",
->         "location": "",
->         "resourceType": "User",
->         "version": ""
->       },
->       "name": {
->         "familyName": "Ample",
->         "formatted": "Eggs Ample",
->         "givenName": "Eggs",
->         "honorificPrefix": "",
->         "honorificSuffix": "",
->         "middleName": ""
->       },
->       "schemas": [
->         "urn:ietf:params:scim:schemas:core:2.0:User"
->       ],
->       "userName": "eggs.ample@example.com"
->     },
->     ...
->   ]
-> }
-> ```
+```json
+{
+  "build": "209031",
+  "version": "2.9.3",
+  "reports": [
+    {
+      "source": "ConfirmationWatcher",
+      "time": "2024-04-25T14:06:09Z",
+      "expires": "2024-04-25T14:16:09Z",
+      "state": "healthy"
+    },
+    {
+      "source": "RedisCache",
+      "time": "2024-04-25T14:06:09Z",
+      "expires": "2024-04-25T14:16:09Z",
+      "state": "healthy"
+    },
+    {
+      "source": "SCIMServer",
+      "time": "2024-04-25T14:06:56Z",
+      "expires": "2024-04-25T14:16:56Z",
+      "state": "healthy"
+    },
+    {
+      "source": "StartProvisionWatcher",
+      "time": "2024-04-25T14:06:09Z",
+      "expires": "2024-04-25T14:16:09Z",
+      "state": "healthy"
+    }
+  ],
+  "retrievedAt": "2024-04-25T14:06:56Z"
+}
+```
 
 </details>
+<br />
+
+To view this information in a visual format, visit your SCIM bridge URL in a web browser. Sign in with your bearer token, then you can view status information and download container log files.
 
 ## Step 6: Connect your identity provider
 
@@ -185,13 +159,12 @@ To finish setting up automated user provisioning, [connect your identity provide
 To update SCIM bridge, connect to your Kubernetes cluster and run the following command:
 
 ```sh
-kubectl set image deploy/op-scim-bridge op-scim-bridge=1password/scim:v2.8.4
+kubectl set image deploy/op-scim-bridge op-scim-bridge=1password/scim:v2.9.5
 ```
 
 > **Note**
 >
-> You can find details about the changes in each release of 1Password SCIM Bridge on our [Release
-> Notes](https://app-updates.agilebits.com/product_history/SCIM) page. The most recent version should be pinned in the
+> You can find details about the changes on the [SCIM bridge releases notes website](https://releases.1password.com/provisioning/scim-bridge/). The most recent version should be pinned in the
 > [`op-scim-deployment.yaml`](./op-scim-deployment.yaml) file (and in the command above in this file) in the main
 > branch of this repository.
 
@@ -204,15 +177,14 @@ If you regenenerate credentials for your SCIM bridge:
 1. Download the new `scimsession` file from your 1Password account.
 2. Delete the `scimsession` Secret on your cluster and recreate it from the new file:
 
-   ```sh
-   kubectl delete secret scimsession
-   kubectl create secret generic scimsession --from-file=scimsession=./scimsession
-   ```
+    ```sh
+    kubectl delete secret scimsession
+    kubectl create secret generic scimsession --from-file=scimsession=./scimsession
+    ```
 
    Kubernetes automatically updates the credentials file mounted in the Pod with the new Secret value.
-
-3. Test your SCIM bridge using the new bearer token associated with the regenerated `scimsession` file.
-4. Update your identity provider configuration with the new bearer token.
+3. [Test your SCIM bridge](#step-5-test-your-scim-bridge) using the new bearer token associated with the regenerated `scimsession` file.
+4. Update your identity provider configuration with your new bearer token.
 
 ## Appendix: Resource recommendations
 
@@ -344,6 +316,46 @@ kubectl delete \
   --filename=redis-service.yaml
 ```
 
+### Advanced Redis configuration
+
+If you are using an external Redis cache with your SCIM bridge and need additional configuration options, you can use the following environment variables in place of `OP_REDIS_URL`. These environment variables may be especially helpful if you need support for URL-unfriendly characters in your Redis credentials. `OP_REDIS_URL` must be unset, otherwise the following environment variables will be ignored.
+
+These values can be set in [`op-scim-config.yaml`](./op-scim-config.yaml)
+
+> **Note**
+>
+> If `OP_REDIS_URL` has any value, the environment variables below are ignored.
+
+- `OP_REDIS_HOST`: overrides the default hostname of the redis server (default: `redis`). It can be either another hostname, or an IP address.
+- `OP_REDIS_PORT`: overrides the default port of the redis server connection (default: `6379`).
+- `OP_REDIS_USERNAME`: sets a username, if any, for the redis connection (default: `(null)`).
+- `OP_REDIS_PASSWORD`: Sets a password, if any, for the redis connection (default: `(null)`). Can accommodate URL-unfriendly characters that `OP_REDIS_URL` may not accommodate.
+- `OP_REDIS_ENABLE_SSL`: Optionally enforce SSL on redis server connections (default: `false`) (Boolean `0` or `1`).
+- `OP_REDIS_INSECURE_SSL`: Set whether to allow insecure SSL on redis server connections when `OP_REDIS_ENABLE_SSL` is set to `true`. This may be useful for testing or self-signed environments (default: `false`) (Boolean `0` or `1`).
+
+#### If you already deployd your SCIM bridge
+
+You can unset `OP_REDIS_URL` and set any of the above environment variables directly to reboot SCIM bridge and connect to the specified Redis server:
+
+_Example command:_
+
+```sh
+kubectl set env deploy/op-scim-bridge OP_REDIS_URL="" \
+OP_REDIS_HOST="hostname" \
+OP_REDIS_USERNAME="sherlock_admin" \
+OP_REDIS_PASSWORD="apv.zbu8wva8gwd1EFC-fake.p@ssw0rd" \
+OP_SSL_ENABLED="0"
+```
+
+Delete the cluster resources for Redis, if required:
+
+```sh
+kubectl delete \
+  --filename=redis-config.yaml \
+  --filename=redis-deployment.yaml \
+  --filename=redis-service.yaml
+```
+
 ### Colorful logs
 
 Set `OP_PRETTY_LOGS` to `1` to colorize container logs.
@@ -399,5 +411,5 @@ When cluster resources are updated in place, Kubernetes will create a new revisi
 If there are enough resources in the cluster available to schedule the new Pod revision, you can restart the Deployment to evict the existing Pod, free up the resources, and allow the new Pod to start:
 
 ```sh
-kubectl rollout restart deployment/op-scim-bridge 
+kubectl rollout restart deployment/op-scim-bridge
 ```
