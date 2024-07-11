@@ -426,11 +426,6 @@ Resources:
     Properties:
       SubnetId: !Ref SubnetPriv2
       RouteTableId: !Ref RouteTablePriv2
-
-  TestSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: "foobar"
 Outputs:
   ScimUrl:
     Description: The URL of your SCIM bridge
