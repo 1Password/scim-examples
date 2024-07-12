@@ -74,7 +74,7 @@ The Cloud Run service for the SCIM bridge will be configured to mount volume usi
     ```sh
     gcloud secrets add-iam-policy-binding scimsession --member=serviceAccount:$(
       gcloud iam service-accounts list --filter="$(
-        gcloud projects list --filter='lifecycleState:ACTIVE' --format='value(projectNumber)'
+        gcloud projects describe $(gcloud config get-value project) --format='value(projectNumber)'
       )-compute@developer.gserviceaccount.com" --format="value(email)"
     ) --role=roles/secretmanager.secretAccessor
     ```
