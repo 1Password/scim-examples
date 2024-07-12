@@ -217,7 +217,7 @@ Resources:
       AutoMinorVersionUpgrade: true
       SnapshotRetentionLimit: 1
       SnapshotWindow: 13:00-14:00
-      VpcSecurityGroupIds: [!GetAtt VPC.DefaultSecurityGroup]
+      VpcSecurityGroupIds: [!Ref ElasticacheSecurityGroup]
   VPC:
     Type: AWS::EC2::VPC
     Properties:
@@ -310,6 +310,8 @@ Resources:
   VpcConnector:
     Type: AWS::AppRunner::VpcConnector
     Properties:
+      SecurityGroups:
+           - !Ref ServiceSecurityGroup
       Subnets:
         - !Ref SubnetPriv1
         - !Ref SubnetPriv2
@@ -426,6 +428,36 @@ Resources:
     Properties:
       SubnetId: !Ref SubnetPriv2
       RouteTableId: !Ref RouteTablePriv2
+  ServiceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+        GroupDescription: "Service security group"
+        VpcId: !Ref VPC
+        SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+  
+  ServiceSecurityEgress1:
+    Type: AWS::EC2::SecurityGroupEgress
+    Properties:
+      GroupId: !Ref ServiceSecurityGroup
+      IpProtocol: tcp
+      FromPort: 6379
+      ToPort: 6379
+      DestinationSecurityGroupId: !Ref ElasticacheSecurityGroup
+      
+  ElasticacheSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+         GroupDescription: "Elasticache Security Group"
+         VpcId: !Ref VPC
+         SecurityGroupIngress:
+              - IpProtocol: tcp
+                FromPort: 6379
+                ToPort: 6379
+                SourceSecurityGroupId: !Ref ServiceSecurityGroup
 Outputs:
   ScimUrl:
     Description: The URL of your SCIM bridge
