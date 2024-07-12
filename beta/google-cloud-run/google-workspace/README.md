@@ -14,14 +14,19 @@ This directory includes [a template JSON file](./workspace-settings.json) used t
 ## Step 1: Create a secret for Workspace credentials
 
 1. Sign in to the Google Cloud console and activate Cloud Shell: <https://console.cloud.google.com?cloudshell=true>
-2. Enable the Admin SDK API, create a service account named `onepassword-provisioning` and a secret named `workspace-credentials`, and add a secret version from a private key for the service account:
+2. Enable the Admin SDK API, create a service account named `onepassword-provisioning` and a secret named `workspace-credentials`, add a secret version from a private key for the service account, and enable Cloud Run to access it using the Compute Engine default service account for the project:
 
     ```sh
     gcloud services enable admin.googleapis.com &&
       gcloud secrets create workspace-credentials &&
       gcloud iam service-accounts keys create - --iam-account=$(
         gcloud iam service-accounts create onepassword-provisioning --format='value(email)'
-      ) | gcloud secrets versions add workspace-credentials --data-file=-
+      ) | gcloud secrets versions add workspace-credentials --data-file=- &&
+      gcloud secrets add-iam-policy-binding workspace-credentials --member=serviceAccount:$(
+        gcloud iam service-accounts list --filter="$(
+          gcloud projects describe $(gcloud config get-value project) --format='value(projectNumber)'
+        )-compute@developer.gserviceaccount.com" --format="value(email)"
+      ) --role=roles/secretmanager.secretAccessor
     ```
 
 3. Get the client ID of the service account:
@@ -32,10 +37,10 @@ This directory includes [a template JSON file](./workspace-settings.json) used t
 
     Copy the client ID returned by this command to use in the next step.
 4. In a separate browser tab or window, open the domain-wide delegation setup in the Workspace console: <https://admin.google.com/ac/owl/domainwidedelegation>. Click **Add new**, then fill out the information:
-    - **Client ID**: paste the client ID for the service account key that is output by the last command.
-    - **OAuth scopes**: paste this comma-separated list:
+    - **Client ID**: paste the client ID for the service account key copied to your clipboard in the previous step.
+    - **OAuth scopes**: copy and paste this comma-separated list:
 
-      ```sh
+      ```text
       https://www.googleapis.com/auth/admin.directory.user.readonly, https://www.googleapis.com/auth/admin.directory.group.readonly, https://www.googleapis.com/auth/admin.directory.group.member.readonly, https://www.googleapis.com/auth/admin.reports.audit.readonly
       ```
 
@@ -57,10 +62,28 @@ In the Cloud Console:
 1. Click **⋮** _(More)_ > **Upload** in the Cloud Shell terminal menu bar.
 2. Click **Choose Files**. Select the `workspace-settings.json` file that you saved to your computer.
 3. Use the destination directory as is (or note the path if you saved it elsewhere). Click **Upload**.
-4. Create the secret using the following command (replace `$HOME/workspace-settings.json` with the appropriate path if you saved it elsewhere):
+4. Create a secret from the file:
 
     ```sh
-    gcloud secrets create workspace-settings --data-file=$HOME/workspace-settings.json
+    gcloud secrets create workspace-settings --data-file=$HOME/workspace-settings.json &&
+    ```
+
+> [!TIP]
+> If the file was not saved using the suggested values, replace `$HOME/workspace-settings.json` with the actual path to
+> the file. For example:
+>
+> ```sh
+> gcloud secrets create workspace-settings --data-file=/example/path/to/workspace-settings.file
+> ```
+
+5. Enable Cloud Run to access the secret using the Compute Engine default service account for the project:
+
+    ```sh
+    gcloud secrets add-iam-policy-binding workspace-settings --member=serviceAccount:$(
+      gcloud iam service-accounts list --filter="$(
+        gcloud projects describe $(gcloud config get-value project) --format='value(projectNumber)'
+      )-compute@developer.gserviceaccount.com" --format="value(email)"
+    ) --role=roles/secretmanager.secretAccessor
     ```
 
 ## Step 4: Redeploy your SCIM bridge to connect to Workspace

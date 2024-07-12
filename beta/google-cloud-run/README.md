@@ -52,10 +52,7 @@ The Cloud Run service for the SCIM bridge will be configured to mount volume usi
 
 1. Click **⋮** _(More)_ > **Upload** in the Cloud Shell terminal menu bar.
 2. Click **Choose Files**. Select the `scimsession` file that you saved to your computer.
-3. Use the suggested destination directory. Click **Upload**.
-> [!NOTE]
-> If the file is saved to a different directory or using a different file name, make a note of the full path to
-> the file.
+3. Use the suggested destination directory. Click **Upload**. If you saved it elsewhere or used a different file name, make a note of the full path to the file.
 4. Create a secret with the contents of this file as its first secret version:
 
     ```sh
@@ -63,9 +60,8 @@ The Cloud Run service for the SCIM bridge will be configured to mount volume usi
     ```
 
 > [!TIP]
-> The command above is expected work as is if the file is named `scimsession` and if it was saved to the home
-> directory when uploading the file. If not, replace `$HOME/scimsession` with the actual path to the file. For
-> example:
+> If the file was not saved using the above suggested values, replace `$HOME/scimsession` with the actual path to the
+> file. For example:
 >
 > ```sh
 > gcloud secrets create scimsession --data-file=/example/path/to/scimsession.file
