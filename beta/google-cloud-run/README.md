@@ -19,14 +19,16 @@ Complete the necessary [preparation steps to deploy 1Password SCIM Bridge](/PREP
 2. Create a [project](https://cloud.google.com/docs/overview#projects) to organize the Google Cloud resources for your 1Password SCIM Bridge deployment, and set it as the default project for your Cloud Shell environment:
 
     ```sh
-    gcloud projects create op-scim-bridge --set-as-default
+    gcloud projects create --name "1Password SCIM Bridge" --set-as-default
     ```
 
+    Use the suggested project ID.
+
 > [!TIP]
-> If you have already created a project for your SCIM bridge, set it as the default project for this Cloud Shell session. For example:
+> If you have already created a project for your SCIM bridge, set its ID as the default project for this Cloud Shell session. For example:
 >
 > ```sh
-> gcloud config set project op-scim-bridge
+> gcloud config set project op-scim-bridge-1234
 > ```
 
 3. Enable the Secret Manager and Cloud Run APIs for your project:
@@ -50,20 +52,16 @@ The Cloud Run service for the SCIM bridge will be configured to mount volume usi
 
 1. Click **⋮** _(More)_ > **Upload** in the Cloud Shell terminal menu bar.
 2. Click **Choose Files**. Select the `scimsession` file that you saved to your computer.
-3. Use the suggested destination directory. Click **Upload**.
-> [!NOTE]
-> If the file is saved to a different directory or using a different file name, make a note of the full path to
-> the file.
-4. Create a secret with the contents of this file as its first secret version using the following command:
+3. Use the suggested destination directory. Click **Upload**. If you saved it elsewhere or used a different file name, make a note of the full path to the file.
+4. Create a secret with the contents of this file as its first secret version:
 
     ```sh
     gcloud secrets create scimsession --data-file=$HOME/scimsession
     ```
 
 > [!TIP]
-> The command above is expected work as is if the file is named `scimsession` and if it was saved to the home
-> directory when uploading the file. If not, replace `$HOME/scimsession` with the actual path to the file. For
-> example:
+> If the file was not saved using the above suggested values, replace `$HOME/scimsession` with the actual path to the
+> file. For example:
 >
 > ```sh
 > gcloud secrets create scimsession --data-file=/example/path/to/scimsession.file
@@ -74,14 +72,14 @@ The Cloud Run service for the SCIM bridge will be configured to mount volume usi
     ```sh
     gcloud secrets add-iam-policy-binding scimsession --member=serviceAccount:$(
       gcloud iam service-accounts list --filter="$(
-        gcloud projects describe op-scim-bridge --format="value(projectNumber)"
+        gcloud projects describe $(gcloud config get-value project) --format='value(projectNumber)'
       )-compute@developer.gserviceaccount.com" --format="value(email)"
     ) --role=roles/secretmanager.secretAccessor
     ```
 
 ## Step 3: Deploy your SCIM bridge
 
-Run this command to stream [`op-scim-bridge.yaml`](./op-scim-bridge.yaml) Cloud Run service YAML from this repository, use it to deploy 1Password SCIM Bridge inline, and enable public ingress for your SCIM bridge so that you and your identity provider can connect to its public endpoint:
+Stream the [`op-scim-bridge.yaml`](./op-scim-bridge.yaml) Cloud Run service YAML from this repository, use it to deploy 1Password SCIM Bridge inline, and enable public ingress for your SCIM bridge so that you and your identity provider can connect to its public endpoint:
 
 ```sh
 curl --silent --show-error \
