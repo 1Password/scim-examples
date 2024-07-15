@@ -156,6 +156,7 @@ Resources:
 
   ECSCluster:
     Type: "AWS::ECS::Cluster"
+    DependsOn: ExecutionRole
     Properties:
       CapacityProviders:
         - FARGATE
