@@ -21,7 +21,7 @@ The included template can be used to deploy 1Password SCIM Bridge as a [stack](h
 - An ElastiCache cluster
 - 2 security groups to restrict traffic to and from the service and the ElastiCache cluster, respectively
 - AWS Secrets Manager secrets to store credentials and configuration for your SCIM bridge
-- required IAM roles
+- required IAM role
 
 This template is a working example to be used as a base for your SCIM bridge deployment and may need to be customized to meet your specific requirements.
 
