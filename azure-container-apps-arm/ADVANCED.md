@@ -17,7 +17,7 @@ The pod for 1Password SCIM Bridge should be vertically scaled if you provision a
 | --------- | --------------- | ----- | ------ |
 | Default   | <1,000          | 0.25  | 0.5Gi  |
 | High      | 1,000–5,000     | 0.5   | 1.0Gi  |
-| Very high | >5,000          | 1.0   | 1.0Gi  |
+| Very high | >5,000          | 1.0   | 2.0Gi  |
 
 If you're provisioning more than 1,000 users, update the resources assigned to the SCIM bridge container to follow these recommendations. The resources specified for the Redis container don't need to be adjusted.
 
@@ -66,7 +66,7 @@ To update the high-volume within the Azure Portal:
 If you're provisioning more than 5,000 users, run the following command:
 
 ```bash
-az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge --cpu 1.0 --memory 1.0Gi
+az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge --cpu 1.0 --memory 2.0Gi
 ```
 
 To update the very high-volume within the Azure Portal: 
@@ -74,7 +74,7 @@ To update the very high-volume within the Azure Portal:
 1. Within Container App from the [Azure Container Apps Portal](https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/Microsoft.App%2FcontainerApps), select **Containers** from the sidebar.
 2. Click **Edit and deploy**.
 3. Select the checkbox next to your **op-scim-bridge** container, then choose **Edit**.
-4. Set the **CPU cores** to `1.0` and the **Memory (Gi)** to `1.0`.
+4. Set the **CPU cores** to `1.0` and the **Memory (Gi)** to `2.0`.
 5. Click **Save**, then click **Create**.
 </details>
 
