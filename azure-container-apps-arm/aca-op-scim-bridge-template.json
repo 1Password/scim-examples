@@ -56,6 +56,20 @@
             "metadata": {
                 "description": "The expected volume of provisioning activity. Use base for provisioning less than 1,000 users, high for up to 5,000 users, or very-high for more than 5,000 users."
             }
+        },
+        "workspaceActor": {
+            "defaultValue": "",
+            "type": "SecureString",
+            "metadata": {
+                "description": "Google Workspace actor. Only fill this field if you are using Google Workspace as your identity provider."
+            }
+        },
+        "workspaceCredentials": {
+            "defaultValue": "",
+            "type": "SecureString",
+            "metadata": {
+                "description": "Google Workspace service account key. Only fill this field if you are using Google Workspace as your identity provider."
+            }
         }
     },
     "resources": [
@@ -160,6 +174,75 @@
                         {
                             "name": "credentials",
                             "storageType": "Secret"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "apiVersion": "2020-06-01",
+            "type": "Microsoft.Resources/deployments",
+            "name": "updateConApp",
+            "dependsOn": [
+                "[resourceId('Microsoft.App/containerApps', parameters('containerAppName'))]"
+            ],
+            "condition": "[not(or(empty(parameters('workspaceActor')), empty(parameters('workspaceCredentials'))))]",
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {},
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.1",
+                    "resources": [
+                        {
+                            "apiVersion": "2023-05-01",
+                            "name": "[parameters('containerAppName')]",
+                            "location": "[resourceGroup().location]",
+                            "type": "Microsoft.App/containerApps",
+                            "properties": {
+                                "managedEnvironmentId": "[reference(parameters('containerAppName')).managedEnvironmentId]",
+                                "configuration": {
+                                    "secrets": [
+                                        {
+                                            "name": "scimsession",
+                                            "value": "[parameters('scimsession')]"
+                                        },
+                                        {
+                                            "name": "workspace-credentials",
+                                            "value": "[parameters('workspaceCredentials')]"
+                                        },
+                                        {
+                                            "name": "workspace-settings",
+                                            "value": "[string(createObject('actor', parameters('workspaceActor'), 'bridgeAddress', concat('https://', reference(parameters('containerAppName')).configuration.ingress.fqdn)))]"
+                                        }
+                                    ],
+                                    "activeRevisionsMode": "[reference(parameters('containerAppName')).configuration.activeRevisionsMode]",
+                                    "ingress": "[reference(parameters('containerAppName')).configuration.ingress]"
+                                },
+                                "template": {
+                                    "containers": "[reference(parameters('containerAppName')).template.containers]",
+                                    "volumes": [
+                                        {
+                                            "name": "[reference(parameters('containerAppName')).template.volumes[0].name]",
+                                            "storageType": "[reference(parameters('containerAppName')).template.volumes[0].storageType]",
+                                            "secrets": [
+                                                {
+                                                    "secretRef": "scimsession",
+                                                    "path": "scimsession"
+                                                },
+                                                {
+                                                    "secretRef": "workspace-credentials",
+                                                    "path": "workspace-credentials.json"
+                                                },
+                                                {
+                                                    "secretRef": "workspace-settings",
+                                                    "path": "workspace-settings.json"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
                         }
                     ]
                 }

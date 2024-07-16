@@ -19,7 +19,7 @@ If you are using Google Workspace as your identity provider, follow [step 1](htt
 > If you don't have an Azure account, you can sign up for a free trial with starting credit: https://azure.microsoft.com/free/
 
 ## Step 1: Download the template file
-1. Download the [ARM(Azure Resource Manager) template](./aca-op-scim-bridge-template.json) file using the download icon at the top right. If your identity provider is Google Workspace, download the [ARM template for Google Workspace](./google-workspace/aca-gw-op-scim-bridge-template.json) instead.
+1. Download the [ARM(Azure Resource Manager) template](./aca-op-scim-bridge-template.json) file using the download icon at the top right.
 
 ## Step 2: Create the Container App
 
@@ -34,8 +34,10 @@ If you are using Google Workspace as your identity provider, follow [step 1](htt
    - **Container App Env Name**: Enter a name you'd like to use, default will be `op-scim-con-app-env`.
    - **Container App Log Analytics Name**: Enter a name you'd like to use, default will be `op-scim-con-app-env`.
    - **Scimsession** : Paste the entire contents of the `scimession` file.
-   - **Workspace Actor** *(Only if you are using Google Workspace as your identity provider)*: Enter the email address of a Google Workspace administrator for the service account.
-   - **Workspace Credentials** *(Only if you are using Google Workspace as your identity provider)*: Paste the entire contents of the json key file you downloaded in the [before you begin](#before-you-begin) section.
+   - **Workspace Actor** *(Only if you are using Google Workspace as your identity provider)*: Enter the email address of a Google Workspace administrator for the service account. If you are not using Google Workspace as your identity provider, leave this field blank.
+   - **Workspace Credentials** *(Only if you are using Google Workspace as your identity provider)*: Paste the entire contents of the json key file you downloaded in the [before you begin](#before-you-begin) section. If you are not using Google Workspace as your identity provider, leave this field blank.
+> [!IMPORTANT]
+> If you are not using Google Workspace as your identity provider, leave `Workspace Actor` and `Workspace Credential` fields blank.
 3. Click **Review + create**.
 4. Once the validation succeeds, click **Create**. It will take a couple of minutes to run the deployment.
 
