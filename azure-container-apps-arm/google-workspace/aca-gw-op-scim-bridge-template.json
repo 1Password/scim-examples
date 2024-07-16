@@ -1,0 +1,249 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "variables": {
+        "resourceSettings": {
+            "base": {
+                "cpu": "0.25",
+                "memory": "0.5Gi"
+            },
+            "high": {
+                "cpu": "0.5",
+                "memory": "1Gi"
+            },
+            "very high": {
+                "cpu": "1",
+                "memory": "2Gi"
+            }
+        }
+    },
+    "parameters": {
+        "containerAppName": {
+            "defaultValue": "op-scim-con-app",
+            "type": "String",
+            "metadata": {
+                "description": "The name of the container app."
+            }
+        },
+        "containerAppEnvName": {
+            "defaultValue": "op-scim-con-app-env",
+            "type": "String",
+            "metadata": {
+                "description": "The name of the container app environment."
+            }
+        },
+        "logAnalyticsWorkspaceName": {
+            "defaultValue": "op-scim-con-app-log-analytics",
+            "type": "String",
+            "metadata": {
+                "description": "The name of the log analytics workspace."
+            }
+        },
+        "scimsession": {
+            "type": "SecureString",
+            "metadata": {
+                "description": "The content of your scimsession file in plain text"
+            }
+        },
+        "provisioningVolume": {
+            "defaultValue": "base",
+            "type": "String",
+            "allowedValues": [
+                "base",
+                "high",
+                "very high"
+            ],
+            "metadata": {
+                "description": "The expected volume of provisioning activity. Use base for provisioning less than 1,000 users, high for up to 5,000 users, or very-high for more than 5,000 users."
+            }
+        },
+        "workspaceActor": {
+            "type": "SecureString",
+            "metadata": {
+                "description": "Google Workspace actor"
+            }
+        },
+        "workspaceCredentials": {
+            "type": "SecureString",
+            "metadata": {
+                "description": "Google Workspace service account key"
+            }
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.OperationalInsights/workspaces",
+            "apiVersion": "2022-10-01",
+            "name": "[parameters('logAnalyticsWorkspaceName')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "sku": {
+                    "name": "PerGB2018"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.App/managedEnvironments",
+            "apiVersion": "2023-05-01",
+            "name": "[parameters('containerAppEnvName')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName'))]"
+            ],
+            "sku": {
+                "name": "Consumption"
+            },
+            "properties": {
+                "appLogsConfiguration": {
+                    "destination": "log-analytics",
+                    "logAnalyticsConfiguration": {
+                        "customerId": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName'))).customerId]",
+                        "sharedKey": "[listKeys(resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName')), '2022-10-01').primarySharedKey]"
+                    }
+                },
+                "zoneRedundant": false
+            }
+        },
+        {
+            "type": "Microsoft.App/containerApps",
+            "apiVersion": "2023-05-01",
+            "name": "[parameters('containerAppName')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.App/managedEnvironments', parameters('containerAppEnvName'))]"
+            ],
+            "tags": {
+                "purpose": "1Password SCIM Bridge"
+            },
+            "properties": {
+                "managedEnvironmentId": "[resourceId('Microsoft.App/managedEnvironments', parameters('containerAppEnvName'))]",
+                "configuration": {
+                    "secrets": [
+                        {
+                            "name": "scimsession",
+                            "value": "[parameters('scimsession')]"
+                        }
+                    ],
+                    "activeRevisionsMode": "Single",
+                    "ingress": {
+                        "external": true,
+                        "targetPort": 3002,
+                        "allowInsecure": false,
+                        "traffic": [
+                            {
+                                "latestRevision": true,
+                                "weight": 100
+                            }
+                        ]
+                    }
+                },
+                "template": {
+                    "containers": [
+                        {
+                            "image": "docker.io/1password/scim:v2.9.5",
+                            "name": "op-scim-bridge",
+                            "resources": {
+                                "cpu": "[variables('resourceSettings')[parameters('provisioningVolume')].cpu]",
+                                "memory": "[variables('resourceSettings')[parameters('provisioningVolume')].memory]"
+                            },
+                            "volumeMounts": [
+                                {
+                                    "mountPath": "/home/opuser/.op",
+                                    "volumeName": "credentials"
+                                }
+                            ]
+                        },
+                        {
+                            "image": "docker.io/redis",
+                            "name": "op-scim-redis",
+                            "env": [
+                                {
+                                    "name": "REDIS_ARGS",
+                                    "value": "--maxmemory 256mb --maxmemory-policy volatile-lru --save''"
+                                }
+                            ],
+                            "resources": {
+                                "cpu": 0.25,
+                                "memory": "0.5Gi"
+                            }
+                        }
+                    ],
+                    "volumes": [
+                        {
+                            "name": "credentials",
+                            "storageType": "Secret"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "apiVersion": "2020-06-01",
+            "type": "Microsoft.Resources/deployments",
+            "name": "updateConApp",
+            "dependsOn": [
+                "[resourceId('Microsoft.App/containerApps', parameters('containerAppName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {},
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.1",
+                    "resources": [
+                        {
+                            "apiVersion": "2023-05-01",
+                            "name": "[parameters('containerAppName')]",
+                            "location": "[resourceGroup().location]",
+                            "type": "Microsoft.App/containerApps",
+                            "properties": {
+                                "managedEnvironmentId": "[reference(parameters('containerAppName')).managedEnvironmentId]",
+                                "configuration": {
+                                    "secrets": [
+                                        {
+                                            "name": "scimsession",
+                                            "value": "[parameters('scimsession')]"
+                                        },
+                                        {
+                                            "name": "workspace-credentials",
+                                            "value": "[parameters('workspaceCredentials')]"
+                                        },
+                                        {
+                                            "name": "workspace-settings",
+                                            "value": "[string(createObject('actor', parameters('workspaceActor'), 'bridgeAddress', concat('https://', reference(parameters('containerAppName')).configuration.ingress.fqdn)))]"
+                                        }
+                                    ],
+                                    "activeRevisionsMode": "[reference(parameters('containerAppName')).configuration.activeRevisionsMode]",
+                                    "ingress": "[reference(parameters('containerAppName')).configuration.ingress]"
+                                },
+                                "template": {
+                                    "containers": "[reference(parameters('containerAppName')).template.containers]",
+                                    "volumes": [
+                                        {
+                                            "name": "[reference(parameters('containerAppName')).template.volumes[0].name]",
+                                            "storageType": "[reference(parameters('containerAppName')).template.volumes[0].storageType]",
+                                            "secrets": [
+                                                {
+                                                    "secretRef": "scimsession",
+                                                    "path": "scimsession"
+                                                },
+                                                {
+                                                    "secretRef": "workspace-credentials",
+                                                    "path": "workspace-credentials.json"
+                                                },
+                                                {
+                                                    "secretRef": "workspace-settings",
+                                                    "path": "workspace-settings.json"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}
