@@ -39,7 +39,7 @@ If you are using Google Workspace as your identity provider, follow [step 1](htt
 > [!IMPORTANT]
 > If you are not using Google Workspace as your identity provider, leave `Workspace Actor` and `Workspace Credential` fields blank.
 3. Click **Review + create**.
-4. Once the validation succeeds, click **Create**. It will take a couple of minutes to run the deployment.
+4. Once the validation succeeds, click **Create**. It is expected to take a couple of minutes to complete the deployment.
 
 
 ## Step 3: Test your SCIM bridge
