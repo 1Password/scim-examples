@@ -43,7 +43,7 @@ If you are using Google Workspace as your identity provider, follow [step 1](htt
 
 
 ## Step 3: Test your SCIM bridge
-Once your deployment is complete, click **Go to resource group** and click on the Container App you created.
+Once your deployment is complete, click **Go to resource group** and click on the container app you created.
 
 To test if your SCIM bridge is online, choose **Overview** in your application's sidebar, then click your **Application Url** link. This is your **SCIM bridge URL**. Sign in using your bearer token to verify that your SCIM bridge is connected to your 1Password account.
 
