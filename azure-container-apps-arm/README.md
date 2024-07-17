@@ -37,7 +37,7 @@ If you are using Google Workspace as your identity provider, follow [step 1](htt
    - **Workspace Actor** *(Only if you are using Google Workspace as your identity provider)*: Enter the email address of a Google Workspace administrator for the service account. If you are not using Google Workspace as your identity provider, leave this field blank.
    - **Workspace Credentials** *(Only if you are using Google Workspace as your identity provider)*: Paste the entire contents of the json key file you downloaded in the [before you begin](#before-you-begin) section. If you are not using Google Workspace as your identity provider, leave this field blank.
 > [!IMPORTANT]
-> If you are not using Google Workspace as your identity provider, leave `Workspace Actor` and `Workspace Credential` fields blank.
+> The optional `Workspace Actor` and `Workspace Credentials` fields should only be filled if integrating with Google Workspace for automated provisioning.
 3. Click **Review + create**.
 4. Once the validation succeeds, click **Create**. It is expected to take a couple of minutes to complete the deployment.
 
