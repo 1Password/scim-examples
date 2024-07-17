@@ -49,12 +49,12 @@
             "defaultValue": "base",
             "type": "String",
             "allowedValues": [
-                "base",
-                "high",
-                "very high"
+                "base (<1,000 users)",
+                "high (1,000–5,000 users)",
+                "very high (>5,000 users)"
             ],
             "metadata": {
-                "description": "The expected volume of provisioning activity. Use base for provisioning less than 1,000 users, high for up to 5,000 users, or very-high for more than 5,000 users."
+                "description": "Expected volume of user provisioning (used to configure appropriate container resources)."
             }
         },
         "workspaceActor": {
