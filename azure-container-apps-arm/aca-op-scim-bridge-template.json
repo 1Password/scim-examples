@@ -158,11 +158,10 @@
                         {
                             "image": "docker.io/redis",
                             "name": "op-scim-redis",
-                            "env": [
-                                {
-                                    "name": "REDIS_ARGS",
-                                    "value": "--maxmemory 256mb --maxmemory-policy volatile-lru --save''"
-                                }
+                            "args": [
+                                "--maxmemory 256mb",
+                                "--maxmemory-policy volatile-lru"
+                                "--save \"\""
                             ],
                             "resources": {
                                 "cpu": 0.25,
