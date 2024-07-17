@@ -3,15 +3,15 @@
     "contentVersion": "1.0.0.0",
     "variables": {
         "resourceSettings": {
-            "base": {
+            "base (<1,000 users)": {
                 "cpu": "0.25",
                 "memory": "0.5Gi"
             },
-            "high": {
+            "high (1,000–5,000 users)": {
                 "cpu": "0.5",
                 "memory": "1Gi"
             },
-            "very high": {
+            "very high (>5,000 users)": {
                 "cpu": "1",
                 "memory": "2Gi"
             }
@@ -46,7 +46,7 @@
             }
         },
         "provisioningVolume": {
-            "defaultValue": "base",
+            "defaultValue": "base (<1,000 users)",
             "type": "String",
             "allowedValues": [
                 "base (<1,000 users)",
@@ -160,7 +160,7 @@
                             "name": "op-scim-redis",
                             "args": [
                                 "--maxmemory 256mb",
-                                "--maxmemory-policy volatile-lru"
+                                "--maxmemory-policy volatile-lru",
                                 "--save \"\""
                             ],
                             "resources": {
