@@ -42,7 +42,7 @@
         "scimsession": {
             "type": "SecureString",
             "metadata": {
-                "description": "The content of your scimsession file in plain text"
+                "description": "The plain text contents of your scimsession file."
             }
         },
         "provisioningVolume": {
