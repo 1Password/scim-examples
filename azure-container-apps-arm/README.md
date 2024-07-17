@@ -72,8 +72,6 @@ To finish setting up automated user provisioning, [connect your identity provide
 8. Check the top left-hand side of the page to verify you're running the updated version of the SCIM bridge.
 
 After you sign in to your SCIM bridge, the [Automated User Provisioning page](https://start.1password.com/integrations/active/) in your 1Password account will also update with the latest access time and SCIM bridge version.
-
-
 ## Get help
 
 > [!TIP]
