@@ -74,7 +74,7 @@ To update the very high-volume within the Azure Portal:
 1. Within Container App from the [Azure Container Apps Portal](https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/Microsoft.App%2FcontainerApps), select **Containers** from the sidebar.
 2. Click **Edit and deploy**.
 3. Select the checkbox next to your **op-scim-bridge** container, then choose **Edit**.
-4. Set the **CPU cores** to `1.0` and the **Memory (Gi)** to `1.0`.
+4. Set the **CPU cores** to `1.0` and the **Memory (Gi)** to `2.0`.
 5. Click **Save**, then click **Create**.
 </details>
 
