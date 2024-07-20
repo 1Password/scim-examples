@@ -1,0 +1,12 @@
+services:
+  scim:
+    secrets:
+      - op-tls-cert
+      - op-tls-key
+    ports:
+      - 443:8443
+secrets:
+  op-tls-cert:
+    external: true
+  op-tls-key:
+    external: true
