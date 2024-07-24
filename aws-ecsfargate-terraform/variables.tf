@@ -46,3 +46,8 @@ variable "google_workspace_actor" {
   default     = null
   description = "The email address of the administrator in Google Workspace that the service account is acting on behalf of."
 }
+
+variable "tls_policy" {
+  type        = string
+  description = "TLS Policy to be used in for ALB HTTPS Listener"
+}
