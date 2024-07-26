@@ -13,7 +13,7 @@ services:
     repository: redis
     tag: latest
   instance_count: 1
-  instance_size_slug: basic-xxs
+  instance_size_slug: apps-s-1vcpu-0.5gb
   internal_ports:
   - 6379
   name: op-scim-redis
@@ -42,7 +42,7 @@ services:
     repository: scim
     tag: v2.9.5
   instance_count: 1
-  instance_size_slug: basic-xxs
+  instance_size_slug: apps-s-1vcpu-0.5gb
   name: op-scim-bridge
   routes:
   - path: /
