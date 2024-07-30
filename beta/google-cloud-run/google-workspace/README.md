@@ -65,7 +65,7 @@ In the Cloud Console:
 4. Create a secret from the file:
 
     ```sh
-    gcloud secrets create workspace-settings --data-file=$HOME/workspace-settings.json &&
+    gcloud secrets create workspace-settings --data-file=$HOME/workspace-settings.json
     ```
 
 > [!TIP]
