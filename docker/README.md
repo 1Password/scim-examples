@@ -61,7 +61,7 @@ You can also manually deploy the SCIM bridge with [Docker Swarm](#docker-swarm-m
 
 ### Clone `scim-examples`
 
-Youâ€™ll need to clone this repository using `git` into a directory of your choice:
+You'll need to clone this repository using `git` into a directory of your choice:
 
 ```bash
 git clone https://github.com/1Password/scim-examples.git
@@ -75,7 +75,7 @@ cd scim-examples/docker/
 
 ### Docker Swarm manual deployment
 
-To use Docker Swarm, run `docker swarm init` or `docker swarm join` on the target node and complete that portion of the setup. Refer to [Dockerâ€™s documentation for more details](https://docs.docker.com/engine/swarm/swarm-tutorial/create-swarm/).
+To use Docker Swarm, run `docker swarm init` or `docker swarm join` on the target node and complete that portion of the setup. Refer to [Docker's documentation for more details](https://docs.docker.com/engine/swarm/swarm-tutorial/create-swarm/).
 
 Unlike Docker Compose, you won't need to set the `OP_SESSION` variable in `scim.env`. Instead, you'll use Docker Secrets to store the `scimsession` file. You'll still need to set the environment variable `OP_TLS_DOMAIN` within `scim.env` to the URL you selected during [PREPARATION.md](/PREPARATION.md). Open that in your preferred text editor and change `OP_TLS_DOMAIN` to that domain name. This is also needs to be set for self-managed TLS Docker Swarm deployment.
 
@@ -92,7 +92,7 @@ Unlike Docker Compose, you won't need to set the `OP_SESSION` variable in `scim.
 
 <br>
 
-After thatâ€™s set up, you can do the following (using the alternate command for the stack deployment if using Google Workspace as your identity provider):
+After that's set up, you can do the following (using the alternate command for the stack deployment if using Google Workspace as your identity provider):
 
 ```bash
 # enter the swarm directory
@@ -141,15 +141,15 @@ When using Docker Compose, you can create the environment variable `OP_SESSION` 
 
 ```bash
 # only needed for Docker Compose - use Docker Secrets when using Swarm
-# enter the compose directory (if you arenâ€™t already in it)
+# enter the compose directory (if you aren't already in it)
 cd scim-examples/docker/compose/
 SESSION=$(cat /path/to/scimsession | base64 | tr -d "\n")
 sed -i '' -e "s/OP_SESSION=$/OP_SESSION=$SESSION/" ./scim.env
 ```
 
-Youâ€™ll also need to set the environment variable `OP_TLS_DOMAIN` within `scim.env` to the URL you selected during [PREPARATION.md](/PREPARATION.md). Open that in your preferred text editor and change `OP_TLS_DOMAIN` to that domain name.
+You'll also need to set the environment variable `OP_TLS_DOMAIN` within `scim.env` to the URL you selected during [PREPARATION.md](/PREPARATION.md). Open that in your preferred text editor and change `OP_TLS_DOMAIN` to that domain name.
 
-Ensure that `OP_TLS_DOMAIN` is set to the domain name youâ€™ve set up before you continue.
+Ensure that `OP_TLS_DOMAIN` is set to the domain name you've set up before you continue.
 
 #### If you use Google Workspace as your identity provider
 
@@ -219,7 +219,7 @@ To finish setting up automated user provisioning, [connect your identity provide
 
 ## Update your SCIM bridge
 
-ðŸ‘ Check for 1Password SCIM Bridge updates on the [SCIM bridge releases notes website](https://releases.1password.com/provisioning/scim-bridge/).
+Check for 1Password SCIM Bridge updates on the [SCIM bridge releases notes website](https://releases.1password.com/provisioning/scim-bridge/).
 
 To upgrade your SCIM bridge, `git pull` the latest versions from this repository. Then re-apply the `.yml` file. For example:
 
@@ -255,7 +255,7 @@ The following options are available for advanced or custom deployments. Unless y
 * `OP_REDIS_URL`: You can specify a `redis://` or `rediss://` (for TLS) URL here to point towards a different Redis host. You can then remove the sections in `docker-compose.yml` that refer to Redis to not deploy that container. Redis is still required for the SCIM bridge to function.  
 * `OP_PRETTY_LOGS`: You can set this to `1` if you'd like the SCIM bridge to output logs in a human-readable format. This can be helpful if you aren't planning on doing custom log ingestion in your environment.
 * `OP_DEBUG`: You can set this to `1` to enable debug output in the logs, which is useful for troubleshooting or working with 1Password Support to diagnose an issue.
-* `OP_TRACE`: You can set this to `1` to enable trace-level log output, which is useful for debugging Letâ€™s Encrypt integration errors.
+* `OP_TRACE`: You can set this to `1` to enable trace-level log output, which is useful for debugging Let's Encrypt integration errors.
 * `OP_PING_SERVER`: You can set this to `1` to enable an optional `/ping` endpoint on port `80`, which is useful for health checks. It's disabled if `OP_TLS_DOMAIN` is unset and TLS is not in use.
 
 As of 1Password SCIM Bridge `v2.8.5`, additional Redis configuration options are available. `OP_REDIS_URL` must be unset for any of these environment variables to be read. These environment variables may be especially helpful if you need support for URL-unfriendly characters in your Redis credentials. 
