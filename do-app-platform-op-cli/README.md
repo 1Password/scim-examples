@@ -268,13 +268,13 @@ Invoke-RestMethod -Uri https://raw.githubusercontent.com/1Password/scim-examples
 If you're provisioning more than 1,000 users:
 
 1. Download the [`op-scim-bridge.yaml`](/do-app-platform-op-cli/op-scim-bridge.yaml) file and open it in a text editor.
-2. Change the `instance_size_slug` value for the `op-scim-bridge` service to `basic-xs`:
+2. Change the `instance_size_slug` value for the `op-scim-bridge` service to `apps-s-1vcpu-1gb-fixed`:
 
     ```yaml
     services:
     # ...
     - ### ...
-      instance_size_slug: basic-xs
+      instance_size_slug: apps-s-1vcpu-1gb-fixed
       name: op-scim-bridge
     ```
 
