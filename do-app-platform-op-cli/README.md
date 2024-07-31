@@ -91,7 +91,8 @@ Copy the following command, replace `https://op-scim-bridge-example.ondigitaloce
 
 ```bash
 curl --silent --show-error --request GET --header "Accept: application/json" --header "Authorization: Bearer $(
-  op read op://${VAULT:-op-scim}/${ITEM:-"bearer token"}/credential)" https://op-scim-bridge-example.ondigitalocean.app/health
+  op read op://${VAULT:-op-scim}/${ITEM:-"bearer token"}/credential
+)" https://op-scim-bridge-example.ondigitalocean.app/health
 ```
 
 **PowerShell**:
