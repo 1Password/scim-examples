@@ -1,5 +1,4 @@
 type: Microsoft.App/containerApps
-name: op-scim-bridge-con-app
 tags:
   purpose: "1Password SCIM Bridge"
 properties:
