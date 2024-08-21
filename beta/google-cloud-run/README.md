@@ -172,3 +172,19 @@ To finish setting up automated user provisioning, [connect your identity provide
 3. [Test your SCIM bridge deployment](#step-4-test-your-scim-bridge) using your bearer token.
 
 The new version number that you updated to should appear in the health check, the container logs for 1Password SCIM Bridge, and the top left-hand side of the page if signing in to the SCIM bridge at its URL in a web browser. After you sign in to your SCIM bridge, the [Automated User Provisioning page](https://start.1password.com/integrations/provisioning/) in your 1Password account will also update with the latest access time and SCIM bridge version.
+
+
+## How to update the **scimsession** secret
+
+To use a new `scimsession` credentials file for your SCIM bridge, replace the secret in your Cloud Run:
+
+
+1. Open the Google Cloud Console and go to the [Cloud Run](https://console.cloud.google.com/run) page.
+2. Click on your 1Password SCIM bridge Cloud Run deployment. 
+3. Move to **REVISIONS** tab. On the left side of the screen, make sure the latest deployed revision is selected.
+4. On the right side of the screen, select **VOLUMES** tab and click the hyperlink **scimsession**.
+5. Click **+NEW VERSION**. 
+   - Enter the entire content of your new `scimsession` file into **Secret value** area.
+   - Check **Disable all past versions**.
+6. Click **ADD NEW VERSION**.
+7. Go back to your SCIM bridge in Cloud Run and click on the URL at the top. Once the page opens, enter your new bearer token. If you can sign in with the new bearer token, it means your secret is successfully rotated.
