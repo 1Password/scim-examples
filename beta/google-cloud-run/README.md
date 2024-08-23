@@ -177,8 +177,6 @@ The new version number that you updated to should appear in the health check, th
 ## Rotate credentials
 
 To use a new `scimsession` credentials file for your SCIM bridge, replace the secret in your Cloud Run:
-
-
 1. Open the Google Cloud Console and go to the [Cloud Run](https://console.cloud.google.com/run) page.
 2. Click on your 1Password SCIM bridge Cloud Run deployment. 
 3. Move to **REVISIONS** tab. On the left side of the screen, make sure the latest deployed revision is selected.
