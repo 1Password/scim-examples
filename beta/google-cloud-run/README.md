@@ -187,4 +187,5 @@ To use a new `scimsession` credentials file for your SCIM bridge, replace the se
    3. Open the new `scimsession` file downloaded from 1Password in the file selector. The "Secret value" field displays the file contents that will be used for the new version.
    4. Select **Disable all past versions**.
    5. Click **Add New Version**.
-7. Go back to your SCIM bridge in Cloud Run and click on the URL at the top. Once the page opens, enter your new bearer token. If you can sign in with the new bearer token, it means your secret is successfully rotated.
+7. Return to the [Cloud Run](https://console.cloud.google.com/run) page, click the name of the Cloud Run service for your SCIM bridge deployment, and click the URL at the top to access your SCIM bridge in a new browser tab. Sign in using the new bearer token associated with the regenerated `scimsession` credentials file to verify the change.
+8. Update your identity provider configuration with your new bearer token and resume provisioning.
