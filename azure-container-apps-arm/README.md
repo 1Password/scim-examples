@@ -32,7 +32,7 @@ If you are using Google Workspace as your identity provider, follow [step 1](htt
    - **Region**: Choose the region you prefer.
    - **Container App Name**: Enter a name you'd like to use, default will be `op-scim-con-app`.
    - **Container App Env Name**: Enter a name you'd like to use, default will be `op-scim-con-app-env`.
-   - **Container App Log Analytics Name**: Enter a name you'd like to use, default will be `op-scim-con-app-env`.
+   - **Container App Log Analytics Name**: Enter a name you'd like to use, default will be `op-scim-con-app-log-analytics`.
    - **Scimsession** : Paste the entire contents of the `scimession` file.
    - **Workspace Actor** *(Only if you are using Google Workspace as your identity provider)*: Enter the email address of a Google Workspace administrator for the service account. If you are not using Google Workspace as your identity provider, leave this field blank.
    - **Workspace Credentials** *(Only if you are using Google Workspace as your identity provider)*: Paste the entire contents of the json key file you downloaded in the [before you begin](#before-you-begin) section. If you are not using Google Workspace as your identity provider, leave this field blank.
