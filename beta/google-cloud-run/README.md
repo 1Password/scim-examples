@@ -180,7 +180,7 @@ To use a new `scimsession` credentials file for your SCIM bridge, replace the se
 1. Sign in to the Google Cloud console, [select the project](https://console.cloud.google.com/projectselector2/home/dashboard) for your SCIM bridge deployment, and go to the [Cloud Run](https://console.cloud.google.com/run) page.
 2. Click on your 1Password SCIM bridge Cloud Run deployment. 
 3. Select the **Revisions** tab. Choose the latest deployed revision.
-4. On the right side of the screen, select **VOLUMES** tab and click the hyperlink **scimsession**.
+4. Select the **Volumes** tab in the revision details pane and click the name of the secret associated with the `credentials` volume (**`scimsession`**).
 5. Click **+NEW VERSION**. 
    - Enter the entire content of your new `scimsession` file into **Secret value** area.
    - Check **Disable all past versions**.
