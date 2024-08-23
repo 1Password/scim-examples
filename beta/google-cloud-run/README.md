@@ -172,3 +172,20 @@ To finish setting up automated user provisioning, [connect your identity provide
 3. [Test your SCIM bridge deployment](#step-4-test-your-scim-bridge) using your bearer token.
 
 The new version number that you updated to should appear in the health check, the container logs for 1Password SCIM Bridge, and the top left-hand side of the page if signing in to the SCIM bridge at its URL in a web browser. After you sign in to your SCIM bridge, the [Automated User Provisioning page](https://start.1password.com/integrations/provisioning/) in your 1Password account will also update with the latest access time and SCIM bridge version.
+
+
+## Rotate credentials
+
+To use regenerated credentials in your SCIM bridge deployment, pause provisioning in your identity provider, then update the value of the `scimsession` credentials:
+1. Sign in to the Google Cloud console, [select the project](https://console.cloud.google.com/projectselector2/home/dashboard) for your SCIM bridge deployment, and go to the [Cloud Run](https://console.cloud.google.com/run) page.
+2. Click on your 1Password SCIM bridge Cloud Run deployment. 
+3. Select the **Revisions** tab. Choose the latest deployed revision.
+4. Select the **Volumes** tab in the revision details pane and click the name of the secret associated with the `credentials` volume (**`scimsession`**).
+5. Add a secret version with the new SCIM bridge credentials to the secret:
+   1. Click **➕ New Version**.
+   2. Click **Browse** in the "Upload file" field.
+   3. Open the new `scimsession` file downloaded from 1Password in the file selector. The "Secret value" field displays the file contents that will be used for the new version.
+   4. Select **Disable all past versions**.
+   5. Click **Add New Version**.
+7. Return to the [Cloud Run](https://console.cloud.google.com/run) page, click the name of the Cloud Run service for your SCIM bridge deployment, and click the URL at the top to access your SCIM bridge in a new browser tab. Sign in using the new bearer token associated with the regenerated `scimsession` credentials file to verify the change.
+8. Update your identity provider configuration with your new bearer token and resume provisioning.
