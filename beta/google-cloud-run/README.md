@@ -181,8 +181,10 @@ To use a new `scimsession` credentials file for your SCIM bridge, replace the se
 2. Click on your 1Password SCIM bridge Cloud Run deployment. 
 3. Select the **Revisions** tab. Choose the latest deployed revision.
 4. Select the **Volumes** tab in the revision details pane and click the name of the secret associated with the `credentials` volume (**`scimsession`**).
-5. Click **+NEW VERSION**. 
-   - Enter the entire content of your new `scimsession` file into **Secret value** area.
-   - Check **Disable all past versions**.
-6. Click **ADD NEW VERSION**.
+5. Add a secret version with the new SCIM bridge credentials to the secret:
+   1. Click **➕ New Version**.
+   2. Click **Browse** in the "Upload file" field.
+   3. Open the new `scimsession` file downloaded from 1Password in the file selector. The "Secret value" field displays the file contents that will be used for the new version.
+   4. Select **Disable all past versions**.
+   5. Click **Add New Version**.
 7. Go back to your SCIM bridge in Cloud Run and click on the URL at the top. Once the page opens, enter your new bearer token. If you can sign in with the new bearer token, it means your secret is successfully rotated.
