@@ -174,7 +174,7 @@ To finish setting up automated user provisioning, [connect your identity provide
 The new version number that you updated to should appear in the health check, the container logs for 1Password SCIM Bridge, and the top left-hand side of the page if signing in to the SCIM bridge at its URL in a web browser. After you sign in to your SCIM bridge, the [Automated User Provisioning page](https://start.1password.com/integrations/provisioning/) in your 1Password account will also update with the latest access time and SCIM bridge version.
 
 
-## How to update the **scimsession** secret
+## Rotate credentials
 
 To use a new `scimsession` credentials file for your SCIM bridge, replace the secret in your Cloud Run:
 
