@@ -25,8 +25,8 @@ Before you begin deploying 1Password SCIM Bridge, review the [Preparation Guide]
 Containers as a service (CaaS) can simplify your deployment by using the built-in tools of the CaaS for DNS and certificate management. This gives you an easy, low-cost SCIM bridge with minimal infrastructure management requirements.
 
 - Azure Container Apps
-  - [CLI Deployment](https://support.1password.com/scim-deploy-azure/) - recommended for most Azure Container App deployments
-  - [Azure Portal Deployment using an ARM Template](/azure-container-apps-arm/README.md) - recommended for those not able to use the tools in the above CLI deployment guide, faster than the manual guide below.
+  - [Azure Portal Deployment using an ARM Template](https://support.1password.com/scim-deploy-azure/) - recommended for most Azure Container App deployments
+  - [CLI Deployment](https://support.1password.com/cs/scim-deploy-azure-container-apps/) - recommended if you want to use Azure CLI
   - [Azure Portal Deployment (Manual)](/azure-container-apps/README.md) - recommended for those not able to use the tools in the above CLI deployment guide
   - [Container Apps advanced customizations](/azure-container-apps/ADVANCED.md)
 - DigitalOcean App Platform 
