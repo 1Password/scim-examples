@@ -43,7 +43,6 @@ If you are using Google Workspace as your identity provider, follow [step 1](htt
 6. Once the validation succeeds, click **Create**. It is expected to take a couple of minutes to complete the deployment.
 
 ## Step 3: Test your SCIM bridge
-
 Once your deployment is complete, click **Go to resource group** and click on the container app you created.
 
 To test if your SCIM bridge is online, choose **Overview** in your application's sidebar, then click your **Application Url** link. This is your **SCIM bridge URL**. Sign in using your bearer token to verify that your SCIM bridge is connected to your 1Password account.
@@ -65,14 +64,13 @@ To finish setting up automated user provisioning, [connect your identity provide
 1. Within your deployed 1Password SCIM Bridge Container App in the [Azure Container Apps Portal](https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/Microsoft.App%2FcontainerApps), select **Containers** from the sidebar.
 2. Click **Edit and deploy**.
 3. Select the checkbox next to your **op-scim-bridge** container, then choose **Edit**.
-4. Change the version number **2.9.5** in the **Image and Tag** field, **1password/scim:v2.9.6** to match the latest version from our [SCIM bridge releases notes website](https://releases.1password.com/provisioning/scim-bridge/).
+4. Change the version number **2.9.6** in the **Image and Tag** field, **1password/scim:v2.9.6** to match the latest version from our [SCIM bridge releases notes website](https://releases.1password.com/provisioning/scim-bridge/).
 5. Select **Save**.
 6. Select **Create** to deploy a new revision using the updated image.
 7. Enter your SCIM bridge URL in a browser and sign in with your bearer token.
 8. Check the top left-hand side of the page to verify you're running the updated version of the SCIM bridge.
 
 After you sign in to your SCIM bridge, the [Automated User Provisioning page](https://start.1password.com/integrations/active/) in your 1Password account will also update with the latest access time and SCIM bridge version.
-
 ## Get help
 
 > [!TIP]
@@ -99,5 +97,4 @@ To use a new `scimsession` credentials file for your SCIM bridge, replace the se
 <summary>Replace your <code>scimsession</code> secret using the Azure Cloud Shell or AZ CLI</summary>
 
 Using the Azure Cloud Shell or AZ CLI, follow the steps in our [Advanced guide](ADVANCED.md).
-
 </details>
