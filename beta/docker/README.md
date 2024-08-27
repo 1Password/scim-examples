@@ -244,7 +244,7 @@ Update the `op-scim-bridge_scim` service with the new image tag from the [`1pass
 
 ```sh
 docker service update op-scim-bridge_scim \
-    --image 1password/scim:v2.9.5
+    --image 1password/scim:v2.9.6
 ```
 
 > **Note**
