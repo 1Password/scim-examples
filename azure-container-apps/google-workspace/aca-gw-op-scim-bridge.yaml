@@ -15,7 +15,7 @@ properties:
       transport: Auto
   template:
     containers:
-      - image: docker.io/1password/scim:v2.9.5
+      - image: docker.io/1password/scim:v2.9.6
         name: op-scim-bridge
         volumeMounts:
           - mountPath: "/home/opuser/.op"
@@ -38,10 +38,9 @@ properties:
       - name: credentials
         storageType: Secret
         secrets:
-        - secretRef: scimsession
-          path: scimsession
-        - secretRef: workspace-settings
-          path: workspace-settings.json
-        - secretRef: workspace-creds
-          path: workspace-credentials.json      
-      
+          - secretRef: scimsession
+            path: scimsession
+          - secretRef: workspace-settings
+            path: workspace-settings.json
+          - secretRef: workspace-creds
+            path: workspace-credentials.json

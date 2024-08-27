@@ -22,7 +22,7 @@ services:
       timeout: 3s
       retries: 5
   scim:
-    image: 1password/scim:v2.9.5
+    image: 1password/scim:v2.9.6
     depends_on:
       - redis
     secrets:

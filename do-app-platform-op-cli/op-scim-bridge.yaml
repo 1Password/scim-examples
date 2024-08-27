@@ -1,40 +1,40 @@
 name: op-scim-bridge
 services:
-- envs:
-  - key: ALLOW_EMPTY_PASSWORD
-    scope: RUN_AND_BUILD_TIME
-    value: "yes"
-  - key: REDIS_ARGS
-    scope: RUN_AND_BUILD_TIME
-    value: "--maxmemory 256mb --maxmemory-policy volatile-lru"
-  image:
-    registry: bitnami
-    registry_type: DOCKER_HUB
-    repository: redis
-    tag: latest
-  instance_count: 1
-  instance_size_slug: apps-s-1vcpu-0.5gb
-  internal_ports:
-  - 6379
-  name: op-scim-redis
-- envs:
-  - key: OP_REDIS_URL
-    scope: RUN_AND_BUILD_TIME
-    value: redis://${op-scim-redis.PRIVATE_DOMAIN}:${op-scim-redis.PRIVATE_PORT}
-  - key: OP_SESSION
-    scope: RUN_AND_BUILD_TIME
-    type: SECRET
-    value: op://${VAULT:-op-scim}/${ITEM:-"scimsession file"}/base64_encoded
-  health_check:
-    http_path: /ping
-  http_port: 3002
-  image:
-    registry: 1password
-    registry_type: DOCKER_HUB
-    repository: scim
-    tag: v2.9.5
-  instance_count: 1
-  instance_size_slug: apps-s-1vcpu-0.5gb
-  name: op-scim-bridge
-  routes:
-  - path: /
+  - envs:
+      - key: ALLOW_EMPTY_PASSWORD
+        scope: RUN_AND_BUILD_TIME
+        value: "yes"
+      - key: REDIS_ARGS
+        scope: RUN_AND_BUILD_TIME
+        value: "--maxmemory 256mb --maxmemory-policy volatile-lru"
+    image:
+      registry: bitnami
+      registry_type: DOCKER_HUB
+      repository: redis
+      tag: latest
+    instance_count: 1
+    instance_size_slug: apps-s-1vcpu-0.5gb
+    internal_ports:
+      - 6379
+    name: op-scim-redis
+  - envs:
+      - key: OP_REDIS_URL
+        scope: RUN_AND_BUILD_TIME
+        value: redis://${op-scim-redis.PRIVATE_DOMAIN}:${op-scim-redis.PRIVATE_PORT}
+      - key: OP_SESSION
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: op://${VAULT:-op-scim}/${ITEM:-"scimsession file"}/base64_encoded
+    health_check:
+      http_path: /ping
+    http_port: 3002
+    image:
+      registry: 1password
+      registry_type: DOCKER_HUB
+      repository: scim
+      tag: v2.9.6
+    instance_count: 1
+    instance_size_slug: apps-s-1vcpu-0.5gb
+    name: op-scim-bridge
+    routes:
+      - path: /

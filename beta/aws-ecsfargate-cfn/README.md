@@ -32,8 +32,8 @@ This template is a working example to be used as a base for your SCIM bridge dep
 ## Prerequisites
 
 - A 1Password account with an active 1Password Business subscription or trial
-> [!TIP]
-> Try 1Password Business **free** for 14 days: <https://start.1password.com/sign-up/business>
+  > [!TIP]
+  > Try 1Password Business **free** for 14 days: <https://start.1password.com/sign-up/business>
 - An AWS account with the permissions and available quota to create and manage the described resources
 - [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) (if you want to manage the deployment using a terminal or script).
 
@@ -145,8 +145,8 @@ Edit the example above as follows before running the command from the working di
 
 - Uncomment the appropriate lines as needed to adjust the CIDR block for the VPC, the scale of the deployment based on its provisoning volume, and add tags as key-value pairs to apply to all supported resources in the stack.
 - If you prefer, set the value for `--stack-name` to choose your own (for example, `--stack-name your-stack-name`). CloudFormation will use the stack name (or a truncated version where needed) as a prefix when naming the created AWS resources.
-> [!NOTE]
-> We use `op-scim-bridge` as a shorthand for 1Password SCIM Bridge throughout our examples and supporting documentation, but the choice is arbitrary.
+  > [!NOTE]
+  > We use `op-scim-bridge` as a shorthand for 1Password SCIM Bridge throughout our examples and supporting documentation, but the choice is arbitrary.
 
 After you run the command, you should see:
 
@@ -182,6 +182,7 @@ curl --silent --show-error --request GET --header "Accept: application/json" \
 > # ...
 >   --header "Authorization: Bearer $(op read "op://Private/bearer token/credential")"
 > # ...
+> ```
 
 <details>
 <summary>Example JSON response:</summary>
@@ -247,5 +248,5 @@ aws cloudformation deploy \
 > [!IMPORTANT]
 > Our [1Password SCIM Bridge release notes page](https://app-updates.agilebits.com/product_history/SCIM) does not include `v` in each release version, but this character must be included in the value of the `SCIMBridgeVersion` parameter to match the corresponding [image tag in Docker Hub](https://hub.docker.com/r/1password/scim/tags):
 >
-> - ✅ `v2.9.5`
+> - ✅ `v2.9.6`
 > - ❌ `2.9.5`

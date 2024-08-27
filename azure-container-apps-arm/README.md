@@ -19,6 +19,7 @@ If you are using Google Workspace as your identity provider, follow [step 1](htt
 > If you don't have an Azure account, you can sign up for a free trial with starting credit: https://azure.microsoft.com/free/
 
 ## Step 1: Download the template file
+
 1. Download the [ARM(Azure Resource Manager) template](./aca-op-scim-bridge-template.json) file using the download icon at the top right.
 
 ## Step 2: Create the Container App
@@ -34,26 +35,25 @@ If you are using Google Workspace as your identity provider, follow [step 1](htt
    - **Container App Env Name**: Enter a name you'd like to use, default will be `op-scim-con-app-env`.
    - **Container App Log Analytics Name**: Enter a name you'd like to use, default will be `op-scim-con-app-log-analytics`.
    - **Scimsession** : Paste the entire contents of the `scimession` file.
-   - **Workspace Actor** *(Only if you are using Google Workspace as your identity provider)*: Enter the email address of a Google Workspace administrator for the service account. If you are not using Google Workspace as your identity provider, leave this field blank.
-   - **Workspace Credentials** *(Only if you are using Google Workspace as your identity provider)*: Paste the entire contents of the json key file you downloaded in the [before you begin](#before-you-begin) section. If you are not using Google Workspace as your identity provider, leave this field blank.
-> [!IMPORTANT]
-> The optional `Workspace Actor` and `Workspace Credentials` fields should only be filled if integrating with Google Workspace for automated provisioning.
-3. Click **Review + create**.
-4. Once the validation succeeds, click **Create**. It is expected to take a couple of minutes to complete the deployment.
-
+   - **Workspace Actor** _(Only if you are using Google Workspace as your identity provider)_: Enter the email address of a Google Workspace administrator for the service account. If you are not using Google Workspace as your identity provider, leave this field blank.
+   - **Workspace Credentials** _(Only if you are using Google Workspace as your identity provider)_: Paste the entire contents of the json key file you downloaded in the [before you begin](#before-you-begin) section. If you are not using Google Workspace as your identity provider, leave this field blank.
+     > [!IMPORTANT]
+     > The optional `Workspace Actor` and `Workspace Credentials` fields should only be filled if integrating with Google Workspace for automated provisioning.
+5. Click **Review + create**.
+6. Once the validation succeeds, click **Create**. It is expected to take a couple of minutes to complete the deployment.
 
 ## Step 3: Test your SCIM bridge
+
 Once your deployment is complete, click **Go to resource group** and click on the container app you created.
 
 To test if your SCIM bridge is online, choose **Overview** in your application's sidebar, then click your **Application Url** link. This is your **SCIM bridge URL**. Sign in using your bearer token to verify that your SCIM bridge is connected to your 1Password account.
 
 ## Step 4: Connect your identity provider
 
-To finish setting up automated user provisioning, [connect your identity provider to the SCIM bridge](https://support.1password.com/scim/#step-3-connect-your-identity-provider). 
+To finish setting up automated user provisioning, [connect your identity provider to the SCIM bridge](https://support.1password.com/scim/#step-3-connect-your-identity-provider).
 
 > [!IMPORTANT]
 > If you are using Google Workspace as your identity provider, you can skip this part. Once you sign in to your SCIM bridge using your bearer token as in step 3, you will see that your SCIM bridge is already connected to your Google Workspace account.
-
 
 <hr>
 
@@ -65,13 +65,14 @@ To finish setting up automated user provisioning, [connect your identity provide
 1. Within your deployed 1Password SCIM Bridge Container App in the [Azure Container Apps Portal](https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/Microsoft.App%2FcontainerApps), select **Containers** from the sidebar.
 2. Click **Edit and deploy**.
 3. Select the checkbox next to your **op-scim-bridge** container, then choose **Edit**.
-4. Change the version number **2.9.5** in the **Image and Tag** field, **1password/scim:v2.9.5** to match the latest version from our [SCIM bridge releases notes website](https://releases.1password.com/provisioning/scim-bridge/).
+4. Change the version number **2.9.5** in the **Image and Tag** field, **1password/scim:v2.9.6** to match the latest version from our [SCIM bridge releases notes website](https://releases.1password.com/provisioning/scim-bridge/).
 5. Select **Save**.
 6. Select **Create** to deploy a new revision using the updated image.
 7. Enter your SCIM bridge URL in a browser and sign in with your bearer token.
 8. Check the top left-hand side of the page to verify you're running the updated version of the SCIM bridge.
 
 After you sign in to your SCIM bridge, the [Automated User Provisioning page](https://start.1password.com/integrations/active/) in your 1Password account will also update with the latest access time and SCIM bridge version.
+
 ## Get help
 
 > [!TIP]
@@ -98,4 +99,5 @@ To use a new `scimsession` credentials file for your SCIM bridge, replace the se
 <summary>Replace your <code>scimsession</code> secret using the Azure Cloud Shell or AZ CLI</summary>
 
 Using the Azure Cloud Shell or AZ CLI, follow the steps in our [Advanced guide](ADVANCED.md).
+
 </details>

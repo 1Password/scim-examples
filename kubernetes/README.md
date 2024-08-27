@@ -159,7 +159,7 @@ To finish setting up automated user provisioning, [connect your identity provide
 To update SCIM bridge, connect to your Kubernetes cluster and run the following command:
 
 ```sh
-kubectl set image deploy/op-scim-bridge op-scim-bridge=1password/scim:v2.9.5
+kubectl set image deploy/op-scim-bridge op-scim-bridge=1password/scim:v2.9.6
 ```
 
 > **Note**
@@ -177,12 +177,13 @@ If you regenenerate credentials for your SCIM bridge:
 1. Download the new `scimsession` file from your 1Password account.
 2. Delete the `scimsession` Secret on your cluster and recreate it from the new file:
 
-    ```sh
-    kubectl delete secret scimsession
-    kubectl create secret generic scimsession --from-file=scimsession=./scimsession
-    ```
+   ```sh
+   kubectl delete secret scimsession
+   kubectl create secret generic scimsession --from-file=scimsession=./scimsession
+   ```
 
    Kubernetes automatically updates the credentials file mounted in the Pod with the new Secret value.
+
 3. [Test your SCIM bridge](#step-5-test-your-scim-bridge) using the new bearer token associated with the regenerated `scimsession` file.
 4. Update your identity provider configuration with your new bearer token.
 
