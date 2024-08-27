@@ -38,9 +38,10 @@ properties:
       - name: credentials
         storageType: Secret
         secrets:
-          - secretRef: scimsession
-            path: scimsession
-          - secretRef: workspace-settings
-            path: workspace-settings.json
-          - secretRef: workspace-creds
-            path: workspace-credentials.json
+        - secretRef: scimsession
+          path: scimsession
+        - secretRef: workspace-settings
+          path: workspace-settings.json
+        - secretRef: workspace-creds
+          path: workspace-credentials.json      
+      

@@ -191,5 +191,4 @@ To use a new `scimsession` credentials file for your SCIM bridge, replace the se
 <summary>Replace your <code>scimsession</code> secret using the Azure Cloud Shell or AZ CLI</summary>
 
 Using the Azure Cloud Shell or AZ CLI, follow the steps in our [Advanced guide](ADVANCED.md).
-
 </details>

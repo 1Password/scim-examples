@@ -38,5 +38,6 @@ properties:
       - name: credentials
         storageType: Secret
         secrets:
-          - secretRef: scimsession
-            path: scimsession
+        - secretRef: scimsession
+          path: scimsession
+      
