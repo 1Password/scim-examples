@@ -295,7 +295,7 @@ kubectl set env deploy op-scim-bridge \
 
 If you prefer to use an external Redis cache, omit the the `redis-*.yaml` files when deploying to your Kubernetes cluster. Replace the value of the `OP_REDIS_URL` environment variable in [`op-scim-config.yaml`](./op-scim-config.yaml) with a Redis connection URI for your Redis server.
 
-#### If you already deployd your SCIM bridge
+#### If you already deployed your SCIM bridge
 
 You can set `OP_REDIS_URL` directly to reboot SCIM bridge and connect to the specified Redis server:
 
