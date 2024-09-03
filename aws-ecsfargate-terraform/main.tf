@@ -68,7 +68,7 @@ data "aws_vpc" "this" {
 
 data "aws_subnets" "public" {
   filter {
-    name = "vpc-id"
+    name   = "vpc-id"
     values = [data.aws_vpc.this.id]
   }
   # Find the public subnets in the VPC, or if the default VPC, use both
@@ -265,6 +265,8 @@ resource "aws_lb_listener" "https" {
   load_balancer_arn = aws_alb.op_scim_bridge.arn
   port              = 443
   protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+
   certificate_arn = !var.wildcard_cert ? (
     var.using_route53 ?
     aws_acm_certificate_validation.op_scim_bridge[0].certificate_arn : aws_acm_certificate.op_scim_bridge[0].arn
@@ -333,10 +335,10 @@ module "google_workspace" {
 
   source = "./modules/google-workspace"
 
-  name_prefix = local.name_prefix
-  tags        = local.tags
-  iam_role    = aws_iam_role.op_scim_bridge
-  enabled     = local.using_google_workspace
+  name_prefix   = local.name_prefix
+  tags          = local.tags
+  iam_role      = aws_iam_role.op_scim_bridge
+  enabled       = local.using_google_workspace
   actor         = var.google_workspace_actor
   bridgeAddress = "https://${var.domain_name}"
 }
