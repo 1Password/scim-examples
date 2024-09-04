@@ -11,7 +11,7 @@ The following deployment methods are deprecated and will be removed from the rep
 
 | Deployment                                           | Deprecation Date | Deletion Date | Suggested Alternative    | Deprecation PR                                               |
 | ---------------------------------------------------- | ---------------- | ------------- | ------------------------ | ------------------------------------------------------------ |
-| [Docker Compose & Docker Swarm](/deprecated/docker/) | 2024-09-04       | 2024-12-04    | [Docker Swarm](/docker/) |  [#255](https://github.com/1Password/scim-examples/pull/255) |
+| [Docker Compose & Docker Swarm](/deprecated/docker/) | 2024-09-04       | 2024-12-04    | [Docker Swarm](/docker/) |  [#335](https://github.com/1Password/scim-examples/pull/335) |
 | -                                                    | -                | -             | -                        | -                                                            |
 
 ### Deleted deployment methods
