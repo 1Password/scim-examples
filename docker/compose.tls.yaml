@@ -1,23 +1,21 @@
 services:
   scim:
+    environment: [OP_TLS_CERT_FILE=/home/opuser/.op/tls.crt, OP_TLS_KEY_FILE=/home/opuser/.op/tls.key]
     secrets:
       - source: op-tls-cert
-        target: tls.crt
+        target: /home/opuser/.op/tls.crt
         uid: "999"
         gid: "999"
         mode: 0440
       - source: op-tls-key
-        target: tls.key
+        target: /home/opuser/.op/tls.key
         uid: "999"
         gid: "999"
         mode: 0440
-    environment:
-      - OP_TLS_CERT_FILE=/run/secrets/tls.crt
-      - OP_TLS_KEY_FILE=/run/secrets/tls.key
 secrets:
   op-tls-cert:
-    name: op-tls-cert
     file: ./certificate.pem
+    name: op-tls-cert
   op-tls-key:
-    name: op-tls-key
     file: ./key.pem
+    name: op-tls-key

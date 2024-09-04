@@ -1,0 +1,8 @@
+services:
+  scim:
+    deploy:
+      resources:
+        reservations:
+          cpus: "1.0"
+        limits:
+          memory: 1024M

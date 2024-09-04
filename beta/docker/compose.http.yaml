@@ -1,4 +1,0 @@
-services:
-  scim:
-    ports:
-      - 80:3002
