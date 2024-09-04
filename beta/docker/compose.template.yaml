@@ -37,4 +37,4 @@ networks:
 secrets:
   credentials:
     file: ./scimsession
-    name: scimsession
+    name: credentials
