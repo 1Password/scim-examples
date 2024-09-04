@@ -34,6 +34,7 @@ services:
     user: 999:999
 networks:
   op-scim:
+    name: op-scim
 secrets:
   credentials:
     file: ./scimsession
