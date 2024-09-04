@@ -71,20 +71,6 @@ Your **SCIM bridge URL** is based on the fully qualified domain name of the DNS 
 
 You can also check the status of your SCIM bridge with a bearer token authenticated request to its `/health` endpoint. Depending on your DNS and networking configuration, you may need to send the request from another device (for example, your computer) to reach the SCIM bridge URL:
 
-> [!TIP]
-> If you saved your bearer token to your 1Password account, you can use [secret reference
-> syntax](https://developer.1password.com/docs/cli/secret-reference-syntax) with [1Password
-> CLI](https://developer.1password.com/docs/cli/get-started) to securely pass it inline. For example, using [`op
-> read`](https://developer.1password.com/docs/cli/secret-references#with-op-read):
->
-> ```sh
-> export OP_SCIM_TOKEN="op://Employee/Bearer Token/credential"
-> export OP_SCIM_BRIDGE_URL="https:/op-scim-bridge.example.com"
->
-> curl --silent --show-error --request GET --header "Accept: application/json"  \
->   --header "Authorization: Bearer $(op read $OP_SCIM_TOKEN)" $OP_SCIM_BRIDGE_URL/health
-> ```
-
 1. Replace `mF_9.B5f-4.1JqM` with your bearer token and `https://op-scim-bridge.example.com` with your SCIM bridge URL to store them as environment variable values for the current terminal session:
 
    ```sh
@@ -99,6 +85,20 @@ You can also check the status of your SCIM bridge with a bearer token authentica
    curl --silent --show-error --request GET --header "Accept: application/json" \
      --header "Authorization: Bearer $OP_SCIM_TOKEN" $OP_SCIM_BRIDGE_URL/health
    ```
+
+> [!TIP]
+> If you saved your bearer token to your 1Password account, you can use [secret reference
+> syntax](https://developer.1password.com/docs/cli/secret-reference-syntax) with [1Password
+> CLI](https://developer.1password.com/docs/cli/get-started) to securely pass it inline. For example, using [`op
+> read`](https://developer.1password.com/docs/cli/secret-references#with-op-read):
+>
+> ```sh
+> export OP_SCIM_TOKEN="op://Employee/Bearer Token/credential"
+> export OP_SCIM_BRIDGE_URL="https:/op-scim-bridge.example.com"
+>
+> curl --silent --show-error --request GET --header "Accept: application/json"  \
+>   --header "Authorization: Bearer $(op read $OP_SCIM_TOKEN)" $OP_SCIM_BRIDGE_URL/health
+> ```
 
    <details>
    <summary>Example JSON response:</summary>
