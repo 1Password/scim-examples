@@ -18,7 +18,7 @@ To connect your SCIM bridge to Workspace, you'll need permissions in Google Clou
 2. Upload the service account key to the working directory on the server. Make sure the file is named `workspace-settings.json` on the server. For example, using SCP:
 
    ```sh
-   scp ./op-scim-bridge-df05213c8cf1.json op-scim-bridge.example.com:scim-examples/beta/docker/workspace-settings.json
+   scp ./op-scim-bridge-df05213c8cf1.json op-scim-bridge.example.com:scim-examples/docker/workspace-settings.json
    ```
 
 ## Step 2: Configure Workspace settings
@@ -34,7 +34,7 @@ To connect your SCIM bridge to Workspace, you'll need permissions in Google Clou
 3. Save the file and upload it to the working directory on the server. For example, using SCP:
 
    ```sh
-   scp ./workspace-settings.json op-scim-bridge.example.com:scim-examples/beta/docker/workspace-settings.json
+   scp ./workspace-settings.json op-scim-bridge.example.com:scim-examples/docker/workspace-settings.json
    ```
 
 ## Step 4: Redeploy your SCIM bridge and select groups
@@ -42,7 +42,7 @@ To connect your SCIM bridge to Workspace, you'll need permissions in Google Clou
 1. Connect to the server and switch to the working directory. For example:
 
    ```sh
-   cd ~/scim-examples/beta/docker
+   cd ~/scim-examples/docker
    ```
 
 2. Redeploy SCIM bridge with the `compose.gw.yaml` override file included in your deployment command to create Docker secrets from the uploaded files and merge the configuration needed to connect Workspace. For example, to merge Workspace into the base configuration:

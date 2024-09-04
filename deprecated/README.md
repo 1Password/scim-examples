@@ -9,10 +9,10 @@ This folder contains 1Password SCIM Bridge deployment methods that have been dep
 
 The following deployment methods are deprecated and will be removed from the repository on or around the Deletion Date.
 
-| Deployment | Deprecation Date | Deletion Date | Suggested Alternative | Deprecation PR |
-| ---------- | ---------------- | ------------- | --------------------- | -------------- |
-| -          | -                | -             | -                     | -              |
-| -          | -                | -             | -                     | -              |
+| Deployment                                           | Deprecation Date | Deletion Date | Suggested Alternative    | Deprecation PR                                               |
+| ---------------------------------------------------- | ---------------- | ------------- | ------------------------ | ------------------------------------------------------------ |
+| [Docker Compose & Docker Swarm](/deprecated/docker/) | 2024-09-04       | 2024-12-04    | [Docker Swarm](/docker/) |  [#255](https://github.com/1Password/scim-examples/pull/255) |
+| -                                                    | -                | -             | -                        | -                                                            |
 
 ### Deleted deployment methods
 
@@ -20,8 +20,8 @@ The following is a list of deployment methods that are no longer supported and w
 
 | Deployment                | Deprecation Date | Deletion Date | Suggested Alternative                                                                                                                | Deprecation and Deletion PRs                                                                                                             |
 | ------------------------- | ---------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| aws-ec2-terraform         | 2020-12-21       | 2023-09-14    | [AWS ECS Fargate with Terraform](../aws-ecsfargate-terraform/) or [AWS ECS Fargate with CloudFormation](../beta/aws-ecsfargate-cfn/) | Dep: [PR#127](https://github.com/1Password/scim-examples/pull/127) \| Del: [PR#255](https://github.com/1Password/scim-examples/pull/255) |
-| DigitalOcean App Platform | 2022-12-21       | 2023-09-14    | [Digital Ocean App Platform with `op` CLI](../beta/do-app-platform-op-cli/) or [Azure Container Apps](../beta/azure-container-apps/) | Dep: [PR#222](https://github.com/1Password/scim-examples/pull/222) \| Del: [PR#255](https://github.com/1Password/scim-examples/pull/255) |
+| aws-ec2-terraform         | 2020-12-21       | 2023-09-14    | [AWS ECS Fargate with Terraform](/aws-ecsfargate-terraform/) or [AWS ECS Fargate with CloudFormation](/beta/aws-ecsfargate-cfn/) | Dep: [PR#127](https://github.com/1Password/scim-examples/pull/127) \| Del: [PR#255](https://github.com/1Password/scim-examples/pull/255) |
+| DigitalOcean App Platform | 2022-12-21       | 2023-09-14    | [Digital Ocean App Platform with `op` CLI](/beta/do-app-platform-op-cli/) or [Azure Container Apps](/azure-container-apps/) | Dep: [PR#222](https://github.com/1Password/scim-examples/pull/222) \| Del: [PR#255](https://github.com/1Password/scim-examples/pull/255) |
 
 ## Process for deprecating deployment methods
 
@@ -41,19 +41,19 @@ All deprecations will take place through a pull request and must be approved by 
 2. Open a new branch with a name conforming to `deprecate/<deployment-method-name>`
 3. Move all assets related to the deployment method to `./deprecated/<deployment-method-name>`
 4. Update READMEs
-   - To the [Deprecated Deployments table](README.md#deprecated-deployment-method-list) in `deprecated/README.md`:
+   - To the [Deprecated Deployments table](#deprecated-deployment-method-list) in `deprecated/README.md`:
      - Add the name and link to the updated path of the deployment in `/deprecated`
      - Set `Deprecation Date` to be the current date (to be updated at merge time to the date of the merge)
      - Set `Deletion Date` to be approximately three months from the deprecation date (considering weekends, holidays, or other events). This may or may not be updated along with the deprecation date at merge time.
      - Add link to PR, once known, to the `Deprecation PR` column.
-   - To the [README in the repository root](../README.md) add:
+   - To the [README in the repository root](/README.md) add:
      - Prefix the name of the deployment in the list with `**(⚠️ Deprecated)**`.
      - Update the URL of the linked text point to the new path of the deployment in `/deprecated`.
 5. Put your PR up for review and approval. In your PR, please include:
    - Justification for the deprecation
    - Why updating or improving the deployment method is not possible or practical
    - Suggestions for existing alternatives, if any
-   - Use internal tooling to set a reminder for both User Lifecycle Developers and Solutions Architects to delete the deprecated method on it's Deletion Date.
+   - Use internal tooling to set a reminder for both User Lifecycle Developers and Solutions Architects to delete the deprecated method on its Deletion Date.
 
 ### Steps to delete a deprecated deployment method
 
