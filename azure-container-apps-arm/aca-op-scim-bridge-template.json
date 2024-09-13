@@ -174,7 +174,12 @@
                             "name": "credentials",
                             "storageType": "Secret"
                         }
-                    ]
+                    ],
+                    "scale": {
+                        "minReplicas": 1,
+                        "maxReplicas": 10,
+                        "rules": []
+                    }
                 }
             }
         },
