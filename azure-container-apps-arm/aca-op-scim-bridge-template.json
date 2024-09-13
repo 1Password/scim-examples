@@ -177,8 +177,7 @@
                     ],
                     "scale": {
                         "minReplicas": 1,
-                        "maxReplicas": 10,
-                        "rules": []
+                        "maxReplicas": 1
                     }
                 }
             }
