@@ -41,9 +41,9 @@ Parameters:
     Default: 10.0.0.0/16
     Description: A CIDR block for the VPC to be created.
   Route53HostedZoneID:
-    Type: "AWS::Route53::HostedZone::Id"
-    Description: >-
-      The Route 53 hosted zone in which to create DNS records for ACM validation and the ALB endpoint.
+    Type: String
+    Default: ""
+    Description: "(Optional) Route 53 Hosted Zone ID for DNS validation. Leave blank if using external DNS provider."
   ProvisioningVolume:
     Type: String
     Description: >-
@@ -57,7 +57,7 @@ Parameters:
     ConstraintDescription: must be base, high, or very-high
   DomainName:
     Type: String
-    Default: scim.example.com
+    Default: scim.doucette.io
     Description: >-
       A fully qualified domain name for your SCIM bridge that is in the domain of the selected Route 53 hosted zone
       where the record will be created.
@@ -127,6 +127,7 @@ Mappings:
       Redis: 512
       Task: 4096
 Conditions:
+  CreateRoute53Records: !Not [!Equals [!Ref Route53HostedZoneID, ""]]
   UsingGoogleWorkspace: !Not
     - !Or
       - !Equals [!Ref WorkspaceCredentials, ""]
@@ -469,6 +470,7 @@ Resources:
                   - "logs:PutLogEvents"
                 Resource: "*"
   DNSRecord:
+    Condition: CreateRoute53Records
     Type: "AWS::Route53::RecordSet"
     Properties:
       HostedZoneId: !Ref Route53HostedZoneID
@@ -481,11 +483,14 @@ Resources:
   TLSCertificate:
     Type: "AWS::CertificateManager::Certificate"
     Properties:
-      DomainName: !Ref DNSRecord
-      ValidationMethod: DNS
-      DomainValidationOptions:
-        - DomainName: !Ref DNSRecord
-          HostedZoneId: !Ref Route53HostedZoneID
+      DomainName: !Ref DomainName
+      ValidationMethod: DNS  # Always use DNS validation
+      DomainValidationOptions: !If
+        - CreateRoute53Records
+        - 
+          - DomainName: !Ref DomainName
+            HostedZoneId: !Ref Route53HostedZoneID
+        - !Ref "AWS::NoValue"  # No HostedZoneId for external DNS, you will need to manually create CNAME
   TaskRole:
     Type: "AWS::IAM::Role"
     Properties:
@@ -602,4 +607,7 @@ Outputs:
     Description: >-
       The URL for your SCIM bridge. Use this and your bearer token to connect
       your identity provider to 1Password.
-    Value: !Sub "https://${DNSRecord}"
+    Value: !If
+      - CreateRoute53Records
+      - !Sub "https://${DNSRecord}"
+      - !Sub "https://${DomainName}"
