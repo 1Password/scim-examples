@@ -563,6 +563,8 @@ Resources:
                   - "ec2:CreateNetworkInterface"
                   - "ec2:DescribeNetworkInterfaces"
                   - "ec2:DeleteNetworkInterface"
+                  - "ec2:Describe*"
+                  - "ec2:AuthorizeSecurityGroupIngress"
                 Resource: "*"
         - PolicyName: task_execution_role_policy
           PolicyDocument:
@@ -574,6 +576,8 @@ Resources:
                   - "ecr:BatchCheckLayerAvailability"
                   - "ecr:GetDownloadUrlForLayer"
                   - "ecr:BatchGetImage"
+                  - "elasticloadbalancing:DeregisterInstancesFromLoadBalancer"
+                  - "elasticloadbalancing:RegisterInstancesWithLoadBalancer"
                 Resource: "*"
 
   ExecutionRole:
