@@ -529,6 +529,7 @@ Resources:
       Protocol: HTTPS
       Certificates:
         - CertificateArn: !Ref TLSCertificate
+      SslPolicy: ELBSecurityPolicy-TLS13-1-2-2021-06
 
   TaskRole:
     Type: "AWS::IAM::Role"
