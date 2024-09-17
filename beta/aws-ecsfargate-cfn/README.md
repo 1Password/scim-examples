@@ -242,7 +242,7 @@ aws cloudformation deploy \
     --template-file ./op-scim-bridge.yaml \
     --stack-name op-scim-bridge \
     --capabilities CAPABILITY_IAM \
-    --parameter-overrides SCIMBridgeVersion=v2.9.5
+    --parameter-overrides SCIMBridgeVersion=v2.9.6
 ```
 
 > [!IMPORTANT]
