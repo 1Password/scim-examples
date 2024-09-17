@@ -4,15 +4,13 @@ Description: >-
   configures a VPC, 2 public subnets, an internet gateway, a route table, an
   ALB, an ACM certificate, Route 53 DNS records, an AWS secret to store
   credentials for your SCIM bridge, security groups, and required IAM roles.
-
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
       - Parameters:
-          - ExistingVPC
+          - VPCID
           - VPCCIDR
-          - ExistingPublicSubnet1
-          - ExistingPublicSubnet2
+          - PublicSubnets
           - Route53HostedZoneID
           - ProvisioningVolume
           - DomainName
@@ -25,14 +23,12 @@ Metadata:
           - WorkspaceCredentials
           - WorkspaceActor
     ParameterLabels:
-      ExistingVPC:
-        default: "Existing VPC (Optional)"
+      VPCID:
+        default: "VPC ID"
       VPCCIDR:
         default: "VPC CIDR"
-      ExistingPublicSubnet1:
-        default: "Existing Public Subnet 1 (if using existing VPC)"
-      ExistingPublicSubnet2:
-        default: "Existing Public Subnet 2 (if using existing VPC)"
+      PublicSubnets:
+        default: "Public subnets"
       Route53HostedZoneID:
         default: "Route 53 hosted zone"
       ProvisioningVolume:
@@ -45,28 +41,26 @@ Metadata:
         default: "Service account key"
       WorkspaceActor:
         default: "Actor"
-
 Parameters:
-  ExistingVPC:
+  VPCID:
     Type: String
-    Default: ""
-    Description: "(Optional) Select an existing VPC. Leave blank to create a new VPC."
+    Description: >-
+      (Optional) ID of an existing VPC to use for your SCIM bridge. If empty, a new VPC and two public subnets will be
+      created.
   VPCCIDR:
     Type: String
     Default: 10.0.0.0/16
-    Description: A CIDR block for the VPC to be created.
-  ExistingPublicSubnet1:
-    Type: String
-    Default: ""
-    Description: "(Optional) Select an existing Public Subnet 1 if using an existing VPC."
-  ExistingPublicSubnet2:
-    Type: String
-    Default: ""
-    Description: "(Optional) Select an existing Public Subnet 2 if using an existing VPC."
+    Description: A CIDR block for the VPC. Required if VPCID is empty; ignored if specifying a VPCID.
+  PublicSubnets:
+    Type: CommaDelimitedList
+    Description: "(Optional) A comma-separated list of two or more public subnets in the specified VPC."
+    ConstraintDescription: >-
+      must be a list of at least two existing subnets associated a unique availability zone in the specified VPC
   Route53HostedZoneID:
     Type: String
-    Default: ""
-    Description: "(Optional) Route 53 Hosted Zone ID for DNS validation. Leave blank if using external DNS provider."
+    Description: >-
+      (Optional) The Route 53 hosted zone in which to create DNS records for ACM validation and the ALB endpoint. If
+      empty, these records must be created in your DNS provider.
   ProvisioningVolume:
     Type: String
     Description: >-
@@ -82,8 +76,7 @@ Parameters:
     Type: String
     Default: scim.example.com
     Description: >-
-      A fully qualified domain name for your SCIM bridge that is in the domain of the selected Route 53 hosted zone
-      where the record will be created.
+      A fully qualified domain name for your SCIM bridge.
   scimsession:
     Type: String
     Description: >-
@@ -108,15 +101,20 @@ Parameters:
     Default: ""
     Description: >-
       The email address of the Google Workspace administrator that the service account is acting on behalf of.
-
-Conditions:
-  CreateNewVPC: !Equals [!Ref ExistingVPC, ""]
-  CreateRoute53Records: !Not [!Equals [!Ref Route53HostedZoneID, ""]]
-  UsingGoogleWorkspace: !Not
-    - !Or
-      - !Equals [!Ref WorkspaceCredentials, ""]
-      - !Equals [!Ref WorkspaceActor, ""]
-
+Rules:
+  ValidateWorkspaceConfig:
+    RuleCondition: !Not
+      - "Fn::EachMemberEquals":
+          - - !Ref WorkspaceCredentials
+            - !Ref WorkspaceActor
+          - ""
+    Assertions:
+      - Assert: !Not [!Equals [!Ref WorkspaceCredentials, ""]]
+        AssertDescription: >-
+          The service account key is required to connect to Google Workspace.
+      - Assert: !Not [!Equals [!Ref WorkspaceActor, ""]]
+        AssertDescription: >-
+          The actor email is required to connect to Google Workspace.
 Mappings:
   CpuScale:
     base:
@@ -144,98 +142,19 @@ Mappings:
       SCIMBridge: 1024
       Redis: 512
       Task: 4096
-
+Conditions:
+  CreateVPC: !Equals [!Ref VPCID, ""]
+  CreateRoute53Records: !Not [!Equals [!Ref Route53HostedZoneID, ""]]
+  UsingGoogleWorkspace: !Not
+    - !Or
+      - !Equals [!Ref WorkspaceCredentials, ""]
+      - !Equals [!Ref WorkspaceActor, ""]
 Resources:
-  VPC:
-    Condition: CreateNewVPC
-    Type: "AWS::EC2::VPC"
-    Properties:
-      CidrBlock: !Ref VPCCIDR
-      EnableDnsHostnames: true
-      EnableDnsSupport: true
-
-  PublicSubnet1:
-    Type: "AWS::EC2::Subnet"
-    Condition: CreateNewVPC
-    Properties:
-      AvailabilityZone:
-        "Fn::Select":
-          - 0
-          - "Fn::GetAZs":
-              Ref: "AWS::Region"
-      VpcId: !If [CreateNewVPC, !Ref VPC, !Ref ExistingVPC]
-      CidrBlock:
-        "Fn::Select":
-          - 0
-          - "Fn::Cidr":
-              - !If [CreateNewVPC, !GetAtt VPC.CidrBlock, !Ref "AWS::NoValue"]
-              - 16
-              - 12
-
-  PublicSubnet2:
-    Type: "AWS::EC2::Subnet"
-    Condition: CreateNewVPC
-    Properties:
-      AvailabilityZone:
-        "Fn::Select":
-          - 1
-          - "Fn::GetAZs":
-              Ref: "AWS::Region"
-      VpcId: !If [CreateNewVPC, !Ref VPC, !Ref ExistingVPC]
-      CidrBlock:
-        "Fn::Select":
-          - 1
-          - "Fn::Cidr":
-              - !If [CreateNewVPC, !GetAtt VPC.CidrBlock, !Ref "AWS::NoValue"]
-              - 16
-              - 12
-
-  InternetGateway:
-    Condition: CreateNewVPC
-    Type: "AWS::EC2::InternetGateway"
-
-  GatewayAttachment:
-    Condition: CreateNewVPC
-    Type: "AWS::EC2::VPCGatewayAttachment"
-    Properties:
-      VpcId: !If [CreateNewVPC, !Ref VPC, !Ref ExistingVPC]
-      InternetGatewayId: !Ref InternetGateway
-
-  RouteTable:
-    Condition: CreateNewVPC
-    Type: "AWS::EC2::RouteTable"
-    Properties:
-      VpcId: !If [CreateNewVPC, !Ref VPC, !Ref ExistingVPC]
-
-  Route:
-    Condition: CreateNewVPC
-    Type: "AWS::EC2::Route"
-    DependsOn: GatewayAttachment
-    Properties:
-      RouteTableId: !Ref RouteTable
-      DestinationCidrBlock: 0.0.0.0/0
-      GatewayId: !Ref InternetGateway
-
-  PublicSubnet1RouteTableAssociation:
-    Condition: CreateNewVPC
-    Type: "AWS::EC2::SubnetRouteTableAssociation"
-    Properties:
-      SubnetId: !Ref PublicSubnet1
-      RouteTableId: !Ref RouteTable
-
-  PublicSubnet2RouteTableAssociation:
-    Condition: CreateNewVPC
-    Type: "AWS::EC2::SubnetRouteTableAssociation"
-    Properties:
-      SubnetId: !Ref PublicSubnet2
-      RouteTableId: !Ref RouteTable
-
   scimsessionSecret:
     Type: "AWS::SecretsManager::Secret"
     Properties:
       SecretString: !Base64
         Ref: scimsession
-
   WorkspaceCredentialsSecret:
     Type: "AWS::SecretsManager::Secret"
     Condition: UsingGoogleWorkspace
@@ -250,9 +169,8 @@ Resources:
         Fn::Base64: !Sub |
           {
             "actor":"${WorkspaceActor}",
-            "bridgeAddress":"https://${DNSRecord}"
+            "bridgeAddress":"https://${DomainName}"
           }
-
   ECSCluster:
     Type: "AWS::ECS::Cluster"
     DependsOn: ExecutionRole
@@ -262,7 +180,6 @@ Resources:
       DefaultCapacityProviderStrategy:
         - CapacityProvider: FARGATE
           Weight: 1
-
   ECSTaskDefinition:
     Type: "AWS::ECS::TaskDefinition"
     Properties:
@@ -282,6 +199,9 @@ Resources:
         - Name: opuser-data
       ExecutionRoleArn: !GetAtt ExecutionRole.Arn
       TaskRoleArn: !Ref TaskRole
+      RuntimePlatform:
+        CpuArchitecture: ARM64
+        OperatingSystemFamily: LINUX
       ContainerDefinitions:
         - Name: op-scim-bridge
           Cpu: !FindInMap
@@ -293,6 +213,7 @@ Resources:
             - !Ref ProvisioningVolume
             - SCIMBridge
           Image: !Sub "1password/scim:${SCIMBridgeVersion}"
+          User: "opuser:opuser"
           PortMappings:
             - ContainerPort: 3002
               HostPort: 3002
@@ -324,9 +245,6 @@ Resources:
               awslogs-group: !Ref LogGroup
               awslogs-stream-prefix: !Ref LogStream
         - Name: redis
-          DependsOn:
-            - ContainerName: init-redis
-              Condition: COMPLETE
           Cpu: !FindInMap
             - CpuScale
             - !Ref ProvisioningVolume
@@ -338,8 +256,9 @@ Resources:
           Image: "redis:latest"
           User: "redis:redis"
           Command:
-            - "redis-server"
-            - "/home/redis/config/redis.conf"
+            - --maxmemory 256mb
+            - --maxmemory-policy volatile-lru
+            - --save ""
           MountPoints:
             - ContainerPath: /home/redis
               SourceVolume: redis-config
@@ -358,70 +277,12 @@ Resources:
               awslogs-region: !Ref "AWS::Region"
               awslogs-group: !Ref LogGroup
               awslogs-stream-prefix: !Ref LogStream
-
-        - Name: init-host
-          Image: bash
-          Essential: false
-          MountPoints:
-            - ContainerPath: /home/redis
-              SourceVolume: redis-config
-            - ContainerPath: /home/opuser
-              SourceVolume: opuser-data
-          Command:
-            - -c
-            - |
-              echo "Setting directory ownership..." &&
-              chown -R 999:999 /home/redis /home/opuser && echo "Directory ownership assigned!"
-
-          LogConfiguration:
-            LogDriver: awslogs
-            Options:
-              awslogs-region: !Ref "AWS::Region"
-              awslogs-group: !Ref LogGroup
-              awslogs-stream-prefix: !Ref LogStream
-
-        - Name: init-redis
-          Image: bash
-          Essential: false
-          DependsOn:
-            - Condition: COMPLETE
-              ContainerName: init-host
-          User: "999:999"
-          Command:
-            - -c
-            - |
-              sleep 5
-              echo "Creating Redis config directory..." &&
-              mkdir /home/redis/config && echo "Directory created!" &&
-              echo "Writing configuration file..." &&
-              echo $REDIS_CONFIG | base64 -d - | tee /home/redis/config/redis.conf && echo "Configuration file saved!" &&
-              chmod 0440 /home/redis/config/redis.conf && echo "File permissions set!"
-          Environment:
-            - Name: REDIS_CONFIG
-              Value:
-                Fn::Base64: |
-                  # Redis Configuration
-                  maxmemory 256mb
-                  maxmemory-policy volatile-lru
-                  save ""
-          MountPoints:
-            - ContainerPath: /home/redis
-              SourceVolume: redis-config
-          LogConfiguration:
-            LogDriver: awslogs
-            Options:
-              awslogs-region: !Ref "AWS::Region"
-              awslogs-group: !Ref LogGroup
-              awslogs-stream-prefix: !Ref LogStream
-
   LogGroup:
     Type: "AWS::Logs::LogGroup"
-
   LogStream:
     Type: "AWS::Logs::LogStream"
     Properties:
       LogGroupName: !Ref LogGroup
-
   ECSService:
     Type: "AWS::ECS::Service"
     DependsOn: HTTPSListener
@@ -432,25 +293,21 @@ Resources:
         MaximumPercent: 100
         MinimumHealthyPercent: 0
       DesiredCount: 1
+      HealthCheckGracePeriodSeconds: 60
       LaunchType: FARGATE
       NetworkConfiguration:
         AwsvpcConfiguration:
           AssignPublicIp: ENABLED
-          Subnets:
-            - !If [CreateNewVPC, !Ref PublicSubnet1, !Ref ExistingPublicSubnet1]
-            - !If [CreateNewVPC, !Ref PublicSubnet2, !Ref ExistingPublicSubnet2]
+          Subnets: !If
+            - CreateVPC
+            - [!Ref PublicSubnet1, !Ref PublicSubnet2]
+            - !Ref PublicSubnets
           SecurityGroups:
             - !Ref ServiceSecurityGroup
       LoadBalancers:
         - ContainerName: op-scim-bridge
           ContainerPort: 3002
           TargetGroupArn: !Ref TargetGroup
-
-      HealthCheckGracePeriodSeconds: !If
-        - CreateRoute53Records
-        - 60
-        - !Ref "AWS::NoValue"
-
   TargetGroup:
     Type: "AWS::ElasticLoadBalancingV2::TargetGroup"
     Properties:
@@ -467,25 +324,24 @@ Resources:
         - Key: deregistration_delay.timeout_seconds
           Value: 60
       TargetType: ip
-      VpcId: !If [CreateNewVPC, !Ref VPC, !Ref ExistingVPC]
-
+      VpcId: !If [CreateVPC, !Ref VPC, !Ref VPCID]
   LoadBalancer:
     Type: "AWS::ElasticLoadBalancingV2::LoadBalancer"
     Properties:
       Scheme: internet-facing
-      Subnets:
-        - !If [CreateNewVPC, !Ref PublicSubnet1, !Ref ExistingPublicSubnet1]
-        - !If [CreateNewVPC, !Ref PublicSubnet2, !Ref ExistingPublicSubnet2]
+      Subnets: !If
+        - CreateVPC
+        - [!Ref PublicSubnet1, !Ref PublicSubnet2]
+        - !Ref PublicSubnets
       SecurityGroups:
         - !Ref LoadBalancerSecurityGroup
-
   LoadBalancerSecurityGroup:
     Type: "AWS::EC2::SecurityGroup"
     Properties:
       GroupDescription: >-
         Allow public HTTPS ingress to the load balancer from the identity
         provider, restrict egress to the VPC for 1Password SCIM Bridge
-      VpcId: !If [CreateNewVPC, !Ref VPC, !Ref ExistingVPC]
+      VpcId: !If [CreateVPC, !Ref VPC, !Ref VPCID]
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 443
@@ -496,17 +352,16 @@ Resources:
           FromPort: 3002
           ToPort: 3002
           CidrIp: !If
-            - CreateNewVPC
+            - CreateVPC
             - !GetAtt VPC.CidrBlock
             - "0.0.0.0/0"
-  
   ServiceSecurityGroup:
     Type: "AWS::EC2::SecurityGroup"
     Properties:
       GroupDescription: >-
         Restrict ingress to ECS Service from load balancer, allow egress to
         1Password.com for 1Password SCIM Bridge.
-      VpcId: !If [CreateNewVPC, !Ref VPC, !Ref ExistingVPC]
+      VpcId: !If [CreateVPC, !Ref VPC, !Ref VPCID]
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 3002
@@ -517,7 +372,6 @@ Resources:
           FromPort: 443
           ToPort: 443
           CidrIp: 0.0.0.0/0
-
   HTTPSListener:
     Type: "AWS::ElasticLoadBalancingV2::Listener"
     Properties:
@@ -530,7 +384,80 @@ Resources:
       Certificates:
         - CertificateArn: !Ref TLSCertificate
       SslPolicy: ELBSecurityPolicy-TLS13-1-2-2021-06
-
+  ExecutionRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Sid: ""
+            Effect: Allow
+            Principal:
+              Service:
+                - ecs-tasks.amazonaws.com
+            Action: "sts:AssumeRole"
+      Policies:
+        - PolicyName: secrets_manager_policy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "secretsmanager:GetSecretValue"
+                Resource:
+                  - !Ref scimsessionSecret
+                  - !If
+                    - UsingGoogleWorkspace
+                    - !Ref WorkspaceCredentialsSecret
+                    - !Ref "AWS::NoValue"
+                  - !If
+                    - UsingGoogleWorkspace
+                    - !Ref WorkspaceSettingsSecret
+                    - !Ref "AWS::NoValue"
+        - PolicyName: inlined_managed_policy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  # These were included in the previous version of the template, but may not be needed.
+                  # - "ec2:AuthorizeSecurityGroupIngress"
+                  # - "ec2:Describe*"
+                  # - "ecr:BatchCheckLayerAvailability"
+                  # - "ecr:BatchGetImage"
+                  # - "ecr:GetAuthorizationToken"
+                  # - "ecr:GetDownloadUrlForLayer"
+                  # - "elasticloadbalancing:DeregisterInstancesFromLoadBalancer"
+                  # - "elasticloadbalancing:DeregisterTargets"
+                  # - "elasticloadbalancing:Describe*"
+                  # - "elasticloadbalancing:RegisterInstancesWithLoadBalancer"
+                  # - "elasticloadbalancing:RegisterTargets"
+                  - "logs:CreateLogGroup"
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                Resource:
+                  - arn:aws:logs:*:*:*
+  DNSRecord:
+    Condition: CreateRoute53Records
+    Type: "AWS::Route53::RecordSet"
+    Properties:
+      HostedZoneId: !Ref Route53HostedZoneID
+      Comment: DNS record pointing to load balancer for 1Password SCIM Bridge
+      Name: !Ref DomainName
+      Type: A
+      AliasTarget:
+        DNSName: !GetAtt LoadBalancer.DNSName
+        HostedZoneId: !GetAtt LoadBalancer.CanonicalHostedZoneID
+  TLSCertificate:
+    Type: "AWS::CertificateManager::Certificate"
+    Properties:
+      DomainName: !Ref DomainName
+      ValidationMethod: DNS
+      DomainValidationOptions: !If
+        - CreateRoute53Records
+        - - DomainName: !Ref DomainName
+            HostedZoneId: !Ref Route53HostedZoneID
+        - !Ref "AWS::NoValue"
   TaskRole:
     Type: "AWS::IAM::Role"
     Properties:
@@ -564,8 +491,9 @@ Resources:
                   - "ec2:CreateNetworkInterface"
                   - "ec2:DescribeNetworkInterfaces"
                   - "ec2:DeleteNetworkInterface"
-                  - "ec2:Describe*"
-                  - "ec2:AuthorizeSecurityGroupIngress"
+                  # These may not be necessary
+                  # - "ec2:Describe*"
+                  # - "ec2:AuthorizeSecurityGroupIngress"
                 Resource: "*"
         - PolicyName: task_execution_role_policy
           PolicyDocument:
@@ -577,89 +505,88 @@ Resources:
                   - "ecr:BatchCheckLayerAvailability"
                   - "ecr:GetDownloadUrlForLayer"
                   - "ecr:BatchGetImage"
-                  - "elasticloadbalancing:DeregisterInstancesFromLoadBalancer"
-                  - "elasticloadbalancing:RegisterInstancesWithLoadBalancer"
+                  # These may not be necessary
+                  # - "elasticloadbalancing:DeregisterInstancesFromLoadBalancer"
+                  # - "elasticloadbalancing:RegisterInstancesWithLoadBalancer"
                 Resource: "*"
-
-  ExecutionRole:
-    Type: "AWS::IAM::Role"
+  VPC:
+    Condition: CreateVPC
+    Type: "AWS::EC2::VPC"
     Properties:
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          - Sid: ""
-            Effect: Allow
-            Principal:
-              Service:
-                - ecs-tasks.amazonaws.com
-            Action: "sts:AssumeRole"
-      Policies:
-        - PolicyName: secrets_manager_policy
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Effect: Allow
-                Action:
-                  - "secretsmanager:GetSecretValue"
-                Resource:
-                  - !Ref scimsessionSecret
-                  - !If
-                    - UsingGoogleWorkspace
-                    - !Ref WorkspaceCredentialsSecret
-                    - !Ref "AWS::NoValue"
-                  - !If
-                    - UsingGoogleWorkspace
-                    - !Ref WorkspaceSettingsSecret
-                    - !Ref "AWS::NoValue"
-        - PolicyName: cloudwatch_logging_policy
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Effect: Allow
-                Action:
-                  - "logs:CreateLogStream"
-                  - "logs:PutLogEvents"
-                  - "logs:CreateLogGroup"
-                Resource: 
-                  - arn:aws:logs:*:*:*
-
-  DNSRecord:
-    Condition: CreateRoute53Records
-    Type: "AWS::Route53::RecordSet"
+      CidrBlock: !Ref VPCCIDR
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+  PublicSubnet1:
+    Type: "AWS::EC2::Subnet"
+    Condition: CreateVPC
     Properties:
-      HostedZoneId: !Ref Route53HostedZoneID
-      Comment: DNS record pointing to load balancer for 1Password SCIM Bridge
-      Name: !Ref DomainName
-      Type: A
-      AliasTarget:
-        DNSName: !GetAtt LoadBalancer.DNSName
-        HostedZoneId: !GetAtt LoadBalancer.CanonicalHostedZoneID
-
-  TLSCertificate:
-    Type: "AWS::CertificateManager::Certificate"
+      AvailabilityZone:
+        "Fn::Select":
+          - 0
+          - "Fn::GetAZs":
+              Ref: "AWS::Region"
+      VpcId: !Ref VPC
+      CidrBlock:
+        "Fn::Select":
+          - 0
+          - "Fn::Cidr":
+              - !GetAtt VPC.CidrBlock
+              - 16
+              - 12
+  PublicSubnet2:
+    Type: "AWS::EC2::Subnet"
+    Condition: CreateVPC
     Properties:
-      DomainName: !Ref DomainName
-      ValidationMethod: DNS
-      DomainValidationOptions: !If
-        - CreateRoute53Records
-        - 
-          - DomainName: !Ref DomainName
-            HostedZoneId: !Ref Route53HostedZoneID
-        - !Ref "AWS::NoValue"
-
+      AvailabilityZone:
+        "Fn::Select":
+          - 1
+          - "Fn::GetAZs":
+              Ref: "AWS::Region"
+      VpcId: !Ref VPC
+      CidrBlock:
+        "Fn::Select":
+          - 1
+          - "Fn::Cidr":
+              - !GetAtt VPC.CidrBlock
+              - 16
+              - 12
+  InternetGateway:
+    Condition: CreateVPC
+    Type: "AWS::EC2::InternetGateway"
+  GatewayAttachment:
+    Condition: CreateVPC
+    Type: "AWS::EC2::VPCGatewayAttachment"
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref InternetGateway
+  RouteTable:
+    Condition: CreateVPC
+    Type: "AWS::EC2::RouteTable"
+    Properties:
+      VpcId: !Ref VPC
+  Route:
+    Condition: CreateVPC
+    Type: "AWS::EC2::Route"
+    DependsOn: GatewayAttachment
+    Properties:
+      RouteTableId: !Ref RouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+  PublicSubnet1RouteTableAssociation:
+    Condition: CreateVPC
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      SubnetId: !Ref PublicSubnet1
+      RouteTableId: !Ref RouteTable
+  PublicSubnet2RouteTableAssociation:
+    Condition: CreateVPC
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      SubnetId: !Ref PublicSubnet2
+      RouteTableId: !Ref RouteTable
 Outputs:
   SCIMBridgeURL:
     Description: >-
       The URL for your SCIM bridge. Use this and your bearer token to connect
       your identity provider to 1Password.
-    Value: !If
-      - CreateRoute53Records
-      - !Sub "https://${DNSRecord}"
-      - !Sub "https://${DomainName}"
-
-  SelectedVPC:
-    Description: "The VPC used for the SCIM Bridge."
-    Value: !If
-      - CreateNewVPC
-      - !Ref VPC
-      - !Ref ExistingVPC
+    Value: !Sub "https://${DomainName}"
