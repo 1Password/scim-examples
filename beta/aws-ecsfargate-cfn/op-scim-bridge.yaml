@@ -194,9 +194,6 @@ Resources:
         - MemoryScale
         - !Ref ProvisioningVolume
         - Task
-      Volumes:
-        - Name: redis-config
-        - Name: opuser-data
       ExecutionRoleArn: !GetAtt ExecutionRole.Arn
       TaskRoleArn: !Ref TaskRole
       RuntimePlatform:
@@ -235,9 +232,6 @@ Resources:
               - Name: OP_WORKSPACE_SETTINGS
                 ValueFrom: !Ref WorkspaceSettingsSecret
               - !Ref "AWS::NoValue"
-          MountPoints:
-            - ContainerPath: /home/opuser
-              SourceVolume: opuser-data
           LogConfiguration:
             LogDriver: awslogs
             Options:
@@ -259,9 +253,6 @@ Resources:
             - --maxmemory 256mb
             - --maxmemory-policy volatile-lru
             - --save ""
-          MountPoints:
-            - ContainerPath: /home/redis
-              SourceVolume: redis-config
           Essential: true
           PortMappings:
             - ContainerPort: 6379
