@@ -147,6 +147,11 @@ resource "aws_ecs_task_definition" "op_scim_bridge" {
   cpu                      = 256
   execution_role_arn       = aws_iam_role.op_scim_bridge.arn
 
+  runtime_platform {
+    cpu_architecture         = "ARM64"
+    operating_system_family  = "LINUX"
+  }
+
   tags = local.tags
 }
 
