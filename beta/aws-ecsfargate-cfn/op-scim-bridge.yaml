@@ -411,18 +411,6 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                  # These were included in the previous version of the template, but may not be needed.
-                  # - "ec2:AuthorizeSecurityGroupIngress"
-                  # - "ec2:Describe*"
-                  # - "ecr:BatchCheckLayerAvailability"
-                  # - "ecr:BatchGetImage"
-                  # - "ecr:GetAuthorizationToken"
-                  # - "ecr:GetDownloadUrlForLayer"
-                  # - "elasticloadbalancing:DeregisterInstancesFromLoadBalancer"
-                  # - "elasticloadbalancing:DeregisterTargets"
-                  # - "elasticloadbalancing:Describe*"
-                  # - "elasticloadbalancing:RegisterInstancesWithLoadBalancer"
-                  # - "elasticloadbalancing:RegisterTargets"
                   - "logs:CreateLogGroup"
                   - "logs:CreateLogStream"
                   - "logs:PutLogEvents"
@@ -482,24 +470,8 @@ Resources:
                   - "ec2:CreateNetworkInterface"
                   - "ec2:DescribeNetworkInterfaces"
                   - "ec2:DeleteNetworkInterface"
-                  # These may not be necessary
-                  # - "ec2:Describe*"
-                  # - "ec2:AuthorizeSecurityGroupIngress"
                 Resource: "*"
-        - PolicyName: task_execution_role_policy
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Effect: Allow
-                Action:
-                  - "ecr:GetAuthorizationToken"
-                  - "ecr:BatchCheckLayerAvailability"
-                  - "ecr:GetDownloadUrlForLayer"
-                  - "ecr:BatchGetImage"
-                  # These may not be necessary
-                  # - "elasticloadbalancing:DeregisterInstancesFromLoadBalancer"
-                  # - "elasticloadbalancing:RegisterInstancesWithLoadBalancer"
-                Resource: "*"
+  
   VPC:
     Condition: CreateVPC
     Type: "AWS::EC2::VPC"
