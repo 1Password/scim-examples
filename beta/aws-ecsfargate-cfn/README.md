@@ -12,7 +12,9 @@ This example describes how to deploy 1Password SCIM Bridge using [AWS CloudForma
 The included template can be used to deploy 1Password SCIM Bridge as a [stack](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-whatis-concepts.html#cfn-concepts-stacks) using the [AWS CloudFormation console](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-using-console.html) or [the AWS Command Line Interface (AWS CLI)](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-using-cli.html). The CloudFormation template will create and configure the following resources in your AWS account:
 
 - a VPC (with a `10.0.0.0/16` CIDR block by default)
+  - option to configure a pre-existing VPC by specifying the VPC ID, or leave this field blank to automatically create a new VPC.
 - 2 public subnets (each with `/20` CIDR blocks within this range), spanned across two availability zones in the current or selected region
+  - option to configure pre-existing public subnets using comma-separated values, or leave this field blank to automatically create new subnets.
 - an internet gateway
 - an Application Load Balancer (ALB)
 - an ECS task with associated container definitions for 1Password SCIM Bridge and the requred Redis cache
@@ -23,6 +25,8 @@ The included template can be used to deploy 1Password SCIM Bridge as a [stack](h
 - 2 Route 53 DNS records:
   - for the domain name of your SCIM bridge (e.g. `scim.example.com`)
   - to validate the requested ACM certificate
+  - optional: If left blank, you must manually create validation records with your DNS provider to allow AWS to issue the TLS certificate.
+  
 - AWS Secrets Manager secrets to store credentials and configuration for your SCIM bridge
 - a CloudWatch log group to capture logs
 - required IAM roles
