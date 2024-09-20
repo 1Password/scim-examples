@@ -1,9 +1,8 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: >-
-  Deploys 1Password SCIM Bridge using Amazon ECS and AWS Fargate. Provisions and
-  configures a VPC, 2 public subnets, an internet gateway, a route table, an
-  ALB, an ACM certificate, Route 53 DNS records, an AWS secret to store
-  credentials for your SCIM bridge, security groups, and required IAM roles.
+  Deploys 1Password SCIM Bridge on AWS Fargate in an Amazon ECS cluster. Includes ALB, ACM certificate, AWS secret,
+  security groups, and IAM role resources. Optionally creates Route 53 records and a VPC with 2 public subnets,
+  internet gateway, and route table.
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
@@ -145,6 +144,7 @@ Mappings:
 Conditions:
   CreateVPC: !Equals [!Ref VPCID, ""]
   CreateRoute53Records: !Not [!Equals [!Ref Route53HostedZoneID, ""]]
+  OutputDNSRecordContent: !Not [Condition: CreateRoute53Records]
   UsingGoogleWorkspace: !Not
     - !Or
       - !Equals [!Ref WorkspaceCredentials, ""]
@@ -247,7 +247,7 @@ Resources:
             - MemoryScale
             - !Ref ProvisioningVolume
             - Redis
-          Image: "redis:latest"
+          Image: "redis"
           User: "redis:redis"
           Command:
             - --maxmemory 256mb
@@ -471,7 +471,7 @@ Resources:
                   - "ec2:DescribeNetworkInterfaces"
                   - "ec2:DeleteNetworkInterface"
                 Resource: "*"
-  
+
   VPC:
     Condition: CreateVPC
     Type: "AWS::EC2::VPC"
@@ -548,6 +548,18 @@ Resources:
       SubnetId: !Ref PublicSubnet2
       RouteTableId: !Ref RouteTable
 Outputs:
+  CNAMEName:
+    Condition: OutputDNSRecordContent
+    Description: >-
+      Name of a DNS record to point to the load balancer. Use with CNAMEValue to create a CNAME record in your DNS
+      provider.
+    Value: !Sub "${DomainName}."
+  CNAMEValue:
+    Condition: OutputDNSRecordContent
+    Description: >-
+      Value of a DNS record to point to the load balancer. Use with CNAMEName to create a public CNAME record in your
+      DNS provider.
+    Value: !Sub "${LoadBalancer.DNSName}."
   SCIMBridgeURL:
     Description: >-
       The URL for your SCIM bridge. Use this and your bearer token to connect
