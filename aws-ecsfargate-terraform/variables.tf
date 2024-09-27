@@ -1,6 +1,12 @@
+variable "scim_bridge_version" {
+  type        = string
+  description = "The container image tag for 1Password SCIM Bridge."
+}
+
 variable "aws_region" {
   type        = string
   description = "The region of the AWS account where the 1Password SCIM Bridge will be deployed."
+  default     = null
 }
 
 variable "domain_name" {
@@ -11,16 +17,19 @@ variable "domain_name" {
 variable "tags" {
   type        = map(string)
   description = "A set of tags to apply to all respective AWS resources."
+  default     = null
 }
 
 variable "name_prefix" {
   type        = string
   description = "A common prefix to apply to the names of all AWS resources."
+  default     = null
 }
 
 variable "vpc_name" {
   type        = string
   description = "The name of an existing VPC to use."
+  default     = null
 }
 
 variable "wildcard_cert" {
@@ -38,6 +47,7 @@ variable "using_route53" {
 variable "log_retention_days" {
   type        = number
   description = "Specifies the number of days to retain log events in CloudWatch. The log is retained indefinitely when set to 0."
+  default     = 0
 }
 
 # For customers integrating with Google Workspace

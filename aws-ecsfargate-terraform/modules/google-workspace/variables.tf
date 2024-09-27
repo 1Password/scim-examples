@@ -29,3 +29,7 @@ variable "bridgeAddress" {
   type        = string
   description = "The URL of 1Password SCIM Bridge."
 }
+
+variable "container_definitions" {
+  description = "Base task definition container definitions to be modified for connecting Google Workspace."
+}

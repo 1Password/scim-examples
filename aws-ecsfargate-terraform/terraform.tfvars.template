@@ -1,22 +1,37 @@
-# Required: Set a domain name for your SCIM bridge
+# ---Required variables---
+
+# The domain name for your SCIM bridge
 domain_name = "scim.example.com"
 
-# Optional: Specify a different region
-aws_region = "us-east-1"
+# The version of SCIM bridge to deploy (its container image tag)
+scim_bridge_version = "v2.9.6"
 
-# Optional: Specify an existing VPC to use, add a common name prefix to all resources, specify the CloudWatch Logs retention period, and add tags for all supported resources.
-vpc_name           = ""
-name_prefix        = ""
-log_retention_days = 0
-tags = {
-  #key = "value"
-}
+# ---Optional variables---
 
-# Uncomment the below line to use an existing wildcard certificate in AWS Certificate Manager.
-#wildcard_cert = true
+# The AWS region to use with the provider (default: use the region from the environment or configuration profile)
+# aws_region = "us-east-1"
 
-# Uncomment the below line if you are *not* using Route 53
-#using_route53 = false
+# The name of an existing VPC to use (default: use the default VPC)
+# vpc_name = "vpc-123"
 
-# Uncomment the below line and specify the appropriate email address to enable connecting to Google Workspace
-#google_workspace_actor = "workspace.admin@example.com"
+# A common name prefix to apply to created resources
+# name_prefix        = "op-scim-bridge"
+
+# The CloudWatch Logs retention period (default: store indefinitely)
+# log_retention_days = 30
+
+# Add tags for all supported resources
+# tags = {
+# #   key = "value"
+# }
+
+# Use an existing wildcard certificate in AWS Certificate Manager
+# wildcard_cert = true
+
+# Use Route 53 as the DNS provider (uncomment to create records manually)
+# using_route53 = false
+
+# --For customers provisioning from Google Workspace---
+
+# The adminstrator email delegated by the service account for Google Workspace
+# google_workspace_actor = "administrator.email@example.com"

@@ -11,59 +11,39 @@ terraform {
 
 provider "aws" {
   region = var.aws_region
+
+  default_tags {
+    tags = local.tags
+  }
 }
 
 locals {
-  name_prefix = var.name_prefix != "" ? var.name_prefix : "op-scim-bridge"
-  domain      = join(".", slice(split(".", var.domain_name), 1, length(split(".", var.domain_name))))
+  domain = join(".", slice(split(".", var.domain_name), 1, length(split(".", var.domain_name))))
+
   tags = merge(var.tags, {
     application = "1Password SCIM Bridge",
-    version     = trimprefix(jsondecode(file("${path.module}/task-definitions/scim.json"))[0].image, "1password/scim:v")
+    version     = var.scim_bridge_version
   })
 
   # Enable Google Workspace module if Workspace admin email is supplied
   using_google_workspace = var.google_workspace_actor != null
 
-  # Define base configuration from ./task-definitions/scim.json
-  base_container_definitions_json = templatefile(
+  # Get base configuration from ./task-definitions/scim.json
+  container_definitions = jsondecode(templatefile(
     "${path.module}/task-definitions/scim.json",
     {
-      secret_arn     = aws_secretsmanager_secret.scimsession.arn,
-      aws_logs_group = aws_cloudwatch_log_group.op_scim_bridge.name,
-      region         = var.aws_region,
+      scim_bridge_version = var.scim_bridge_version
+      secret_arn          = aws_secretsmanager_secret.scimsession.arn,
+      aws_logs_group      = aws_cloudwatch_log_group.op_scim_bridge.name,
+      region              = data.aws_region.current.name,
     }
-  )
-
-  # Split base config array into discrete container definitions
-  base_scim_bridge_container_definition = jsondecode(local.base_container_definitions_json)[0]
-  base_redis_container_definition       = jsondecode(local.base_container_definitions_json)[1]
-
-  # Conditionally merge Google Workspace config
-  scim_bridge_container_definition = !local.using_google_workspace ? local.base_scim_bridge_container_definition : merge(
-    local.base_scim_bridge_container_definition,
-    {
-      #Add Google Workspace secrets to current list
-      secrets = concat(
-        local.base_scim_bridge_container_definition.secrets,
-        module.google_workspace[0].secrets,
-      )
-    }
-  )
-
-  # Create local variable for merging in config to Redis container
-  redis_container_definition = local.base_redis_container_definition
-
-  # Combine discrete container definitions into list
-  container_definitions = [
-    local.scim_bridge_container_definition,
-    local.redis_container_definition,
-  ]
+  ))
 }
 
 data "aws_vpc" "this" {
   # Use the default VPC or find the VPC by name if specified
-  default = var.vpc_name == "" ? true : false
-  tags    = var.vpc_name != "" ? { Name = var.vpc_name } : {}
+  default = var.vpc_name == null ? true : false
+  tags    = var.vpc_name == null ? {} : { Name = var.vpc_name }
 }
 
 data "aws_subnets" "public" {
@@ -72,10 +52,11 @@ data "aws_subnets" "public" {
     values = [data.aws_vpc.this.id]
   }
   # Find the public subnets in the VPC, or if the default VPC, use both
-  tags = var.vpc_name != "" ? { SubnetTier = "public" } : {}
+  tags = var.vpc_name != null ? { SubnetTier = "public" } : {}
 
 }
-data "aws_iam_policy_document" "assume_role_policy" {
+
+data "aws_iam_policy_document" "execution_trust_policy" {
   statement {
     actions = ["sts:AssumeRole"]
 
@@ -86,15 +67,54 @@ data "aws_iam_policy_document" "assume_role_policy" {
   }
 }
 
-data "aws_iam_policy_document" "scimsession" {
+data "aws_iam_policy_document" "execution_policy" {
   statement {
     actions = [
-      "secretsmanager:GetSecretValue",
+      "events:PutRule",
+      "events:PutTargets",
+      "events:DescribeRule",
+      "events:ListTargetsByRule",
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:DescribeLogGroups"
     ]
 
-    resources = [
-      aws_secretsmanager_secret.scimsession.arn,
-    ]
+    resources = ["*"]
+  }
+}
+
+data "aws_caller_identity" "current" {}
+
+data "aws_region" "current" {}
+
+data "aws_iam_policy_document" "task_trust_policy" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["ecs-tasks.amazonaws.com"]
+    }
+
+    condition {
+      test     = "ArnLike"
+      variable = "aws:SourceArn"
+      values   = ["arn:aws:ecs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:*"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:SourceAccount"
+      values   = ["${data.aws_caller_identity.current.account_id}"]
+    }
+  }
+}
+
+data "aws_iam_policy_document" "read_secrets" {
+  statement {
+    actions = ["secretsmanager:GetSecretValue"]
+
+    resources = [aws_secretsmanager_secret.scimsession.arn]
   }
 }
 
@@ -112,69 +132,81 @@ data "aws_route53_zone" "zone" {
 }
 
 resource "aws_secretsmanager_secret" "scimsession" {
-  name_prefix = local.name_prefix
+  name_prefix = var.name_prefix
   # Allow `terraform destroy` to delete secret (hint: save your scimsession file in 1Password)
   recovery_window_in_days = 0
-
-  tags = local.tags
 }
 
 resource "aws_secretsmanager_secret_version" "scimsession" {
   secret_id     = aws_secretsmanager_secret.scimsession.id
-  secret_string = filebase64("${path.module}/scimsession")
+  secret_string = file("${path.module}/scimsession")
 }
 
 resource "aws_cloudwatch_log_group" "op_scim_bridge" {
-  name_prefix       = local.name_prefix
+  name_prefix       = var.name_prefix
   retention_in_days = var.log_retention_days
-
-  tags = local.tags
 }
 
 resource "aws_ecs_cluster" "op_scim_bridge" {
-  name = var.name_prefix == "" ? "op-scim-bridge" : format("%s-%s", local.name_prefix, "scim-bridge")
-
-  tags = local.tags
+  name = var.name_prefix == null ? "op-scim-bridge-cluster" : format("%s-%s", var.name_prefix, "cluster")
 }
 
 resource "aws_ecs_task_definition" "op_scim_bridge" {
-  family                = var.name_prefix == "" ? "op_scim_bridge" : format("%s_%s", local.name_prefix, "scim_bridge")
-  container_definitions = jsonencode(local.container_definitions)
+  family = "op_scim_bridge"
+  container_definitions = jsonencode(
+    !local.using_google_workspace ? local.container_definitions : module.google_workspace[0].container_definitions
+  )
 
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   memory                   = 1024
   cpu                      = 256
   execution_role_arn       = aws_iam_role.op_scim_bridge.arn
+  task_role_arn            = aws_iam_role.task_role.arn
 
-  runtime_platform {
-    cpu_architecture         = "ARM64"
-    operating_system_family  = "LINUX"
+  volume {
+    configure_at_launch = false
+    name                = "secrets"
   }
 
-  tags = local.tags
+  runtime_platform {
+    cpu_architecture        = "ARM64"
+    operating_system_family = "LINUX"
+  }
 }
 
 resource "aws_iam_role" "op_scim_bridge" {
-  name_prefix        = local.name_prefix
-  assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
+  name_prefix        = var.name_prefix
+  assume_role_policy = data.aws_iam_policy_document.execution_trust_policy.json
+}
 
-  tags = local.tags
+resource "aws_iam_policy" "execution_policy" {
+  name_prefix = var.name_prefix
+  policy      = data.aws_iam_policy_document.execution_policy.json
 }
 
 resource "aws_iam_role_policy_attachment" "op_scim_bridge" {
   role       = aws_iam_role.op_scim_bridge.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+  policy_arn = aws_iam_policy.execution_policy.arn
 }
 
-resource "aws_iam_role_policy" "scimsession" {
-  name_prefix = local.name_prefix
-  role        = aws_iam_role.op_scim_bridge.id
-  policy      = data.aws_iam_policy_document.scimsession.json
+resource "aws_iam_role" "task_role" {
+  name_prefix        = var.name_prefix
+  assume_role_policy = data.aws_iam_policy_document.task_trust_policy.json
+}
+
+resource "aws_iam_policy" "read_secrets" {
+  name_prefix = var.name_prefix
+  policy      = data.aws_iam_policy_document.read_secrets.json
+}
+
+resource "aws_iam_role_policy_attachment" "task_role" {
+  role       = aws_iam_role.task_role.name
+  policy_arn = aws_iam_policy.read_secrets.arn
 }
 
 resource "aws_ecs_service" "op_scim_bridge" {
-  name             = format("%s_%s", local.name_prefix, "service")
+  name             = var.name_prefix == null ? "op-scim-bridge-service" : format("%s-%s", var.name_prefix, "service")
   cluster          = aws_ecs_cluster.op_scim_bridge.id
   task_definition  = aws_ecs_task_definition.op_scim_bridge.arn
   launch_type      = "FARGATE"
@@ -193,18 +225,14 @@ resource "aws_ecs_service" "op_scim_bridge" {
     security_groups  = [aws_security_group.service.id]
   }
 
-  tags = local.tags
-
   depends_on = [aws_lb_listener.https]
 }
 
 resource "aws_alb" "op_scim_bridge" {
-  name               = var.name_prefix == "" ? "op-scim-bridge-alb" : format("%s-%s", local.name_prefix, "alb")
+  name               = var.name_prefix == null ? "op-scim-bridge-alb" : format("%s-%s", var.name_prefix, "alb")
   load_balancer_type = "application"
   subnets            = data.aws_subnets.public.ids
   security_groups    = [aws_security_group.alb.id]
-
-  tags = local.tags
 }
 
 resource "aws_security_group" "alb" {
@@ -225,8 +253,6 @@ resource "aws_security_group" "alb" {
     protocol    = "tcp"
     cidr_blocks = [data.aws_vpc.this.cidr_block]
   }
-
-  tags = local.tags
 }
 
 resource "aws_security_group" "service" {
@@ -248,12 +274,10 @@ resource "aws_security_group" "service" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
-  tags = local.tags
 }
 
 resource "aws_lb_target_group" "op_scim_bridge" {
-  name        = var.name_prefix == "" ? "op-scim-bridge-tg" : format("%s-%s", local.name_prefix, "tg")
+  name        = var.name_prefix == null ? "op-scim-bridge-tg" : format("%s-%s", var.name_prefix, "tg")
   port        = 3002
   protocol    = "HTTP"
   target_type = "ip"
@@ -262,8 +286,6 @@ resource "aws_lb_target_group" "op_scim_bridge" {
     matcher = "200,301,302"
     path    = "/app"
   }
-
-  tags = local.tags
 }
 
 resource "aws_lb_listener" "https" {
@@ -340,12 +362,13 @@ module "google_workspace" {
 
   source = "./modules/google-workspace"
 
-  name_prefix   = local.name_prefix
-  tags          = local.tags
-  iam_role      = aws_iam_role.op_scim_bridge
-  enabled       = local.using_google_workspace
-  actor         = var.google_workspace_actor
-  bridgeAddress = "https://${var.domain_name}"
+  name_prefix           = var.name_prefix
+  tags                  = local.tags
+  iam_role              = aws_iam_role.task_role
+  container_definitions = local.container_definitions
+  enabled               = local.using_google_workspace
+  actor                 = var.google_workspace_actor
+  bridgeAddress         = "https://${var.domain_name}"
 }
 
 moved {

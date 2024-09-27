@@ -1,19 +1,5 @@
-locals {
-  # Define secret reference list
-  secrets = [
-    {
-      name      = "OP_WORKSPACE_CREDENTIALS"
-      valueFrom = aws_secretsmanager_secret.workspace_credentials.arn
-    },
-    {
-      name      = "OP_WORKSPACE_SETTINGS",
-      valueFrom = aws_secretsmanager_secret.workspace_settings.arn,
-    },
-  ]
-}
-
-# Construct an IAM policy document
-data "aws_iam_policy_document" "this" {
+# Construct an IAM policy document to allow reading secrets for Google Workspace
+data "aws_iam_policy_document" "read_gw_secrets" {
   statement {
     actions = [
       "secretsmanager:GetSecretValue",
@@ -26,11 +12,16 @@ data "aws_iam_policy_document" "this" {
   }
 }
 
-# Create a policy from the document and attach it to the IAM role
-resource "aws_iam_role_policy" "this" {
+# Create a policy from the document
+resource "aws_iam_policy" "read_gw_secrets" {
   name_prefix = var.name_prefix
-  policy      = data.aws_iam_policy_document.this.json
-  role        = var.iam_role.name
+  policy      = data.aws_iam_policy_document.read_gw_secrets.json
+}
+
+# Attach the policy to the IAM role
+resource "aws_iam_role_policy_attachment" "attach_gw_policy" {
+  role       = var.iam_role.name
+  policy_arn = aws_iam_policy.read_gw_secrets.arn
 }
 
 resource "aws_secretsmanager_secret" "workspace_settings" {
@@ -40,11 +31,11 @@ resource "aws_secretsmanager_secret" "workspace_settings" {
 }
 
 resource "aws_secretsmanager_secret_version" "workspace_settings" {
-  secret_id     = aws_secretsmanager_secret.workspace_settings.id
-  secret_string = !var.enabled ? null : base64encode(jsonencode({
+  secret_id = aws_secretsmanager_secret.workspace_settings.id
+  secret_string = !var.enabled ? null : jsonencode({
     actor         = var.actor
     bridgeAddress = var.bridgeAddress
-  }))
+  })
 }
 
 resource "aws_secretsmanager_secret" "workspace_credentials" {
@@ -55,5 +46,5 @@ resource "aws_secretsmanager_secret" "workspace_credentials" {
 
 resource "aws_secretsmanager_secret_version" "workspace_credentials" {
   secret_id     = aws_secretsmanager_secret.workspace_credentials.id
-  secret_string = var.enabled ? filebase64("${path.root}/workspace-credentials.json") : null
+  secret_string = !var.enabled ? null : file("${path.root}/workspace-credentials.json")
 }

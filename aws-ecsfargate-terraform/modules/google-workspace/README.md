@@ -6,6 +6,6 @@ This module:
 
 - Creates AWS secrets to store the Google Workspace configuration.
 - Creates an IAM policy to read the secrets and attaches it to the role passed into the module.
-- Outputs a list of `secrets` objects to append to the SCIM bridge container definition.
+- Merges the environment variables and AWS CLI commands into the container definitions passed into the module.
 
-Learn how to use this module in the Terraform deployment example folder's [`README.md`](../README.md#step-1-configure-the-deployment) document.
+Learn how to use this module in the Terraform deployment example folder's [`README.md`](../../README.md#step-1-configure-the-deployment) document.

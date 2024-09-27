@@ -1,57 +1,56 @@
 [
   {
     "name": "op_scim_bridge",
-    "image": "1password/scim:v2.9.11",
+    "image": "1password/scim:${scim_bridge_version}",
     "cpu": 128,
     "memory": 512,
     "essential": true,
     "dependsOn": [
       {
+        "containerName": "mount-secrets",
+        "condition": "SUCCESS"
+      },
+      {
         "containerName": "redis",
-        "condition": "START"
+        "condition": "HEALTHY"
       }
     ],
-    "portMappings": [
-      {
-        "containerPort": 3002,
-        "hostPort": 3002,
-        "protocol": "tcp"
-      }
-    ],
-    "environment": [
-      {
-        "name": "OP_REDIS_URL",
-        "value": "redis://localhost:6379"
-      },
-      {
-        "name": "OP_TLS_DOMAIN",
-        "value": ""
-      },
-      {
-        "name": "OP_CONFIRMATION_INTERVAL",
-        "value": "300"
-      }
-    ],
-    "secrets": [
-      {
-        "name": "OP_SESSION",
-        "valueFrom": "${secret_arn}"
-      }
-    ],
+    "portMappings": [{"containerPort": 3002}],
+    "environment": [],
     "logConfiguration": {
       "logDriver": "awslogs",
       "options": {
         "awslogs-group": "${aws_logs_group}",
         "awslogs-region": "${region}",
-        "awslogs-stream-prefix": "ecs-scim"
+        "awslogs-stream-prefix": "ecs"
       }
     },
-    "mountPoints": [],
+    "mountPoints": [
+      {
+        "containerPath": "/home/opuser/.op",
+        "sourceVolume": "secrets"
+      }
+    ],
+    "systemControls": [],
     "volumesFrom": []
   },
   {
     "name": "redis",
-    "image": "redis:latest",
+    "image": "redis",
+    "command": [
+      "--maxmemory 256mb",
+      "--maxmemory-policy volatile-lru",
+      "--save \"\""
+    ],
+    "healthCheck": {
+      "command": [
+        "CMD-SHELL",
+        "redis-cli ping | grep PONG"
+      ],
+      "interval": 30,
+      "retries": 3,
+      "timeout": 5
+    },
     "cpu": 128,
     "memory": 512,
     "essential": true,
@@ -61,23 +60,48 @@
       "options": {
         "awslogs-group": "${aws_logs_group}",
         "awslogs-region": "${region}",
-        "awslogs-stream-prefix": "ecs-redis"
+        "awslogs-stream-prefix": "ecs"
       }
     },
-    "portMappings": [
+    "portMappings": [{"containerPort": 6379}],
+    "environment": [],
+    "mountPoints": [],
+    "systemControls": [],
+    "volumesFrom": []
+  },
+  {
+    "name": "mount-secrets",
+    "portMappings": [],
+    "essential": false,
+    "image": "public.ecr.aws/aws-cli/aws-cli",
+    "mountPoints": [
       {
-        "containerPort": 6379,
-        "hostPort": 6379,
-        "protocol": "tcp"
+        "containerPath": "/aws",
+        "sourceVolume": "secrets"
       }
     ],
     "environment": [
       {
-        "name": "REDIS_ARGS",
-        "value": "--maxmemory 256mb --maxmemory-policy volatile-lru"
+        "name": "SCIMSESSION_ARN",
+        "value": "${secret_arn}"
       }
     ],
-    "mountPoints": [],
+    "entryPoint": [
+      "/bin/bash",
+      "-c"
+    ],
+    "command": [
+      "aws secretsmanager get-secret-value --secret-id $SCIMSESSION_ARN --query SecretString --output text > scimsession"
+    ],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "${aws_logs_group}",
+        "awslogs-region": "${region}",
+        "awslogs-stream-prefix": "ecs"
+      }
+    },
+    "systemControls": [],
     "volumesFrom": []
   }
 ]
