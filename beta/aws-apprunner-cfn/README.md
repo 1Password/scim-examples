@@ -33,7 +33,12 @@ This template is a working example to be used as a base for your SCIM bridge dep
 - An AWS account with the permissions and available quota to create and manage the described resources
 - [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) (if you want to manage the deployment using a terminal or script).
 
+
+
 ## Getting started
+
+> [!IMPORTANT]
+> Currently, 1Password SCIM Bridge is not published to AWS Elastic Container Registry. To use this deployment example currently, it is necessary to create a private ECR repository in your AWS account containing the ` 1password/scim` container. See [Pushing a Docker image to an Amazon ECR private repository - Amazon ECR](https://docs.aws.amazon.com/AmazonECR/latest/userguide/docker-push-ecr-image.html)
 
 Before deploying 1Password SCIM Bridge, consult the [Preparation Guide](/PREPARATION.md) in this repository. Since this CloudFormation template will create all necessary resources, you do not need to separately create a DNS record for your SCIM bridge, nor use its certificate manager component to create and manage a TLS certificate.
 
@@ -49,6 +54,12 @@ Before deploying 1Password SCIM Bridge, consult the [Preparation Guide](/PREPARA
 2. Follow the steps in [Automate provisioning in 1Password Business using SCIM](https://support.1password.com/scim/#step-1-set-up-and-deploy-1password-scim-bridge) to generate credentials for your SCIM bridge.
 3. Save the `scimsession` credentials file and the associated bearer token as items in your 1Password account.
 4. Download the `scimsession` file to the same working directory.
+5. Edit line 172 of `op-scim-bridge.yaml` to refer to your private repository of 1Password SCIM Bridge: 
+```
+- ImageIdentifier: !Sub ${AWS::AccountId}.dkr.ecr.us-west-2.amazonaws.com/op-scim-bridge:v2.9.6
++ ImageIdentifier: 1234567890.dkr.ecr.us-west-2.amazonaws.com/op-scim-bridge:v2.9.6
+
+```
 
 ## 🏗️ Deploy 1Password SCIM Bridge
 
