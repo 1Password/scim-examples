@@ -8,10 +8,19 @@ variable "tags" {
   description = "A set of tags to apply to all respective AWS resources."
 }
 
+variable "container_definitions" {
+  type = list(object({
+    name    = optional(string)
+    command = optional(list(string))
+    environment = optional(list(object({
+      name  = string
+      value = string
+    })))
+  }))
+}
+
 variable "iam_role" {
-  type = object({
-    name = string
-  })
+  type        = string
   description = "The IAM role to which the policy to read the Google Workspace credentials should be attached."
 }
 
@@ -28,8 +37,4 @@ variable "actor" {
 variable "bridgeAddress" {
   type        = string
   description = "The URL of 1Password SCIM Bridge."
-}
-
-variable "container_definitions" {
-  description = "Base task definition container definitions to be modified for connecting Google Workspace."
 }

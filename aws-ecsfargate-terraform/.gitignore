@@ -1,0 +1,2 @@
+# Exclude `.json` files that may be a Google Cloud service account key from the currrent directory only
+/*.json

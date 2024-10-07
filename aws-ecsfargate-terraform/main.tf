@@ -25,25 +25,7 @@ locals {
     version     = var.scim_bridge_version
   })
 
-  # Enable Google Workspace module if Workspace admin email is supplied
-  using_google_workspace = var.google_workspace_actor != null
 
-  # Get base configuration from ./task-definitions/scim.json
-  container_definitions = jsondecode(templatefile(
-    "${path.module}/task-definitions/scim.json",
-    {
-      scim_bridge_version = var.scim_bridge_version
-      secret_arn          = aws_secretsmanager_secret.scimsession.arn,
-      aws_logs_group      = aws_cloudwatch_log_group.op_scim_bridge.name,
-      region              = data.aws_region.current.name,
-    }
-  ))
-}
-
-data "aws_vpc" "this" {
-  # Use the default VPC or find the VPC by name if specified
-  default = var.vpc_name == null ? true : false
-  tags    = var.vpc_name == null ? {} : { Name = var.vpc_name }
 }
 
 data "aws_subnets" "public" {
@@ -147,15 +129,70 @@ resource "aws_cloudwatch_log_group" "op_scim_bridge" {
   retention_in_days = var.log_retention_days
 }
 
+locals {
+  # Construct base container definitions
+  base_container_definitions = jsondecode(
+    # Pass in template values to container definitions file
+    templatefile(
+      "${path.root}/task-definitions/scim.json", # file path
+      {
+        scim_bridge_version = var.scim_bridge_version                      # SCIM bridge version
+        secret_arn          = aws_secretsmanager_secret.scimsession.arn    # AWS secret ARN for `scimsession` file
+        aws_logs_group      = aws_cloudwatch_log_group.op_scim_bridge.name # CloudWatch log group
+        region              = data.aws_region.current.name                 # AWS region
+      }
+  ))
+
+  # Enable Google Workspace module if Workspace admin email is supplied
+  using_google_workspace = var.google_workspace_actor != null
+}
+
+module "google_workspace" {
+  count = local.using_google_workspace ? 1 : 0
+
+  source = "./modules/google-workspace"
+
+  name_prefix           = var.name_prefix
+  tags                  = local.tags
+  container_definitions = local.base_container_definitions
+  iam_role              = aws_iam_role.task_role.name
+  enabled               = local.using_google_workspace
+  actor                 = var.google_workspace_actor
+  bridgeAddress         = "https://${var.domain_name}"
+}
+
+locals {
+  # Container definitions to pass to task definition  
+  container_definitions = !local.using_google_workspace ? local.base_container_definitions : [ # default to base
+    # If connecting to Google Workspace, merge properties from the Google Workspace module
+    for container in local.base_container_definitions :
+    # Only merge the designated secret mounting container
+    container.name != "mount-secrets" ? container :
+    # Merge with the base definition
+    merge(container,
+      merge( # Inner merge to ensure consistent type
+        # Selected properties from the base container
+        {
+          command     = container.command
+          environment = container.environment
+        },
+        # Secret mounting container from the Google Workspace module
+        {
+          for container in module.google_workspace[0].container_definitions :
+          container.name => container
+        }["mount-secrets"]
+      )
+    )
+  ]
+}
+
 resource "aws_ecs_cluster" "op_scim_bridge" {
   name = var.name_prefix == null ? "op-scim-bridge-cluster" : format("%s-%s", var.name_prefix, "cluster")
 }
 
 resource "aws_ecs_task_definition" "op_scim_bridge" {
-  family = "op_scim_bridge"
-  container_definitions = jsonencode(
-    !local.using_google_workspace ? local.container_definitions : module.google_workspace[0].container_definitions
-  )
+  family                = "op_scim_bridge"
+  container_definitions = jsonencode(local.container_definitions)
 
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
