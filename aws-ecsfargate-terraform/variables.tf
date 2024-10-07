@@ -1,3 +1,8 @@
+variable "domain_name" {
+  type        = string
+  description = "The public DNS name that will point to the load balancer for your 1Password SCIM bridge deployment."
+}
+
 variable "scim_bridge_version" {
   type        = string
   description = "The container image tag for 1Password SCIM Bridge."
@@ -5,19 +10,20 @@ variable "scim_bridge_version" {
 
 variable "aws_region" {
   type        = string
-  description = "The region of the AWS account where the 1Password SCIM Bridge will be deployed."
+  description = "An AWS region where the provider will operate."
   default     = null
 }
 
-variable "domain_name" {
+variable "aws_profile" {
   type        = string
-  description = "The public DNS address pointing to your SCIM bridge."
+  description = "An AWS profile name to use with the provider."
+  default     = null
 }
 
 variable "tags" {
   type        = map(string)
   description = "A set of tags to apply to all respective AWS resources."
-  default     = null
+  default     = {}
 }
 
 variable "name_prefix" {
@@ -26,9 +32,21 @@ variable "name_prefix" {
   default     = null
 }
 
-variable "vpc_name" {
+variable "vpc_id" {
   type        = string
-  description = "The name of an existing VPC to use."
+  description = "The ID of an existing VPC to use."
+  default     = null
+}
+
+variable "vpc_cidr_block" {
+  type        = string
+  description = "A CIDR range to use when creating a VPC."
+  default     = null
+}
+
+variable "public_subnets" {
+  type        = list(string)
+  description = "A list of public subnets spanning at least two availability zones."
   default     = null
 }
 
