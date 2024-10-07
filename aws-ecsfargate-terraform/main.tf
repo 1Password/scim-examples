@@ -76,9 +76,9 @@ data "aws_iam_policy_document" "execution_policy" {
       "events:ListTargetsByRule",
       "logs:CreateLogGroup",
       "logs:CreateLogStream",
-      "logs:DescribeLogGroups"
+      "logs:DescribeLogGroups",
+      "logs:PutLogEvents"
     ]
-
     resources = ["*"]
   }
 }
