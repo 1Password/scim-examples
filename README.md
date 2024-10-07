@@ -16,16 +16,16 @@ Before you begin deploying 1Password SCIM Bridge,
 
 - [Azure Kubernetes Service](https://support.1password.com/cs/scim-deploy-azure-kubernetes/)
 
-### AWS
-- ✨ **BETA** [AWS with CloudFormation](/beta/aws-ecsfargate-cfn)
+### Amazon Web Service (AWS)
+- ✨ **BETA** [AWS ECS Fargate with CloudFormation](/beta/aws-ecsfargate-cfn)
 - [AWS ECS Fargate with Terraform](/aws-ecsfargate-terraform)
 
-### GCP
+### Google Cloud (GCP)
 - ✨ **BETA** [Google Cloud Run (CaaS)](/beta/google-cloud-run)
 - [Google Cloud Marketplace](https://support.1password.com/scim-deploy-gcp/)
 
 ### Digital Ocean
-- [Deploy 1Password SCIM Bridge on DigitalOcean Marketplace](https://support.1password.com/scim-deploy-digitalocean/)
+- [DigitalOcean Marketplace](https://support.1password.com/scim-deploy-digitalocean/)
 - DigitalOcean App Platform (CaaS)
   - [using web portal](https://support.1password.com/cs/scim-deploy-digitalocean-ap/)
   - [using CLI](/do-app-platform-op-cli) 
