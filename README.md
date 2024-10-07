@@ -1,10 +1,7 @@
 # 1Password SCIM Bridge deployment examples
-
 You can deploy 1Password SCIM Bridge on any supported infrastructure that allows ingress from your identity provider and egress to 1Password servers. Here you'll find configuration files and best practices to help with your deployment.
 
-
 ### Before you begin
-
 Before you begin deploying 1Password SCIM Bridge, 
 - learn more about [automating provisioning in 1Password using SCIM](https://support.1password.com/scim/).
 - review the [Preparation Guide](/PREPARATION.md). The guide will help you plan for some of the technical components of the deployment and consider some issues you may encounter along the way.
@@ -26,14 +23,12 @@ Before you begin deploying 1Password SCIM Bridge,
 - [DigitalOcean App Platform (CaaS)](https://support.1password.com/cs/scim-deploy-digitalocean-ap/)
 - [DigitalOcean Marketplace](https://support.1password.com/scim-deploy-digitalocean/)
 
-
 ### Generic
 - [Docker](/docker)
 - [Kubernetes](/kubernetes)
 - [Helm](https://github.com/1Password/op-scim-helm)
 
 ## Choosing a deployment method
-
 Choosing a deployment method comes down to which infrastructure and tool you mainly use in your organization. Under the hood they all use the same Docker image and serve the same purpose of a SCIM bridge. Below are some more information on terminologies used in the deployment method list.
 
 ### Marketplace
@@ -46,9 +41,7 @@ Containers as a service (CaaS) can simplify your deployment by using the built-i
 The beta deployments _should_ work, but aren't guaranteed and will change in the future. See the [README](./beta/README.md) for more information about the "beta" designation.
 
 ## Deprecated deployment methods
-
 A list of recently-deprecated deployments can be found in [`/deprecated`](./deprecated/). At the time of deprecation, these deployments were fully functional, but will soon become unsupported.
-
 - [**List of deprecated deployment methods**](./deprecated/README.md#deprecated-deployments)
 
 <details>

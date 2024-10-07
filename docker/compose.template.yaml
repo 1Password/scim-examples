@@ -1,0 +1,41 @@
+services:
+  redis:
+    command: --maxmemory 256mb --maxmemory-policy volatile-lru --save ""
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.125"
+        limits:
+          memory: 512M
+    healthcheck:
+      test: redis-cli ping | grep PONG
+    image: redis
+    networks: [op-scim]
+    user: 999:999
+  scim:
+    depends_on: [redis]
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.125"
+        limits:
+          memory: 512M
+    env_file: ./scim.env
+    environment: [OP_REDIS_URL=redis://redis:6379]
+    image: 1password/scim:v2.9.6
+    networks: [op-scim]
+    ports: [443:8443]
+    secrets:
+      - source: credentials
+        target: /home/opuser/.op/scimsession
+        uid: "999"
+        gid: "999"
+        mode: 0440
+    user: 999:999
+networks:
+  op-scim:
+    name: op-scim
+secrets:
+  credentials:
+    file: ./scimsession
+    name: credentials

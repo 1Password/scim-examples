@@ -159,7 +159,7 @@ To finish setting up automated user provisioning, [connect your identity provide
 To update SCIM bridge, connect to your Kubernetes cluster and run the following command:
 
 ```sh
-kubectl set image deploy/op-scim-bridge op-scim-bridge=1password/scim:v2.9.5
+kubectl set image deploy/op-scim-bridge op-scim-bridge=1password/scim:v2.9.6
 ```
 
 > **Note**
@@ -295,7 +295,7 @@ kubectl set env deploy op-scim-bridge \
 
 If you prefer to use an external Redis cache, omit the the `redis-*.yaml` files when deploying to your Kubernetes cluster. Replace the value of the `OP_REDIS_URL` environment variable in [`op-scim-config.yaml`](./op-scim-config.yaml) with a Redis connection URI for your Redis server.
 
-#### If you already deployd your SCIM bridge
+#### If you already deployed your SCIM bridge
 
 You can set `OP_REDIS_URL` directly to reboot SCIM bridge and connect to the specified Redis server:
 

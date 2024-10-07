@@ -142,7 +142,7 @@
                 "template": {
                     "containers": [
                         {
-                            "image": "docker.io/1password/scim:v2.9.5",
+                            "image": "docker.io/1password/scim:v2.9.6",
                             "name": "op-scim-bridge",
                             "resources": {
                                 "cpu": "[variables('resourceSettings')[parameters('provisioningVolume')].cpu]",
@@ -174,7 +174,11 @@
                             "name": "credentials",
                             "storageType": "Secret"
                         }
-                    ]
+                    ],
+                    "scale": {
+                        "minReplicas": 1,
+                        "maxReplicas": 1
+                    }
                 }
             }
         },
