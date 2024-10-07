@@ -15,7 +15,13 @@
         "condition": "HEALTHY"
       }
     ],
-    "portMappings": [{"containerPort": 3002}],
+    "portMappings": [
+      {
+        "containerPort": 3002,
+        "hostPort": 3002,
+        "protocol": "tcp"
+      }
+    ],
     "environment": [],
     "logConfiguration": {
       "logDriver": "awslogs",
@@ -31,12 +37,25 @@
         "sourceVolume": "secrets"
       }
     ],
-    "systemControls": [],
-    "volumesFrom": []
+    "volumesFrom": [],
+    "systemControls":[]
   },
   {
     "name": "redis",
     "image": "redis",
+    "cpu": 128,
+    "memory": 512,
+    "essential": true,
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "${aws_logs_group}",
+        "awslogs-region": "${region}",
+        "awslogs-stream-prefix": "ecs"
+      }
+    },
+    "portMappings": [],
+    "environment": [],
     "command": [
       "--maxmemory 256mb",
       "--maxmemory-policy volatile-lru",
@@ -51,29 +70,15 @@
       "retries": 3,
       "timeout": 5
     },
-    "cpu": 128,
-    "memory": 512,
-    "essential": true,
-    "restart": "always",
-    "logConfiguration": {
-      "logDriver": "awslogs",
-      "options": {
-        "awslogs-group": "${aws_logs_group}",
-        "awslogs-region": "${region}",
-        "awslogs-stream-prefix": "ecs"
-      }
-    },
-    "portMappings": [{"containerPort": 6379}],
-    "environment": [],
     "mountPoints": [],
-    "systemControls": [],
-    "volumesFrom": []
+    "volumesFrom": [],
+    "systemControls":[]
   },
   {
     "name": "mount-secrets",
-    "portMappings": [],
     "essential": false,
     "image": "public.ecr.aws/aws-cli/aws-cli",
+    "portMappings": [],
     "mountPoints": [
       {
         "containerPath": "/aws",
