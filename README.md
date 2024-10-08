@@ -7,7 +7,7 @@ You can deploy 1Password SCIM Bridge on any supported infrastructure that allows
 Read this documentation to help you plan your deployment:
 
 - Learn more about [automating provisioning in 1Password using SCIM](https://support.1password.com/scim/).
-- Review the [Preparation Guide](/PREPARATION.md). The guide will help you plan for some of the technical components of the deployment and consider some issues you may encounter along the way.
+- Review the [Preparation Guide](/PREPARATION.md), which discusses some of the technical components of SCIM bridge deployment and how to avoid potential issues you might encounter along the way.
 
 ## Cloud platform examples
 
