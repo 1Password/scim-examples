@@ -16,6 +16,7 @@ Solutions by cloud platform:
 ### Microsoft Azure
 
 - [Azure Container Apps using ARM (Azure Resource Manager) template](https://support.1password.com/scim-deploy-azure/)
+- [Azure Container Apps using CLI](https://support.1password.com/cs/scim-deploy-azure-container-apps/)
 - [Azure Kubernetes Service using Cloud Shell](https://support.1password.com/cs/scim-deploy-azure-kubernetes/)
 
 
@@ -30,16 +31,22 @@ Solutions by cloud platform:
 
 ### DigitalOcean
 
-- [App Platform using DigitalOcean console](https://support.1password.com/cs/scim-deploy-digitalocean-ap/)
+- [App Platform using DigitalOcean portal](https://support.1password.com/cs/scim-deploy-digitalocean-ap/)
+- [App Platform using DigitalOcean CLI & 1Password CLI](/do-app-platform-op-cli)
 - [DigitalOcean Kubernetes using DigitalOcean Marketplace](https://support.1password.com/scim-deploy-digitalocean/)
 
 ## Platform-agnostic examples
 
 For physical server or virtual machine on-premise or custom cloud deployments:
 
-- [Docker](/docker)
-- [Kubernetes](/kubernetes)
-- [Helm Chart](https://github.com/1Password/op-scim-helm/tree/main/charts/op-scim-bridge)
+### Docker
+
+- [Docker using Docker Swarm](/docker)
+
+### Kubernetes
+
+- [Kubernetes using kubectl CLI](/kubernetes)
+- [Kubernetes using Helm Chart](https://github.com/1Password/op-scim-helm/tree/main/charts/op-scim-bridge)
 
 ## Choosing a deployment method
 
