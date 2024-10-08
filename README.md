@@ -6,12 +6,12 @@ You can deploy 1Password SCIM Bridge on any supported infrastructure that allows
 
 Before you begin deploying 1Password SCIM Bridge,
 
-- learn more about [automating provisioning in 1Password using SCIM](https://support.1password.com/scim/).
-- review the [Preparation Guide](/PREPARATION.md). The guide will help you plan for some of the technical components of the deployment and consider some issues you may encounter along the way.
+- Learn more about [automating provisioning in 1Password using SCIM](https://support.1password.com/scim/).
+- Review the [Preparation Guide](/PREPARATION.md). The guide will help you plan for some of the technical components of the deployment and consider some issues you may encounter along the way.
 
-## Cloud platforms examples
+## Cloud platform examples
 
-Platform-native solutions sorted by cloud service provider:
+Solutions by cloud platform:
 
 ### Microsoft Azure
 
@@ -33,7 +33,7 @@ Platform-native solutions sorted by cloud service provider:
 - [App Platform using DigitalOcean console](https://support.1password.com/cs/scim-deploy-digitalocean-ap/)
 - [DigitalOcean Kubernetes using DigitalOcean Marketplace](https://support.1password.com/scim-deploy-digitalocean/)
 
-## Generic examples
+## Platform-agnostic examples
 
 For physical server or virtual machine on-premise or custom cloud deployments:
 
@@ -54,7 +54,7 @@ We publish these apps to [DigitalOcean Marketplace](https://marketplace.digitalo
 
 ### Containers as a Service deployments
 
-Many cloud service providers offer **Containers as a Service** (or **Platform as a Service**) deployment platforms. These solutions include DNS and TLS certificate management out-of-the-box for a speedier deployment with a much lower expected cost and burden of maintenance. These examples are suitable for use in a production environment, include common configuration options, and can used a base for your own custom deployment.
+Many cloud service providers offer **Containers as a Service** (or **Platform as a Service**) deployment platforms. These solutions include DNS and TLS certificate management out-of-the-box for a speedier deployment with a much lower expected cost and burden of maintenance. These examples are suitable for use in a production environment, include common configuration options, and can be used as a base for your own custom deployment.
 
 We include examples for Azure Container Apps, Google Cloud Run, and DigitalOcean App Platform.
 
