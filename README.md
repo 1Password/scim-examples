@@ -9,9 +9,9 @@ Read this documentation to help you plan your deployment:
 - Learn more about [automating provisioning in 1Password using SCIM](https://support.1password.com/scim/).
 - Review the [Preparation Guide](/PREPARATION.md), which discusses some of the technical components of SCIM bridge deployment and how to avoid potential issues you might encounter along the way.
 
-## Cloud platform examples
+## Cloud service provider deployments
 
-Solutions for common cloud service providers:
+Solutions for common cloud service platforms:
 
 ### Microsoft Azure
 
@@ -36,7 +36,7 @@ Solutions for common cloud service providers:
 - [App Platform using DigitalOcean CLI & 1Password CLI](/do-app-platform-op-cli)
 - [DigitalOcean Kubernetes using DigitalOcean Marketplace](https://support.1password.com/scim-deploy-digitalocean/)
 
-## Platform-agnostic examples
+## Generic cloud deployments
 
 For physical server or virtual machine on-premise or custom cloud deployments:
 
@@ -54,7 +54,7 @@ For physical server or virtual machine on-premise or custom cloud deployments:
 The choice of deployment method depends on your available or preferred cloud service provider or infrastructure, as well as the platform and tooling that you use or prefer. All deployment examples are based on the same container image for 1Password SCIM Bridge that is pulled from Docker Hub.
 Here are some additional details to help you make an informed choice:
 
-### Marketplace apps deployments
+### Marketplace app deployments
 
 For a guided deployment of 1Password SCIM Bridge that connects to your 1Password account to automatically generate and load credentials from 1Password, choose a marketplace app. These are off-the-shelf deployments that are not customizable, require creating a public DNS record, and have strict networking requirements.
 
@@ -70,7 +70,7 @@ We include examples for Azure Container Apps, Google Cloud Run, and DigitalOcean
 
 Our beta deployment examples represent early efforts to provide a working solution using some new platform or tooling. Each uses the same container image as our stable deployment examples. These deployments _should_ work, but aren't guaranteed and may change in the future.
 
-See the [README](/beta/README.md) in the `/beta` directory for more information about this designation.
+Learn more about this designation in [`/beta/README.md`](/beta/README.md).
 
 ## Deprecated deployment examples
 
@@ -80,9 +80,9 @@ We sometimes deprecate deployment examples that become irrelevant, usually when 
 
 At the time of deprecation, these deployment examples were fully functional, but will soon become unsupported and removed from the repository:
 
-- [Docker Compose & Docker Swarm](https://github.com/1Password/scim-examples/blob/main/deprecated/docker)
+- ⚠️ [Docker Compose & Docker Swarm](https://github.com/1Password/scim-examples/blob/main/deprecated/docker)
 
-These examples were moved to the [`/deprecated`](/deprecated) directory. You can learn more about this designation and find suggested alternatives in [`/deprecated/README.md`](/deprecated/README.md).
+Deprecated deployment examples are moved to the [`/deprecated`](/deprecated) directory. You can learn more about this designation and find suggested alternatives in [`/deprecated/README.md`](/deprecated/README.md).
 
 ## Get help
 
