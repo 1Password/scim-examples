@@ -1,22 +1,22 @@
 # 1Password SCIM Bridge deployment examples
 
-You can deploy 1Password SCIM Bridge on any supported infrastructure that allows ingress from your identity provider and egress to 1Password servers. Here you'll find configuration files and best practices to help with your deployment.
+You can deploy 1Password SCIM Bridge on any supported infrastructure that allows ingress from your identity provider and egress to 1Password servers. This repository includes examples for deploying 1Password SCIM Bridge on selected platforms, information to help you plan your deployment, and links to related external repositories and support articles.
 
 ## Before you begin
 
-Before you begin deploying 1Password SCIM Bridge,
+Read this documentation to help you plan your deployment:
 
 - Learn more about [automating provisioning in 1Password using SCIM](https://support.1password.com/scim/).
 - Review the [Preparation Guide](/PREPARATION.md). The guide will help you plan for some of the technical components of the deployment and consider some issues you may encounter along the way.
 
 ## Cloud platform examples
 
-Solutions by cloud platform:
+Solutions for common cloud service providers:
 
 ### Microsoft Azure
 
 - [Azure Container Apps using ARM (Azure Resource Manager) template](https://support.1password.com/scim-deploy-azure/)
-- [Azure Container Apps using CLI](https://support.1password.com/cs/scim-deploy-azure-container-apps/)
+- [Azure Container Apps using Cloud Shell](https://support.1password.com/cs/scim-deploy-azure-container-apps/)
 - [Azure Kubernetes Service using Cloud Shell](https://support.1password.com/cs/scim-deploy-azure-kubernetes/)
 
 
@@ -41,12 +41,12 @@ For physical server or virtual machine on-premise or custom cloud deployments:
 
 ### Docker
 
-- [Docker using Docker Swarm](/docker)
+- [Docker Swarm using Docker CLI](/docker)
 
 ### Kubernetes
 
 - [Kubernetes using kubectl CLI](/kubernetes)
-- [Kubernetes using Helm Chart](https://github.com/1Password/op-scim-helm/tree/main/charts/op-scim-bridge)
+- [Helm Chart using Helm CLI](https://github.com/1Password/op-scim-helm/tree/main/charts/op-scim-bridge#installation)
 
 ## Choosing a deployment method
 
@@ -73,14 +73,16 @@ See the [README](/beta/README.md) in the `/beta` directory for more information 
 
 ## Deprecated deployment examples
 
-A list of recently-deprecated deployments can be found in [`/deprecated`](./deprecated/). At the time of deprecation, these deployments were fully functional, but will soon become unsupported.
 
 We sometimes deprecate deployment examples that become irrelevant, usually when a new deployment example is released that is a more desirable solution for that cloud service provider or platform.
 
 ### Recently deprecated
 
+At the time of deprecation, these deployment examples were fully functional, but will soon become unsupported and removed from the repository:
+
 - [Docker Compose & Docker Swarm](https://github.com/1Password/scim-examples/blob/main/deprecated/docker)
-See the [README](/deprecated/README.md) in the `/deprecated` directory for more information about this designation and suggested alternatives.
+
+These examples were moved to the [`/deprecated`](/deprecated) directory. You can learn more about this designation and find suggested alternatives in [`/deprecated/README.md`](/deprecated/README.md).
 
 ## Get help
 
