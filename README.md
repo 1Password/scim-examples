@@ -21,6 +21,7 @@ Solutions for common cloud service providers:
 
 
 ### Amazon Web Services (AWS)
+
 - ✨ **BETA** [Amazon ECS using CloudFormation](/beta/aws-ecsfargate-cfn)
 - [Amazon ECS using Terraform](/aws-ecsfargate-terraform)
 
@@ -72,7 +73,6 @@ Our beta deployment examples represent early efforts to provide a working soluti
 See the [README](/beta/README.md) in the `/beta` directory for more information about this designation.
 
 ## Deprecated deployment examples
-
 
 We sometimes deprecate deployment examples that become irrelevant, usually when a new deployment example is released that is a more desirable solution for that cloud service provider or platform.
 
