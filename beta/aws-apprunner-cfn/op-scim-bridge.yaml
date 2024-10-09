@@ -1,0 +1,407 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  Deploys 1Password SCIM Bridge using AWS App Runner including the required available Redis cache using Amazon
+  ElastiCache. Provisions AWS secrets to store credentials for your SCIM bridge, a VPC with public and private subnets,
+  internet gateway and NAT gateways, route tables, a VPC connector, security groups, and required IAM roles and
+  policies.
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Parameters:
+          - VPCCIDR
+          # - ProvisioningVolume
+          # - SCIMBridgeVersion
+          - scimsession
+      - Label:
+          default: Google Workspace configuration (only for customers integrating with Workspace)
+        Parameters:
+          - WorkspaceCredentials
+          - WorkspaceActor
+          # - BridgeAddress
+    ParameterLabels:
+      VPCCIDR:
+        default: VPC CIDR
+      # ProvisioningVolume:
+      #   default: Provisioning volume
+      WorkspaceCredentials:
+        default: Service account key
+      WorkspaceActor:
+        default: Actor
+Parameters:
+  VPCCIDR:
+    Type: String
+    Default: 10.0.0.0/16
+    Description: A CIDR block for the VPC to be created.
+  scimsession:
+    Type: String
+    Description: >-
+      The plain text contents of the scimsession file created during the automated user provisioning setup in your
+      1Password account.
+    MinLength: 1
+    ConstraintDescription: must not be empty
+    NoEcho: true
+  WorkspaceCredentials:
+    Type: String
+    Default: ""
+    Description: >-
+      The plain text contents of a Google Cloud service account key file to use for provisioning from Workspace.
+    NoEcho: true
+  WorkspaceActor:
+    Type: String
+    Default: ""
+    Description: >-
+      The email address of the Google Workspace administrator that the service account is acting on behalf of.
+  BridgeAddress:
+    Type: String
+    # Default: ""
+    Description: Your SCIM bridge URL to configure the connection from Google Workspace.
+Rules:
+  ValidateWorkspaceConfig:
+    RuleCondition: !Not
+      - Fn::EachMemberEquals:
+          - - !Ref WorkspaceCredentials
+            - !Ref WorkspaceActor
+          - ""
+    Assertions:
+      - Assert: !Not [!Equals [!Ref WorkspaceCredentials, ""]]
+        AssertDescription: >-
+          The service account key is required to connect to Google Workspace.
+      - Assert: !Not [!Equals [!Ref WorkspaceActor, ""]]
+        AssertDescription: >-
+          The actor email is required to connect to Google Workspace.
+Conditions:
+  UsingGoogleWorkspace: !Not
+    - !Or
+      - !Equals [!Ref WorkspaceCredentials, ""]
+      - !Equals [!Ref WorkspaceActor, ""]
+      # - !Equals [!Ref BridgeAddress, ""]
+Resources:
+  scimsessionSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      SecretString:
+        Fn::Base64: !Ref scimsession
+  WorkspaceSettingsSecret:
+    Type: AWS::SecretsManager::Secret
+    Condition: UsingGoogleWorkspace
+    Properties:
+      SecretString:
+        Fn::Base64: !Sub |
+          {
+            "actor":"${WorkspaceActor}",
+            "bridgeAddress":"${BridgeAddress}"
+          }
+  WorkspaceCredentialsSecret:
+    Type: AWS::SecretsManager::Secret
+    Condition: UsingGoogleWorkspace
+    Properties:
+      SecretString:
+        Fn::Base64: !Ref WorkspaceCredentials
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VPCCIDR
+      EnableDnsSupport: true
+  PrivateSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Select
+        - 0
+        - !Cidr
+          - !GetAtt VPC.CidrBlock
+          - 16
+          - 12
+      AvailabilityZone: !Select
+        - 0
+        - !GetAZs
+          Ref: AWS::Region
+  PrivateSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Select
+        - 1
+        - !Cidr
+          - !GetAtt VPC.CidrBlock
+          - 16
+          - 12
+      AvailabilityZone: !Select
+        - 1
+        - !GetAZs
+          Ref: AWS::Region
+  PublicSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Select
+        - 2
+        - !Cidr
+          - !GetAtt VPC.CidrBlock
+          - 16
+          - 12
+      AvailabilityZone: !Select
+        - 0
+        - !GetAZs
+          Ref: AWS::Region
+  PublicSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Select
+        - 3
+        - !Cidr
+          - !GetAtt VPC.CidrBlock
+          - 16
+          - 12
+      AvailabilityZone: !Select
+        - 1
+        - !GetAZs
+          Ref: AWS::Region
+  PrivateRouteTable1:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+  PrivateRouteTable2:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+  InternetGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref InternetGateway
+  NatGatewayIP1:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+    DependsOn: InternetGatewayAttachment
+  NatGatewayIP2:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+    DependsOn: InternetGatewayAttachment
+  NatGateway1:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      SubnetId: !Ref PublicSubnet1
+      AllocationId: !GetAtt NatGatewayIP1.AllocationId
+  NatGateway2:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      SubnetId: !Ref PublicSubnet2
+      AllocationId: !GetAtt NatGatewayIP2.AllocationId
+  PublicRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      GatewayId: !Ref InternetGateway
+      DestinationCidrBlock: 0.0.0.0/0
+  PrivateRoute1:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable1
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NatGateway1
+  PrivateRoute2:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable2
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NatGateway2
+  RouteTableAssociationPublic1:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnet1
+      RouteTableId: !Ref PublicRouteTable
+  RouteTableAssociationPublic2:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnet2
+      RouteTableId: !Ref PublicRouteTable
+  RouteTableAssociationPrivate1:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnet1
+      RouteTableId: !Ref PrivateRouteTable1
+  RouteTableAssociationPrivate2:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnet2
+      RouteTableId: !Ref PrivateRouteTable2
+  RedisSubnetGroup:
+    Type: AWS::ElastiCache::SubnetGroup
+    Properties:
+      Description: Cache subnet group for ElastiCache Redis used by 1Password SCIM Bridge.
+      SubnetIds:
+        - !Ref PrivateSubnet1
+        - !Ref PrivateSubnet2
+  RedisSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Restrict Redis cache traffic for 1Password SCIM Bridge.
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 6379
+          ToPort: 6379
+          SourceSecurityGroupId: !Ref ServiceSecurityGroup
+  RedisServiceIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref RedisSecurityGroup
+      IpProtocol: tcp
+      FromPort: 6379
+      ToPort: 6379
+      SourceSecurityGroupId: !Ref ServiceSecurityGroup
+  RedisEgress:
+    Type: AWS::EC2::SecurityGroupEgress
+    Properties:
+      GroupId: !Ref RedisSecurityGroup
+      IpProtocol: -1
+      DestinationSecurityGroupId: !Ref RedisSecurityGroup
+  RedisCluster:
+    Type: AWS::ElastiCache::CacheCluster
+    Properties:
+      CacheNodeType: cache.t4g.micro
+      Engine: redis
+      NumCacheNodes: 1
+      CacheSubnetGroupName: !Ref RedisSubnetGroup
+      VpcSecurityGroupIds: [!Ref RedisSecurityGroup]
+  ServiceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Restrict App Runner service traffic for 1Password SCIM Bridge.
+      VpcId: !Ref VPC
+  ServicePublicHTTPSEgress:
+    Type: AWS::EC2::SecurityGroupEgress
+    Properties:
+      GroupId: !Ref ServiceSecurityGroup
+      IpProtocol: tcp
+      FromPort: 443
+      ToPort: 443
+      CidrIp: 0.0.0.0/0
+  ServiceRedisEgress:
+    Type: AWS::EC2::SecurityGroupEgress
+    Properties:
+      GroupId: !Ref ServiceSecurityGroup
+      IpProtocol: tcp
+      FromPort: 6379
+      ToPort: 6379
+      DestinationSecurityGroupId: !Ref RedisSecurityGroup
+  VPCConnector:
+    Type: AWS::AppRunner::VpcConnector
+    Properties:
+      SecurityGroups:
+        - !Ref ServiceSecurityGroup
+      Subnets:
+        - !Ref PrivateSubnet1
+        - !Ref PrivateSubnet2
+  VPCEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      VpcId: !Ref VPC
+      VpcEndpointType: Interface
+      ServiceName: !Sub com.amazonaws.${AWS::Region}.apprunner.requests
+      SubnetIds:
+        - !Ref PrivateSubnet1
+        - !Ref PrivateSubnet2
+  InstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Description: >-
+        Allow 1Password SCIM Bridge App Runner service instance to access secrets for SCIM bridge credentials.
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - tasks.apprunner.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: op-scim-bridge-secret-access
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - secretsmanager:GetSecretValue
+                Resource:
+                  - !Ref scimsessionSecret
+                  - !If
+                    - UsingGoogleWorkspace
+                    - !Ref WorkspaceCredentialsSecret
+                    - !Ref AWS::NoValue
+                  - !If
+                    - UsingGoogleWorkspace
+                    - !Ref WorkspaceSettingsSecret
+                    - !Ref AWS::NoValue
+  AccessRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Description: Allow App Runner service to access private Amazon ECR images.
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: build.apprunner.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSAppRunnerServicePolicyForECRAccess
+  AutoScalingConfiguration:
+    Type: AWS::AppRunner::AutoScalingConfiguration
+    Properties:
+      MaxSize: 1
+      MinSize: 1
+  SCIMBridgeService:
+    Type: AWS::AppRunner::Service
+    Properties:
+      AutoScalingConfigurationArn: !Ref AutoScalingConfiguration
+      SourceConfiguration:
+        AutoDeploymentsEnabled: false
+        ImageRepository:
+          ImageIdentifier: !Sub ${AWS::AccountId}.dkr.ecr.us-west-2.amazonaws.com/op-scim-bridge:v2.9.5
+          ImageConfiguration:
+            Port: 3002
+            RuntimeEnvironmentVariables:
+              - Name: OP_REDIS_URL
+                Value: !Sub redis://${RedisCluster.RedisEndpoint.Address}:${RedisCluster.RedisEndpoint.Port}
+            RuntimeEnvironmentSecrets:
+              - Name: OP_SESSION
+                Value: !Ref scimsessionSecret
+              - !If
+                - UsingGoogleWorkspace
+                - Name: OP_WORKSPACE_CREDENTIALS
+                  Value: !Ref WorkspaceCredentialsSecret
+                - !Ref AWS::NoValue
+              - !If
+                - UsingGoogleWorkspace
+                - Name: OP_WORKSPACE_SETTINGS
+                  Value: !Ref WorkspaceSettingsSecret
+                - !Ref AWS::NoValue
+          ImageRepositoryType: ECR
+        AuthenticationConfiguration:
+          AccessRoleArn: !GetAtt AccessRole.Arn
+      InstanceConfiguration:
+        Cpu: 256
+        Memory: 512
+        InstanceRoleArn: !GetAtt InstanceRole.Arn
+      NetworkConfiguration:
+        IngressConfiguration:
+          IsPubliclyAccessible: true
+        EgressConfiguration:
+          EgressType: VPC
+          VpcConnectorArn: !Ref VPCConnector
+Outputs:
+  SCIMBridgeURL:
+    Description: >-
+      The URL for your SCIM bridge. Use this and your bearer token to connect your identity provider to 1Password.
+    Value: !Sub https://${SCIMBridgeService.ServiceUrl}
