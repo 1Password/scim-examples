@@ -1,88 +1,66 @@
-AWSTemplateFormatVersion: '2010-09-09'
-
-Description: <your stack description here>
-
-# Available top-level fields are listed in code completion
-
-# Add Resources Here: uncomment the following lines
-# Resources:
-#   <resource name here>:
-#     Type: # resource type here - available resources are listed in code completion
-#     # <add resource-specific properties underneath this entry  - available properties are listed in code completion>
-#     Properties:
-
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  Deploys 1Password SCIM Bridge using AWS App Runner including the required available Redis cache using Amazon
+  ElastiCache. Provisions AWS secrets to store credentials for your SCIM bridge, a VPC with public and private subnets,
+  internet gateway and NAT gateways, route tables, a VPC connector, security groups, and required IAM roles and
+  policies.
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
       - Parameters:
           - VPCCIDR
-          - Route53HostedZoneID
-          - ProvisioningVolume
-          - DomainName
-          - SCIMBridgeVersion
+          # - ProvisioningVolume
+          # - SCIMBridgeVersion
           - scimsession
       - Label:
-          default: >-
-            Workspace configuration (only for customers integrating with Google Workspace)
+          default: Google Workspace configuration (only for customers integrating with Workspace)
         Parameters:
           - WorkspaceCredentials
           - WorkspaceActor
-          - BridgeUrl
-  AWS::Composer::Groups:
-    Group:
-      Label: Public
-      Members:
-        - SubnetPublic1
-        - SubnetPublic2
-    Group2:
-      Label: Private
-      Members:
-        - SubnetPriv1
-        - SubnetPriv2
-    Group3:
-      Label: Networking
-      Members:
-        - VPC
-        - Group2
-        - Group
-    Group4:
-      Label: Elasticache
-      Members:
-        - CacheCluster
-        - SubnetGroup
-        - ReplicationGroup
-
+          # - BridgeAddress
+    ParameterLabels:
+      VPCCIDR:
+        default: VPC CIDR
+      # ProvisioningVolume:
+      #   default: Provisioning volume
+      WorkspaceCredentials:
+        default: Service account key
+      WorkspaceActor:
+        default: Actor
 Parameters:
-  ScimsessionParameter:
+  VPCCIDR:
     Type: String
-    Description: The plain text contents of the scimsession file created during the
-      automated user provisioning setup in your 1Password account.
-    MinLength: '1'
+    Default: 10.0.0.0/16
+    Description: A CIDR block for the VPC to be created.
+  scimsession:
+    Type: String
+    Description: >-
+      The plain text contents of the scimsession file created during the automated user provisioning setup in your
+      1Password account.
+    MinLength: 1
     ConstraintDescription: must not be empty
     NoEcho: true
   WorkspaceCredentials:
     Type: String
     Default: ""
     Description: >-
-      The plain text contents of the key file associated with the service account for Google Workspace.
+      The plain text contents of a Google Cloud service account key file to use for provisioning from Workspace.
     NoEcho: true
   WorkspaceActor:
     Type: String
     Default: ""
     Description: >-
       The email address of the Google Workspace administrator that the service account is acting on behalf of.
-  BridgeUrl:
+  BridgeAddress:
     Type: String
-    Default: ""
-    Description: >-
-      The bridge URL for use with Google Workspace
+    # Default: ""
+    Description: Your SCIM bridge URL to configure the connection from Google Workspace.
 Rules:
   ValidateWorkspaceConfig:
     RuleCondition: !Not
-      - "Fn::EachMemberEquals":
+      - Fn::EachMemberEquals:
           - - !Ref WorkspaceCredentials
             - !Ref WorkspaceActor
-            - !Ref BridgeUrl
           - ""
     Assertions:
       - Assert: !Not [!Equals [!Ref WorkspaceCredentials, ""]]
@@ -96,73 +74,294 @@ Conditions:
     - !Or
       - !Equals [!Ref WorkspaceCredentials, ""]
       - !Equals [!Ref WorkspaceActor, ""]
-      - !Equals [!Ref BridgeUrl, ""]
+      # - !Equals [!Ref BridgeAddress, ""]
 Resources:
-  ScimsessionSecret:
-    DeletionPolicy: Delete
-    UpdateReplacePolicy: Delete
+  scimsessionSecret:
     Type: AWS::SecretsManager::Secret
     Properties:
       SecretString:
-        Fn::Base64:
-          !Ref ScimsessionParameter
+        Fn::Base64: !Ref scimsession
   WorkspaceSettingsSecret:
-    DeletionPolicy: Delete
-    UpdateReplacePolicy: Delete
-    Type: "AWS::SecretsManager::Secret"
+    Type: AWS::SecretsManager::Secret
     Condition: UsingGoogleWorkspace
     Properties:
       SecretString:
         Fn::Base64: !Sub |
           {
             "actor":"${WorkspaceActor}",
-            "bridgeAddress":"https://${BridgeUrl}"
+            "bridgeAddress":"${BridgeAddress}"
           }
   WorkspaceCredentialsSecret:
-    DeletionPolicy: Delete
-    UpdateReplacePolicy: Delete
-    Type: "AWS::SecretsManager::Secret"
+    Type: AWS::SecretsManager::Secret
     Condition: UsingGoogleWorkspace
     Properties:
-      SecretString: Fn::Base64 !Ref WorkspaceCredentials
-  SubnetPriv1:
+      SecretString:
+        Fn::Base64: !Ref WorkspaceCredentials
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VPCCIDR
+      EnableDnsSupport: true
+  PrivateSubnet1:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
-      CidrBlock:
-        "Fn::Select":
-          - 0
-          - "Fn::Cidr":
-              - !GetAtt VPC.CidrBlock
-              - 16
-              - 12
-      AvailabilityZone: 
-        "Fn::Select":
-          - 0 
-          - Fn::GetAZs: ""
-  SubnetPriv2:
+      CidrBlock: !Select
+        - 0
+        - !Cidr
+          - !GetAtt VPC.CidrBlock
+          - 16
+          - 12
+      AvailabilityZone: !Select
+        - 0
+        - !GetAZs
+          Ref: AWS::Region
+  PrivateSubnet2:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
-      CidrBlock:
-        "Fn::Select":
-          - 1
-          - "Fn::Cidr":
-              - !GetAtt VPC.CidrBlock
-              - 16
-              - 12
-      AvailabilityZone: 
-        "Fn::Select":
-          - 1
-          - Fn::GetAZs: ""
-  ElastiCacheSubnetGroup:
+      CidrBlock: !Select
+        - 1
+        - !Cidr
+          - !GetAtt VPC.CidrBlock
+          - 16
+          - 12
+      AvailabilityZone: !Select
+        - 1
+        - !GetAZs
+          Ref: AWS::Region
+  PublicSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Select
+        - 2
+        - !Cidr
+          - !GetAtt VPC.CidrBlock
+          - 16
+          - 12
+      AvailabilityZone: !Select
+        - 0
+        - !GetAZs
+          Ref: AWS::Region
+  PublicSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Select
+        - 3
+        - !Cidr
+          - !GetAtt VPC.CidrBlock
+          - 16
+          - 12
+      AvailabilityZone: !Select
+        - 1
+        - !GetAZs
+          Ref: AWS::Region
+  PrivateRouteTable1:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+  PrivateRouteTable2:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+  InternetGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref InternetGateway
+  NatGatewayIP1:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+    DependsOn: InternetGatewayAttachment
+  NatGatewayIP2:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+    DependsOn: InternetGatewayAttachment
+  NatGateway1:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      SubnetId: !Ref PublicSubnet1
+      AllocationId: !GetAtt NatGatewayIP1.AllocationId
+  NatGateway2:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      SubnetId: !Ref PublicSubnet2
+      AllocationId: !GetAtt NatGatewayIP2.AllocationId
+  PublicRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      GatewayId: !Ref InternetGateway
+      DestinationCidrBlock: 0.0.0.0/0
+  PrivateRoute1:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable1
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NatGateway1
+  PrivateRoute2:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable2
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NatGateway2
+  RouteTableAssociationPublic1:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnet1
+      RouteTableId: !Ref PublicRouteTable
+  RouteTableAssociationPublic2:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnet2
+      RouteTableId: !Ref PublicRouteTable
+  RouteTableAssociationPrivate1:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnet1
+      RouteTableId: !Ref PrivateRouteTable1
+  RouteTableAssociationPrivate2:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnet2
+      RouteTableId: !Ref PrivateRouteTable2
+  RedisSubnetGroup:
     Type: AWS::ElastiCache::SubnetGroup
     Properties:
-      Description: subnet group
+      Description: Cache subnet group for ElastiCache Redis used by 1Password SCIM Bridge.
       SubnetIds:
-        - !Ref SubnetPriv1
-        - !Ref SubnetPriv2
-  Service:
+        - !Ref PrivateSubnet1
+        - !Ref PrivateSubnet2
+  RedisSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Restrict Redis cache traffic for 1Password SCIM Bridge.
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 6379
+          ToPort: 6379
+          SourceSecurityGroupId: !Ref ServiceSecurityGroup
+  RedisServiceIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref RedisSecurityGroup
+      IpProtocol: tcp
+      FromPort: 6379
+      ToPort: 6379
+      SourceSecurityGroupId: !Ref ServiceSecurityGroup
+  RedisEgress:
+    Type: AWS::EC2::SecurityGroupEgress
+    Properties:
+      GroupId: !Ref RedisSecurityGroup
+      IpProtocol: -1
+      DestinationSecurityGroupId: !Ref RedisSecurityGroup
+  RedisCluster:
+    Type: AWS::ElastiCache::CacheCluster
+    Properties:
+      CacheNodeType: cache.t4g.micro
+      Engine: redis
+      NumCacheNodes: 1
+      CacheSubnetGroupName: !Ref RedisSubnetGroup
+      VpcSecurityGroupIds: [!Ref RedisSecurityGroup]
+  ServiceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Restrict App Runner service traffic for 1Password SCIM Bridge.
+      VpcId: !Ref VPC
+  ServicePublicHTTPSEgress:
+    Type: AWS::EC2::SecurityGroupEgress
+    Properties:
+      GroupId: !Ref ServiceSecurityGroup
+      IpProtocol: tcp
+      FromPort: 443
+      ToPort: 443
+      CidrIp: 0.0.0.0/0
+  ServiceRedisEgress:
+    Type: AWS::EC2::SecurityGroupEgress
+    Properties:
+      GroupId: !Ref ServiceSecurityGroup
+      IpProtocol: tcp
+      FromPort: 6379
+      ToPort: 6379
+      DestinationSecurityGroupId: !Ref RedisSecurityGroup
+  VPCConnector:
+    Type: AWS::AppRunner::VpcConnector
+    Properties:
+      SecurityGroups:
+        - !Ref ServiceSecurityGroup
+      Subnets:
+        - !Ref PrivateSubnet1
+        - !Ref PrivateSubnet2
+  VPCEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      VpcId: !Ref VPC
+      VpcEndpointType: Interface
+      ServiceName: !Sub com.amazonaws.${AWS::Region}.apprunner.requests
+      SubnetIds:
+        - !Ref PrivateSubnet1
+        - !Ref PrivateSubnet2
+  InstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Description: >-
+        Allow 1Password SCIM Bridge App Runner service instance to access secrets for SCIM bridge credentials.
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - tasks.apprunner.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: op-scim-bridge-secret-access
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - secretsmanager:GetSecretValue
+                Resource:
+                  - !Ref scimsessionSecret
+                  - !If
+                    - UsingGoogleWorkspace
+                    - !Ref WorkspaceCredentialsSecret
+                    - !Ref AWS::NoValue
+                  - !If
+                    - UsingGoogleWorkspace
+                    - !Ref WorkspaceSettingsSecret
+                    - !Ref AWS::NoValue
+  AccessRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Description: Allow App Runner service to access private Amazon ECR images.
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: build.apprunner.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSAppRunnerServicePolicyForECRAccess
+  AutoScalingConfiguration:
+    Type: AWS::AppRunner::AutoScalingConfiguration
+    Properties:
+      MaxSize: 1
+      MinSize: 1
+  SCIMBridgeService:
     Type: AWS::AppRunner::Service
     Properties:
       AutoScalingConfigurationArn: !Ref AutoScalingConfiguration
@@ -171,294 +370,38 @@ Resources:
         ImageRepository:
           ImageIdentifier: !Sub ${AWS::AccountId}.dkr.ecr.us-west-2.amazonaws.com/op-scim-bridge:v2.9.5
           ImageConfiguration:
-            Port: '3002'
+            Port: 3002
             RuntimeEnvironmentVariables:
               - Name: OP_REDIS_URL
-                Value: !Sub redis://${CacheCluster.RedisEndpoint.Address}:${CacheCluster.RedisEndpoint.Port}
+                Value: !Sub redis://${RedisCluster.RedisEndpoint.Address}:${RedisCluster.RedisEndpoint.Port}
             RuntimeEnvironmentSecrets:
               - Name: OP_SESSION
-                Value: !Ref ScimsessionSecret
-              - !If 
+                Value: !Ref scimsessionSecret
+              - !If
                 - UsingGoogleWorkspace
                 - Name: OP_WORKSPACE_CREDENTIALS
                   Value: !Ref WorkspaceCredentialsSecret
-                - !Ref "AWS::NoValue"
-              - !If 
+                - !Ref AWS::NoValue
+              - !If
                 - UsingGoogleWorkspace
                 - Name: OP_WORKSPACE_SETTINGS
                   Value: !Ref WorkspaceSettingsSecret
-                - !Ref "AWS::NoValue"
+                - !Ref AWS::NoValue
           ImageRepositoryType: ECR
         AuthenticationConfiguration:
-          AccessRoleArn: !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/service-role/AppRunnerECRAccessRole #only for ECR Private. 
+          AccessRoleArn: !GetAtt AccessRole.Arn
       InstanceConfiguration:
-        Cpu: '256'
-        Memory: '512'
-        InstanceRoleArn: !GetAtt Role.Arn
+        Cpu: 256
+        Memory: 512
+        InstanceRoleArn: !GetAtt InstanceRole.Arn
       NetworkConfiguration:
         IngressConfiguration:
           IsPubliclyAccessible: true
         EgressConfiguration:
           EgressType: VPC
-          VpcConnectorArn: !Ref VpcConnector
-  CacheCluster:
-    Type: AWS::ElastiCache::CacheCluster
-    DeletionPolicy: Delete
-    UpdateReplacePolicy: Delete
-    Properties:
-      CacheNodeType: cache.t4g.micro
-      Engine: redis
-      EngineVersion: 7.1
-      NumCacheNodes: 1
-      PreferredAvailabilityZone: !GetAtt SubnetPriv1.AvailabilityZone
-      PreferredMaintenanceWindow: thu:12:00-thu:13:00
-      CacheParameterGroupName: default.redis7
-      CacheSubnetGroupName: !Ref ElastiCacheSubnetGroup
-      AutoMinorVersionUpgrade: true
-      SnapshotRetentionLimit: 1
-      SnapshotWindow: 13:00-14:00
-      VpcSecurityGroupIds: [!Ref ElasticacheSecurityGroup]
-  VPC:
-    Type: AWS::EC2::VPC
-    Properties:
-      CidrBlock: 10.0.0.0/16
-      EnableDnsSupport: true
-      EnableDnsHostnames: true
-  VPCEndpoint:
-    Type: AWS::EC2::VPCEndpoint
-    Properties:
-      VpcId: !Ref VPC
-      VpcEndpointType: Interface
-      ServiceName: !Sub com.amazonaws.${AWS::Region}.apprunner.requests
-      SubnetIds:
-        - !Ref SubnetPriv1
-        - !Ref SubnetPriv2
-  SubnetPublic1:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref VPC
-      CidrBlock:
-        "Fn::Select":
-          - 2
-          - "Fn::Cidr":
-              - !GetAtt VPC.CidrBlock
-              - 16
-              - 12
-      AvailabilityZone: 
-        "Fn::Select":
-          - 0
-          - Fn::GetAZs: ""
-  SubnetPublic2:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref VPC
-      CidrBlock:
-        "Fn::Select":
-          - 3
-          - "Fn::Cidr":
-              - !GetAtt VPC.CidrBlock
-              - 16
-              - 12
-      AvailabilityZone: 
-        "Fn::Select":
-          - 1
-          - Fn::GetAZs: ""
-  NatGateway:
-    Type: AWS::EC2::NatGateway
-    Properties:
-      SubnetId: !Ref SubnetPublic1
-      AllocationId: !GetAtt EIP.AllocationId
-  NatGateway2:
-    Type: AWS::EC2::NatGateway
-    Properties:
-      SubnetId: !Ref SubnetPublic2
-      AllocationId: !GetAtt EIP2.AllocationId
-  # ReplicationGroup:
-  #   UpdateReplacePolicy: Delete
-  #   DeletionPolicy: Delete
-  #   Type: AWS::ElastiCache::ReplicationGroup
-  #   Properties:
-  #     ReplicationGroupId: !Sub "${CacheCluster}-rg"
-  #     ReplicationGroupDescription: ' '
-  #     NumNodeGroups: 1
-  #     AutomaticFailoverEnabled: false
-  #     SnapshotRetentionLimit: 1
-  #     SnapshotWindow: 13:00-14:00
-  #     CacheNodeType: cache.t4g.micro
-  #     TransitEncryptionEnabled: false
-  #     AtRestEncryptionEnabled: false
-  #     MultiAZEnabled: false
-  InternetGateway:
-    Type: AWS::EC2::InternetGateway
-    Properties: {}
-  EIP:
-    Type: AWS::EC2::EIP
-    Properties:
-      Domain: vpc
-  EIP2:
-    Type: AWS::EC2::EIP
-    Properties:
-      Domain: vpc
-  NetworkInterface:
-    Type: AWS::EC2::NetworkInterface
-    Properties:
-      SubnetId: !Ref SubnetPublic1
-  NetworkInterface2:
-    Type: AWS::EC2::NetworkInterface
-    Properties:
-      SubnetId: !Ref SubnetPublic2
-  VpcConnector:
-    Type: AWS::AppRunner::VpcConnector
-    Properties:
-      SecurityGroups:
-           - !Ref ServiceSecurityGroup
-      Subnets:
-        - !Ref SubnetPriv1
-        - !Ref SubnetPriv2
-  Role:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service: tasks.apprunner.amazonaws.com
-            Action: sts:AssumeRole
-      Policies:
-        - PolicyName: elasticache
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action:
-                  - elasticache:CreateServerlessCache
-                  - elasticache:CreateCacheCluster
-                  - elasticache:DescribeServerlessCaches
-                  - elasticache:DescribeReplicationGroups
-                  - elasticache:DescribeCacheClusters
-                  - elasticache:ModifyServerlessCache
-                  - elasticache:ModifyReplicationGroup
-                  - elasticache:ModifyCacheCluster
-                Resource: !Join 
-                        - ':'
-                        - - arn:aws:elasticache 
-                          - !Ref AWS::Region
-                          - !Ref AWS::AccountId
-                          - cluster
-                          - !Ref CacheCluster
-        - PolicyName: secrets-manager
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action:
-                  - secretsmanager:GetSecretValue
-                Resource:
-                  - !Ref ScimsessionSecret
-                  - !If
-                    - UsingGoogleWorkspace
-                    - !Ref WorkspaceCredentialsSecret
-                    - !Ref "AWS::NoValue"
-                  - !If
-                    - UsingGoogleWorkspace
-                    - !Ref WorkspaceSettingsSecret
-                    - !Ref "AWS::NoValue"
-  AutoScalingConfiguration:
-    Type: AWS::AppRunner::AutoScalingConfiguration
-    Properties:
-      AutoScalingConfigurationName: op-scim-asg
-      MaxSize: 1
-      MinSize: 1
-  RouteTablePublic:
-    Type: AWS::EC2::RouteTable
-    Properties:
-      VpcId: !Ref VPC
-  RouteTablePriv1:
-    Type: AWS::EC2::RouteTable
-    Properties:
-      VpcId: !Ref VPC
-  RouteTablePriv2:
-    Type: AWS::EC2::RouteTable
-    Properties:
-      VpcId: !Ref VPC
-  InternetGatewayAttachment:
-    Type: AWS::EC2::VPCGatewayAttachment
-    Properties:
-      VpcId: !Ref VPC
-      InternetGatewayId: !Ref InternetGateway
-  RoutePublic:
-    Type: AWS::EC2::Route
-    Properties:
-      RouteTableId: !Ref RouteTablePublic
-      GatewayId: !Ref InternetGateway
-      DestinationCidrBlock: 0.0.0.0/0
-
-  RoutePrivate1: 
-    Type: AWS::EC2::Route
-    Properties:
-      RouteTableId: !Ref RouteTablePriv1
-      DestinationCidrBlock: 0.0.0.0/0
-      NatGatewayId: !Ref NatGateway
-  RoutePrivate2: 
-    Type: AWS::EC2::Route
-    Properties:
-      RouteTableId: !Ref RouteTablePriv2
-      DestinationCidrBlock: 0.0.0.0/0
-      NatGatewayId: !Ref NatGateway2
-
-  RouteTableAssociationPublic1:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref SubnetPublic1
-      RouteTableId: !Ref RouteTablePublic
-  RouteTableAssociationPublic2:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref SubnetPublic2
-      RouteTableId: !Ref RouteTablePublic
-  RouteTableAssociationPrivate1:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref SubnetPriv1
-      RouteTableId: !Ref RouteTablePriv1
-
-  RouteTableAssociationPrivate2:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref SubnetPriv2
-      RouteTableId: !Ref RouteTablePriv2
-  ServiceSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-        GroupDescription: "Service security group"
-        VpcId: !Ref VPC
-        SecurityGroupEgress:
-        - IpProtocol: tcp
-          FromPort: 443
-          ToPort: 443
-          CidrIp: 0.0.0.0/0
-  
-  ServiceSecurityEgress1:
-    Type: AWS::EC2::SecurityGroupEgress
-    Properties:
-      GroupId: !Ref ServiceSecurityGroup
-      IpProtocol: tcp
-      FromPort: 6379
-      ToPort: 6379
-      DestinationSecurityGroupId: !Ref ElasticacheSecurityGroup
-      
-  ElasticacheSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-         GroupDescription: "Elasticache Security Group"
-         VpcId: !Ref VPC
-         SecurityGroupIngress:
-              - IpProtocol: tcp
-                FromPort: 6379
-                ToPort: 6379
-                SourceSecurityGroupId: !Ref ServiceSecurityGroup
+          VpcConnectorArn: !Ref VPCConnector
 Outputs:
-  ScimUrl:
-    Description: The URL of your SCIM bridge
-    Value: !GetAtt Service.ServiceUrl
+  SCIMBridgeURL:
+    Description: >-
+      The URL for your SCIM bridge. Use this and your bearer token to connect your identity provider to 1Password.
+    Value: !Sub https://${SCIMBridgeService.ServiceUrl}
