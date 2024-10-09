@@ -1,0 +1,30 @@
+services:
+  scim:
+    image: 1password/scim:v2.9.5
+    container_name: scim
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+    networks:
+      - op-scim
+    secrets:
+      - scimsession
+    env_file: scim.env
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    command: redis-server --maxmemory 256mb --maxmemory-policy volatile-lru --save ""
+    networks:
+      - op-scim
+
+networks:
+  op-scim:
+    name: op-scim
+
+secrets:
+  scimsession:
+    external: true
