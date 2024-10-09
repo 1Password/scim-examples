@@ -40,7 +40,7 @@ services:
     registry: 1password
     registry_type: DOCKER_HUB
     repository: scim
-    tag: v2.9.6
+    tag: v2.9.7
   instance_count: 1
   instance_size_slug: apps-s-1vcpu-0.5gb
   name: op-scim-bridge

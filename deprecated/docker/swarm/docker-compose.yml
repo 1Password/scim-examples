@@ -1,7 +1,7 @@
 version: "3.3"
 services:
   scim:
-    image: 1password/scim:v2.9.6
+    image: 1password/scim:v2.9.7
     deploy:
       replicas: 1
       restart_policy:
