@@ -51,20 +51,35 @@ For physical server or virtual machine on-premise or custom cloud deployments:
 
 ## Choosing a deployment method
 
-The choice of deployment method depends on your available or preferred cloud service provider or infrastructure, as well as the platform and tooling that you use or prefer. All deployment examples are based on the same container image for 1Password SCIM Bridge that is pulled from Docker Hub.
+The choice of deployment method depends on your available or preferred cloud service provider or infrastructure, as well as the platform and tooling that you use or prefer. 
+
+> [!NOTE]
+> All deployment examples pull the same public [`1password/scim`](https://hub.docker.com/r/1password/scim) container image from Docker Hub.
+
 Here are some additional details to help you make an informed choice:
 
-### Marketplace app deployments
-
-For a guided deployment of 1Password SCIM Bridge that connects to your 1Password account to automatically generate and load credentials from 1Password, choose a marketplace app. These are off-the-shelf deployments that are not customizable, require creating a public DNS record, and have strict networking requirements.
-
-We publish these apps to [DigitalOcean Marketplace](https://marketplace.digitalocean.com/apps/1password-scim-bridge) and [Google Cloud Marketplace](https://console.cloud.google.com/marketplace/product/agilebits-public/op-scim-bridge).
 
 ### Containers as a Service deployments
 
-Many cloud service providers offer **Containers as a Service** (or **Platform as a Service**) deployment platforms. These solutions include DNS and TLS certificate management out-of-the-box for a speedier deployment with a much lower expected cost and burden of maintenance. These examples are suitable for use in a production environment, include common configuration options, and can be used as a base for your own custom deployment.
+Many cloud service providers offer **Containers as a Service** (or **Platform as a Service**) deployment platforms. Compared to other platforms, these solutions offer:
+
+- DNS and TLS certificate management out-of-the-box
+- speedier deployment
+- lower expected cost and burden of maintenance
+
+These examples are suitable for use in a production environment, include common configuration options, and can be used as a base for your own custom deployment.
 
 We include examples for Azure Container Apps, Google Cloud Run, and DigitalOcean App Platform.
+
+### Marketplace app deployments
+
+For a guided deployment of 1Password SCIM Bridge that connects to your 1Password account to automatically generate and load credentials from 1Password, choose a marketplace app. These are off-the-shelf deployments that may be a suitable choice, but:
+
+- are not customizable
+- require creating a public DNS record
+- have strict networking requirements
+
+We publish these apps to [DigitalOcean Marketplace](https://marketplace.digitalocean.com/apps/1password-scim-bridge) and [Google Cloud Marketplace](https://console.cloud.google.com/marketplace/product/agilebits-public/op-scim-bridge).
 
 ### Beta deployments
 
