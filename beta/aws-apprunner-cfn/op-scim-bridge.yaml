@@ -1,37 +1,58 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: >-
-  Deploys 1Password SCIM Bridge using AWS App Runner including the required available Redis cache using Amazon
-  ElastiCache. Provisions AWS secrets to store credentials for your SCIM bridge, a VPC with public and private subnets,
-  internet gateway and NAT gateways, route tables, a VPC connector, security groups, and required IAM roles and
-  policies.
+  Deploys 1Password SCIM Bridge using AWS App Runner including the required available Redis cache as an Amazon ECS
+  service. Provisions AWS secrets to store SCIM bridge credentials, a VPC with public and private subnets, internet
+  gateway and NAT gateways, route tables, a VPC connector, security groups, and required IAM roles and policies.
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
       - Parameters:
           - VPCCIDR
-          # - ProvisioningVolume
-          # - SCIMBridgeVersion
+          # - ServiceDiscoveryNamespace
+          - ProvisioningVolume
+          - SCIMBridgeVersion
           - scimsession
       - Label:
           default: Google Workspace configuration (only for customers integrating with Workspace)
         Parameters:
           - WorkspaceCredentials
           - WorkspaceActor
-          # - BridgeAddress
+          - BridgeAddress
     ParameterLabels:
       VPCCIDR:
         default: VPC CIDR
-      # ProvisioningVolume:
-      #   default: Provisioning volume
+      # ServiceDiscoveryNamespace:
+      #   default: Service Discovery namespace
+      ProvisioningVolume:
+        default: Provisioning volume
+      SCIMBridgeVersion:
+        default: 1Password SCIM Bridge version
       WorkspaceCredentials:
         default: Service account key
       WorkspaceActor:
         default: Actor
+      BridgeAddress:
+        default: SCIM bridge URL
 Parameters:
   VPCCIDR:
     Type: String
     Default: 10.0.0.0/16
     Description: A CIDR block for the VPC to be created.
+  # ServiceDiscoveryName:
+  #   Type: String
+  #   Default: op-scim-bridge
+  #   Description: A name for the private DNS namespace for Service Discovery.
+  ProvisioningVolume:
+    Type: String
+    Description: >-
+      The expected volume of provisioning activity. Use base for provisioning less than 1,000 users, high for up to
+      5,000 users, or very-high for more than 5,000 users.
+    Default: base
+    AllowedValues:
+      - base
+      - high
+      - very-high
+    ConstraintDescription: must be base, high, or very-high
   scimsession:
     Type: String
     Description: >-
@@ -40,6 +61,10 @@ Parameters:
     MinLength: 1
     ConstraintDescription: must not be empty
     NoEcho: true
+  SCIMBridgeVersion:
+    Type: String
+    Default: v2.9.7
+    Description: The version of 1Password SCIM Bridge to deploy.
   WorkspaceCredentials:
     Type: String
     Default: ""
@@ -64,11 +89,20 @@ Rules:
           - ""
     Assertions:
       - Assert: !Not [!Equals [!Ref WorkspaceCredentials, ""]]
-        AssertDescription: >-
-          The service account key is required to connect to Google Workspace.
+        AssertDescription: The service account key is required to connect to Google Workspace.
       - Assert: !Not [!Equals [!Ref WorkspaceActor, ""]]
-        AssertDescription: >-
-          The actor email is required to connect to Google Workspace.
+        AssertDescription: The actor email is required to connect to Google Workspace.
+Mappings:
+  InstanceConfiguration:
+    base:
+      Cpu: 256
+      Memory: 512
+    high:
+      Cpu: 512
+      Memory: 1024
+    very-high:
+      Cpu: 1024
+      Memory: 1024
 Conditions:
   UsingGoogleWorkspace: !Not
     - !Or
@@ -86,7 +120,7 @@ Resources:
     Condition: UsingGoogleWorkspace
     Properties:
       SecretString:
-        Fn::Base64: !Sub |
+        Fn::Base64: !Sub |-
           {
             "actor":"${WorkspaceActor}",
             "bridgeAddress":"${BridgeAddress}"
@@ -102,6 +136,7 @@ Resources:
     Properties:
       CidrBlock: !Ref VPCCIDR
       EnableDnsSupport: true
+      EnableDnsHostnames: true
   PrivateSubnet1:
     Type: AWS::EC2::Subnet
     Properties:
@@ -235,81 +270,58 @@ Resources:
     Properties:
       SubnetId: !Ref PrivateSubnet2
       RouteTableId: !Ref PrivateRouteTable2
-  RedisSubnetGroup:
-    Type: AWS::ElastiCache::SubnetGroup
-    Properties:
-      Description: Cache subnet group for ElastiCache Redis used by 1Password SCIM Bridge.
-      SubnetIds:
-        - !Ref PrivateSubnet1
-        - !Ref PrivateSubnet2
-  RedisSecurityGroup:
+  ECSSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Restrict Redis cache traffic for 1Password SCIM Bridge.
+      GroupDescription: ECS traffic for 1Password SCIM Bridge.
       VpcId: !Ref VPC
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: 6379
-          ToPort: 6379
-          SourceSecurityGroupId: !Ref ServiceSecurityGroup
-  RedisServiceIngress:
+  ECSIngress:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
-      GroupId: !Ref RedisSecurityGroup
+      GroupId: !Ref ECSSecurityGroup
+      Description: Redis traffic from App Runner service.
       IpProtocol: tcp
       FromPort: 6379
       ToPort: 6379
-      SourceSecurityGroupId: !Ref ServiceSecurityGroup
-  RedisEgress:
+      SourceSecurityGroupId: !Ref AppRunnerSecurityGroup
+  ECSEgress:
     Type: AWS::EC2::SecurityGroupEgress
     Properties:
-      GroupId: !Ref RedisSecurityGroup
-      IpProtocol: -1
-      DestinationSecurityGroupId: !Ref RedisSecurityGroup
-  RedisCluster:
-    Type: AWS::ElastiCache::CacheCluster
-    Properties:
-      CacheNodeType: cache.t4g.micro
-      Engine: redis
-      NumCacheNodes: 1
-      CacheSubnetGroupName: !Ref RedisSubnetGroup
-      VpcSecurityGroupIds: [!Ref RedisSecurityGroup]
-  ServiceSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: Restrict App Runner service traffic for 1Password SCIM Bridge.
-      VpcId: !Ref VPC
-  ServicePublicHTTPSEgress:
-    Type: AWS::EC2::SecurityGroupEgress
-    Properties:
-      GroupId: !Ref ServiceSecurityGroup
+      Description: HTTPS to Docker Hub, ECR, and CodeBuild.
+      GroupId: !Ref ECSSecurityGroup
       IpProtocol: tcp
       FromPort: 443
       ToPort: 443
       CidrIp: 0.0.0.0/0
-  ServiceRedisEgress:
+  AppRunnerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: App Runner service traffic for 1Password SCIM Bridge.
+      VpcId: !Ref VPC
+  AppRunnerEgress1:
     Type: AWS::EC2::SecurityGroupEgress
     Properties:
-      GroupId: !Ref ServiceSecurityGroup
+      Description: To ECS service Redis.
+      GroupId: !Ref AppRunnerSecurityGroup
       IpProtocol: tcp
       FromPort: 6379
       ToPort: 6379
-      DestinationSecurityGroupId: !Ref RedisSecurityGroup
+      DestinationSecurityGroupId: !Ref ECSSecurityGroup
+  AppRunnerEgress2:
+    Type: AWS::EC2::SecurityGroupEgress
+    Properties:
+      Description: HTTPS to 1Password.
+      GroupId: !Ref AppRunnerSecurityGroup
+      IpProtocol: tcp
+      FromPort: 443
+      ToPort: 443
+      CidrIp: 0.0.0.0/0
   VPCConnector:
     Type: AWS::AppRunner::VpcConnector
     Properties:
       SecurityGroups:
-        - !Ref ServiceSecurityGroup
+        - !Ref AppRunnerSecurityGroup
       Subnets:
-        - !Ref PrivateSubnet1
-        - !Ref PrivateSubnet2
-  VPCEndpoint:
-    Type: AWS::EC2::VPCEndpoint
-    Properties:
-      VpcId: !Ref VPC
-      VpcEndpointType: Interface
-      ServiceName: !Sub com.amazonaws.${AWS::Region}.apprunner.requests
-      SubnetIds:
         - !Ref PrivateSubnet1
         - !Ref PrivateSubnet2
   InstanceRole:
@@ -343,6 +355,257 @@ Resources:
                     - UsingGoogleWorkspace
                     - !Ref WorkspaceSettingsSecret
                     - !Ref AWS::NoValue
+  CodeBuildRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - codebuild.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: CodeBuildECRAccess
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - ecr:GetAuthorizationToken
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - ecr:BatchCheckLayerAvailability
+                  - ecr:CompleteLayerUpload
+                  - ecr:UploadLayerPart
+                  - ecr:InitiateLayerUpload
+                  - ecr:PutImage
+                Resource: !GetAtt ECRRepository.Arn
+  CodeBuildProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: DockerHubToECR
+      ServiceRole: !GetAtt CodeBuildRole.Arn
+      Environment:
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:5.0
+        Type: LINUX_CONTAINER
+        PrivilegedMode: true
+        EnvironmentVariables:
+          - Name: AWS_REGION
+            Value: !Ref AWS::Region
+          - Name: AWS_ACCOUNT_ID
+            Value: !Ref AWS::AccountId
+          - Name: IMAGE_TAG
+            Value: !Ref SCIMBridgeVersion
+          - Name: REPO_NAME
+            Value: !Ref ECRRepository
+          - Name: REPO_URI
+            Value: !GetAtt ECRRepository.RepositoryUri
+      Source:
+        Type: NO_SOURCE
+        BuildSpec: |-
+          version: 0.2
+          phases:
+            pre_build:
+              commands:
+                - aws ecr get-login-password --region "$AWS_REGION" |
+                  docker login --username AWS --password-stdin "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
+            build:
+              commands:
+                - docker pull "1password/scim:$IMAGE_TAG"
+                - docker tag "1password/scim:$IMAGE_TAG" "$REPO_URI:$IMAGE_TAG"
+            post_build:
+              commands:
+                - docker push "$REPO_URI:$IMAGE_TAG"
+      Artifacts:
+        Type: NO_ARTIFACTS
+  ECSCluster:
+    Type: AWS::ECS::Cluster
+    DependsOn: TaskExecutionRole
+    Properties:
+      CapacityProviders:
+        - FARGATE
+      DefaultCapacityProviderStrategy:
+        - CapacityProvider: FARGATE
+          Weight: 1
+  TaskExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: ECSLogs
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource:
+                  - arn:aws:logs:*:*:*
+  ECRRepository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: 1password/scim
+  TaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: ECSTaskAccess
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ecr:GetAuthorizationToken
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - ecr:DescribeImages
+                Resource: !GetAtt ECRRepository.Arn
+              - Effect: Allow
+                Action:
+                  - codebuild:StartBuild
+                Resource: !GetAtt CodeBuildProject.Arn
+  ServiceDiscoveryNamespace:
+    Type: AWS::ServiceDiscovery::PrivateDnsNamespace
+    Properties:
+      Description: AWS Cloud Map private DNS namespace for 1Password SCIM Bridge.
+      Vpc: !Ref VPC
+      Name: op-scim-bridge
+  RedisService:
+    Type: AWS::ServiceDiscovery::Service
+    Properties:
+      DnsConfig:
+        DnsRecords:
+          - TTL: 60
+            Type: A
+      HealthCheckCustomConfig:
+        FailureThreshold: 1
+      Name: redis
+      NamespaceId: !Ref ServiceDiscoveryNamespace
+  TaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: op-scim-bridge
+      RequiresCompatibilities:
+        - FARGATE
+      NetworkMode: awsvpc
+      Cpu: 256
+      Memory: 512
+      ExecutionRoleArn: !GetAtt TaskExecutionRole.Arn
+      TaskRoleArn: !Ref TaskRole
+      RuntimePlatform:
+        CpuArchitecture: ARM64
+        OperatingSystemFamily: LINUX
+      ContainerDefinitions:
+        - Name: image-sync
+          Essential: false
+          Environment:
+            - Name: AWS_REGION
+              Value: !Ref AWS::Region
+            - Name: IMAGE_TAG
+              Value: !Ref SCIMBridgeVersion
+            - Name: REPO_NAME
+              Value: !Ref ECRRepository
+            - Name: CODEBUILD_PROJECT
+              Value: !Ref CodeBuildProject
+          Image: amazon/aws-cli
+          EntryPoint:
+            - /bin/bash
+            - -c
+          Command:
+            - |-
+              echo "Checking if image tag $IMAGE_TAG already exists in $REPO_NAME..." &&
+              aws ecr describe-images \
+                --repository-name "$REPO_NAME" --image-ids imageTag="$IMAGE_TAG" \
+                --query imageDetails[].imageTags[] --output text > image_check 2>&1 ;
+              if ! grep -q "ImageNotFoundException" image_check && ! grep -q "$IMAGE_TAG" image_check; then
+                cat image_check
+                exit 1
+              elif grep -q "ImageNotFoundException" image_check; then
+                echo "$IMAGE_TAG not found in $REPO_NAME. Triggering CodeBuild..."
+                aws codebuild start-build --project-name "$CODEBUILD_PROJECT" \
+                  --environment-variables-override name=IMAGE_TAG,value="$IMAGE_TAG" \
+                  --region "$AWS_REGION" --output text
+              else
+                echo "$IMAGE_TAG already exists in $REPO_NAME. Exiting."
+              fi
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-region: !Ref AWS::Region
+              awslogs-group: !Ref ECSLogGroup
+              awslogs-stream-prefix: ecs/op-scim-bridge
+        - Name: redis
+          DependsOn:
+            - ContainerName: image-sync
+              Condition: SUCCESS
+          Cpu: 256
+          Memory: 512
+          Image: redis
+          User: redis:redis
+          Command:
+            - --maxmemory 256mb
+            - --maxmemory-policy volatile-lru
+            - --save ""
+          PortMappings:
+            - ContainerPort: 6379
+          HealthCheck:
+            Command:
+              - CMD-SHELL
+              - redis-cli ping | grep PONG
+            StartPeriod: 5
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-region: !Ref AWS::Region
+              awslogs-group: !Ref ECSLogGroup
+              awslogs-stream-prefix: ecs/op-scim-bridge
+  ECSLogGroup:
+    Type: AWS::Logs::LogGroup
+  ECSService:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !Ref ECSCluster
+      TaskDefinition: !Ref TaskDefinition
+      DesiredCount: 1
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          Subnets:
+            - !Ref PrivateSubnet1
+            - !Ref PrivateSubnet2
+          SecurityGroups:
+            - !Ref ECSSecurityGroup
+      ServiceRegistries:
+        - ContainerName: redis
+          RegistryArn: !GetAtt RedisService.Arn
   AccessRole:
     Type: AWS::IAM::Role
     Properties:
@@ -361,19 +624,20 @@ Resources:
     Properties:
       MaxSize: 1
       MinSize: 1
-  SCIMBridgeService:
+  AppRunnerService:
     Type: AWS::AppRunner::Service
+    DependsOn: ECSService
     Properties:
       AutoScalingConfigurationArn: !Ref AutoScalingConfiguration
       SourceConfiguration:
         AutoDeploymentsEnabled: false
         ImageRepository:
-          ImageIdentifier: !Sub ${AWS::AccountId}.dkr.ecr.us-west-2.amazonaws.com/op-scim-bridge:v2.9.5
+          ImageIdentifier: !Sub ${ECRRepository.RepositoryUri}:${SCIMBridgeVersion}
           ImageConfiguration:
             Port: 3002
             RuntimeEnvironmentVariables:
               - Name: OP_REDIS_URL
-                Value: !Sub redis://${RedisCluster.RedisEndpoint.Address}:${RedisCluster.RedisEndpoint.Port}
+                Value: !Sub redis://${RedisService.Name}.op-scim-bridge:6379
             RuntimeEnvironmentSecrets:
               - Name: OP_SESSION
                 Value: !Ref scimsessionSecret
@@ -391,8 +655,14 @@ Resources:
         AuthenticationConfiguration:
           AccessRoleArn: !GetAtt AccessRole.Arn
       InstanceConfiguration:
-        Cpu: 256
-        Memory: 512
+        Cpu: !FindInMap
+          - InstanceConfiguration
+          - !Ref ProvisioningVolume
+          - Cpu
+        Memory: !FindInMap
+          - InstanceConfiguration
+          - !Ref ProvisioningVolume
+          - Memory
         InstanceRoleArn: !GetAtt InstanceRole.Arn
       NetworkConfiguration:
         IngressConfiguration:
@@ -404,4 +674,4 @@ Outputs:
   SCIMBridgeURL:
     Description: >-
       The URL for your SCIM bridge. Use this and your bearer token to connect your identity provider to 1Password.
-    Value: !Sub https://${SCIMBridgeService.ServiceUrl}
+    Value: !Sub https://${AppRunnerService.ServiceUrl}
