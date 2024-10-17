@@ -1,0 +1,567 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  Deploys 1Password SCIM Bridge on AWS Fargate in an Amazon ECS cluster with Amazon API Gateway and AWS Cloud Map,
+  Includes AWS secret, IAM role and policy, security group resources. Optionally creates a VPc and related resources.
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Parameters:
+          - VPCID
+          - VPCCIDR
+          - PublicSubnets
+          - ProvisioningVolume
+          - SCIMBridgeVersion
+          - scimsession
+      - Label:
+          default: Workspace configuration (only for customers integrating with Google Workspace)
+        Parameters:
+          - WorkspaceCredentials
+          - WorkspaceActor
+    ParameterLabels:
+      VPCID:
+        default: VPC ID
+      VPCCIDR:
+        default: VPC CIDR
+      PublicSubnets:
+        default: Public subnets
+      ProvisioningVolume:
+        default: Provisioning volume
+      SCIMBridgeVersion:
+        default: 1Password SCIM Bridge version
+      WorkspaceCredentials:
+        default: Service account key
+      WorkspaceActor:
+        default: Actor
+Parameters:
+  VPCID:
+    Type: String
+    Description: >-
+      (Optional) ID of an existing VPC to use for your SCIM bridge. If empty, a new VPC and two public subnets will be
+      created.
+  VPCCIDR:
+    Type: String
+    Default: 10.0.0.0/16
+    Description: A CIDR block for the VPC. Required if VPCID is empty; ignored if specifying a VPCID.
+  PublicSubnets:
+    Type: CommaDelimitedList
+    Description: (Optional) A comma-separated list of two or more public subnets in the specified VPC.
+    ConstraintDescription: >-
+      must be a list of at least two existing subnets associated a unique availability zone in the specified VPC
+  ProvisioningVolume:
+    Type: String
+    Description: >-
+      The expected volume of provisioning activity. Use base for provisioning less than 1,000 users, high for up to
+      5,000 users, or very-high for more than 5,000 users.
+    Default: base
+    AllowedValues:
+      - base
+      - high
+      - very-high
+    ConstraintDescription: must be base, high, or very-high
+  scimsession:
+    Type: String
+    Description: >-
+      The plain text contents of the scimsession file created during the automated user provisioning setup in your
+      1Password account.
+    MinLength: 1
+    ConstraintDescription: must not be empty
+    NoEcho: true
+  SCIMBridgeVersion:
+    Type: String
+    Default: v2.9.7
+    Description: >-
+      The tag of the 1Password SCIM Bridge image to pull from Docker Hub.
+  WorkspaceCredentials:
+    Type: String
+    Default: ""
+    Description: >-
+      The plain text contents of the key file associated with the service account for Google Workspace.
+    NoEcho: true
+  WorkspaceActor:
+    Type: String
+    Default: ""
+    Description: >-
+      The email address of the Google Workspace administrator that the service account is acting on behalf of.
+Rules:
+  ValidateWorkspaceConfig:
+    RuleCondition: !Not
+      - Fn::EachMemberEquals:
+          - - !Ref WorkspaceCredentials
+            - !Ref WorkspaceActor
+          - ""
+    Assertions:
+      - Assert: !Not [!Equals [!Ref WorkspaceCredentials, ""]]
+        AssertDescription: >-
+          The service account key is required to connect to Google Workspace.
+      - Assert: !Not [!Equals [!Ref WorkspaceActor, ""]]
+        AssertDescription: >-
+          The actor email is required to connect to Google Workspace.
+Mappings:
+  SCIMBridgeResources:
+    base:
+      Cpu: 256
+      Memory: 512
+    high:
+      Cpu: 512
+      Memory: 1024
+    very-high:
+      Cpu: 1024
+      Memory: 1024
+Conditions:
+  CreateVPC: !Equals [!Ref VPCID, ""]
+  UsingGoogleWorkspace: !Not
+    - !Or
+      - !Equals [!Ref WorkspaceCredentials, ""]
+      - !Equals [!Ref WorkspaceActor, ""]
+Resources:
+  scimsessionSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      SecretString: !Ref scimsession
+  WorkspaceCredentialsSecret:
+    Type: AWS::SecretsManager::Secret
+    Condition: UsingGoogleWorkspace
+    Properties:
+      SecretString: !Ref WorkspaceCredentials
+  WorkspaceSettingsSecret:
+    Type: AWS::SecretsManager::Secret
+    Condition: UsingGoogleWorkspace
+    Properties:
+      SecretString: !Sub |-
+        {
+          "actor":"${WorkspaceActor}",
+          "bridgeAddress":"${ApiGateway.ApiEndpoint}"
+        }
+  VPC:
+    Condition: CreateVPC
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VPCCIDR
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+  PublicSubnet1:
+    Type: AWS::EC2::Subnet
+    Condition: CreateVPC
+    Properties:
+      AvailabilityZone:
+        Fn::Select:
+          - 0
+          - Fn::GetAZs: !Ref AWS::Region
+      VpcId: !Ref VPC
+      CidrBlock:
+        Fn::Select:
+          - 0
+          - Fn::Cidr:
+              - !GetAtt VPC.CidrBlock
+              - 16
+              - 12
+  PublicSubnet2:
+    Type: AWS::EC2::Subnet
+    Condition: CreateVPC
+    Properties:
+      AvailabilityZone:
+        Fn::Select:
+          - 1
+          - Fn::GetAZs: !Ref AWS::Region
+      VpcId: !Ref VPC
+      CidrBlock:
+        Fn::Select:
+          - 1
+          - Fn::Cidr:
+              - !GetAtt VPC.CidrBlock
+              - 16
+              - 12
+  InternetGateway:
+    Condition: CreateVPC
+    Type: AWS::EC2::InternetGateway
+  GatewayAttachment:
+    Condition: CreateVPC
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref InternetGateway
+  RouteTable:
+    Condition: CreateVPC
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+  Route:
+    Condition: CreateVPC
+    Type: AWS::EC2::Route
+    DependsOn: GatewayAttachment
+    Properties:
+      RouteTableId: !Ref RouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+  PublicSubnet1RouteTableAssociation:
+    Condition: CreateVPC
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnet1
+      RouteTableId: !Ref RouteTable
+  PublicSubnet2RouteTableAssociation:
+    Condition: CreateVPC
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnet2
+      RouteTableId: !Ref RouteTable
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+  ExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: ECSLogs
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource:
+                  - arn:aws:logs:*:*:*
+  SCIMBridgeTaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ecs-tasks.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: SecretAccess
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - secretsmanager:GetSecretValue
+                Resource:
+                  - !Ref scimsessionSecret
+                  - !If
+                    - UsingGoogleWorkspace
+                    - !Ref WorkspaceCredentialsSecret
+                    - !Ref AWS::NoValue
+                  - !If
+                    - UsingGoogleWorkspace
+                    - !Ref WorkspaceSettingsSecret
+                    - !Ref AWS::NoValue
+  ServiceDiscoveryNamespace:
+    Type: AWS::ServiceDiscovery::PrivateDnsNamespace
+    Properties:
+      Description: AWS Cloud Map private DNS namespace for 1Password SCIM Bridge.
+      Vpc: !If [CreateVPC, !Ref VPC, !Ref VPCID]
+      Name: op-scim-bridge
+  RedisService:
+    Type: AWS::ServiceDiscovery::Service
+    Properties:
+      DnsConfig:
+        DnsRecords:
+          - TTL: 60
+            Type: A
+      HealthCheckCustomConfig:
+        FailureThreshold: 1
+      Name: redis
+      NamespaceId: !Ref ServiceDiscoveryNamespace
+  SCIMBridgeService:
+    Type: AWS::ServiceDiscovery::Service
+    Properties:
+      DnsConfig:
+        DnsRecords:
+          - TTL: 60
+            Type: SRV
+      Name: scim
+      NamespaceId: !Ref ServiceDiscoveryNamespace
+  ECSCluster:
+    Type: AWS::ECS::Cluster
+    DependsOn: ExecutionRole
+    Properties:
+      CapacityProviders:
+        - FARGATE
+      DefaultCapacityProviderStrategy:
+        - CapacityProvider: FARGATE
+          Weight: 1
+  RedisTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: op-scim-redis
+      RequiresCompatibilities:
+        - FARGATE
+      NetworkMode: awsvpc
+      Cpu: 256
+      Memory: 512
+      ExecutionRoleArn: !GetAtt ExecutionRole.Arn
+      RuntimePlatform:
+        CpuArchitecture: ARM64
+        OperatingSystemFamily: LINUX
+      ContainerDefinitions:
+        - Name: redis
+          Image: redis
+          User: redis:redis
+          Command:
+            - --maxmemory 256mb
+            - --maxmemory-policy volatile-lru
+            - --save ""
+          PortMappings: [ContainerPort: 6379]
+          HealthCheck:
+            Command:
+              - CMD-SHELL
+              - redis-cli ping | grep PONG
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-region: !Ref AWS::Region
+              awslogs-group: !Ref LogGroup
+              awslogs-stream-prefix: ecs/op-scim-bridge
+  SCIMBridgeTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: op-scim-bridge
+      RequiresCompatibilities:
+        - FARGATE
+      NetworkMode: awsvpc
+      Cpu: !FindInMap
+        - SCIMBridgeResources
+        - !Ref ProvisioningVolume
+        - Cpu
+      Memory: !FindInMap
+        - SCIMBridgeResources
+        - !Ref ProvisioningVolume
+        - Memory
+      ExecutionRoleArn: !GetAtt ExecutionRole.Arn
+      TaskRoleArn: !Ref SCIMBridgeTaskRole
+      RuntimePlatform:
+        CpuArchitecture: ARM64
+        OperatingSystemFamily: LINUX
+      Volumes:
+        - Name: secrets
+      ContainerDefinitions:
+        - Name: mount-secrets
+          Essential: false
+          Image: amazon/aws-cli
+          MountPoints:
+            - ContainerPath: /aws
+              SourceVolume: secrets
+          Environment:
+            - Name: SCIMSESSION_ARN
+              Value: !Ref scimsessionSecret
+            - !If
+              - UsingGoogleWorkspace
+              - Name: WORKSPACE_CREDENTIALS_ARN
+                Value: !Ref WorkspaceCredentialsSecret
+              - !Ref AWS::NoValue
+            - !If
+              - UsingGoogleWorkspace
+              - Name: WORKSPACE_SETTINGS_ARN
+                Value: !Ref WorkspaceSettingsSecret
+              - !Ref AWS::NoValue
+          EntryPoint:
+            - /bin/bash
+            - -c
+          Command:
+            - !Join
+              - " "
+              - - >-
+                  aws secretsmanager get-secret-value
+                  --secret-id $SCIMSESSION_ARN --query SecretString --output text
+                  > scimsession
+                - !If
+                  - UsingGoogleWorkspace
+                  - >-
+                    && aws secretsmanager get-secret-value
+                    --secret-id $WORKSPACE_CREDENTIALS_ARN --query SecretString --output text
+                    > workspace-credentials.json
+                    && aws secretsmanager get-secret-value
+                    --secret-id $WORKSPACE_SETTINGS_ARN --query SecretString --output text
+                    > workspace-settings.json
+                  - !Ref AWS::NoValue
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-region: !Ref AWS::Region
+              awslogs-group: !Ref LogGroup
+              awslogs-stream-prefix: ecs/op-scim-bridge
+        - Name: scim
+          Image: !Sub 1password/scim:${SCIMBridgeVersion}
+          User: opuser:opuser
+          PortMappings: [ContainerPort: 3002]
+          DependsOn:
+            - ContainerName: mount-secrets
+              Condition: SUCCESS
+          MountPoints:
+            - ContainerPath: /home/opuser/.op
+              SourceVolume: secrets
+          Environment:
+            - Name: OP_REDIS_URL
+              Value: !Sub redis://${RedisService.Name}.op-scim-bridge:6379
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-region: !Ref AWS::Region
+              awslogs-group: !Ref LogGroup
+              awslogs-stream-prefix: ecs/op-scim
+  RedisECSService:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !Ref ECSCluster
+      PropagateTags: SERVICE
+      TaskDefinition: !Ref RedisTaskDefinition
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          Subnets: !If
+            - CreateVPC
+            - [!Ref PublicSubnet1, !Ref PublicSubnet2]
+            - !Ref PublicSubnets
+          SecurityGroups:
+            - !Ref RedisSecurityGroup
+      ServiceRegistries:
+        - ContainerName: redis
+          RegistryArn: !GetAtt RedisService.Arn
+  SCIMBridgeECSService:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !Ref ECSCluster
+      PropagateTags: SERVICE
+      TaskDefinition: !Ref SCIMBridgeTaskDefinition
+      DesiredCount: 1
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          Subnets: !If
+            - CreateVPC
+            - [!Ref PublicSubnet1, !Ref PublicSubnet2]
+            - !Ref PublicSubnets
+          SecurityGroups:
+            - !Ref SCIMBridgeSecurityGroup
+      ServiceRegistries:
+        - ContainerName: scim
+          ContainerPort: 3002
+          RegistryArn: !GetAtt SCIMBridgeService.Arn
+  ApiGatewaySecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: API Gateway traffic for 1Password SCIM Bridge.
+      VpcId: !If [CreateVPC, !Ref VPC, !Ref VPCID]
+  SCIMBridgeSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: ECS Service traffic for 1Password SCIM Bridge.
+      VpcId: !If [CreateVPC, !Ref VPC, !Ref VPCID]
+  RedisSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Redis traffic for 1Password SCIM Bridge.
+      VpcId: !If [CreateVPC, !Ref VPC, !Ref VPCID]
+  ApiGatewayEgress:
+    Type: AWS::EC2::SecurityGroupEgress
+    Properties:
+      GroupId: !Ref ApiGatewaySecurityGroup
+      IpProtocol: tcp
+      FromPort: 3002
+      ToPort: 3002
+      DestinationSecurityGroupId: !Ref SCIMBridgeSecurityGroup
+  SCIMBridgeIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref SCIMBridgeSecurityGroup
+      IpProtocol: tcp
+      FromPort: 3002
+      ToPort: 3002
+      SourceSecurityGroupId: !Ref ApiGatewaySecurityGroup
+  SCIMBridgeRedisEgress:
+    Type: AWS::EC2::SecurityGroupEgress
+    Properties:
+      GroupId: !Ref SCIMBridgeSecurityGroup
+      IpProtocol: tcp
+      FromPort: 6379
+      ToPort: 6379
+      DestinationSecurityGroupId: !Ref RedisSecurityGroup
+  SCIMBridgePublicEgress:
+    Type: AWS::EC2::SecurityGroupEgress
+    Properties:
+      GroupId: !Ref SCIMBridgeSecurityGroup
+      IpProtocol: tcp
+      FromPort: 443
+      ToPort: 443
+      CidrIp: 0.0.0.0/0
+  RedisIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref RedisSecurityGroup
+      Description: Redis traffic from SCIM Bridge service.
+      IpProtocol: tcp
+      FromPort: 6379
+      ToPort: 6379
+      SourceSecurityGroupId: !Ref SCIMBridgeSecurityGroup
+  RedisEgress:
+    Type: AWS::EC2::SecurityGroupEgress
+    Properties:
+      Description: HTTPS to Docker Hub.
+      GroupId: !Ref RedisSecurityGroup
+      IpProtocol: tcp
+      FromPort: 443
+      ToPort: 443
+      CidrIp: 0.0.0.0/0
+  VpcLink:
+    Type: AWS::ApiGatewayV2::VpcLink
+    Properties:
+      Name: op-scim-bridge
+      SecurityGroupIds:
+        - !Ref ApiGatewaySecurityGroup
+      SubnetIds: !If
+        - CreateVPC
+        - [!Ref PublicSubnet1, !Ref PublicSubnet2]
+        - !Ref PublicSubnets
+  ApiGateway:
+    Type: AWS::ApiGatewayV2::Api
+    Properties:
+      Name: op-scim-bridge
+      ProtocolType: HTTP
+  ApiGatewayRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref ApiGateway
+      RouteKey: $default
+      AuthorizationType: NONE
+      Target: !Join
+        - /
+        - - integrations
+          - !Ref ApiGatewayIntegration
+  ApiGatewayIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref ApiGateway
+      IntegrationType: HTTP_PROXY
+      IntegrationMethod: ANY
+      ConnectionType: VPC_LINK
+      ConnectionId: !Ref VpcLink
+      IntegrationUri: !GetAtt SCIMBridgeService.Arn
+      PayloadFormatVersion: 1.0
+  ApiGatewayStage:
+    Type: AWS::ApiGatewayV2::Stage
+    Properties:
+      StageName: $default
+      ApiId: !Ref ApiGateway
+      AutoDeploy: true
+Outputs:
+  SCIMBridgeURL:
+    Description: >-
+      The URL for your SCIM bridge. Use this and your bearer token to connect your identity provider to 1Password.
+    Value: !GetAtt ApiGateway.ApiEndpoint
