@@ -7,7 +7,7 @@ services:
       - op-scim
 
   scim:
-    image: docker.io/1password/scim:v2.9.7
+    image: docker.io/1password/scim:${SCIM_IMAGE_VERSION}
     container_name: scim
     ports:
       - "80:3002"
