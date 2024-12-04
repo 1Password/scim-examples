@@ -12,15 +12,13 @@ services:
     ports:
       - "80:3002"
     env_file:
-      - ./../scim.env
+      - ./scim.env
     networks:
       - op-scim
     depends_on:
       - redis
     secrets:
       - scimsession
-      - workspace-credentials
-      - workspace-settings
 
 networks:
   op-scim:
@@ -28,7 +26,3 @@ networks:
 secrets:
   scimsession:
     name: scimsession
-  workspace-credentials:
-    name: workspace-credentials
-  workspace-settings:
-    name: workspace-settings

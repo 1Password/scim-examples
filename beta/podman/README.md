@@ -5,7 +5,7 @@ Podman-compose is a community developed package that enables Podman to achieve t
 
 > **Before you move on**
 >
-> If you are using Google Workspace or need to send more than 1000 provisioning requests at a time, please reach out to 1Password support team as these are not supported with Podman deployment yet.
+> If you need to send more than 1000 provisioning requests at a time, please reach out to 1Password support team as t are not supported with Podman deployment yet.
 
 ## In this folder
 
@@ -19,8 +19,6 @@ Podman-compose is a community developed package that enables Podman to achieve t
 ## Prerequisites
 
 > **Note**
->
-> 📚 Before proceeding, review the [Preparation Guide](/PREPARATION.md) at the root of this repository.
 
 - AMD64/ARM64 VM or bare metal server with a Podman-supported Linux distribution (usually RHEL)
 - Create a public DNS A record that points to the public IP address of the Linux server for your SCIM bridge. For example, `scim.example.com`.
@@ -48,14 +46,7 @@ All following steps should be run on the same computer where you are already usi
    cd ./scim-examples/beta/podman
    ```
 
-2. Run the commands below to make the shell script files executable.
-
-  ```sh
-  chmod u+x deploy.sh
-  chmod u+x teardown.sh
-  ```
-
-3. Save the `scimsession` credentials file from [the Automated User Provisioning setup](https://start.1password.com/integrations/directory/) to this working directory.
+2. Save the `scimsession` credentials file from [the Automated User Provisioning setup](https://start.1password.com/integrations/directory/) to this working directory.
 Once this is done, you should be able to see `scimsession` listed when you run `ls`.
 
 

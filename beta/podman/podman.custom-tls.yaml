@@ -12,7 +12,7 @@ services:
     ports:
       - "443:8443"
     env_file:
-      - ./../scim.env
+      - ./scim.env
     networks:
       - op-scim
     depends_on:
@@ -21,8 +21,6 @@ services:
       - scimsession
       - tls.crt
       - tls.key
-      - workspace-credentials
-      - workspace-settings
 
 networks:
   op-scim:
@@ -34,7 +32,3 @@ secrets:
     name: tls.crt
   tls.key:
     name: tls.key
-  workspace-credentials:
-    name: workspace-credentials
-  workspace-settings:
-    name: workspace-settings
