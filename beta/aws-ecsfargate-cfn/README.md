@@ -9,8 +9,8 @@ The included [AWS CloudFormation template](https://docs.aws.amazon.com/AWSCloudF
 ## Prerequisites
 
 - A 1Password account with an active 1Password Business subscription or trial
-> [!TIP]
-> Try 1Password Business **free** for 14 days: <https://start.1password.com/sign-up/business>
+  > [!TIP]
+  > Try 1Password Business **free** for 14 days: <https://start.1password.com/sign-up/business>
 - An AWS account with the permissions and available quota to create and manage the described resources
 
 ## Before you begin

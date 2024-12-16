@@ -1,7 +1,7 @@
 version: "2.2"
 services:
   scim:
-    image: 1password/scim:v2.9.7
+    image: 1password/scim:v2.9.9
     ports:
       - "3002:3002"
       - "80:8080"

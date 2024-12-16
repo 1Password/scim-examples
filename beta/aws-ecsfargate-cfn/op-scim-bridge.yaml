@@ -85,7 +85,7 @@ Parameters:
     NoEcho: true
   SCIMBridgeVersion:
     Type: String
-    Default: v2.9.7
+    Default: v2.9.9
     Description: >-
       The tag of the 1Password SCIM Bridge image to pull from Docker Hub.
   WorkspaceCredentials:
@@ -209,15 +209,15 @@ Resources:
             - Name: SCIMSESSION_ARN
               Value: !Ref scimsessionSecret
             - !If
-                - UsingGoogleWorkspace
-                - Name: WORKSPACE_CREDENTIALS_ARN
-                  Value: !Ref WorkspaceCredentialsSecret
-                - !Ref AWS::NoValue
+              - UsingGoogleWorkspace
+              - Name: WORKSPACE_CREDENTIALS_ARN
+                Value: !Ref WorkspaceCredentialsSecret
+              - !Ref AWS::NoValue
             - !If
-                - UsingGoogleWorkspace
-                - Name: WORKSPACE_SETTINGS_ARN
-                  Value: !Ref WorkspaceSettingsSecret
-                - !Ref AWS::NoValue
+              - UsingGoogleWorkspace
+              - Name: WORKSPACE_SETTINGS_ARN
+                Value: !Ref WorkspaceSettingsSecret
+              - !Ref AWS::NoValue
           EntryPoint:
             - /bin/bash
             - -c
@@ -229,15 +229,15 @@ Resources:
                   --secret-id $SCIMSESSION_ARN --query SecretString --output text
                   > scimsession
                 - !If
-                    - UsingGoogleWorkspace
-                    - >-
-                      && aws secretsmanager get-secret-value
-                      --secret-id $WORKSPACE_CREDENTIALS_ARN --query SecretString --output text
-                      > workspace-credentials.json
-                      && aws secretsmanager get-secret-value
-                      --secret-id $WORKSPACE_SETTINGS_ARN --query SecretString --output text
-                      > workspace-settings.json
-                    - !Ref AWS::NoValue
+                  - UsingGoogleWorkspace
+                  - >-
+                    && aws secretsmanager get-secret-value
+                    --secret-id $WORKSPACE_CREDENTIALS_ARN --query SecretString --output text
+                    > workspace-credentials.json
+                    && aws secretsmanager get-secret-value
+                    --secret-id $WORKSPACE_SETTINGS_ARN --query SecretString --output text
+                    > workspace-settings.json
+                  - !Ref AWS::NoValue
           LogConfiguration:
             LogDriver: awslogs
             Options:

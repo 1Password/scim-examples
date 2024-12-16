@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: scim
-          image: 1password/scim:v2.9.7
+          image: 1password/scim:v2.9.9
           ports:
             - name: http1
               containerPort: 3002
