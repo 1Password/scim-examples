@@ -71,7 +71,7 @@ Parameters:
       - very-high
     ConstraintDescription: must be base, high, or very-high
   DomainName:
-    Type: Strin2.9.9
+    Type: String
     Default: scim.example.com
     Description: >-
       A fully qualified domain name for your SCIM bridge.

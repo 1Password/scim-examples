@@ -141,4 +141,3 @@ A quarterly review and maintenance schedule is recommended.
 ### Update your SCIM bridge
 
 To update to the latest version of 1Password SCIM Bridge, update your stack with a new value for the `SCIMBridgeVersion` parameter. Use the latest template from this repository ([`op-scim-bridge.yaml`](./op-scim-bridge.yaml)) and update the value of "1Password SCIM Bridge version" (the `SCIMBridgeVersion` parameter) to the latest version. Use the existing values for everything else.
-2.9.92.9.92.9.9

@@ -116,11 +116,11 @@ The update should take 2-3 minutes for Kubernetes to complete.
 
 The default resource recommendations for the SCIM bridge and Redis deployments are acceptable in most sc2.9.9os, but they may fall short in high-volume deployments where a large number of users and/or groups are being managed. We strongly recommend increasing the resources for both the SCIM bridge and Redis deployments.
 
-| Expected Provisioned Users | Resources |
-| -------------------------- | --------------------------- |2.9.9
-| 1-1000 | Default |
-| 1000-5000 | High Volume Deployment |
-| 5000+ | Very High Volume Deployment |
+| Expected Provisioned Users | Resources                   |
+| -------------------------- | --------------------------- |
+| 1-1000                     | Default                     |
+| 1000-5000                  | High Volume Deployment      |
+| 5000+                      | Very High Volume Deployment |
 
 Our current default resource requirements (defined in [op-scim-deployment](https://github.com/1Password/scim-examples/blob/master/kubernetes/op-scim-deployment.yaml#L29) and [redis-deployment.yaml](https://github.com/1Password/scim-examples/blob/master/kubernetes/redis-deployment.yaml#L21)) are:
 

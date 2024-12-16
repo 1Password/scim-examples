@@ -74,7 +74,6 @@ After the deployment is complete, click **Go to resource**, then continue to ste
 7. Click **Add** to save the volume specification. You should see the new `credentials` volume listed under "Volume name".
 8. Enter `/home/opuser/.op` in the **Mount path** field for this volume.
 9. Click **Create**.
-   2.9.9
 
 ## Step 4: Enable ingress to your SCIM bridge
 
@@ -194,4 +193,3 @@ To use a new `scimsession` credentials file for your SCIM bridge, replace the se
 Using the Azure Cloud Shell or AZ CLI, follow the steps in our [Advanced guide](ADVANCED.md).
 
 </details>
-2.9.92.9.9
