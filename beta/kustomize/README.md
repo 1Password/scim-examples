@@ -102,10 +102,10 @@ To finish setting up automated user provisioning, [connect your identity provide
 
 👍 Check for 1Password SCIM Bridge updates on the [SCIM bridge release page](https://app-updates.agilebits.com/product_history/SCIM).
 
-To update the SCIM bridge, connect to your Kubernetes cluster and run the following command, replacing v2.9.7 with the latest version:
+To update the SCIM bridge, connect to your Kubernetes cluster and run the following command, replacing v2.9.9 with the latest version:
 
 ```bash
-kubectl set image deploy/op-scim-bridge op-scim-bridge=1password/scim:v2.9.7 -n=op-scim
+kubectl set image deploy/op-scim-bridge op-scim-bridge=1password/scim:v2.9.9 -n=op-scim
 ```
 
 The update should take 2-3 minutes for Kubernetes to complete.
@@ -114,13 +114,13 @@ The update should take 2-3 minutes for Kubernetes to complete.
 
 ### Resource recommendations
 
-The default resource recommendations for the SCIM bridge and Redis deployments are acceptable in most scenarios, but they may fall short in high-volume deployments where a large number of users and/or groups are being managed. We strongly recommend increasing the resources for both the SCIM bridge and Redis deployments.
+The default resource recommendations for the SCIM bridge and Redis deployments are acceptable in most sc2.9.9os, but they may fall short in high-volume deployments where a large number of users and/or groups are being managed. We strongly recommend increasing the resources for both the SCIM bridge and Redis deployments.
 
-| Expected Provisioned Users | Resources                   |
-| -------------------------- | --------------------------- |
-| 1-1000                     | Default                     |
-| 1000-5000                  | High Volume Deployment      |
-| 5000+                      | Very High Volume Deployment |
+| Expected Provisioned Users | Resources |
+| -------------------------- | --------------------------- |2.9.9
+| 1-1000 | Default |
+| 1000-5000 | High Volume Deployment |
+| 5000+ | Very High Volume Deployment |
 
 Our current default resource requirements (defined in [op-scim-deployment](https://github.com/1Password/scim-examples/blob/master/kubernetes/op-scim-deployment.yaml#L29) and [redis-deployment.yaml](https://github.com/1Password/scim-examples/blob/master/kubernetes/redis-deployment.yaml#L21)) are:
 

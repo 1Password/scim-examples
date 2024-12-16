@@ -13,6 +13,7 @@ Create a public DNS record (for example, `op-scim-bridge.example.com`) that poin
 ## Step 1: Prepare the server
 
 Connect to the machine that you will be using as the host for your SCIM bridge to set up Docker:
+
 > [!TIP]
 > 🔑 You can use use the [1Password SSH agent](https://developer.1password.com/docs/ssh/get-started) to authenticate the
 > connection to the server (and other SSH workflows).
@@ -90,7 +91,7 @@ You can also check the status of your SCIM bridge with a bearer token authentica
 > If you saved your bearer token to your 1Password account, you can use [secret reference
 > syntax](https://developer.1password.com/docs/cli/secret-reference-syntax) with [1Password
 > CLI](https://developer.1password.com/docs/cli/get-started) to securely pass it inline. For example, using [`op
-> read`](https://developer.1password.com/docs/cli/secret-references#with-op-read):
+read`](https://developer.1password.com/docs/cli/secret-references#with-op-read):
 >
 > ```sh
 > export OP_SCIM_TOKEN="op://Employee/Bearer Token/credential"
@@ -103,47 +104,46 @@ You can also check the status of your SCIM bridge with a bearer token authentica
    <details>
    <summary>Example JSON response:</summary>
 
-   ```json
-   {
-     "build": "209051",
-     "version": "2.9.5",
-     "reports": [
-       {
-         "source": "ConfirmationWatcher",
-         "time": "2024-04-25T14:06:09Z",
-         "expires": "2024-04-25T14:16:09Z",
-         "state": "healthy"
-       },
-       {
-         "source": "RedisCache",
-         "time": "2024-04-25T14:06:09Z",
-         "expires": "2024-04-25T14:16:09Z",
-         "state": "healthy"
-       },
-       {
-         "source": "SCIMServer",
-         "time": "2024-04-25T14:06:56Z",
-         "expires": "2024-04-25T14:16:56Z",
-         "state": "healthy"
-       },
-       {
-         "source": "StartProvisionWatcher",
-         "time": "2024-04-25T14:06:09Z",
-         "expires": "2024-04-25T14:16:09Z",
-         "state": "healthy"
-       }
-     ],
-     "retrievedAt": "2024-04-25T14:06:56Z"
-   }
-   ```
+```json
+{
+  "build": "209051",
+  "version": "2.9.9",
+  "reports": [
+    {
+      "source": "ConfirmationWatcher",
+      "time": "2024-04-25T14:06:09Z",
+      "expires": "2024-04-25T14:16:09Z",
+      "state": "healthy"
+    },
+    {
+      "source": "RedisCache",
+      "time": "2024-04-25T14:06:09Z",
+      "expires": "2024-04-25T14:16:09Z",
+      "state": "healthy"
+    },
+    {
+      "source": "SCIMServer",
+      "time": "2024-04-25T14:06:56Z",
+      "expires": "2024-04-25T14:16:56Z",
+      "state": "healthy"
+    },
+    {
+      "source": "StartProvisionWatcher",
+      "time": "2024-04-25T14:06:09Z",
+      "expires": "2024-04-25T14:16:09Z",
+      "state": "healthy"
+    }
+  ],
+  "retrievedAt": "2024-04-25T14:06:56Z"
+}
+```
 
    </details>
    <br />
 
 ## Step 5: Connect your identity provider
 
-> [!WARNING]
-> **If Google Workspace is your identity provider**, additional steps are required: [connect your 1Password SCIM Bridge to Google Workspace](./google-workspace/README.md).
+> [!WARNING] > **If Google Workspace is your identity provider**, additional steps are required: [connect your 1Password SCIM Bridge to Google Workspace](./google-workspace/README.md).
 
 To finish setting up automated user provisioning, use your SCIM bridge URL and bearer token to [connect your identity provider to 1Password SCIM Bridge](https://support.1password.com/scim/#step-3-connect-your-identity-provider).
 
@@ -156,7 +156,7 @@ Quarterly review and maintenance is recommended to update the operating system, 
 To use a new version of SCIM bridge, update the `op-scim-bridge_scim` service with the new image tag from the [`1password/scim` repository on Docker Hub](https://hub.docker.com/r/1password/scim/tags):
 
 ```sh
-docker service update op-scim-bridge_scim --image 1password/scim:v2.9.7
+docker service update op-scim-bridge_scim --image 1password/scim:v2.9.9
 ```
 
 Your SCIM bridge should automatically reboot using the specified version, typically in a few seconds.

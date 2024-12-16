@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: op-scim-bridge
-          image: 1password/scim:v2.9.7
+          image: 1password/scim:v2.9.9
           ports:
             # HTTPS port (external TCP traffic should be forwarded to this port by default)
             - name: https
@@ -36,16 +36,16 @@ spec:
             - configMapRef:
                 name: op-scim-configmap
       volumes:
-      - name: secrets
-        projected:
-          sources:
-          - secret:
-              name: scimsession
-          - secret:
-              name: op-scim-tls
-              optional: true
-              items:
-                - key: tls.crt
-                  path: tls.crt
-                - key: tls.key
-                  path: tls.key
+        - name: secrets
+          projected:
+            sources:
+              - secret:
+                  name: scimsession
+              - secret:
+                  name: op-scim-tls
+                  optional: true
+                  items:
+                    - key: tls.crt
+                      path: tls.crt
+                    - key: tls.key
+                      path: tls.key

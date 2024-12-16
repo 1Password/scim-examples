@@ -9,8 +9,8 @@ The included [AWS CloudFormation template](https://docs.aws.amazon.com/AWSCloudF
 ## Prerequisites
 
 - A 1Password account with an active 1Password Business subscription or trial
-> [!TIP]
-> Try 1Password Business **free** for 14 days: <https://start.1password.com/sign-up/business>
+  > [!TIP]
+  > Try 1Password Business **free** for 14 days: <https://start.1password.com/sign-up/business>
 - An AWS account with the permissions and available quota to create and manage the described resources
 
 ## Before you begin
@@ -141,3 +141,4 @@ A quarterly review and maintenance schedule is recommended.
 ### Update your SCIM bridge
 
 To update to the latest version of 1Password SCIM Bridge, update your stack with a new value for the `SCIMBridgeVersion` parameter. Use the latest template from this repository ([`op-scim-bridge.yaml`](./op-scim-bridge.yaml)) and update the value of "1Password SCIM Bridge version" (the `SCIMBridgeVersion` parameter) to the latest version. Use the existing values for everything else.
+2.9.92.9.92.9.9
