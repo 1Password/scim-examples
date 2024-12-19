@@ -4,7 +4,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 3.0"
+      version = "~> 5.0"
     }
   }
 }
@@ -21,6 +21,9 @@ locals {
     version     = trimprefix(jsondecode(file("${path.module}/task-definitions/scim.json"))[0].image, "1password/scim:v")
   })
 
+  # Enable Google Workspace module if Workspace admin email is supplied
+  using_google_workspace = var.google_workspace_actor != null
+
   # Define base configuration from ./task-definitions/scim.json
   base_container_definitions_json = templatefile(
     "${path.module}/task-definitions/scim.json",
@@ -36,7 +39,7 @@ locals {
   base_redis_container_definition       = jsondecode(local.base_container_definitions_json)[1]
 
   # Conditionally merge Google Workspace config
-  scim_bridge_container_definition = !var.using_google_workspace ? local.base_scim_bridge_container_definition : merge(
+  scim_bridge_container_definition = !local.using_google_workspace ? local.base_scim_bridge_container_definition : merge(
     local.base_scim_bridge_container_definition,
     {
       #Add Google Workspace secrets to current list
@@ -63,12 +66,15 @@ data "aws_vpc" "this" {
   tags    = var.vpc_name != "" ? { Name = var.vpc_name } : {}
 }
 
-data "aws_subnet_ids" "public" {
-  vpc_id = data.aws_vpc.this.id
-  # Find the public subnets in the VPC
+data "aws_subnets" "public" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.this.id]
+  }
+  # Find the public subnets in the VPC, or if the default VPC, use both
   tags = var.vpc_name != "" ? { SubnetTier = "public" } : {}
-}
 
+}
 data "aws_iam_policy_document" "assume_role_policy" {
   statement {
     actions = ["sts:AssumeRole"]
@@ -141,6 +147,11 @@ resource "aws_ecs_task_definition" "op_scim_bridge" {
   cpu                      = 256
   execution_role_arn       = aws_iam_role.op_scim_bridge.arn
 
+  runtime_platform {
+    cpu_architecture         = "ARM64"
+    operating_system_family  = "LINUX"
+  }
+
   tags = local.tags
 }
 
@@ -177,7 +188,7 @@ resource "aws_ecs_service" "op_scim_bridge" {
   }
 
   network_configuration {
-    subnets          = data.aws_subnet_ids.public.ids
+    subnets          = data.aws_subnets.public.ids
     assign_public_ip = true
     security_groups  = [aws_security_group.service.id]
   }
@@ -190,7 +201,7 @@ resource "aws_ecs_service" "op_scim_bridge" {
 resource "aws_alb" "op_scim_bridge" {
   name               = var.name_prefix == "" ? "op-scim-bridge-alb" : format("%s-%s", local.name_prefix, "alb")
   load_balancer_type = "application"
-  subnets            = data.aws_subnet_ids.public.ids
+  subnets            = data.aws_subnets.public.ids
   security_groups    = [aws_security_group.alb.id]
 
   tags = local.tags
@@ -199,16 +210,7 @@ resource "aws_alb" "op_scim_bridge" {
 resource "aws_security_group" "alb" {
   # Create a security group for the load balancer
   vpc_id = data.aws_vpc.this.id
-
-  # Allow HTTP traffic from anywhere
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  # Allow HTTPS traffic from anywhere
+  # Allow HTTPS traffic to the load balancer from anywhere
   ingress {
     from_port   = 443
     to_port     = 443
@@ -216,11 +218,12 @@ resource "aws_security_group" "alb" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # Restrict outgoing traffic from the load balancer to the ECS service
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    from_port   = 3002
+    to_port     = 3002
+    protocol    = "tcp"
+    cidr_blocks = [data.aws_vpc.this.cidr_block]
   }
 
   tags = local.tags
@@ -230,7 +233,7 @@ resource "aws_security_group" "service" {
   # Create a security group for the service
   vpc_id = data.aws_vpc.this.id
 
-  # Only allow traffic from the load balancer security group
+  # Restrict incoming traffic to the service from the load balancer security group
   ingress {
     from_port       = 3002
     to_port         = 3002
@@ -238,10 +241,11 @@ resource "aws_security_group" "service" {
     security_groups = [aws_security_group.alb.id]
   }
 
+  # Allow HTTPS traffic from the service to anywhere (to allow TCP traffic to 1Password servers)
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
@@ -266,6 +270,8 @@ resource "aws_lb_listener" "https" {
   load_balancer_arn = aws_alb.op_scim_bridge.arn
   port              = 443
   protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+
   certificate_arn = !var.wildcard_cert ? (
     var.using_route53 ?
     aws_acm_certificate_validation.op_scim_bridge[0].certificate_arn : aws_acm_certificate.op_scim_bridge[0].arn
@@ -330,14 +336,16 @@ resource "aws_route53_record" "op_scim_bridge" {
 }
 
 module "google_workspace" {
-  count = var.using_google_workspace ? 1 : 0
+  count = local.using_google_workspace ? 1 : 0
 
-  source = "../beta/aws-terraform-gw"
+  source = "./modules/google-workspace"
 
-  name_prefix = local.name_prefix
-  tags        = local.tags
-  iam_role    = aws_iam_role.op_scim_bridge
-  enabled     = var.using_google_workspace
+  name_prefix   = local.name_prefix
+  tags          = local.tags
+  iam_role      = aws_iam_role.op_scim_bridge
+  enabled       = local.using_google_workspace
+  actor         = var.google_workspace_actor
+  bridgeAddress = "https://${var.domain_name}"
 }
 
 moved {

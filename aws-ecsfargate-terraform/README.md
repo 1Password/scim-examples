@@ -1,23 +1,20 @@
-# Deploying the 1Password SCIM Bridge on AWS Fargate with Terraform
+# Deploy 1Password SCIM Bridge on AWS Fargate with Terraform
 
-This guide will run you through a deployment of the 1Password SCIM bridge on AWS Fargate using Terraform. 
+_Learn how to deploy 1Password SCIM Bridge on AWS Fargate using Terraform._
 
-Note that due to the highly advanced and customizable nature of Amazon Web Services, this is only a suggested starting point. You may modify it to your needs to fit within your existing infrastructure.
+> **Note**
+>
+> Due to the highly advanced and customizable nature of Amazon Web Services, this is only a suggested starting point. You can modify it to fit your existing infrastructure.
 
-## Prerequisites
+## Before you begin
 
-Before beginning, familiarize yourself with [PREPARATION.md](/PREPARATION.md) and complete the necessary steps there.
+Before you begin, complete the necessary [preparation steps to deploy 1Password SCIM Bridge](/PREPARATION.md). You'll also need to:
 
-- Install [Terraform](https://www.terraform.io/downloads)
-- Have your `scimsession` file and bearer token (as seen in `PREPARATION.md`) ready
+- Install [Terraform](https://www.terraform.io/downloads).
+- Have your `scimsession` file and bearer token (as seen in [PREPARATION.md](/PREPARATION.md)) ready.
+- Make sure you're authenticated with the `aws` command-line tool in your local environment. Learn more in the [Terraform AWS Provider documentation](https://registry.terraform.io/providers/hashicorp/aws/latest/docs).
 
-## Sign in with `aws`
-
-Ensure you are authenticated with the `aws` tool in your local environment.
-
-See [Terraform AWS Authentication](https://registry.terraform.io/providers/hashicorp/aws/latest/docs#authentication) for more details.
-
-## Configuration
+## Step 1: Configure the deployment
 
 ### Copy configuration template
 
@@ -28,56 +25,30 @@ cp terraform.tfvars.template terraform.tfvars
 ```
 
 <details>
-  <summary>Optional: For customers using Google Workspace</summary>
+  <summary>Integrate with Google Workspace</summary>
+<br />
+Additional configuration is required to integrate 1Password with Google Workspace.
 
-### Copy Google Worskpace credentials
-
-Copy the `workspace-settings.json` template file to this Terraform code directory:
-
-```bash
-cp ../beta/workspace-settings.json ./workspace-settings.json
-```
-Edit this file and add the respective values for each variable (see our [Google Workspace documentation](https://support.1password.com/scim-google-workspace/)).
-
-Copy your `workspace-credentials.json` file to this Terraform code directory:
-
-```bash
-cp <path>/workspace-credentials.json ./workspace-credentials.json
-```
-
-### Enable Google Workspace configuration
-
-Uncommment this line in `terraform.tfvars`:
+1. [Create a service account, key, and API client.](https://support.1password.com/scim-google-workspace/#step-1-create-a-google-service-account-key-and-api-client)
+2. Save the Google Workspace service account key to the working directory.
+3. Make sure the service account key is named `workspace-credentials.json`.
+4. Uncomment the following line in `terraform.tfvars` and and enter the email address for the Google Workspace administrator associated with the credentials you just created.
 
 ```terraform
-using_google_workspace = true
+google_workspace_actor = "workspace.admin@example.com"
 ```
 
 </details>
 
-### Copy `scimsession` file
+### 1.1: Copy `scimsession` file
 
-Copy the `scimsession` file in the Terraform code directory:
+Save the `scimsession` file from the automated user provisioning setup to the working directory. The Terraform plan will automatically create an AWS secret containing the contents of the `scimsession` file.
 
-```bash
-cp <path>/scimsession ./
-```
-
-This will automatically create an AWS secret containing the contents of the `scimsession` file in your instance.
-
-**Note:** If you skip this step or the installation of the scimsession file is not successful, you can create the required AWS secret manually. Ensure you `base64` encode the `scimsession` file, and store it in a secret as **plain text** (not as JSON, and not wrapped in quotation marks):
-
-```bash
-# only required if the automatic installation of the 'scimession' file is not successful
-cat <path>/scimsession | base64
-# copy the output to Secrets Manager
-```
-
-### Region
+### 1.2: Set the region
 
 Set the `aws_region` variable in `terraform.tfvars` to the AWS region you're deploying in (the default is `us-east-1`).
 
-### Domain name
+### 1.3: Set the domain name
 
 This example uses AWS Certificate Manager to manage the required TLS certificate. Save the full domain name you want to use as `domain_name` in `terraform.tfvars`:
 
@@ -88,8 +59,7 @@ domain_name = "<scim.example.com>"
 <details>
   <summary>Optional: Configure additional features</summary>
 
-
-### Use an existing ACM wildcard certificate
+### 1.4: Use an existing ACM wildcard certificate
 
 If you would like to use an existing wildcard certificate in AWS Certificate Manager (`*.example.com`), uncommment this line in `terraform.tfvars`:
 
@@ -97,7 +67,7 @@ If you would like to use an existing wildcard certificate in AWS Certificate Man
 wildcard_cert = true
 ```
 
-### External DNS 
+### 1.5: External DNS
 
 This deployment example uses Route 53 to create the required DNS record by default. If you are using another DNS provider, uncommment this line in `terraform.tfvars`:
 
@@ -107,7 +77,7 @@ using_route53 = false
 
 Create a CNAME record pointing to the `loadbalancer-dns-name` output printed out from `terraform apply`.
 
-### Use an existing VPC
+### 1.6: Use an existing VPC
 
 This deployment example uses the default VPC for your AWS region. If you would like to specify another VPC to use instead, set the value in the `vpc_name` in `terraform.tfvars`:
 
@@ -115,24 +85,24 @@ This deployment example uses the default VPC for your AWS region. If you would l
 vpc_name           = "<name_of_VPC>"
 ```
 
-### Specify a name prefix
+### 1.7: Specify a name prefix
 
-If you would like to specify a common prefix for naming all supported AWS resources created by Terraform, set the value in the `name_prefix` variable in `terraform.tfvars`:
+If you'd like to specify a common prefix for naming all supported AWS resources created by Terraform, set the value in the `name_prefix` variable in `terraform.tfvars`:
 
 ```terraform
 name_prefix        = "<prefix>"
 ```
 
-### Set a log retention period
+### 1.8: Set a log retention period
 
-Thw deployment example retains logs indifnietely by default. If you would like to set a differnet retention period, specify a number of days in the `log_retention_days` variable in `terraform.tfvars`:
+The deployment example retains logs indefinitely by default. If you'd like to set a different retention period, specify a number of days in the `log_retention_days` variable in `terraform.tfvars`:
 
 ```terraform
 log_retention_days = <number_of_days>
 
 ```
 
-### Apply additional tags
+### 1.9: Apply additional tags
 
 To apply additional tags to all supported AWS resources created by Terraform, add keys and values to the `tags` variable in `terraform.tfvars`:
 
@@ -146,114 +116,192 @@ tags = {
 
 </details>
 
-## Deploy
+## Step 2: Deploy 1Password SCIM Bridge
 
 Run the following commands to create the necessary configuration settings:
 
 ```bash
 terraform init
-terraform plan -out=./op-scim.plan
+terraform plan -out="./op-scim.plan"
 ```
 
-You will now be asked to validate your configuration. Once you are sure it is correct, run the following:
+You'll be asked to validate your configuration. Check it to make sure it's correct, then run the following to deploy the SCIM bridge:
 
 ```bash
-terraform apply ./op-scim.plan
+terraform apply "./op-scim.plan"
 ```
 
-After a few minutes and the DNS update has had time to take effect, go to the SCIM Bridge URL you set, and you should be able to enter your bearer token to verify that your SCIM bridge is up and running.
+After a few minutes, and once the DNS has updated, go to the SCIM bridge URL you set. You should be able to enter your bearer token to verify that your SCIM bridge is up and running.
 
-## Complete setup
+## Step 3: Connect your identity provider
 
-Connect to your Identity Provider following [the remainder of our setup guide](https://support.1password.com/scim/#step-2-deploy-the-scim-bridge).
+To finish setting up automated user provisioning, [connect your identity provider to the SCIM bridge](https://support.1password.com/scim/#step-3-connect-your-identity-provider).
 
-## Updating
+---
 
-The process for updating your infrastructure involes a few key steps. Lucky for us most of the heavy lifting is done by the `terraform` CLI.
+## Update your SCIM bridge
 
-The update steps are generally as follows:
+👍 Check for 1Password SCIM Bridge updates on the [SCIM bridge releases notes website](https://releases.1password.com/provisioning/scim-bridge/).
 
-1. Update any variables and task definitions as necessary
-2. Create a plan for Terraform to apply
-3. Apply the new plan to your infrastrucure
+To update your SCIM bridge:
 
-Note that the `terraform` CLI will output the details of the plan in addition to saving it to an output file (`./op-scim.plan`). The plan will contain the steps necessary to bring your deployment in line with the latest configuration depending on the changes that are detected. Feel free to inspect the output to get a better idea of the steps that will be taken.
+1. Update any variables and task definitions.
+2. Create a plan for Terraform to apply.
+3. Apply the new plan to your infrastructure.
 
-Below we go into detail about some common reasons that you would want to update your infrastructure.
+The `terraform` CLI will output the details of the plan in addition to saving it to an output file (`op-scim.plan`). The plan will contain the steps necessary to bring your deployment in line with the latest configuration depending on the changes that are detected. Feel free to inspect the output to get a better idea of the steps that will be taken.
 
-### Updating to the latest tag version
+Below you can learn about some common update scenarios.
+
+### Update to the latest tag version
 
 To update your deployment to the latest version, edit the `task-definitions/scim.json` file and edit the following line:
 
 ```json
-    "image": "1password/scim:v2.x.x",
+    "image": "1password/scim:v2.9.7",
 ```
 
-Change `v2.x.x` to the latest version [seen here](https://app-updates.agilebits.com/product_history/SCIM).
+Learn about the changes included in each version on the [SCIM bridge releases notes website](https://releases.1password.com/provisioning/scim-bridge/).
 
 Then, reapply your Terraform settings:
 
 ```bash
-terraform plan -out=./op-scim.plan
-terraform apply ./op-scim.plan
+terraform plan -out="./op-scim.plan"
+terraform apply "./op-scim.plan"
 ```
 
-### Updating to the latest configuration
+### Update to the latest configuration
 
-There may be situations where you want to update your deployment with the latest configuration changes available in this repository even if you are already on the latest `1password/scim` tag. The steps are fairly similar to updating the tag with a few minor differences.
+There may be situations where you want to update your deployment with the latest configuration changes available in this repository even if you are already on the latest `1password/scim` tag. The steps are fairly similar to updating the tag, with a few minor differences:
 
-Update steps:
+1. [Optional] Verify that your Terraform variables (`./terraform.tfvars`) are correct and up to date.
+2. [Optional] Reconcile the state between what Terraform knows about and your deployed infrastructure: `terraform refresh`.
+3. Create an update plan to apply: `terraform plan -out="./op-scim.plan"`
+4. Apply the plan to your infrastructure: `terraform apply "./op-scim.plan"`
+5. Verify that there are no errors in the output as Terraform updates your infrastructure.
 
-1. [Optional] Verify that your Terraform variables (`./terraform.tfvars`) are correct and up to date
-2. [Optional] Reconcile the state between what Terraform knows about and your deployed infrastructure: `terraform refresh`
-3. Create an update plan to apply: `terraform plan -out=./op-scim.plan`
-4. Apply the plan to your infrastructure: `terraform apply ./op-scim.plan`
-5. Verify that there are no errors in the output as Terraform updates your infrastructure
+### Resource recommendations
 
-### Resource Recommendations
+The resource allocations for 1Password SCIM Bridge should be increased when provisioning a large number of users or groups. Our default resource specifications and recommended configurations for provisioning at scale are listed in the below table:
 
-The default resource recommendations for the SCIM bridge and Redis deployments are acceptable in most scenarios, but they fall short in high volume deployments where there is a large number of users and/or groups. 
+| Volume    | Number of users | SCIM bridge CPU | SCIM bridge memory | Task CPU | Task memory |
+| --------- | --------------- | --------------- | ------------------ | -------- | ----------- |
+| Default   | <1,000          | 128             | 512                | 256      | 1024        |
+| High      | 1,000–5,000     | 512             | 1024               | 1024     | 2048        |
+| Very high | >5,000          | 1024            | 1024               | 2048     | 4096        |
 
-Our current default resource requirements (defined in [scim.json](https://github.com/1Password/scim-examples/blob/master/aws-ecsfargate-terraform/task-definitions/scim.json#L5)) are:
+If provisioning more than 1,000 users, the resources assigned to the container definition for 1Password SCIM Bridge should be updated as recommended in the above table. The resource allocation specified for the Redis container does not need to be adjusted. The task definition must also be updated to allocate enough resources for both containers. Fargate task resources are constrained by AWS; the recommended configurations are the minimum resources required for both containers (see [Fargate task definition considerations: Task CPU and memory](https://docs.aws.amazon.com/AmazonECS/latest/userguide/fargate-task-defs.html#fargate-tasks-size)).
 
-```yaml
-  cpu: 128
-  memory: 512
+Resources for the SCIM bridge container are declared in [`scim.json`](https://github.com/1Password/scim-examples/blob/master/aws-ecsfargate-terraform/task-definitions/scim.json):
+
+```json
+[
+  {
+    "name": "op_scim_bridge",
+    ...
+    "cpu": 128,
+    "memory": 512,
+    ...
+  },
+  ...
+]
 ```
 
-Proposed recommendations for high volume deployments:
+Task CPU and memory allocations are configured in the ECS task definition resource in [`main.tf`](https://github.com/1Password/scim-examples/blob/master/aws-ecsfargate-terraform/main.tf):
 
-```yaml
-  cpu: 512
-  memory: 1024
+```terraform
+resource "aws_ecs_task_definition" "op_scim_bridge" {
+  ...
+  memory                   = 1024
+  cpu                      = 256
+  ...
+}
 ```
 
-This proposal is 4x the CPU and 2x the memory of the default values.
+If you need help with the configuration, [contact 1Password Support](https://support.1password.com/contact/).
 
-Please reach out to our [support team](https://support.1password.com/contact/) if you need help with the configuration or to tweak the values for your deployment.
+## Customize Redis
 
-### April 2022 changes
+As of SCIM bridge `v2.8.5`, additional Redis configuration options are available. `OP_REDIS_URL` must be unset for any of these environment variables to be read. These environment variables may be especially helpful if you need support for URL-unfriendly characters in your Redis credentials.
 
-As of April 2022 we have updated the Redis deployment to require a maximum of 512 MB of memory. This meant that we also had to bump required memory for the "op-scim-bridge" task definition to 1024 MB.
+> **Note**  
+> `OP_REDIS_URL` must be unset, otherwise the following environment variables will be ignored.
 
-The Redis dataset maximum is set to 256Mb and an eviction policy will determine how keys are evicted when the maximum data set size is approached.
+- `OP_REDIS_HOST`: overrides the default hostname of the redis server (default: `redis`). It can be either another hostname, or an IP address.
+- `OP_REDIS_PORT`: overrides the default port of the redis server connection (default: `6379`).
+- `OP_REDIS_USERNAME`: sets a username, if any, for the redis connection (default: `(null)`)
+- `OP_REDIS_PASSWORD`: Sets a password, if any, for the redis connection (default: `(null)`). Can accommodate URL-unfriendly characters that `OP_REDIS_URL` may not accommodate.
+- `OP_REDIS_ENABLE_SSL`: Optionally enforce SSL on redis server connections (default: `false`). (Boolean `0` or `1`)
+- `OP_REDIS_INSECURE_SSL`: Set whether to allow insecure SSL on redis server connections when `OP_REDIS_ENABLE_SSL` is set to `true`. This may be useful for testing or self-signed environments (default: `false`) (Boolean `0` or `1`).
 
-This should prevent Redis from consuming large amounts of memory and eventually running out of available memory. The SCIM bridge is also restarted in instances where Redis runs into an out of memory error.
+To apply these customizations, replace the following lines in [`scim.json`](./task-definitions/scim.json):
 
-### December 2021 changes
+```
+{
+  "name": "OP_REDIS_URL",
+  "value": "redis://localhost:6379"
+},
+```
 
-As of December 2021, [the ALB health check path has changed](https://github.com/1Password/scim-examples/pull/162). If you are updating from a version earlier than 2.3.0, edit your `terraform.tf` file [to use `/app` instead of `/`](https://github.com/1Password/scim-examples/pull/162/commits/a876c46b9812e96f65e42e0441a772566ca32176#) for the health check before reapplying your Terraform settings.
+with the desired environment variables and their values, e.g.,:
+
+```
+{
+  "name": "OP_REDIS_HOST",
+  "value": "hostname"
+},
+{
+  "name": "OP_REDIS_PORT",
+  "value": "6379"
+},
+{
+  "name": "OP_REDIS_USERNAME",
+  "value": "op-redis-admin"
+},
+{
+  "name": "OP_REDIS_PASSWORD",
+  "value": "apv.zbu8wva8gwd1EFC-fake.password"
+},
+{
+  "name": "OP_REDIS_ENABLE_SSL",
+  "value": "1"
+},
+```
 
 ## Troubleshooting
 
 ### Logs
 
-If you want to view the logs for your SCIM bridge within AWS, go to **Cloudwatch -> Log Groups** and you should see the log group that was printed out at the end of your `terraform apply`. Look for `op_scim_bridge` and `redis` for your logs in this section.
+If you want to view the logs for your SCIM bridge within AWS, go to **Cloudwatch > Log Groups** and you should see the log group that was printed out at the end of your `terraform apply`. Look for `op_scim_bridge` and `redis` for your logs in this section.
 
 ### Specific issues
 
-#### Prompted to Sign In
+#### If you're prompted to sign in
 
-If you browse to the domain name of your SCIM bridge and are met with a `Sign In With 1Password` link, this means the `scimsession` file was not properly installed. Due to the nature of the ECS deployment, **this “sign in” option cannot be used** to complete the setup of your SCIM bridge.
+If you open your SCIM bridge domain in a browser and see a `Sign In With 1Password` button, the `scimsession` file was not properly installed. Due to the nature of the ECS deployment, **this “sign in” option cannot be used** to complete the setup of your SCIM bridge.
 
-To fix this, be sure to retry [the instructions of Step 2 of Configuration](#copy-`scimsession`-file). You will also need to restart your `op_scim_bridge` task in order for the changes to take effect after you update the `scimsession` secret.
+To fix this, [copy the `scimsession` file](#11-copy-scimsession-file) again and stop the ECS task for your SCIM bridge. The ECS service will ensure that the task is restarted to reboot your SCIM bridge and apply the changes.
+
+#### If you can't access AWS Secrets Manager
+
+Because the `aws_security_group.service` resource creates a security group that restricts outbound traffic from the Fargate task, 1Password SCIM Bridge may only connect to the 1Password service over HTTPS on this port. If the VPC where the Fargate task is deployed hasn't been configured to support DNS resolution through the Amazon DNS server, this security group will also restrict DNS resolution.
+
+**_Example error:_**
+
+> ```sh
+> ResourceInitializationError: unable to pull secrets or registry auth: execution resource retrieval failed: unable to retrieve secret from asm: service call has been retried 5 time(s): failed to fetch secret arn:aws:secretsmanager:us-east-1:…:secret:op-scim-bridge-sercretARN from secrets manager: RequestCanceled: request context canceled caused by: context deadline exceeded. Please check your task network configuration.
+> ```
+
+To resolve this issue, enable the Amazon DNS server for the VPC where your SCIM bridge is deployed. See Learn more in the [view and update DNS attributes for your VPC documentation](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-dns.html#vpc-dns-updating). Select Enable for at least "DNS resolution" to resolve this.
+
+Alternatively, add an additional block to to the `aws_security_group.service` resource in `main.tf` to create a security group rule that enables DNS resolution. For example:
+
+```terraform
+  # Allow DNS resolution
+  egress {
+    from_port   = 53
+    to_port     = 53
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+```
