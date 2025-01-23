@@ -103,7 +103,7 @@ Use your SCIM bridge URL to test the connection and view status information. For
 ```sh
 curl --silent --show-error --request GET --header "Accept: application/json" \
   --header "Authorization: Bearer mF_9.B5f-4.1JqM" \
-  https:/scim.example.com/health
+  https://scim.example.com/health
 ```
 
 Replace `mF_9.B5f-4.1JqM` with your bearer token and `https://scim.example.com` with your SCIM bridge URL.
