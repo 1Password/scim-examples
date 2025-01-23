@@ -77,7 +77,7 @@ You can also check the status of your SCIM bridge with a bearer token authentica
    ```sh
    # The below commmand includes a prepended space so that the bearer token is not saved to your terminal history
     export OP_SCIM_TOKEN="mF_9.B5f-4.1JqM"
-   export OP_SCIM_BRIDGE_URL="https:/op-scim-bridge.example.com"
+   export OP_SCIM_BRIDGE_URL="https://op-scim-bridge.example.com"
    ```
 
 2. Use the environment variables in your request. For example, using `curl`:
