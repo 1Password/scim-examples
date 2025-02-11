@@ -23,6 +23,11 @@ variable "vpc_id" {
   description = "The Id of an existing VPC to use."
 }
 
+variable "vpc_name" {
+  type        = string
+  description = "The Name of an existing VPC to use."
+}
+
 variable "wildcard_cert" {
   type        = bool
   default     = false
