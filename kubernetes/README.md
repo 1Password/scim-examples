@@ -2,9 +2,6 @@
 
 _Learn how to deploy 1Password SCIM Bridge on a Kubernetes cluster._
 
-> **Note**
->
-> If you use Azure Kubernetes Service, learn how to [deploy the SCIM bridge there](https://support.1password.com/scim-deploy-azure/).
 
 ## Before you begin
 
