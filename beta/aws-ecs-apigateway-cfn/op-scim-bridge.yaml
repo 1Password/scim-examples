@@ -1,7 +1,7 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: >-
   Deploys 1Password SCIM Bridge on AWS Fargate in an Amazon ECS cluster with Amazon API Gateway and AWS Cloud Map,
-  Includes AWS secret, IAM role and policy, security group resources. Optionally creates a VPc and related resources.
+  Includes AWS secret, IAM role and policy, security group resources. Optionally creates a VPC and related resources.
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
@@ -68,7 +68,7 @@ Parameters:
     NoEcho: true
   SCIMBridgeVersion:
     Type: String
-    Default: v2.9.7
+    Default: v2.9.9
     Description: >-
       The tag of the 1Password SCIM Bridge image to pull from Docker Hub.
   WorkspaceCredentials:
@@ -81,7 +81,7 @@ Parameters:
     Type: String
     Default: ""
     Description: >-
-      The email address of the Google Workspace administrator that the service account is acting on behalf of.
+      The email address of a Google Workspace administrator that the service account authenticates as.
 Rules:
   ValidateWorkspaceConfig:
     RuleCondition: !Not
@@ -265,7 +265,7 @@ Resources:
     Properties:
       Description: AWS Cloud Map private DNS namespace for 1Password SCIM Bridge.
       Vpc: !If [CreateVPC, !Ref VPC, !Ref VPCID]
-      Name: op-scim-bridge
+      Name: 1password
   RedisService:
     Type: AWS::ServiceDiscovery::Service
     Properties:
@@ -326,7 +326,7 @@ Resources:
             Options:
               awslogs-region: !Ref AWS::Region
               awslogs-group: !Ref LogGroup
-              awslogs-stream-prefix: ecs/op-scim-bridge
+              awslogs-stream-prefix: ecs/op-scim
   SCIMBridgeTaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
@@ -394,7 +394,7 @@ Resources:
             Options:
               awslogs-region: !Ref AWS::Region
               awslogs-group: !Ref LogGroup
-              awslogs-stream-prefix: ecs/op-scim-bridge
+              awslogs-stream-prefix: ecs/op-scim
         - Name: scim
           Image: !Sub 1password/scim:${SCIMBridgeVersion}
           User: opuser:opuser
@@ -407,7 +407,7 @@ Resources:
               SourceVolume: secrets
           Environment:
             - Name: OP_REDIS_URL
-              Value: !Sub redis://${RedisService.Name}.op-scim-bridge:6379
+              Value: !Sub redis://${RedisService.Name}.1password:6379
           LogConfiguration:
             LogDriver: awslogs
             Options:
