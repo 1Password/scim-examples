@@ -1,0 +1,55 @@
+# Specify the AWS region where resources will be deployed (e.g., "us-west-2").
+region = ""
+
+# SCIM session configuration
+
+# Path to the scimsession file (e.g., "./scimsession"). If provided, its contents will be stored in Secrets Manager, overriding scimsession_arn.
+#scimsession_file = ""
+
+# ARN of an existing Secrets Manager secret containing the scimsession content. Used if scimsession_file is not set.
+#scimsession_arn = ""
+
+# Name for the Secrets Manager secret created from scimsession_file. Defaults to "scimsession" if unset.
+#scimsession_secret_name = "scimsession"
+
+# 1Password SCIM Bridge version to pull from Docker Hub (e.g., "v2.9.9").
+scim_bridge_version = "v2.9.9"
+
+# Confirmation interval for SCIM operations, in seconds (e.g., "300"). Optional; leave unset to use the default.
+op_confirmation_interval = "300"
+
+# Expected provisioning volume: "base" (<1,000 users), "high" (up to 5,000 users), or "very-high" (>5,000 users).
+provisioning_volume = "base"
+
+# Google Workspace credentials configuration
+
+# Path to the Google Workspace credentials file (e.g., "./workspace-credentials.json"). If provided, its contents will be stored in Secrets Manager, overriding workspace_credentials_arn.
+#workspace_credentials_file = ""
+
+# ARN of an existing Secrets Manager secret containing the Google Workspace credentials. Used if workspace_credentials_file is not set.
+#workspace_credentials_arn = ""
+
+# Name for the Secrets Manager secret created from workspace_credentials_file. If unset, a unique name like "scim-workspace-credentials-<random>" will be generated.
+#workspace_credentials_secret_name = ""
+
+# Google Workspace settings
+
+# Email address of a Google Workspace administrator for service account authentication. Required if using Google Workspace integration.
+#workspace_actor = ""
+
+# ARN of an existing Secrets Manager secret containing the Google Workspace settings. Used if neither workspace_credentials_file nor workspace_actor is set to create a new secret.
+#workspace_settings_arn = ""
+
+# Name for the Secrets Manager secret storing workspace settings (actor and bridge address). If unset, a unique name like "scim-workspace-settings-<random>" will be generated.
+#workspace_settings_secret_name = ""
+
+# Optional VPC configuration
+
+# ID of an existing VPC to use. Leave empty to create a new VPC with two public subnets.
+#vpc_id = ""
+
+# CIDR block for the new VPC (e.g., "10.0.0.0/16"). Ignored if vpc_id is specified.
+#vpc_cidr = "10.0.0.0/16"
+
+# List of two or more public subnet IDs in the specified VPC. Leave empty if creating a new VPC.
+#public_subnets = []
