@@ -2,7 +2,7 @@
 
 _Learn how to configure your Docker deployed 1Password SCIM Bridge to connect Google Workspace._
 
-This directory includes [a JSON template file](./workspace-settings.json) to configure Workspace settings, and a [Compose override file](./op-scim-bridge-gw.yaml)to create Docker secrets and merge the necessary configuration into your stack.
+This directory includes [a JSON template file](./workspace-settings.json) to configure Workspace settings, and a [Compose override file](./compose.gw.yaml) to create Docker secrets and merge the necessary configuration into your stack.
 
 ## Before you begin
 
@@ -15,10 +15,10 @@ To connect your SCIM bridge to Workspace, you'll need permissions in Google Clou
 > Complete **only** Step 1 in the linked article. If you sign in to the SCIM bridge to connect to Workspace, the
 > configuration will be lost whenever the container is restarted. Follow the remaining steps in _this_ document to save
 > the Workspace configuration in your deployment.
-2. Upload the service account key to the working directory on the server. Make sure the file is named `workspace-settings.json` on the server. For example, using SCP:
+2. Upload the service account key to the working directory on the server. Make sure the file is named `workspace-credentials.json` on the server. For example, using SCP:
 
    ```sh
-   scp ./op-scim-bridge-df05213c8cf1.json op-scim-bridge.example.com:scim-examples/docker/workspace-settings.json
+   scp ./op-scim-bridge-df05213c8cf1.json op-scim-bridge.example.com:scim-examples/docker/workspace-credentials.json
    ```
 
 ## Step 2: Configure Workspace settings
