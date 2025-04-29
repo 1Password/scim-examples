@@ -11,8 +11,8 @@ This template deploys 1Password SCIM Bridge and the required Redis cache as Farg
 ## Prerequisites
 
 - A 1Password account with an active 1Password Business subscription or trial
-> [!TIP]
-> Try 1Password Business **free** for 14 days: <https://start.1password.com/sign-up/business>
+  > [!TIP]
+  > Try 1Password Business **free** for 14 days: <https://start.1password.com/sign-up/business>
 - An AWS account with the permissions and available quota to create and manage the described resources
 
 ## Before you begin
@@ -26,7 +26,7 @@ Consult the [Preparation Guide](/PREPARATION.md) in this repository. Since this 
 
 ## Step 1: Upload the stack template file
 
-1. Sign in to AWS and [create a stack](https://console.aws.amazon.com/cloudformation/home#/stacks/create).
+1. Sign in to AWS and [create a stack](https://console.aws.amazon.com/cloudformation/home#/stacks/create) (if you don't want to click that link, in the CloudFormation console, choose **Create stack** and then **With new resources (standard)**).
 2. In the **Prerequisite - Prepare template** section, select **Choose an existing template**.
 3. In the **Specify template** section, choose **Upload a template file**.
 4. Click **↑ Choose file** and upload the [`op-scim-bridge.yaml`](./op-scim-bridge.yaml) template file from your computer. Click **Next**.
