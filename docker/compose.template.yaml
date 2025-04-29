@@ -22,7 +22,7 @@ services:
           memory: 512M
     env_file: ./scim.env
     environment: [OP_REDIS_URL=redis://redis:6379]
-    image: 1password/scim:v2.9.9
+    image: 1password/scim:v2.9.11
     networks: [op-scim]
     ports: [443:8443]
     secrets:
