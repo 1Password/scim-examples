@@ -286,9 +286,14 @@ Resources:
             Type: SRV
       Name: scim
       NamespaceId: !Ref ServiceDiscoveryNamespace
+  ECSServiceLinkedRole:
+    Type: AWS::IAM::ServiceLinkedRole
+    Properties:
+      AWSServiceName: ecs.amazonaws.com
+      Description: Service Linked Role for ECS managed by CloudFormation
   ECSCluster:
     Type: AWS::ECS::Cluster
-    DependsOn: ExecutionRole
+    DependsOn: ECSServiceLinkedRole
     Properties:
       CapacityProviders:
         - FARGATE
