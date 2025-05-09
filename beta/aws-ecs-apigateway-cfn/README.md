@@ -57,6 +57,20 @@ Consult the [Preparation Guide](/PREPARATION.md) in this repository. Since this 
 
 The console will display the stack status as `ℹ️ CREATE_IN_PROGRESS` during the deployment. The stack is expected to take a few minutes to create (~2–3 minutes when this document was written).
 
+> [!IMPORTANT]
+>
+> If this is the first time deploying an ECS cluster using your AWS account, CloudFormation may fail to create the
+> `AWS::ECS::Cluster` resource (`ECSCluster`) with an error containing:
+>
+> ```plaintext
+> Unable to assume the service linked role. Please verify that the ECS service linked role exists.
+> ```
+>
+> To resolve this issue, when the failed stack finishes rolling back (`ROLLBACK COMPLETE`), click **Delete** to remove
+> it, then try to create the stack again. The next attempt will succeed if the service-linked role has been
+> successfully created from the prior failed attempt. For more details, see the related issue:
+> https://github.com/1Password/scim-examples/issues/356.
+
 ## Step 5: Test your SCIM bridge
 
 Your **SCIM bridge URL** is displayed in the **Outputs** tab of the CloudFormation console. Click the link to access the web interface for your SCIM bridge. Sign in using your bearer token to test the connection, view status information, and download logs.
