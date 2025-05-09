@@ -288,7 +288,6 @@ Resources:
       NamespaceId: !Ref ServiceDiscoveryNamespace
   ECSCluster:
     Type: AWS::ECS::Cluster
-    DependsOn: ExecutionRole
     Properties:
       CapacityProviders:
         - FARGATE
