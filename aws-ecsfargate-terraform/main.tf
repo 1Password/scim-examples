@@ -15,7 +15,6 @@ provider "aws" {
 
 locals {
   name_prefix = var.name_prefix != "" ? var.name_prefix : "op-scim-bridge"
-  domain      = join(".", slice(split(".", var.domain_name), 1, length(split(".", var.domain_name))))
   tags = merge(var.tags, {
     application = "1Password SCIM Bridge",
     version     = trimprefix(jsondecode(file("${path.module}/task-definitions/scim.json"))[0].image, "1password/scim:v")
@@ -100,14 +99,13 @@ data "aws_iam_policy_document" "scimsession" {
 
 data "aws_acm_certificate" "wildcard_cert" {
   count = !var.wildcard_cert ? 0 : 1
-
-  domain = "*.${local.domain}"
+  domain = var.domain_name
 }
 
 data "aws_route53_zone" "zone" {
   count = var.using_route53 ? 1 : 0
 
-  name         = local.domain
+  name         = "${var.domain_name}."
   private_zone = false
 }
 
