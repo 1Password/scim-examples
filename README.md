@@ -95,7 +95,7 @@ We sometimes deprecate deployment examples that become irrelevant, usually when 
 
 At the time of deprecation, these deployment examples were fully functional, but will soon become unsupported and removed from the repository:
 
-- ⚠️ [Docker Compose & Docker Swarm](https://github.com/1Password/scim-examples/blob/main/deprecated/docker)
+- _No deployment example have recently been deprecated_
 
 Deprecated deployment examples are moved to the [`/deprecated`](/deprecated) directory. You can learn more about this designation and find suggested alternatives in [`/deprecated/README.md`](/deprecated/README.md).
 
