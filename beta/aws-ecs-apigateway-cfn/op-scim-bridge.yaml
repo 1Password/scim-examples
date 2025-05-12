@@ -68,7 +68,7 @@ Parameters:
     NoEcho: true
   SCIMBridgeVersion:
     Type: String
-    Default: v2.9.9
+    Default: v2.9.11
     Description: >-
       The tag of the 1Password SCIM Bridge image to pull from Docker Hub.
   WorkspaceCredentials:

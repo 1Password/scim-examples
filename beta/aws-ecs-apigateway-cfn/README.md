@@ -97,35 +97,35 @@ curl --silent --show-error --request GET --header "Accept: application/json" \
 
 ```json
 {
-  "build": "209031",
-  "version": "2.9.9",
+  "build": "209111",
+  "version": "2.9.11",
   "reports": [
     {
       "source": "ConfirmationWatcher",
-      "time": "2025-03-12T14:06:09Z",
-      "expires": "2025-03-12T14:16:09Z",
+      "time": "2025-05-09T14:06:09Z",
+      "expires": "2025-05-09T14:16:09Z",
       "state": "healthy"
     },
     {
       "source": "RedisCache",
-      "time": "2025-03-12T14:06:09Z",
-      "expires": "2025-03-12T14:16:09Z",
+      "time": "2025-05-09T14:06:09Z",
+      "expires": "2025-05-09T14:16:09Z",
       "state": "healthy"
     },
     {
       "source": "SCIMServer",
-      "time": "2025-03-12T14:06:56Z",
-      "expires": "2025-03-12T14:16:56Z",
+      "time": "2025-05-09T14:06:56Z",
+      "expires": "2025-05-09T14:16:56Z",
       "state": "healthy"
     },
     {
       "source": "StartProvisionWatcher",
-      "time": "2025-03-12T14:06:09Z",
-      "expires": "2025-03-12T14:16:09Z",
+      "time": "2025-05-09T14:06:09Z",
+      "expires": "2025-05-09T14:16:09Z",
       "state": "healthy"
     }
   ],
-  "retrievedAt": "2025-03-12T14:06:56Z"
+  "retrievedAt": "2025-05-09T14:06:56Z"
 }
 ```
 
