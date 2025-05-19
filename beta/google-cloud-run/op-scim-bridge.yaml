@@ -11,6 +11,7 @@ spec:
         run.googleapis.com/cpu-throttling: "false"
         run.googleapis.com/startup-cpu-boost: "true"
     spec:
+      serviceAccountName: onepassword-provisioning # Needs to be replaced with the email of the service account created in <./google-workspace/README.md>
       containers:
         - name: scim
           image: 1password/scim:v2.9.11

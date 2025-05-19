@@ -11,6 +11,7 @@ spec:
         run.googleapis.com/cpu-throttling: "false"
         run.googleapis.com/startup-cpu-boost: "true"
     spec:
+      serviceAccountName: onepassword-provisioning # Needs to be replaced with the email of the service account created in <./google-workspace/README.md>
       containers:
         - name: scim
           image: 1password/scim:v2.9.11
@@ -29,8 +30,6 @@ spec:
           volumeMounts:
             - name: credentials
               mountPath: /home/opuser/.op
-            - name: workspace-credentials
-              mountPath: /home/opuser/.op/workspace-credentials
             - name: workspace-settings
               mountPath: /home/opuser/.op/workspace-settings
         - name: redis
@@ -50,12 +49,6 @@ spec:
             items:
               - key: latest
                 path: scimsession
-        - name: workspace-credentials
-          secret:
-            secretName: workspace-credentials
-            items:
-              - key: latest
-                path: .json
         - name: workspace-settings
           secret:
             secretName: workspace-settings
