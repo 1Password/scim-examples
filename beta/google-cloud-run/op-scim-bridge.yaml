@@ -10,6 +10,7 @@ spec:
         autoscaling.knative.dev/maxScale: "1"
         run.googleapis.com/cpu-throttling: "false"
         run.googleapis.com/startup-cpu-boost: "true"
+        run.googleapis.com/container-dependencies: '{"scim":["redis"]}'
     spec:
       containers:
         - name: scim
@@ -30,6 +31,13 @@ spec:
             - --maxmemory 256mb
             - --maxmemory-policy volatile-lru
             - --save ""
+          startupProbe:
+            tcpSocket:
+              port: 6379
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
+            timeoutSeconds: 1
           resources:
             limits:
               cpu: 500m
