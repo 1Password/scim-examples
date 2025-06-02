@@ -86,7 +86,7 @@ To use a new `scimsession` credentials file for your SCIM bridge, replace the se
 <summary>Replace your <code>scimsession</code> secret using the Azure Portal</summary>
 
 1. Open the Azure Portal and go to the [Container Apps](https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/Microsoft.App%2FcontainerApps) page.
-2. Choose **Secrets** from the Settings section in the sidebar.
+2. Choose **Secrets** from the Security section in the sidebar.
 3. Edit the **scimsession** secret and paste the entire contents of your new `scimsession` file.
 4. Select the checkbox and click **Save**.
 5. Choose the **Revisions** from the Application section in the sidebar.
