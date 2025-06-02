@@ -4,7 +4,7 @@
 domain_name = "scim.example.com"
 
 # The image tag for the 1Password SCIM Bridge to use for the deployment.
-scim_bridge_version = "v2.9.6"
+scim_bridge_version = "v2.9.11"
 
 # --- Optional variables ---
 
