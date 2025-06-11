@@ -288,13 +288,16 @@ docker stack config \
 
 You may also choose to supply your own TLS certificate with CertificateManager instead of invoking Let's Encrypt. The value set for `OP_TLS_DOMAIN` must match the common name of the certificate.
 
-Save the public certificate along with any provided intermediates from your Certificate Authority, and private key files as `certificate.pem` and `key.pem` (respectively) to the working directory. 
+Save the public certificate along with any provided intermediates from your certificate authority, and private key files as `certificate.pem` and `key.pem` (respectively) to the working directory. 
 
-The `certificate.pem` file should look like this: 
+> [!IMPORTANT]
+> If the intermediate certificate is not included, some identity providers (ex. [Okta](https://support.okta.com/help/s/article/receiving-pkix-path-building-failed-setting-up-a-hook-or-scim-server?language=en_US)) will be unable to validate your TLS certificate for your SCIM bridge. 
 
-
+<details>
+   <summary>An example certificate.pem file</summary>
+   
 ```
------BEGIN CERTIFICATE----- ## The certificate for example.com
+-----BEGIN CERTIFICATE----- # The certificate for example.com
 MIIFmzCCBSGgAwIBAgIQCtiTuvposLf7ekBPBuyvmjAKBggqhkjOPQQDAzBZMQsw
 CQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMTMwMQYDVQQDEypEaWdp
 Q2VydCBHbG9iYWwgRzMgVExTIEVDQyBTSEEzODQgMjAyMCBDQTEwHhcNMjUwMTE1
@@ -326,7 +329,7 @@ IEb1hyh0S8bBN3O4u2sA9zisKIlYjZg8wjAKBggqhkjOPQQDAwNoADBlAjEA+aaC
 RlPbb+VY+u4avPyaG7fvUDJqN8KwlrXD4XptT7QL+D03+BA/FUEo3dD1iz37AjBk
 Y3jhsuLAW7pWsDbtX/Qwxp6kNsK4jh1/RjvV/260sxQwM/GM7t0+T0uP2L+Y12U=
 -----END CERTIFICATE-----
------BEGIN CERTIFICATE----- ## The intermediate certificate for example.com
+-----BEGIN CERTIFICATE----- # The intermediate certificate for example.com provided by your CA
 MIIDeTCCAv+gAwIBAgIQCwDpLU1tcx/KMFnHyx4YhjAKBggqhkjOPQQDAzBhMQsw
 CQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3d3cu
 ZGlnaWNlcnQuY29tMSAwHgYDVQQDExdEaWdpQ2VydCBHbG9iYWwgUm9vdCBHMzAe
@@ -348,7 +351,7 @@ IJ5HsVvBsmcxHcxyeq8ickBCbmWE/odLDxkCMQDmv9auNIdbP2fHHahv1RJ4teaH
 MUSpXca4eMzP79QyWBH/OoUGPB2Eb9P1+dozHKQ=
 -----END CERTIFICATE-----
 ```
-
+</details>
 
 Use the included `compose.tls.yaml` file when deploying SCIM bridge to create Docker secrets and configure SCIM bridge use this certificate when terminating TLS traffic:
 
