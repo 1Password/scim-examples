@@ -290,8 +290,11 @@ You may also choose to supply your own TLS certificate with CertificateManager i
 
 Save the public certificate along with any provided intermediates from your certificate authority, and private key files as `certificate.pem` and `key.pem` (respectively) to the working directory. 
 
+The provided intermediate(s) from your certificate authority must be _after_ the leaf cert that applies to your SCIM bridge deployment URL.
+
+
 > [!IMPORTANT]
-> If the intermediate certificate is not included, some identity providers (ex. [Okta](https://support.okta.com/help/s/article/receiving-pkix-path-building-failed-setting-up-a-hook-or-scim-server?language=en_US)) will be unable to validate your TLS certificate for your SCIM bridge. 
+> Without the intermediate(s) included, some identity providers (ex. [Okta](https://support.okta.com/help/s/article/receiving-pkix-path-building-failed-setting-up-a-hook-or-scim-server?language=en_US)) will be unable to validate your TLS certificate for your SCIM bridge. 
 
 <details>
    <summary>An example certificate.pem file</summary>
@@ -353,7 +356,7 @@ MUSpXca4eMzP79QyWBH/OoUGPB2Eb9P1+dozHKQ=
 ```
 </details>
 
-Use the included `compose.tls.yaml` file when deploying SCIM bridge to create Docker secrets and configure SCIM bridge use this certificate when terminating TLS traffic:
+Use the included `compose.tls.yaml` file when deploying SCIM bridge to create Docker secrets and configure SCIM bridge to use this certificate and private key when terminating TLS traffic:
 
 ```sh
 docker stack config --compose-file ./compose.template.yaml \
