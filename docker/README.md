@@ -288,7 +288,7 @@ docker stack config \
 
 You may also choose to supply your own TLS certificate with CertificateManager instead of invoking Let's Encrypt. The value set for `OP_TLS_DOMAIN` must match the common name of the certificate.
 
-Save the public certificate along with any provided intermediates from your certificate authority, and private key files as `certificate.pem` and `key.pem` (respectively) to the working directory. 
+Save the public certificate along with any provided intermediate certificates from your certificate authority to the file `certificate.pem`, and the private key in `key.pem`.
 
 The provided intermediate(s) from your certificate authority must be _after_ the leaf cert that applies to your SCIM bridge deployment URL.
 
@@ -355,6 +355,7 @@ MUSpXca4eMzP79QyWBH/OoUGPB2Eb9P1+dozHKQ=
 -----END CERTIFICATE-----
 ```
 </details>
+
 
 Use the included `compose.tls.yaml` file when deploying SCIM bridge to create Docker secrets and configure SCIM bridge to use this certificate and private key when terminating TLS traffic:
 
