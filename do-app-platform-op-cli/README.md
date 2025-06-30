@@ -108,8 +108,8 @@ Invoke-RestMethod -Method GET -Auth OAuth -Token $(
 
 ```json
 {
-  "build": "209111",
-  "version": "2.9.11",
+  "build": "209121",
+  "version": "2.9.12",
   "reports": [
     {
       "source": "ConfirmationWatcher",
