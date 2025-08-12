@@ -48,7 +48,7 @@ After you [prepare your 1Password account](/PREPARATION.md#prepare-your-1passwor
 1. Follow the steps to [create a Google service account, key, and API client](https://support.1password.com/scim-google-workspace/#step-1-create-a-google-service-account-key-and-api-client).
 2. Save the credentials file to the `google-workspace` subfolder in this directory.
 3. Make sure the key file is named `workspace-credentials.json`.
-4. Edit the Workpsace settings file template located at [`./google-workspace/workspace-settings.json`](./google-workspace/workspace-settings.json) and fill in correct values for:
+4. Edit the Workspace settings file template located at [`./google-workspace/workspace-settings.json`](./google-workspace/workspace-settings.json) and fill in correct values for:
    - **Actor**: the email address of the administrator in Google Workspace that the service account is acting on behalf of.
    - **Bridge Address**: the URL you will use for your SCIM bridge (not your 1Password account sign-in address). This is most often a subdomain of your choosing on a domain you own. For example: `https://scim.example.com`.
 5. Return to the working directory for all following steps (`scim-examples/kubernetes`).
@@ -404,7 +404,7 @@ These values can be set in [`op-scim-config.yaml`](./op-scim-config.yaml)
 - `OP_REDIS_ENABLE_SSL`: Optionally enforce SSL on redis server connections (default: `false`) (Boolean `0` or `1`).
 - `OP_REDIS_INSECURE_SSL`: Set whether to allow insecure SSL on redis server connections when `OP_REDIS_ENABLE_SSL` is set to `true`. This may be useful for testing or self-signed environments (default: `false`) (Boolean `0` or `1`).
 
-#### If you already deployd your SCIM bridge
+#### If you already deployed your SCIM bridge
 
 You can unset `OP_REDIS_URL` and set any of the above environment variables directly to reboot SCIM bridge and connect to the specified Redis server:
 
