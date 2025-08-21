@@ -27,7 +27,7 @@ Solutions for common cloud service platforms:
 
 ### Google Cloud (GCP)
 
-- [Cloud Run using Cloud Shell](/beta/google-cloud-run)
+- [Cloud Run using Cloud Shell](/google-cloud-run)
 - [Google Kubernetes Engine using Google Cloud Marketplace](https://support.1password.com/scim-deploy-gcp/)
 
 ### DigitalOcean

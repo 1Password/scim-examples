@@ -92,7 +92,7 @@ In the Cloud Console:
 
     ```sh
     curl --silent --show-error \
-      https://raw.githubusercontent.com/1Password/scim-examples/main/beta/google-cloud-run/google-workspace/op-scim-bridge-gw.yaml |
+      https://raw.githubusercontent.com/1Password/scim-examples/main/google-cloud-run/google-workspace/op-scim-bridge-gw.yaml |
       gcloud run services replace - &&
       gcloud run services describe op-scim-bridge --format="value(status.url)"
     ```
@@ -110,7 +110,7 @@ Learn more about automated provisioning in 1Password with Google Workspace: [Con
 
     ```sh
     curl --silent --show-error \
-      https://raw.githubusercontent.com/1Password/scim-examples/main/beta/google-cloud-run/google-workspace/op-scim-bridge-gw.yaml |
+      https://raw.githubusercontent.com/1Password/scim-examples/main/google-cloud-run/google-workspace/op-scim-bridge-gw.yaml |
       gcloud run services replace -
     ```
 

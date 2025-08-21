@@ -83,7 +83,7 @@ Stream the [`op-scim-bridge.yaml`](./op-scim-bridge.yaml) Cloud Run service YAML
 
 ```sh
 curl --silent --show-error \
-  https://raw.githubusercontent.com/1Password/scim-examples/main/beta/google-cloud-run/op-scim-bridge.yaml |
+  https://raw.githubusercontent.com/1Password/scim-examples/main/google-cloud-run/op-scim-bridge.yaml |
   gcloud run services replace - &&
   gcloud run services add-iam-policy-binding op-scim-bridge --member=allUsers --role=roles/run.invoker &&
   gcloud run services describe op-scim-bridge --format="value(status.url)"
@@ -163,7 +163,7 @@ To finish setting up automated user provisioning, [connect your identity provide
 
     ```sh
     curl --silent --show-error \
-      https://raw.githubusercontent.com/1Password/scim-examples/main/beta/google-cloud-run/op-scim-bridge.yaml |
+      https://raw.githubusercontent.com/1Password/scim-examples/main/google-cloud-run/op-scim-bridge.yaml |
       gcloud run services replace -
     ```
 
