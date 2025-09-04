@@ -106,8 +106,8 @@ read`](https://developer.1password.com/docs/cli/secret-references#with-op-read):
 
 ```json
 {
-  "build": "209121",
-  "version": "2.9.12",
+  "build": "209131",
+  "version": "2.9.13",
   "reports": [
     {
       "source": "ConfirmationWatcher",
@@ -156,7 +156,7 @@ Quarterly review and maintenance is recommended to update the operating system, 
 To use a new version of SCIM bridge, update the `op-scim-bridge_scim` service with the new image tag from the [`1password/scim` repository on Docker Hub](https://hub.docker.com/r/1password/scim/tags):
 
 ```sh
-docker service update op-scim-bridge_scim --image 1password/scim:v2.9.12
+docker service update op-scim-bridge_scim --image 1password/scim:v2.9.13
 ```
 
 Your SCIM bridge should automatically reboot using the specified version, typically in a few seconds.

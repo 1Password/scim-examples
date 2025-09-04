@@ -94,8 +94,8 @@ curl --silent --show-error --request GET --header "Accept: application/json" \
 
 ```json
 {
-  "build": "209121",
-  "version": "2.9.12",
+  "build": "209131",
+  "version": "2.9.13",
   "reports": [
     {
       "source": "ConfirmationWatcher",

@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: scim
-          image: 1password/scim:v2.9.12
+          image: 1password/scim:v2.9.13
           ports:
             - name: http1
               containerPort: 3002
@@ -35,9 +35,9 @@ spec:
             tcpSocket:
               port: 6379
             initialDelaySeconds: 5
-            periodSeconds: 10
-            failureThreshold: 3
-            timeoutSeconds: 1
+            periodSeconds: 20
+            failureThreshold: 5
+            timeoutSeconds: 2
           resources:
             limits:
               cpu: 500m
