@@ -108,8 +108,8 @@ Replace `mF_9.B5f-4.1JqM` with your bearer token and `https://op-scim-bridge-exa
 
 ```json
 {
-  "build": "209121",
-  "version": "2.9.12",
+  "build": "209131",
+  "version": "2.9.13",
   "reports": [
     {
       "source": "ConfirmationWatcher",
