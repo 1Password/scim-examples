@@ -12,6 +12,9 @@ spec:
         run.googleapis.com/startup-cpu-boost: "true"
         run.googleapis.com/container-dependencies: '{"scim":["redis"]}'
     spec:
+      # 🔧 This value will be dynamically replaced during deployment using envsubst
+      serviceAccountName: ${SERVICE_ACCOUNT_NAME}
+
       containers:
         - name: scim
           image: 1password/scim:v2.9.13
