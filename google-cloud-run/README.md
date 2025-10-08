@@ -26,7 +26,7 @@ Complete the necessary preparation steps to deploy 1Password SCIM Bridge. You'll
 > 
 > ```sh
 > gcloud config set project op-scim-bridge-1234
-> ```sh
+> ```
 
 3. Enable the Secret Manager and Cloud Run APIs for your project:  
 
@@ -86,7 +86,7 @@ gcloud secrets create scimsession --data-file=$HOME/scimsession
 
 ```sh
 gcloud secrets add-iam-policy-binding scimsession --member=serviceAccount:${SA_EMAIL} --role=roles/secretmanager.secretAccessor
-```sh
+```
 
 ## Step 3: Deploy your SCIM bridge
 
@@ -163,7 +163,7 @@ To finish setting up automated user provisioning, [connect your identity provide
 
 1. Sign in to the Google Cloud console and activate Cloud Shell: <https://console.cloud.google.com?cloudshell=true>
 
-2. If you have not already set the PROJECT_ID and SA_EMAIL variables in this session and also have not set your SCIM bridge default region, please do so as described in Step 1.
+2. If you have not already set the PROJECT_ID and SA_EMAIL variables in this session and also have not set your SCIM bridge default region, please do so as described in [Step 1: Set up Google Cloud](../README.md#step-1-set-up-google-cloud).
 
 4. Redeploy your SCIM bridge using the latest version of the Cloud Run services YAML from this directory in our repository:  
 
