@@ -6,38 +6,61 @@
 
 Complete the necessary preparation steps to deploy 1Password SCIM Bridge. You'll also need a Google Cloud account with permissions to create a project, set up billing, and enable Google Cloud APIs to create and manage secrets in Secret Manager.
 
-[!NOTE]  
-If you don't have a Google Cloud account, you can sign up for a free trial with starting credit: <https://console.cloud.google.com/freetrial>
+> [!NOTE]  
+> If you don't have a Google Cloud account, you can sign up for a free trial with starting credit: <https://console.cloud.google.com/freetrial>
 
 ## Step 1: Set up Google Cloud
 
 1. Sign in to the Google Cloud console and activate Cloud Shell: <https://console.cloud.google.com?cloudshell=true>
 
 2. Create a project to organize the Google Cloud resources for your 1Password SCIM Bridge deployment, and set it as the default project for your Cloud Shell environment:  
-gcloud projects create --name "1Password SCIM Bridge" --set-as-default  
-Use the suggested project ID.
 
-[!TIP]  
-If you have already created a project for your SCIM bridge, set its ID as the default project for this Cloud Shell session. For example:  
-gcloud config set project op-scim-bridge-1234
+  ```sh
+  gcloud projects create --name "1Password SCIM Bridge" --set-as-default  
+  ```
+
+  Use the suggested project ID.
+
+> [!TIP]  
+> If you have already created a project for your SCIM bridge, set its ID as the default project for this Cloud Shell session. For example:  
+> 
+> ```sh
+> gcloud config set project op-scim-bridge-1234
+> ```sh
 
 3. Enable the Secret Manager and Cloud Run APIs for your project:  
+
+```sh
 gcloud services enable secretmanager.googleapis.com run.googleapis.com
+```
 
 4. If you don't already have a dedicated service account for the SCIM bridge, create one:  
+
+```sh
 gcloud iam service-accounts create op-scim-bridge-sa --display-name "1Password SCIM Bridge Service Account"
+```
 
 5. Set the service account email variable. If you just created the service account above, run:  
+
+```sh
 PROJECT_ID=$(gcloud config get-value project)  
 SA_EMAIL=op-scim-bridge-sa@$(gcloud config get-value project).iam.gserviceaccount.com
+```
+
 If you are using an existing service account, set SA_EMAIL to its email address instead, e.g.:  
+
+```sh
 SA_EMAIL=your-existing-sa@$(gcloud config get-value project).iam.gserviceaccount.com
+```
 
 6. Set the default region for Cloud Run:  
-gcloud config set run/region us-central1
 
-[!NOTE]  
-All region-bound resources created in the following steps will be created in the specified region. You may replace us-central1 in the above command with your preferred region.
+```sh
+gcloud config set run/region us-central1
+```
+
+> [!NOTE]  
+> All region-bound resources created in the following steps will be created in the specified region. You may replace us-central1 in the above command with your preferred region.
 
 ## Step 2: Create a secret for your scimsession credentials
 
@@ -50,32 +73,45 @@ The Cloud Run service for the SCIM bridge will be configured to mount volume usi
 3. Use the suggested destination directory. Click **Upload**. If you saved it elsewhere or used a different file name, make a note of the full path to the file.
 
 4. Create a secret with the contents of this file as its first secret version:  
-gcloud secrets create scimsession --data-file=$HOME/scimsession
 
-[!TIP]  
-If the file was not saved using the above suggested values, replace $HOME/scimsession with the actual path to the file. For example:  
-gcloud secrets create scimsession --data-file=/example/path/to/scimsession.file
+```sh
+gcloud secrets create scimsession --data-file=$HOME/scimsession
+```
+
+> [!TIP]  
+> If the file was not saved using the above suggested values, replace $HOME/scimsession with the actual path to the file. For example:  
+> gcloud secrets create scimsession --data-file=/example/path/to/scimsession.file
 
 5. Enable Cloud Run to access the secret using the dedicated service account for the project:  
+
+```sh
 gcloud secrets add-iam-policy-binding scimsession --member=serviceAccount:${SA_EMAIL} --role=roles/secretmanager.secretAccessor
+```sh
 
 ## Step 3: Deploy your SCIM bridge
 
 Stream the op-scim-bridge.yaml Cloud Run service YAML from this repository, modify it to use the dedicated service account, deploy 1Password SCIM Bridge inline, and enable public ingress for your SCIM bridge so that you and your identity provider can connect to its public endpoint:  
+
+```sh
 PROJECT_ID=$(gcloud config get-value project) && SA_EMAIL=op-scim-bridge-sa@${PROJECT_ID}.iam.gserviceaccount.com && curl --silent --show-error https://raw.githubusercontent.com/1Password/scim-examples/main/google-cloud-run/op-scim-bridge.yaml | env SA_EMAIL="$SA_EMAIL" envsubst | gcloud run services replace - && gcloud run services add-iam-policy-binding op-scim-bridge --member=allUsers --role=roles/run.invoker && gcloud run services describe op-scim-bridge --format="value(status.url)"
+```
 
 The final line of the above chained command should output a URL for the HTTPS endpoint provided by Cloud Run. This is your **SCIM bridge URL**.
 
 ## Step 4: Test your SCIM bridge
 
 Use your SCIM bridge URL to test the connection and view status information. For example:  
+
+```sh
 curl --silent --show-error --request GET --header "Accept: application/json" --header "Authorization: Bearer mF_9.B5f-4.1JqM" https://op-scim-bridge-example-uc.a.run.app/health
+```
 
 Replace mF_9.B5f-4.1JqM with your bearer token and https://op-scim-bridge-example-uc.a.run.app with your SCIM bridge URL.
 
 <details>
 <summary>Example JSON response:</summary>
 
+```json
 {
   "build": "209131",
   "version": "2.9.13",
@@ -107,6 +143,7 @@ Replace mF_9.B5f-4.1JqM with your bearer token and https://op-scim-bridge-exampl
   ],
   "retrievedAt": "2025-05-09T14:06:56Z"
 }
+```
 
 </details>
 
@@ -126,10 +163,13 @@ To finish setting up automated user provisioning, [connect your identity provide
 
 1. Sign in to the Google Cloud console and activate Cloud Shell: <https://console.cloud.google.com?cloudshell=true>
 
-2. If you have not already set the SA_EMAIL variable in this session, set it as described in Step 1.
+2. If you have not already set the PROJECT_ID and SA_EMAIL variables in this session and also have not set your SCIM bridge default region, please do so as described in Step 1.
 
-3. Redeploy your SCIM bridge using the latest version of the Cloud Run services YAML from this directory in our repository:  
-curl --silent --show-error https://raw.githubusercontent.com/1Password/scim-examples/main/google-cloud-run/op-scim-bridge.yaml | sed "/^    spec:/a\      serviceAccountName: ${SA_EMAIL}" | gcloud run services replace -
+4. Redeploy your SCIM bridge using the latest version of the Cloud Run services YAML from this directory in our repository:  
+
+```sh
+PROJECT_ID=$(gcloud config get-value project) && SA_EMAIL=op-scim-bridge-sa@${PROJECT_ID}.iam.gserviceaccount.com && curl --silent --show-error https://raw.githubusercontent.com/1Password/scim-examples/main/google-cloud-run/op-scim-bridge.yaml | env SA_EMAIL="$SA_EMAIL" envsubst | gcloud run services replace -
+```
 
 > [!TIP]  
 > Check for 1Password SCIM Bridge updates on the [SCIM bridge releases notes website](https://releases.1password.com/provisioning/scim-bridge/).

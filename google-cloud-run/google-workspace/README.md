@@ -16,34 +16,46 @@ To connect your SCIM bridge to Workspace, you'll need permissions in Google Clou
 
 2. If you have not already set the PROJECT_ID and SA_EMAIL variables in this session, set them as described in [Step 1: Set up Google Cloud](../README.md#step-1-set-up-google-cloud):
 
+```sh
 PROJECT_ID=$(gcloud config get-value project)
 SA_EMAIL=op-scim-bridge-sa@${PROJECT_ID}.iam.gserviceaccount.com
+```
 
 3. If you don't already have a dedicated service account for Workspace credentials, create one:
 
+```sh
 gcloud iam service-accounts create onepassword-provisioning --display-name "1Password Provisioning Service Account"
+```
 
 4. Set the Workspace service account email variable. If you just created the service account above, run:
 
+```sh
 WORKSPACE_SA_EMAIL=onepassword-provisioning@${PROJECT_ID}.iam.gserviceaccount.com
+```
 
 If you are using an existing service account (including reusing the SCIM bridge service account), set WORKSPACE_SA_EMAIL to its email address instead, e.g.:
 
+```sh
 WORKSPACE_SA_EMAIL=your-existing-sa@${PROJECT_ID}.iam.gserviceaccount.com
+```
 
 > [!TIP]
 > Reusing the same service account as the SCIM bridge (e.g., op-scim-bridge-sa) is possible but not recommended for security reasons, as it combines runtime access with domain-wide delegation to Workspace data. Use a dedicated service account for Workspace credentials whenever possible.
 
 5. Enable the Admin SDK API, create a secret named `workspace-credentials`, add a secret version from a private key for the service account, and enable Cloud Run to access it using the dedicated service account for the project:
 
+```sh
 gcloud services enable admin.googleapis.com &&
 gcloud secrets create workspace-credentials &&
 gcloud iam service-accounts keys create - --iam-account=${WORKSPACE_SA_EMAIL} | gcloud secrets versions add workspace-credentials --data-file=- &&
 gcloud secrets add-iam-policy-binding workspace-credentials --member=serviceAccount:${SA_EMAIL} --role=roles/secretmanager.secretAccessor
+```
 
 6. Get the client ID of the service account:
 
+```sh
 gcloud secrets versions access latest --secret=workspace-credentials | jq '.client_id' --raw-output
+```
 
 Copy the client ID returned by this command to use in the next step.
 
@@ -78,7 +90,9 @@ In the Cloud Console:
 
 4. Create a secret from the file:
 
+```sh
 gcloud secrets create workspace-settings --data-file=$HOME/workspace-settings.json
+```
 
 > [!TIP]
 > If the file was not saved using the suggested values, replace `$HOME/workspace-settings.json` with the actual path to
@@ -88,13 +102,17 @@ gcloud secrets create workspace-settings --data-file=$HOME/workspace-settings.js
 
 5. Enable Cloud Run to access the secret using the dedicated service account for the project:
 
+```sh
 gcloud secrets add-iam-policy-binding workspace-settings --member=serviceAccount:${SA_EMAIL} --role=roles/secretmanager.secretAccessor
+```
 
 ## Step 4: Redeploy your SCIM bridge to connect to Workspace
 
 1. Use the [`op-scim-bridge-gw.yaml`](./op-scim-bridge-gw.yaml) Cloud Run YAML from this repository to create a new revision of the service that is configured to connect to Google Workspace:
 
+```sh
 PROJECT_ID=$(gcloud config get-value project) && SA_EMAIL=op-scim-bridge-sa@${PROJECT_ID}.iam.gserviceaccount.com && curl --silent --show-error https://raw.githubusercontent.com/1Password/scim-examples/main/google-cloud-run/google-workspace/op-scim-bridge-gw.yaml | env SA_EMAIL="$SA_EMAIL" envsubst | gcloud run services replace - && gcloud run services add-iam-policy-binding op-scim-bridge --member=allUsers --role=roles/run.invoker && gcloud run services describe op-scim-bridge --format="value(status.url)"
+```
 
 2. Sign in to your SCIM bridge in a web browser at the HTTPS endpoint provided by Cloud Run.
 
@@ -110,10 +128,9 @@ Learn more about automated provisioning in 1Password with Google Workspace: [Con
 
 3. Create a new revision of your SCIM bridge deployment using the latest version of the [`op-scim-bridge-gw.yaml`](./op-scim-bridge-gw.yaml) Cloud Run services YAML from this directory in our repository:
 
-curl --silent --show-error \
-  https://raw.githubusercontent.com/1Password/scim-examples/main/google-cloud-run/google-workspace/op-scim-bridge-gw.yaml | \
-  sed "/^    spec:/a\      serviceAccountName: ${SA_EMAIL}" | \
-  gcloud run services replace -
+```sh
+PROJECT_ID=$(gcloud config get-value project) && SA_EMAIL=op-scim-bridge-sa@${PROJECT_ID}.iam.gserviceaccount.com && curl --silent --show-error https://raw.githubusercontent.com/1Password/scim-examples/main/google-cloud-run/google-workspace/op-scim-bridge-gw.yaml | env SA_EMAIL="$SA_EMAIL" envsubst | gcloud run services replace -
+```
 
 > [!TIP]
 > Check for 1Password SCIM Bridge updates on the [SCIM bridge releases notes website](https://releases.1password.com/provisioning/scim-bridge/).
