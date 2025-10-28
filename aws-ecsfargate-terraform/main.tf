@@ -101,7 +101,7 @@ data "aws_iam_policy_document" "scimsession" {
 data "aws_acm_certificate" "wildcard_cert" {
   count = !var.wildcard_cert ? 0 : 1
 
-  domain = "*.${local.domain}"
+  domain = local.domain
 }
 
 data "aws_route53_zone" "zone" {
