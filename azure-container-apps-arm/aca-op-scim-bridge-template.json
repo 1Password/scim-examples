@@ -156,7 +156,7 @@
                 "template": {
                     "containers": [
                         {
-                            "image": "docker.io/1password/scim:v2.9.13",
+                            "image": "docker.io/1password/scim:v2.9.14",
                             "name": "op-scim-bridge",
                             "resources": {
                                 "cpu": "[variables('resourceSettings')[parameters('provisioningVolume')].cpu]",

@@ -106,35 +106,35 @@ read`](https://developer.1password.com/docs/cli/secret-references#with-op-read):
 
 ```json
 {
-  "build": "209131",
-  "version": "2.9.13",
+  "build": "209141",
+  "version": "2.9.14",
   "reports": [
     {
       "source": "ConfirmationWatcher",
-      "time": "2025-05-09T14:06:09Z",
-      "expires": "2025-05-09T14:16:09Z",
+      "time": "2026-03-03T14:06:09Z",
+      "expires": "2026-03-03T14:16:09Z",
       "state": "healthy"
     },
     {
       "source": "RedisCache",
-      "time": "2025-05-09T14:06:09Z",
-      "expires": "2025-05-09T14:16:09Z",
+      "time": "2026-03-03T14:06:09Z",
+      "expires": "2026-03-03T14:16:09Z",
       "state": "healthy"
     },
     {
       "source": "SCIMServer",
-      "time": "2025-05-09T14:06:56Z",
-      "expires": "2025-05-09T14:16:56Z",
+      "time": "2026-03-03T14:06:56Z",
+      "expires": "2026-03-03T14:16:56Z",
       "state": "healthy"
     },
     {
       "source": "StartProvisionWatcher",
-      "time": "2025-05-09T14:06:09Z",
-      "expires": "2025-05-09T14:16:09Z",
+      "time": "2026-03-03T14:06:09Z",
+      "expires": "2026-03-03T14:16:09Z",
       "state": "healthy"
     }
   ],
-  "retrievedAt": "2025-05-09T14:06:56Z"
+  "retrievedAt": "2026-03-03T14:06:56Z"
 }
 ```
 
@@ -156,7 +156,7 @@ Quarterly review and maintenance is recommended to update the operating system, 
 To use a new version of SCIM bridge, update the `op-scim-bridge_scim` service with the new image tag from the [`1password/scim` repository on Docker Hub](https://hub.docker.com/r/1password/scim/tags):
 
 ```sh
-docker service update op-scim-bridge_scim --image 1password/scim:v2.9.13
+docker service update op-scim-bridge_scim --image 1password/scim:v2.9.14
 ```
 
 Your SCIM bridge should automatically reboot using the specified version, typically in a few seconds.
