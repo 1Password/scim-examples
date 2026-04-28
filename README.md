@@ -4,6 +4,10 @@ You can deploy 1Password SCIM Bridge on any supported infrastructure that allows
 
 ## Before you begin
 
+> [!IMPORTANT]
+> If you use Entra ID or Okta, Automated Provisioning, hosted by 1Password is now available. See [here](https://support.1password.com/provisioning/) for more details.
+
+
 Read this documentation to help you plan your deployment:
 
 - Learn more about [automating provisioning in 1Password using SCIM](https://support.1password.com/scim/).
