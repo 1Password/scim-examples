@@ -99,6 +99,12 @@
                 "appLogsConfiguration": {
                     "destination": "azure-monitor"
                 },
+                "workloadProfiles": [
+                  {
+                    "name": "Consumption",
+                    "workloadProfileType": "Consumption"
+                  }
+                ],
                 "zoneRedundant": false
             }
         },
