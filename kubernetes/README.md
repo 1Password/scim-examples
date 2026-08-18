@@ -114,8 +114,8 @@ Replace `mF_9.B5f-4.1JqM` with your bearer token and `https://scim.example.com` 
 
 ```json
 {
-  "build": "209141",
-  "version": "2.9.14",
+  "build": "209163",
+  "version": "2.9.16",
   "reports": [
     {
       "source": "ConfirmationWatcher",
@@ -160,7 +160,7 @@ To finish setting up automated user provisioning, [connect your identity provide
 To update SCIM bridge, connect to your Kubernetes cluster and run the following command:
 
 ```sh
-kubectl set image deploy/op-scim-bridge op-scim-bridge=1password/scim:v2.9.14
+kubectl set image deploy/op-scim-bridge op-scim-bridge=1password/scim:v2.9.16
 ```
 
 > **Note**
