@@ -106,7 +106,7 @@ read`](https://developer.1password.com/docs/cli/secret-references#with-op-read):
 
 ```json
 {
-  "build": "209141",
+  "build": "209163",
   "version": "2.9.16",
   "reports": [
     {
