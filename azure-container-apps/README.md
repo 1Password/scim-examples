@@ -88,6 +88,17 @@ After the deployment is complete, click **Go to resource**, then continue to ste
 
 To test if your SCIM bridge is online, choose **Overview** in your application's sidebar, then click your **Application Url** link. This is your **SCIM bridge URL**. Sign in using your bearer token to verify that your SCIM bridge is connected to your 1Password account.
 
+> [!NOTE]
+> If clicking the Application URL only shows a log-like page (for example: `Here are Logs from the Log Stream: Connecting to stream... 2025-10-06T21:03:40.92766 Connecting to the container 'op-scim-bridge'...`) and never loads the SCIM UI, your container is likely listening on HTTPS/8443 while the Azure Container Apps ingress is targeting HTTP/3002.
+>
+> Azure Container Apps terminates TLS at the ingress, so the SCIM Bridge container should listen on plain HTTP port 3002. Disable the SCIM Bridge’s internal TLS so it serves HTTP on 3002:
+>
+> - In your Container App, go to **Containers** > **Edit and deploy** > select the `op-scim-bridge` container.
+> - Open **Environment variables** and ensure `OP_TLS_DOMAIN` is not set (remove it) or is left empty.
+> - Save and create a new revision. Also confirm your **Ingress** Target port is `3002`.
+>
+> In the SCIM image, TLS is enabled when `OP_TLS_DOMAIN` is set; if it’s empty or unset, the bridge listens on plain HTTP port `3002` (the same port used in this guide and in the 1Password ARM template).
+
 ## Step 6: Connect your identity provider
 
 To finish setting up automated user provisioning, [connect your identity provider to the SCIM bridge](https://support.1password.com/scim/#step-3-connect-your-identity-provider).
