@@ -58,6 +58,19 @@ The Cloud Run service for the SCIM bridge will be configured to mount volume usi
     ```sh
     gcloud secrets create scimsession --data-file=$HOME/scimsession
     ```
+> [!IMPORTANT]
+> Your `scimsession` file MUST NOT contain a `domain` field.  
+> If it contains a domain, the SCIM bridge will automatically attempt to start on port 8443 with Let's Encrypt enabled to provision an SSL certificate.
+>
+> ```diff
+> {
+>   "version": "2",
+>   ...
+>   "deviceUuid": "EXAMPLE_DEVICE_UUID",
+> - "domain": "scim.example.com"
+> }
+> ```
+
 
 > [!TIP]
 > If the file was not saved using the above suggested values, replace `$HOME/scimsession` with the actual path to the
