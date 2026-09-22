@@ -18,6 +18,13 @@ spec:
           ports:
             - name: http1
               containerPort: 3002
+          env:
+            # The Google Front End terminates TLS and forwards the client IP
+            # address in the X-Forwarded-For header. Trust the private and
+            # link-local ranges it uses so SCIM bridge rate limits on the real
+            # client IP instead of the front end address.
+            - name: OP_SCIM_RATE_LIMIT_TRUSTED_PROXIES
+              value: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,169.254.0.0/16"
           resources:
             limits:
               cpu: 500m

@@ -17,6 +17,13 @@ properties:
     containers:
       - image: docker.io/1password/scim:v2.9.16
         name: op-scim-bridge
+        env:
+          # Container Apps' ingress terminates TLS and forwards the client IP
+          # address in the X-Forwarded-For header. Trust the private and
+          # link-local ranges the ingress uses so SCIM bridge rate limits on the
+          # real client IP instead of the ingress address.
+          - name: OP_SCIM_RATE_LIMIT_TRUSTED_PROXIES
+            value: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,169.254.0.0/16"
         volumeMounts:
           - mountPath: "/home/opuser/.op"
             volumeName: credentials

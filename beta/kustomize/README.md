@@ -112,6 +112,24 @@ The update should take 2-3 minutes for Kubernetes to complete.
 
 ## Appendix:
 
+### Trusted proxies
+
+SCIM bridge rate limits requests per client IP address. In this deployment the `op-scim-service` Service passes traffic through at layer 4, so no proxy adds an `X-Forwarded-For` header and SCIM bridge sees the client address directly.
+
+If you put your own reverse proxy, ingress controller, or layer 7 load balancer in front of your SCIM bridge, set `OP_SCIM_RATE_LIMIT_TRUSTED_PROXIES` in [`base/op-scim-config.yaml`](./base/op-scim-config.yaml) to a comma-separated list of the CIDR blocks the proxy sends traffic from:
+
+```yaml
+OP_SCIM_RATE_LIMIT_TRUSTED_PROXIES: "10.0.0.0/16,192.168.1.0/24"
+```
+
+SCIM bridge then reads the client address from the `X-Forwarded-For` header set by the proxy, and rate limits each client separately rather than treating all traffic as one caller.
+
+> **Note**
+>
+> Only list ranges that reach your SCIM bridge through a proxy that sets `X-Forwarded-For`. A caller that can connect directly from a trusted range can set the header itself and choose which address it is rate limited as.
+>
+> Note also that `op-scim-service` does not set `externalTrafficPolicy`, so the cluster default of `Cluster` applies and kube-proxy may replace the source address with a node address. Setting it to `Local` preserves the client address, at the cost of the load balancer routing only to nodes running the Pod.
+
 ### Resource recommendations
 
 The default resource recommendations for the SCIM bridge and Redis deployments are acceptable in most scenarios, but they may fall short in high-volume deployments where a large number of users and/or groups are being managed. We strongly recommend increasing the resources for both the SCIM bridge and Redis deployments.

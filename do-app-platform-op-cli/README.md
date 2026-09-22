@@ -236,6 +236,23 @@ Invoke-RestMethod -Uri https://raw.githubusercontent.com/1Password/scim-examples
 
 The [op-scim-bridge.yaml](./op-scim-bridge.yaml) file that this command uses should have the latest version in it. If the version doesn't match the one on the [SCIM bridge releases notes website](https://releases.1password.com/provisioning/scim-bridge/), you can download the file and update it before you run the command.
 
+## Appendix: Trusted proxies
+
+SCIM bridge rate limits requests per client IP address. App Platform's gateway terminates TLS and forwards each request to your component, so every request arrives from the gateway rather than from your identity provider. Left alone, SCIM bridge would treat all of your provisioning traffic as a single caller.
+
+The app spec in this directory sets `OP_SCIM_RATE_LIMIT_TRUSTED_PROXIES` to the private and link-local ranges the gateway uses:
+
+```yaml
+- key: OP_SCIM_RATE_LIMIT_TRUSTED_PROXIES
+  scope: RUN_AND_BUILD_TIME
+  value: 10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,169.254.0.0/16
+```
+
+SCIM bridge then reads the client address from the `X-Forwarded-For` header App Platform sets and rate limits each client separately. You do not need to change this.
+
+> [!NOTE]
+> These ranges are safe to trust here because the App Platform gateway is the only route to your component. Do not carry this value over to a deployment where SCIM bridge can be reached directly from a private network, where a caller could set `X-Forwarded-For` itself.
+
 ## Appendix: Resource recommendations
 
 The pod for 1Password SCIM Bridge should be vertically scaled if you provision a large number of users or groups. These are our default resource specifications and recommended configurations for provisioning at scale:

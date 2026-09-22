@@ -17,6 +17,10 @@ data:
   #OP_CONFIRMATION_INTERVAL=300
   # OP_DNS_CHALLENGE_CONFIG_FILE sets the path for a Let's Encrypt DNS-01 configuration file
   #OP_DNS_CHALLENGE_CONFIG_FILE=/secrets/dns01-config
+  # OP_SCIM_RATE_LIMIT_TRUSTED_PROXIES takes a comma-separated list of CIDR blocks to trust as proxies, so that SCIM
+  # bridge rate limits on the client IP address from the X-Forwarded-For header. Only set this if you put your own
+  # reverse proxy or layer 7 load balancer in front of SCIM bridge and it sets that header.
+  #OP_SCIM_RATE_LIMIT_TRUSTED_PROXIES: "10.0.0.0/16,192.168.1.0/24"
   # (optional) uncomment this line to change the email that is used when Let's Encrypt issues your SCIM bridge a certificate
   # default: "1pw@[OP_TLS_DOMAIN]"
   #OP_LETSENCRYPT_EMAIL: "1pw@example.com"

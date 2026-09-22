@@ -9,6 +9,7 @@ Metadata:
           - VPCID
           - VPCCIDR
           - PublicSubnets
+          - TrustedProxies
           - ProvisioningVolume
           - SCIMBridgeVersion
           - scimsession
@@ -24,6 +25,8 @@ Metadata:
         default: VPC CIDR
       PublicSubnets:
         default: Public subnets
+      TrustedProxies:
+        default: Trusted proxies
       ProvisioningVolume:
         default: Provisioning volume
       SCIMBridgeVersion:
@@ -47,6 +50,12 @@ Parameters:
     Description: (Optional) A comma-separated list of two or more public subnets in the specified VPC.
     ConstraintDescription: >-
       must be a list of at least two existing subnets associated a unique availability zone in the specified VPC
+  TrustedProxies:
+    Type: String
+    Default: ""
+    Description: >-
+      (Optional) A comma-separated list of CIDR blocks that SCIM bridge trusts as proxies when it reads the client IP
+      address from the X-Forwarded-For header. Required only if specifying a VPCID; otherwise the VPC CIDR is used.
   ProvisioningVolume:
     Type: String
     Description: >-
@@ -109,6 +118,9 @@ Mappings:
       Memory: 1024
 Conditions:
   CreateVPC: !Equals [!Ref VPCID, ""]
+  HasTrustedProxies: !Or
+    - !Equals [!Ref VPCID, ""]
+    - !Not [!Equals [!Ref TrustedProxies, ""]]
   UsingGoogleWorkspace: !Not
     - !Or
       - !Equals [!Ref WorkspaceCredentials, ""]
@@ -407,6 +419,11 @@ Resources:
           Environment:
             - Name: OP_REDIS_URL
               Value: !Sub redis://${RedisService.Name}.1password:6379
+            - !If
+              - HasTrustedProxies
+              - Name: OP_SCIM_RATE_LIMIT_TRUSTED_PROXIES
+                Value: !If [CreateVPC, !Ref VPCCIDR, !Ref TrustedProxies]
+              - !Ref AWS::NoValue
           LogConfiguration:
             LogDriver: awslogs
             Options:

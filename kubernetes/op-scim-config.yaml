@@ -64,6 +64,15 @@ data:
   # unset or set to 0, the /ping endpoint is not available on port 8080.
   # OP_PING_SERVER: "1"
 
+  # SCIM bridge rate limits requests per client IP address. In the standard configuration it terminates TLS itself and
+  # the Service passes traffic through at layer 4, so no proxy adds an X-Forwarded-For header. If you put your own
+  # reverse proxy, ingress controller, or layer 7 load balancer in front of SCIM bridge, set
+  # OP_SCIM_RATE_LIMIT_TRUSTED_PROXIES to a comma-separated list of the CIDR blocks it proxies traffic from. SCIM bridge
+  # then reads the client IP address from X-Forwarded-For instead of rate limiting every request as though it came from
+  # the proxy. Only set this if your proxy sets the header. See the README for how the Service's externalTrafficPolicy
+  # affects the source IP address the SCIM bridge container sees.
+  # OP_SCIM_RATE_LIMIT_TRUSTED_PROXIES: "10.0.0.0/16,192.168.1.0/24"
+
   # Use OP_CONFIRMATION_INTERVAL to set how often the ConfirmationWatcher component runs in seconds. The minimum
   # interval is 30 seconds. If not set, the default value of 300 seconds (5 minutes) is used.
   # OP_CONFIRMATION_INTERVAL: "30"

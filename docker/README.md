@@ -284,6 +284,16 @@ docker stack config \
   docker stack deploy --compose-file - op-scim-bridge
 ```
 
+In this configuration, every SCIM request reaches the bridge from your proxy rather than from the identity provider. Because SCIM bridge rate limits requests per client IP address, it would otherwise treat all of that traffic as a single caller. Set `OP_SCIM_RATE_LIMIT_TRUSTED_PROXIES` in `scim.env` to a comma-separated list of the CIDR blocks your proxy sends traffic from:
+
+```sh
+OP_SCIM_RATE_LIMIT_TRUSTED_PROXIES=10.0.0.0/16,192.168.1.0/24
+```
+
+SCIM bridge then reads the client address from the `X-Forwarded-For` header set by your proxy. Only list ranges that reach SCIM bridge through a proxy that sets that header: a caller connecting directly from a trusted range can set the header itself and choose which address it is rate limited as.
+
+In the default configuration, where Docker publishes port 443 straight to the bridge and CertificateManager terminates TLS, SCIM bridge already sees the real client address and this variable should stay unset.
+
 #### Self-managed TLS certificate
 
 You may also choose to supply your own TLS certificate with CertificateManager instead of invoking Let's Encrypt. The value set for `OP_TLS_DOMAIN` must match the common name of the certificate.

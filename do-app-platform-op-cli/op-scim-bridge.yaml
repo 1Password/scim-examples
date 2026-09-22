@@ -11,6 +11,13 @@ services:
     name: op-scim-redis
     run_command: redis-server --maxmemory 256mb --maxmemory-policy volatile-lru --save ""
   - envs:
+      # App Platform's gateway terminates TLS and forwards the client IP address
+      # in the X-Forwarded-For header. Trust the private and link-local ranges
+      # the gateway uses so SCIM bridge rate limits on the real client IP
+      # instead of the gateway address.
+      - key: OP_SCIM_RATE_LIMIT_TRUSTED_PROXIES
+        scope: RUN_AND_BUILD_TIME
+        value: 10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,169.254.0.0/16
       - key: OP_REDIS_URL
         scope: RUN_AND_BUILD_TIME
         value: redis://${op-scim-redis.PRIVATE_DOMAIN}:${op-scim-redis.PRIVATE_PORT}

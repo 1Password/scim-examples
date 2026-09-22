@@ -185,6 +185,30 @@ To update within the Azure Portal:
 This may be useful for troubleshooting issues.
 </details>
 
+<details>
+<summary>Trusted proxies</summary>
+
+SCIM bridge rate limits requests per client IP address. Container Apps' ingress terminates TLS and forwards each request to your container, so every request arrives from the ingress rather than from your identity provider. Left alone, SCIM bridge would treat all of your provisioning traffic as a single caller.
+
+The deployment template sets `OP_SCIM_RATE_LIMIT_TRUSTED_PROXIES` to the private and link-local ranges the Container Apps ingress uses, so SCIM bridge reads the client address from the `X-Forwarded-For` header the ingress sets and rate limits each client separately. You do not need to change this.
+
+If you need to set it on a SCIM bridge you have already deployed:
+
+```bash
+az containerapp update -n $ConAppName -g $ResourceGroup --container-name op-scim-bridge --set-env-vars OP_SCIM_RATE_LIMIT_TRUSTED_PROXIES=10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,169.254.0.0/16
+```
+
+To update within the Azure Portal:
+
+1. Within Container App from the [Azure Container Apps Portal](https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/Microsoft.App%2FcontainerApps), select **Containers** from the sidebar.
+2. Click **Edit and deploy**.
+3. Select the checkbox next to your **op-scim-bridge** container, then choose **Edit**.
+4. Add a new **Environment variable**, using the **name** of `OP_SCIM_RATE_LIMIT_TRUSTED_PROXIES`, the **source** of **Manual entry** and enter `10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,169.254.0.0/16` for the **value**
+5. Click **Save**, then click **Create**.
+
+These ranges are safe to trust here because the Container Apps ingress is the only route to your container. Do not carry this value over to a deployment where SCIM bridge can be reached directly from a private network.
+</details>
+
 ## Update your SCIM bridge
 
 > [!TIP]

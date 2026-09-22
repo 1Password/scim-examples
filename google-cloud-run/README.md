@@ -152,6 +152,32 @@ Similar information is presented graphically by accessing your SCIM bridge URL i
 
 To finish setting up automated user provisioning, [connect your identity provider to your SCIM bridge](https://support.1password.com/scim/#step-3-connect-your-identity-provider).
 
+## Customize your deployment
+
+### Trusted proxies
+
+SCIM bridge rate limits requests per client IP address. Cloud Run terminates TLS at the Google Front End and forwards each request to your container, so every request arrives from Google's front end rather than from your identity provider. Left alone, SCIM bridge would treat all of your provisioning traffic as a single caller.
+
+The service YAML in this directory sets `OP_SCIM_RATE_LIMIT_TRUSTED_PROXIES` to the private and link-local ranges the front end uses:
+
+```yaml
+env:
+  - name: OP_SCIM_RATE_LIMIT_TRUSTED_PROXIES
+    value: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,169.254.0.0/16"
+```
+
+SCIM bridge then reads the client address from the `X-Forwarded-For` header Cloud Run sets and rate limits each client separately. You do not need to change this.
+
+To set it on a SCIM bridge you have already deployed:
+
+```sh
+gcloud run services update op-scim-bridge \
+  --update-env-vars OP_SCIM_RATE_LIMIT_TRUSTED_PROXIES=10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,169.254.0.0/16
+```
+
+> [!NOTE]
+> These ranges are safe to trust here because the Cloud Run front end is the only route to your container. Do not carry this value over to a deployment where SCIM bridge can be reached directly from a private network, where a caller could set `X-Forwarded-For` itself.
+
 ## Update your SCIM bridge
 
 > [!IMPORTANT]

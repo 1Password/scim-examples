@@ -37,12 +37,13 @@ Consult the [Preparation Guide](/PREPARATION.md) in this repository. Since this 
 2. To use an existing VPC, input its ID in the **VPC ID** field. The stack will create a new VPC with two public subnets and associated resources if this field is empty.
 3. A CIDR block must be specified when creating a VPC. If creating a VPC with the stack, use the default value provided or specify your own in the **VPC CIDR** field. This field is ignored when specifying a VPC ID.
 4. If specifying an existing VPC, input a comma-separated list of IDs for at least two public subnet IDs in the **Public subnets** field. The subnets must span at least two Avilability Zones. This field is required when using an existing VPC and ignored otherwise.
-5. If you are provisioning more than 1,000 users to 1Password, choose the appropriate value for **Provisioning volume**. Choose `high` for up to 5,000 users, or `very-high` for more than 5,000.
-6. Open the `scimsession` file from your working directory in your favourite text editor. Select all text in the file and copy it to your clipboard. Paste the contents into the `scimession` field (input will be masked).
-7. **If Google Workspace is your identity provider**, [create a service account, key, and API client](https://support.1password.com/scim-google-workspace/#step-1-create-a-google-service-account-key-and-api-client). Save the Google Workspace service account key file to your computer, open the file in a text editor, select all text in the file, and copy it to your clipboard. In the **Workspace configuration** section:
+5. If specifying an existing VPC, input a comma-separated list of CIDR blocks in the **Trusted proxies** field. See [Trusted proxies](#trusted-proxies) below. Leave this field empty when creating a VPC with the stack; the VPC CIDR is used instead.
+6. If you are provisioning more than 1,000 users to 1Password, choose the appropriate value for **Provisioning volume**. Choose `high` for up to 5,000 users, or `very-high` for more than 5,000.
+7. Open the `scimsession` file from your working directory in your favourite text editor. Select all text in the file and copy it to your clipboard. Paste the contents into the `scimession` field (input will be masked).
+8. **If Google Workspace is your identity provider**, [create a service account, key, and API client](https://support.1password.com/scim-google-workspace/#step-1-create-a-google-service-account-key-and-api-client). Save the Google Workspace service account key file to your computer, open the file in a text editor, select all text in the file, and copy it to your clipboard. In the **Workspace configuration** section:
    - Paste the contents of the key file (from your clipboard) into the **Service account key** field (the input will be masked).
    - Input the email address for a Google Workspace administrator to use with the service account in the **Actor** field.
-8. Click **Next**.
+9. Click **Next**.
 
 ## Step 3: Configure stack options
 
@@ -136,6 +137,18 @@ curl --silent --show-error --request GET --header "Accept: application/json" \
 Use your SCIM bridge URL and bearer token to [connect your identity provider to 1Password SCIM Bridge](https://support.1password.com/scim/#step-3-connect-your-identity-provider).
 
 If you are integrating with Google Workspace, sign in to your SCIM bridge URL using your bearer token and [set up provisioning to 1Password](https://support.1password.com/scim-google-workspace/#22-set-up-provisioning-to-1password).
+
+## Trusted proxies
+
+SCIM bridge rate limits requests per client IP address. In this deployment, Amazon API Gateway terminates TLS and reaches the SCIM bridge container through a VPC Link, so every request arrives from one of the VPC Link's network interfaces. Left alone, SCIM bridge would treat all of your provisioning traffic as a single caller.
+
+The stack sets `OP_SCIM_RATE_LIMIT_TRUSTED_PROXIES` on the container so that SCIM bridge trusts the `X-Forwarded-For` header API Gateway sets and rate limits on the real client address instead.
+
+- **If the stack creates the VPC** (the **VPC ID** field is empty), the **VPC CIDR** value is used and there is nothing to configure.
+- **If you supply your own VPC**, the stack cannot look up its CIDR block, so set the **Trusted proxies** parameter to a comma-separated list of the CIDR blocks of the public subnets you specified, for example `10.0.0.0/20,10.0.16.0/20`. If you leave it empty, SCIM bridge rate limits all traffic as one client.
+
+> [!WARNING]
+> Only list ranges that reach your SCIM bridge through API Gateway. A caller that can connect directly from a trusted range can set `X-Forwarded-For` itself and choose which address it is rate limited as.
 
 ## Maintenance
 

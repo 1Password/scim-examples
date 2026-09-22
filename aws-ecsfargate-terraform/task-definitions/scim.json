@@ -30,6 +30,10 @@
       {
         "name": "OP_CONFIRMATION_INTERVAL",
         "value": "300"
+      },
+      {
+        "name": "OP_SCIM_RATE_LIMIT_TRUSTED_PROXIES",
+        "value": "${trusted_proxies}"
       }
     ],
     "secrets": [

@@ -28,9 +28,10 @@ locals {
   base_container_definitions_json = templatefile(
     "${path.module}/task-definitions/scim.json",
     {
-      secret_arn     = aws_secretsmanager_secret.scimsession.arn,
-      aws_logs_group = aws_cloudwatch_log_group.op_scim_bridge.name,
-      region         = var.aws_region,
+      secret_arn      = aws_secretsmanager_secret.scimsession.arn,
+      aws_logs_group  = aws_cloudwatch_log_group.op_scim_bridge.name,
+      region          = var.aws_region,
+      trusted_proxies = join(",", [for s in data.aws_subnet.public : s.cidr_block]),
     }
   )
 
@@ -75,6 +76,15 @@ data "aws_subnets" "public" {
   tags = var.vpc_name != "" ? { SubnetTier = "public" } : {}
 
 }
+
+# Look up the CIDR block of each public subnet. The load balancer's network
+# interfaces live in these subnets, so their ranges are what SCIM bridge trusts
+# as proxies when resolving the client IP address.
+data "aws_subnet" "public" {
+  for_each = toset(data.aws_subnets.public.ids)
+  id       = each.value
+}
+
 data "aws_iam_policy_document" "assume_role_policy" {
   statement {
     actions = ["sts:AssumeRole"]

@@ -268,6 +268,21 @@ with the desired environment variables and their values, e.g.,:
 },
 ```
 
+## Trusted proxies
+
+SCIM bridge rate limits requests per client IP address. In this deployment, the application load balancer terminates TLS and forwards each request to the SCIM bridge container, so every request arrives from one of the load balancer's network interfaces. Left alone, SCIM bridge would treat all of your provisioning traffic as a single caller.
+
+This is handled for you. Terraform looks up the CIDR block of each public subnet in your VPC and passes the list to the SCIM bridge container as `OP_SCIM_RATE_LIMIT_TRUSTED_PROXIES`:
+
+```hcl
+trusted_proxies = join(",", [for s in data.aws_subnet.public : s.cidr_block]),
+```
+
+Because the load balancer's network interfaces live in those subnets, SCIM bridge trusts the `X-Forwarded-For` header the load balancer sets and rate limits on the real client address instead.
+
+> **Note**  
+> The trusted ranges are the public subnets rather than the whole VPC, so the trust is no broader than it needs to be. If you front your SCIM bridge with something else, edit the `trusted_proxies` value in [`main.tf`](./main.tf) to match the ranges that proxy traffic to it.
+
 ## Troubleshooting
 
 ### Logs

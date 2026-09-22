@@ -158,6 +158,12 @@
                         {
                             "image": "docker.io/1password/scim:v2.9.16",
                             "name": "op-scim-bridge",
+                            "env": [
+                                {
+                                    "name": "OP_SCIM_RATE_LIMIT_TRUSTED_PROXIES",
+                                    "value": "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,169.254.0.0/16"
+                                }
+                            ],
                             "resources": {
                                 "cpu": "[variables('resourceSettings')[parameters('provisioningVolume')].cpu]",
                                 "memory": "[variables('resourceSettings')[parameters('provisioningVolume')].memory]"

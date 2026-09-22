@@ -475,6 +475,36 @@ kubectl set env deploy/op-scim-bridge OP_PING_SERVER=1
 
 No other endpoints (such as `/scim`) are exposed through this port.
 
+### Trusted proxies
+
+SCIM bridge rate limits requests per client IP address. In the standard configuration, the `op-scim-bridge` Service passes traffic through at layer 4 and TLS terminates at the container, so SCIM bridge sees the client address directly and there is nothing to configure.
+
+If you put your own reverse proxy, ingress controller, or layer 7 load balancer in front of your SCIM bridge, every request instead arrives from the proxy. Set `OP_SCIM_RATE_LIMIT_TRUSTED_PROXIES` to a comma-separated list of the CIDR blocks the proxy sends traffic from:
+
+```sh
+kubectl set env deploy/op-scim-bridge OP_SCIM_RATE_LIMIT_TRUSTED_PROXIES=10.0.0.0/16,192.168.1.0/24
+```
+
+SCIM bridge then reads the client address from the `X-Forwarded-For` header set by the proxy, and rate limits each client separately rather than treating all traffic as one caller.
+
+> **Warning**
+>
+> Only list ranges that reach your SCIM bridge through a proxy that sets `X-Forwarded-For`. A caller that can connect directly from a trusted range can set the header itself and choose which address it is rate limited as.
+
+#### Preserving the client IP address
+
+The `op-scim-bridge` Service does not set `externalTrafficPolicy`, so the cluster default of `Cluster` applies. Under that policy, kube-proxy can forward traffic to a Pod on another node and replace the source address with a node address before SCIM bridge sees it. The original client address is lost, and because no proxy adds `X-Forwarded-For`, trusted proxies cannot recover it.
+
+To keep the client address, set the policy to `Local` in `op-scim-service.yaml`:
+
+```yaml
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+```
+
+This example does not set it by default. With the single replica deployed here, `Local` makes the load balancer send traffic only to the node running the Pod, so a rollout or a Pod moving to another node can drop requests until the load balancer health checks catch up. Whether that tradeoff is worth accurate client addresses depends on your cluster.
+
 ## Troubleshooting
 
 When cluster resources are updated in place, Kubernetes will create a new revision alongside an existing workload before replacing the existing revision. If there are not enough available resources in the cluster to schedule both revisions, the update can hang until they become available. This can happen when vertically scaling a Deployment or updating to a new SCIM bridge image version.
